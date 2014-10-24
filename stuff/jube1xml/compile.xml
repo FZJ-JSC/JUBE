@@ -1,0 +1,163 @@
+<compilation>
+
+<!-- predefined vars:
+   $outdir -> output directory for temporary compile files
+   $id     -> identifier of this benchmark run
+-->
+
+<!-- ********************************************************** -->
+
+<!-- ********************************************************** -->
+
+<compile cname="Intel-Nehalem-JuRoPA">
+    <!-- Specification of source files to copy into temporary build
+         directory -->
+    <src directory="./../src" files="rayben.15-OCT-2013.tar.gz"/>
+
+    <!-- Create makefile.defs and substitute parameters -->
+    <substitute infile="Makefile.defs.in" outfile="Makefile.defs">
+        <sub from="#ARCH#"          to="$platform" />
+        <sub from="#MAKE#"          to="$make" />
+        <sub from="#RANLIB#"        to="$ranlib" />
+        <sub from="#AR#"            to="$ar" />
+        <sub from="#ARFLAGS#"       to="$arflags" />
+        <sub from="#RM#"            to="$rm" />
+        <sub from="#CPP#"           to="$cpp" />
+        <sub from="#CPPFLAGS#"      to="$cppflags -C "/>
+        <sub from="#FCPRE#"         to=" " />
+        <sub from="#MPIF90#"        to="$mpi_f90" />
+        <sub from="#F90FLAGS#"      to="$f90flags $optflags" />
+        <sub from="#LDPRE#"         to=" " />
+        <sub from="#LD#"            to="$mpi_f90" />
+        <sub from="#LDFLAGS#"       to="$ldflags $ldoptflags" />
+        <sub from="#LDLIBS#"        to="" />
+        <sub from="#EXECNAME#"      to="$execname" />
+    </substitute>
+    <substitute infile="param.f.in" outfile="param.f">
+        <sub from="#N1#"          to="$N1" />
+        <sub from="#N2#"          to="$N2" />
+        <sub from="#N3#"          to="$N3" />
+    </substitute>
+
+    <!-- issue build command -->
+    <command>(module purge; module load parastation/mpi2-intel-5.0.26-1 intel/13.1.3; make)</command>
+
+</compile>
+
+
+<!-- ********************************************************** -->
+<compile cname="Intel-SandyBridge-EURORA">
+    <!-- Specification of source files to copy into temporary build
+         directory -->
+    <src directory="./../src" files="rayben.15-OCT-2013.tar.gz eurora_modmake.sh"/>
+   <substitute infile="Makefile_mic.defs.in" outfile="Makefile_mic.defs">
+       <sub from="#MPIF90#"        to="$mpi_f90" />
+       <sub from="#F90FLAGSMIC#"   to="$f90flags $optflagsmic" />
+       <sub from="#LDFLAGSMIC#"    to="$ldflags $ldoptflagsmic" />
+       <sub from="#EXECNAME#"      to="$execname" />
+       <sub from="#LD#"            to="$mpi_f90" />
+       <sub from="#LDLIBS#"        to="" />
+   </substitute>
+
+    <!-- Create makefile.defs and substitute parameters -->
+    <substitute infile="Makefile_host.defs.in" outfile="Makefile_host.defs">
+        <sub from="#ARCH#"          to="$platform" />
+        <sub from="#MAKE#"          to="$make" />
+        <sub from="#RANLIB#"        to="$ranlib" />
+        <sub from="#AR#"            to="$ar" />
+        <sub from="#ARFLAGS#"       to="$arflags" />
+        <sub from="#RM#"            to="$rm" />
+        <sub from="#CPP#"           to="$cpp" />
+        <sub from="#CPPFLAGS#"      to="$cppflags -C "/>
+        <sub from="#FCPRE#"         to=" " />
+        <sub from="#MPIF90#"        to="$mpi_f90" />
+        <sub from="#LDFLAGSHOST#"   to="$ldflags $ldoptflagshost" />
+        <sub from="#LDFLAGSMIC#"    to="$ldflags $ldoptflagsmic" />
+        <sub from="#F90FLAGSHOST#"  to="$f90flags $optflagshost" />
+        <sub from="#F90FLAGSMIC #"  to="$f90flags $optflagsmic" />
+        <sub from="#LDPRE#"         to=" " />
+        <sub from="#LD#"            to="$mpi_f90" />
+        <sub from="#LDLIBS#"        to="" />
+        <sub from="#EXECNAME#"      to="$execname" />
+    </substitute>
+    <substitute infile="param.f.in" outfile="param.f">
+        <sub from="#N1#"          to="$N1" />
+        <sub from="#N2#"          to="$N2" />
+        <sub from="#N3#"          to="$N3" />
+    </substitute>
+    <substitute infile="compile-for-host.sh.in" outfile="compile-for-host.sh">
+      <sub from="#COMPILEHOST#"       to="`'$targethost' eq 'host' ? 'make -f Makefile_host' : ' '`" />
+      <sub from="#CLEANHOST#"         to="`'$targethost' eq 'host' ? 'make -f Makefile_host clean' : ' '`" /> 
+    </substitute>
+    <substitute infile="compile-for-mic.sh.in" outfile="compile-for-mic.sh">
+      <sub from="#COMPILEMIC#"        to="`'$targetmic' eq 'mic' ? 'make -f Makefile_mic' : ' '`" />
+      <sub from="#CLEANMIC#"          to="`'$targetmic' eq 'mic' ? 'make -f Makefile_mic clean' : ' '`" />    
+    </substitute> 
+
+    <!-- issue build command -->
+ <!--(module purge; module load autoload intel openmpi; module load mkl; make)-->
+    <command>(./compile.sh $execname $targethost $targetmic)</command>
+
+</compile>
+
+
+<!-- ********************************************************** -->
+
+<compile cname="Intel-SandyBridge-JUROPA3">
+    <!-- Specification of source files to copy into temporary build
+         directory -->
+    <src directory="./../src" files="rayben.15-OCT-2013.tar.gz"/>
+
+    <!-- Create makefile.defs and substitute parameters -->
+   <substitute infile="Makefile_mic.defs.in" outfile="Makefile_mic.defs">
+       <sub from="#MPIF90#"        to="$mpi_f90" />
+       <sub from="#F90FLAGSMIC#"   to="$f90flags $optflagsmic" />
+       <sub from="#LDFLAGSMIC#"    to="$ldflags $ldoptflagsmic" />
+       <sub from="#EXECNAME#"      to="$execname" />
+       <sub from="#LD#"            to="$mpi_f90" />
+       <sub from="#LDLIBS#"        to="" />
+   </substitute>
+    <substitute infile="Makefile_host.defs.in" outfile="Makefile_host.defs">
+        <sub from="#ARCH#"          to="$platform" />
+        <sub from="#MAKE#"          to="$make" />
+        <sub from="#RANLIB#"        to="$ranlib" />
+        <sub from="#AR#"            to="$ar" />
+        <sub from="#ARFLAGS#"       to="$arflags" />
+        <sub from="#RM#"            to="$rm" />
+        <sub from="#CPP#"           to="$cpp" />
+        <sub from="#CPPFLAGS#"      to="$cppflags -C "/>
+        <sub from="#FCPRE#"         to=" " />
+        <sub from="#MPIF90#"        to="$mpi_f90" />
+        <sub from="#F90FLAGSHOST#"  to="$f90flags $optflagshost" />
+        <sub from="#F90FLAGSMIC #"  to="$f90flags $optflagsmic" />
+        <sub from="#LDPRE#"         to=" " />
+        <sub from="#LD#"            to="$mpi_f90" />
+        <sub from="#LDFLAGSHOST#"   to="$ldflags $ldoptflagshost" />
+        <sub from="#LDFLAGSMIC#"    to="$ldflags $ldoptflagsmic" />
+        <sub from="#LDLIBS#"        to="" />
+        <sub from="#EXECNAME#"      to="$execname" />
+    </substitute>
+    <substitute infile="param.f.in" outfile="param.f">
+        <sub from="#N1#"          to="$N1" />
+        <sub from="#N2#"          to="$N2" />
+        <sub from="#N3#"          to="$N3" />
+    </substitute>
+    <substitute infile="compile-for-host.sh.in" outfile="compile-for-host.sh">
+      <sub from="#COMPILEHOST#"       to="`'$targethost' eq 'host' ? 'make -f Makefile_host' : ' '`" />
+      <sub from="#CLEANHOST#"         to="`'$targethost' eq 'host' ? 'make -f Makefile_host clean' : ' '`" /> 
+    </substitute>
+    <substitute infile="compile-for-mic.sh.in" outfile="compile-for-mic.sh">
+      <sub from="#COMPILEMIC#"        to="`'$targetmic' eq 'mic' ? 'make -f Makefile_mic' : ' '`" />
+      <sub from="#CLEANMIC#"          to="`'$targetmic' eq 'mic' ? 'make -f Makefile_mic clean' : ' '`" />    
+    </substitute> 
+
+    <!-- issue build command -->
+<!--    <command>(source /usr/local/etc/mic/intel_mic_env;bash compile-for-host.sh;mv $execname $execname.$targethost;bash compile-for-mic.sh;mv $execname $execname.$targetmic; tar cvf $execname $execname.$targethost $execname.$targetmic )</command>-->
+ <command>compile.sh $execname $targethost $targetmic</command>
+ </compile>
+
+
+<!-- ********************************************************** -->
+
+
+</compilation>

@@ -1,0 +1,10 @@
+SRC = bench_test.c
+PROG= #PROGNAME#
+OBJ = $(SRC:%.c=%.o)
+
+all: $(OBJ)
+	@ #CC# -o $(PROG) $(OBJ) 
+
+%.o: %.c
+	@ #CC# -Wall #CPPFLAGS# -c $<
+

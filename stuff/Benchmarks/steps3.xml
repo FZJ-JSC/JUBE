@@ -1,0 +1,7 @@
+<stepdef name="compile" cname="BGP"> 
+ <actionorder actions="cp, sub, run" />
+
+ <action name="cp1" type="copy" 
+     from="" to="" />
+ 
+</stepdef>

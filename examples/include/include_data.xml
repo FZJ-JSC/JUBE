@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <parameterset name="parameterset">
+    <parameter name="number" type="int">1,2,4</parameter>
+  </parameterset>
+    
+  <parameterset name="parameterset2">
+    <parameter name="text">Hello</parameter>
+  </parameterset>
+    
+  <dos>
+    <do>echo Test</do>
+    <do>echo $number</do>
+  </dos>
+</jube>

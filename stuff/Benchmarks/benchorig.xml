@@ -1,0 +1,24 @@
+<bench name="bonnie" platform="IBM-BGP-Jugene" >
+<include file="steps.xml" host="babel" type="deb"/> 
+<const min="0" max="1000"/>
+<benchmark name="16Racks" active="1">
+    <tasks       threadspertask="1" taskspernode="16384" nodes="1" />
+    <params      
+                 mix="0,1,2"
+                 alltoall="1"
+                 msgsize="128"
+                 iterations="3"
+                 bgconnection="prefer_torus"
+                 bgmode="SMP"
+                 bgshape="4x4x2"
+                 srcversion="mpilinktest"
+     />
+    <steporder steps="compile,prepare,execute,verify,analyse"/>
+    <step        name="compile" type="Opt" version="new" />
+    <step        name="prepare"  />
+    <step        name="execute" cname="$platform" shape="_shape" timelimit="00:59:00" />
+    <step        name="verify"  cname="LINKTEST"  />
+    <step        name="analyse" cname="$platform"  />
+    <step        name="putDB"   cname="$platform" oraspec="orasrv.fz-juelich.de"  />
+</benchmark>
+</bench>

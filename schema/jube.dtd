@@ -1,0 +1,81 @@
+<!ELEMENT jube ((selection|include-path)* ,(benchmark|parameterset|fileset|substituteset|patternset|include)*)>
+<!ATTLIST jube          xmlns:xsi CDATA #IMPLIED
+                        xsi:noNamespaceSchemaLocation CDATA #IMPLIED>
+<!ELEMENT selection ((only|not)*)>
+<!ELEMENT only (#PCDATA)>
+<!ELEMENT not (#PCDATA)>
+<!ELEMENT include-path (path*)>
+<!ELEMENT path (#PCDATA)>
+<!ELEMENT benchmark (comment?,(parameterset|substituteset|fileset|step|patternset|analyzer|result|include)*)>
+<!ATTLIST benchmark     name CDATA #REQUIRED
+                        outpath CDATA #REQUIRED>
+<!ELEMENT comment (#PCDATA)>
+<!ELEMENT parameterset ((parameter|include)*)>
+<!ATTLIST parameterset  name CDATA #REQUIRED
+                        init_with CDATA #IMPLIED>
+<!ELEMENT parameter (#PCDATA)>
+<!ATTLIST parameter     name CDATA #REQUIRED
+                        type (int|string|float) #IMPLIED
+                        mode CDATA #IMPLIED
+                        separator CDATA #IMPLIED>
+<!ELEMENT substituteset ((iofile|sub|include)*)>
+<!ATTLIST substituteset name CDATA #REQUIRED
+                        init_with CDATA #IMPLIED>
+<!ELEMENT iofile EMPTY>
+<!ATTLIST iofile        in CDATA #REQUIRED
+                        out CDATA #REQUIRED>
+<!ELEMENT sub EMPTY>
+<!ATTLIST sub           source CDATA #REQUIRED
+                        dest CDATA #REQUIRED>
+<!ELEMENT fileset ((copy|link|include)*)>
+<!ATTLIST fileset       name CDATA #REQUIRED
+                        init_with CDATA #IMPLIED>  
+<!ELEMENT link (#PCDATA)>
+<!ATTLIST link          directory CDATA #IMPLIED
+                        name CDATA #IMPLIED
+                        rel_path_ref (internal|external) #IMPLIED>
+<!ELEMENT copy (#PCDATA)>
+<!ATTLIST copy          directory CDATA #IMPLIED
+                        name CDATA #IMPLIED
+                        rel_path_ref (internal|external) #IMPLIED>
+<!ELEMENT patternset ((pattern|include)*)>
+<!ATTLIST patternset    name CDATA #REQUIRED
+                        init_with CDATA #IMPLIED>
+<!ELEMENT pattern (#PCDATA)>
+<!ATTLIST pattern       name CDATA #REQUIRED
+                        type (int|string|float) #IMPLIED
+                        mode CDATA #IMPLIED
+                        unit CDATA #IMPLIED
+                        reduce CDATA #IMPLIED>
+<!ELEMENT step ((use|do|include)*)>
+<!ATTLIST step          name CDATA #REQUIRED
+                        iterations CDATA #IMPLIED
+                        depend CDATA #IMPLIED
+                        work_dir CDATA #IMPLIED
+                        shared CDATA #IMPLIED>
+<!ELEMENT analyzer ((use|analyse|include)*)>
+<!ATTLIST analyzer      name CDATA #REQUIRED>
+<!ELEMENT use (#PCDATA)>
+<!ATTLIST use           from CDATA #IMPLIED>
+<!ELEMENT do ANY>
+<!ATTLIST do            done_file CDATA #IMPLIED
+                        active CDATA #IMPLIED
+                        shared (true|false) #IMPLIED
+                        stdout CDATA #IMPLIED
+                        stderr CDATA #IMPLIED>
+<!ELEMENT analyse ((file|include)*)>
+<!ATTLIST analyse       step CDATA #REQUIRED>
+<!ELEMENT result ((use|table|include)*)>
+<!ATTLIST result        result_dir CDATA #IMPLIED>
+<!ELEMENT table ((column|include)*)>
+<!ATTLIST table         name CDATA #REQUIRED
+                        style (csv|pretty) #IMPLIED
+                        separator CDATA #IMPLIED
+                        sort CDATA #IMPLIED>
+<!ELEMENT column (#PCDATA)>
+<!ATTLIST column        colw CDATA #IMPLIED
+                        format CDATA #IMPLIED>
+<!ELEMENT file (#PCDATA)>
+<!ELEMENT include EMPTY>
+<!ATTLIST include       from CDATA #REQUIRED
+                        path CDATA #IMPLIED>

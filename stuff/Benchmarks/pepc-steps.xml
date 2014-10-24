@@ -1,0 +1,157 @@
+<steps name="pepc" platform="IBM-SP6-Jump">
+<stepdef name="compile" cname="BGP"> 
+ <actionorder actions="cp, sub, run" />
+
+ <action name="cp" type="copydir" >
+    <from directory="./src" files="configure.in configure config.h.in makefile.in lpepcsrc pepc-b src-config compile.sh.in" />
+    <to directory="./tmp"/>
+ </action>
+ 
+ <action name="sub" type="substitute"
+ 	 infile="/home6/st.meier/steffi/Benchmarking/JuBEs/jube2/Benchmarks/compile.sh.in" outfile="/home6/st.meier/steffi/Benchmarking/JuBEs/jube2/Benchmarks/compile.sh">
+        <sub from="#EXECNAME#"      to="$execname" />
+        <sub from="#OUTDIR#"        to="$outdir" />
+        <sub from="#CPP#"           to="$cpp" />
+        <sub from="#CPPFLAGS#"      to="" />
+        <sub from="#CC#"            to="xlc" />
+        <sub from="#CFLAGS#"        to="" />
+        <sub from="#FFLAGS#"        to="-q64 $f90flags" />
+        <sub from="#MPI_F90#"       to="$mpi_f90" />
+        <sub from="#LDFLAGS#"       to="$ldflags" />
+        <sub from="#CONFIG_SHELL#"  to="/usr/bin/bash" />
+        <sub from="#MPI_DIR#"       to="" />
+        <sub from="#MPI_LIBS#"      to="" />
+
+        <sub from="#MAKE#"          to="$make" />
+        <sub from="#RM#"            to="$rm" />
+        <sub from="#AR#"            to="$ar" />
+        <sub from="#ARFLAGS#"       to="-X64 $arflags" />
+        <sub from="#RANLIB#"        to="$ranlib" />
+        <sub from="#F77#"           to="$f77" />
+        <sub from="#F90#"           to="$f90" />
+        <sub from="#F90FLAGS#"      to="-q64 $f90flags -O3 -qsuffix=cpp=F90" />
+        <sub from="#CXX#"           to="$cxx" />
+        <sub from="#CXXFLAGS#"      to="-q64 $cxxflags" />
+        <sub from="#MPI_F77#"       to="$mpi_f77" />
+        <sub from="#MPI_CC#"        to="$mpi_cc" />
+        <sub from="#MPI_CXX#"       to="$mpi_cxx" />
+        <sub from="#LD#"            to="$mpi_f90" />
+        <sub from="#MPI_DIR#"       to="$mpi_dir" />
+        <sub from="#MPI_LIB#"       to="$mpi_lib" />
+        <sub from="#MPI_INC#"       to="$mpi_inc" />
+        <sub from="#MPI_BIN#"       to="$mpi_bin" />
+        <sub from="#BLAS_DIR#"      to="$blas_dir" />
+        <sub from="#BLAS_LIB#"      to="$blas_lib" />
+        <sub from="#LAPACK_DIR#"    to="$lapack_dir" />
+        <sub from="#LAPACK_LIB#"    to="$lapack_lib" />
+        <sub from="#FFTW_DIR#"      to="$fftw3_dir" />
+        <sub from="#FFTW_LIB#"      to="$fftw3_lib" />
+        <sub from="#FFTW_INC#"      to="$fftw3_inc" />
+        <sub from="#NETCDF_DIR#"    to="$netcdf3_dir" />
+        <sub from="#NETCDF_LIB#"    to="$netcdf3_lib" />
+        <sub from="#NETCDF_INC#"    to="$netcdf3_inc" />
+        <sub from="#MODULE_CMD#"    to="$module_cmd" />
+        <sub from="#MODULE_FILES#"  to="" />
+ </action>
+ 
+ <action name="run" type="execute" scope="parameterspace"> 
+    <command>sh compile.sh</command>
+ </action>
+
+</stepdef>
+
+
+<stepdef name="execute" cname="BGP"> 
+ <actionorder actions="sub, env, run" />
+ 
+ <action name="sub" type="substitute"
+ 	 infile="ibm_llsubmit.job.in" outfile="ibm_llsubmit.job">
+       <sub from="#OUTDIR#"            to="$outdir" />
+        <sub from="#STDOUTLOGFILE#"     to="$stdoutlogfile" />
+        <sub from="#STDERRLOGFILE#"     to="$stderrlogfile" />
+        <sub from="#CLASS#"             to="m_big" />
+        <sub from="#BENCHNAME#"         to="$benchname" />
+        <sub from="#NODEUSAGE#"         to="not_shared" />
+        <sub from="#TIME_LIMIT#"        to="00:59:00" />
+        <sub from="#NODES#"             to="$nodes" />
+        <sub from="#TASKS#"             to="$tasks" />
+        <sub from="#TASKSPERNODE#"      to="$taskspernode" />
+        <sub from="#NOTIFICATION#"      to="never" />
+        <sub from="#NOTIFY_EMAIL#"      to="user@host.com" />
+        <sub from="#THREADSPERTASK#"    to="$threadspertask" />
+        <sub from="#DATA_LIMIT#"        to="3.0Gb" />
+        <sub from="#STACK_LIMIT#"       to="0.5GB" />
+        <sub from="#MEMORYPERTASK#"     to="`3.5*$threadspertask`Gb" />
+        <sub from="#EXECUTABLE#"        to="$executable" />
+        <sub from="#ENV#"               to="$env" />
+        <sub from="#PREPROCESS#"        to="cp run_start.h run.h; poe $executable > preprun_out.log 2> preprun_err.log;$benchhome/run/merge1_dump 000002;cp run_bench.h run.h;( cd ./data/pe0000; ln -sf ../../dumps/parts_dump.000002 ./parts_dump.000002; ln -sf ../../dumps/parts_info.000002 ./parts_info.000002);cp ./dumps/parts_info.000002 ./parts_info.in" />
+        <sub from="#POSTPROCESS#"       to="" />
+        <sub from="#STARTER#"           to="poe" />
+        <sub from="#ARGS_STARTER#"      to="" />
+        <sub from="#MEASUREMENT#"       to="time /usr/local/bin/hpmcount" />
+        <sub from="#ARGS_EXECUTABLE#"   to="" />
+ </action>
+
+ <action name="env" type="environment">
+        <env var="MP_LABELIO" value="yes" />
+        <env var="MP_INFOLEVEL" value="2" />
+        <env var="MP_SHARED_MEMORY" value="yes" />
+        <env var="MP_TASK_AFFINITY" value="MCM" />
+        <env var="MEMORY_AFFINITY"  value="MCM" />
+        <env var="OMP_NUM_THREADS"  value="$threadspertask" />
+ </action>
+
+ <action name="run" type="execute" scope="parameterspace"> 
+    <command>llsubmit ibm_llsubmit.job</command>
+ </action>
+
+</stepdef>
+
+
+<stepdef name="prepare" cname="BGP"> 
+ <actionorder actions="mkdir1, sub, run" />
+
+ <action name="mkdir1" type="execute">
+  <command> mkdir data </command> 
+  <command> mkdir dumps </command> 
+  <command> mkdir log </command> 
+  <command> mkdir fields </command> 
+  <command> mkdir fields_pp </command> 
+ </action>
+ 
+ <action name="sub" type="substitute"
+    infile="sphere.h.in" outfile="run_bench.h">
+    <sub from="#NPART#"   to="$npart" />
+    <sub from="#WSCHEME#" to="$wscheme" />
+    <sub from="#NT#"      to="$nt" />
+    <sub from="#NT2#"      to="`$nt+2`" />
+    <sub from="#NPMULT#"  to="$npmult" />
+    <sub from="#FETCHMULT#"  to="$fetchmult" />
+ </action>
+ 
+ <action name="run" type="execute"> 
+  <command>
+  ( cd $rundir;
+    perl $benchhome/run/create_pelist.pl $ncpus;
+    $benchhome/run/make_pes;
+    $benchhome/run/clean_pes;
+    cp $benchhome/run/merge1_dump .
+  )
+  </command> 
+ </action>
+
+</stepdef>
+
+
+<stepdef name="verify" cname="BGP"> 
+ <actionorder actions="run" />
+
+ <action name="run" type="execute">
+  <command> perl run/check_results_pepc.pl $subdir/verify.xml $stdoutfile $stderrfile $subdir $ncpus $npart 
+ </command> 
+ </action>
+ 
+</stepdef>
+
+
+</steps>

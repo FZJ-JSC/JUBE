@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="scripting_parameter" outpath="bench_run">
+    <comment>A scripting parameter example</comment>
+    
+    <!-- Configuration -->
+    <parameterset name="parameterset">
+      <!-- Normal template -->
+      <parameter name="number" type="int">1,2,4</parameter>
+      <!-- A template created by a scripting parameter-->
+      <parameter name="additional_number" mode="python" type="int">",".join(str(a*${number}) for a in [1,2])</parameter>
+      <!-- A scripting parameter -->
+      <parameter name="number_mult" mode="python" type="float">${number}*${additional_number}</parameter>
+      <!-- Normal template -->
+      <parameter name="text">Number: $number</parameter>
+    </parameterset>
+    
+    <!-- Operation -->
+    <step name="operation">
+      <use>parameterset</use> <!-- use existing parameterset -->
+      <!-- shell commands -->
+      <do>echo "number: $number, additional_number: $additional_number"</do>
+      <do>echo "number_mult: $number_mult, text: $text"</do>
+    </step>    
+  </benchmark>
+</jube>

@@ -1,0 +1,23 @@
+<verification>
+
+<!-- ******************************************************************************** -->
+<!-- predefined vars:
+     $subdir      -> execution dir of benchmark run
+     $stdoutfile  -> $stdout file of bnechmark run
+     $stderrfile  -> $stderr file of bnechmark run
+     $...         -> params from benchmark specification in toplevel dir     
+-->
+
+<verify cname="standard">
+  <command>perl run/check_results_rayben.pl $subdir/verify.xml \
+                $subdir/boute-reference.out $subdir/boute.out \
+                $subdir/nusse-reference.out $subdir/nusse.out \
+                $stdoutfile $subdir</command>
+</verify>
+
+<!-- ******************************************************************************** -->
+
+</verification>
+
+
+

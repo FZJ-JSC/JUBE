@@ -1,0 +1,289 @@
+XML-Object destroyed
+XML-Object destroyed
+XML-Object destroyed
+$VAR1 = {
+  'include_tmp0' => {
+    'status' => [
+      {
+        'cmd' => [
+          ' \'shell cmd which return -1,0,1\'
+   '
+        ],
+        'message' => [
+          '
+   \'shell cmd which return string containg error message\'	
+   '
+        ]
+      }
+    ],
+    'actionorder' => [
+      {
+        'actions' => 'cp, sub, run'
+      }
+    ],
+    'action' => [
+      {
+        'to' => '',
+        'from' => '',
+        'name' => 'cp1',
+        'type' => 'copy'
+      },
+      {
+        'to' => '',
+        'from' => '',
+        'name' => 'cp2',
+        'type' => 'copy'
+      },
+      {
+        'sub' => [
+          {
+            'to' => '$execname',
+            'from' => '#EXECNAME#'
+          },
+          {
+            'to' => '$outdir',
+            'from' => '#OUTDIR#'
+          },
+          {
+            'to' => '$cpp',
+            'from' => '#CPP#'
+          },
+          {
+            'to' => '',
+            'from' => '#CPPFLAGS#'
+          }
+        ],
+        'outfile' => 'Makefile_BGP.defs',
+        'name' => 'sub',
+        'infile' => 'Makefile_BGP.defs.in',
+        'type' => 'substitute'
+      },
+      {
+        'name' => 'run',
+        'type' => 'execute'
+      }
+    ],
+    'name' => 'compile',
+    'cname' => 'BGP'
+  },
+  'const' => [
+    {
+      'min' => '0',
+      'max' => '1000'
+    }
+  ],
+  'include_tmp1' => {
+    'include_tmp0' => {
+      'actionorder' => [
+        {
+          'actions' => 'cp, sub, run'
+        }
+      ],
+      'action' => [
+        {
+          'to' => '',
+          'from' => '',
+          'name' => 'cp1',
+          'type' => 'copy'
+        }
+      ],
+      'name' => 'compile',
+      'cname' => 'BGP'
+    },
+    'status' => [
+      {
+        'cmd' => [
+          ' \'shell cmd which return -1,0,1\'
+   '
+        ],
+        'message' => [
+          '
+   \'shell cmd which return string containg error message\'	
+   '
+        ]
+      }
+    ],
+    'actionorder' => [
+      {
+        'actions' => 'cp, sub, run'
+      }
+    ],
+    'action' => [
+      {
+        'to' => '',
+        'from' => '',
+        'name' => 'cp1',
+        'type' => 'copy'
+      },
+      {
+        'to' => '',
+        'from' => '',
+        'name' => 'cp2',
+        'type' => 'copy'
+      },
+      {
+        'sub' => [
+          {
+            'to' => '$execname',
+            'from' => '#EXECNAME#'
+          },
+          {
+            'to' => '$outdir',
+            'from' => '#OUTDIR#'
+          },
+          {
+            'to' => '$cpp',
+            'from' => '#CPP#'
+          },
+          {
+            'to' => '',
+            'from' => '#CPPFLAGS#'
+          }
+        ],
+        'outfile' => 'Makefile_BGP.defs',
+        'name' => 'sub',
+        'infile' => 'Makefile_BGP.defs.in',
+        'type' => 'substitute'
+      },
+      {
+        'name' => 'run',
+        'type' => 'execute'
+      }
+    ],
+    'include' => {
+      'Benchmarks/steps3.xml' => {
+        'file' => 'Benchmarks/steps3.xml'
+      }
+    },
+    'name' => 'compile',
+    'cname' => 'BGP'
+  },
+  'include' => {
+    'Benchmarks/steps.xml' => {
+      'const' => 'xzy',
+      'file' => 'Benchmarks/steps.xml'
+    },
+    'Benchmarks/steps2.xml' => {
+      'file' => 'Benchmarks/steps2.xml'
+    }
+  },
+  'name' => 'bonnie',
+  'benchmark' => {
+    '32Racks' => {
+      'params' => [
+        {
+          'msgsize' => '128',
+          'srcversion' => 'mpilinktest',
+          'bgconnection' => 'prefer_torus',
+          'bgmode' => 'SMP',
+          'alltoall' => '1',
+          'iterations' => '3',
+          'bgshape' => '4x4x2',
+          'mix' => '0,1,2'
+        }
+      ],
+      'tasks' => [
+        {
+          'taskspernode' => '16384',
+          'threadspertask' => '1',
+          'nodes' => '1'
+        }
+      ],
+      'steporder' => [
+        {
+          'steps' => 'compile,prepare,execute,verify,analyse'
+        }
+      ],
+      'step' => [
+        {
+          'version' => 'new',
+          'name' => 'compile',
+          'type' => 'Opt'
+        },
+        {
+          'name' => 'prepare'
+        },
+        {
+          'name' => 'execute',
+          'timelimit' => '00:59:00',
+          'shape' => '_shape',
+          'cname' => '$platform'
+        },
+        {
+          'name' => 'verify',
+          'cname' => 'LINKTEST'
+        },
+        {
+          'name' => 'analyse',
+          'cname' => '$platform'
+        },
+        {
+          'name' => 'putDB',
+          'oraspec' => 'orasrv.fz-juelich.de',
+          'cname' => '$platform'
+        }
+      ],
+      'active' => '1',
+      'name' => '32Racks'
+    },
+    '16Racks' => {
+      'params' => [
+        {
+          'msgsize' => '128',
+          'srcversion' => 'mpilinktest',
+          'bgconnection' => 'prefer_torus',
+          'bgmode' => 'SMP',
+          'alltoall' => '1',
+          'iterations' => '3',
+          'bgshape' => '4x4x2',
+          'mix' => '0,1,2'
+        }
+      ],
+      'tasks' => [
+        {
+          'taskspernode' => '16384',
+          'threadspertask' => '1',
+          'nodes' => '1'
+        }
+      ],
+      'steporder' => [
+        {
+          'steps' => 'compile,prepare,execute,verify,analyse'
+        }
+      ],
+      'step' => [
+        {
+          'version' => 'new',
+          'name' => 'compile',
+          'type' => 'Opt'
+        },
+        {
+          'name' => 'prepare'
+        },
+        {
+          'name' => 'execute',
+          'timelimit' => '00:59:00',
+          'shape' => '_shape',
+          'cname' => '$platform'
+        },
+        {
+          'name' => 'verify',
+          'cname' => 'LINKTEST'
+        },
+        {
+          'name' => 'analyse',
+          'cname' => '$platform'
+        },
+        {
+          'name' => 'putDB',
+          'oraspec' => 'orasrv.fz-juelich.de',
+          'cname' => '$platform'
+        }
+      ],
+      'active' => '1',
+      'name' => '16Racks'
+    }
+  },
+  'platform' => 'IBM-BGP-Jugene'
+};
+XML-Object destroyed

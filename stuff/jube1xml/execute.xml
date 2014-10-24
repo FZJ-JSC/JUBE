@@ -1,0 +1,116 @@
+<execution>
+
+<!-- ********************************************************** -->
+
+<execute cname="Intel-Nehalem-JuRoPA">
+    <input files="$pdir/Intel-Nehalem-JuRoPA/intel_PBSsubmit.job.in" />
+
+    <substitute infile="intel_PBSsubmit.job.in" outfile="intel_PBSsubmit.job">
+        <sub from="#OUTDIR#"            to="$outdir" />
+        <sub from="#STDOUTLOGFILE#"     to="$stdoutlogfile" />
+        <sub from="#STDERRLOGFILE#"     to="$stderrlogfile" />
+        <sub from="#BENCHNAME#"         to="$benchname $subid" />
+        <sub from="#TIME_LIMIT#"        to="$walltime" />
+        <sub from="#NODES#"             to="$nodes" />
+        <sub from="#PPN#"               to="$ppn" />
+        <sub from="#TPT#"               to="$threadspertask" />
+        <sub from="#THREADSPERTASK#"    to="$threadspertask" />
+        <sub from="#NOTIFICATION#"      to="n" />
+        <sub from="#NOTIFY_EMAIL#"      to="user@host.com" />
+        <sub from="#EXECUTABLE#"        to="$executable" />
+        <sub from="#ENV#"               to="$env" />
+        <sub from="#PREPROCESS#"        to="module purge ; module load parastation/mpi2-intel-5.0.26-1 intel/13.1.3" />
+        <sub from="#POSTPROCESS#"       to="cat Total_time.out" />
+        <sub from="#STARTER#"           to="mpiexec" />
+        <sub from="#ARGS_STARTER#"      to="-np `$nodes*$ppn/$threadspertask` $omp" />
+        <sub from="#MEASUREMENT#"       to="time " />
+        <sub from="#ARGS_EXECUTABLE#"   to="" />
+    </substitute>
+
+    <environment>
+        <env var="OMP_NUM_THREADS"  value="$threadspertask" />
+    </environment>
+
+    <command>msub intel_PBSsubmit.job</command>
+</execute>
+
+<!-- ********************************************************** -->
+<execute cname="Intel-SandyBridge-EURORA">
+    <input files="$pdir/Intel-SandyBridge-EURORA/intel_PBSsubmit.job.in" />
+
+    <substitute infile="intel_PBSsubmit.job.in" outfile="intel_PBSsubmit.job">
+        <sub from="#OUTDIR#"            to="$outdir" />
+        <sub from="#STDOUTLOGFILE#"     to="$stdoutlogfile" />
+        <sub from="#STDERRLOGFILE#"     to="$stderrlogfile" />
+        <sub from="#BENCHNAME#"         to="$benchname" />
+        <sub from="#TIME_LIMIT#"        to="$walltime" />
+        <sub from="#NODES#"             to="`$nodes == 0 ? 1 : $nodes`" />
+        <sub from="#PPN#"               to="$ppn" />
+	<sub from="#NCPUS#"             to="$ncpus" />
+        <sub from="#TPN#"               to="$taskspernode" />
+        <sub from="#TPT#"               to="$threadspertask" />
+        <sub from="#THREADSPERTASK#"    to="$threadspertask" />
+	<sub from="#MEM#"               to="$mem"/>
+        <sub from="#NOTIFICATION#"      to="n" />
+        <sub from="#NOTIFY_EMAIL#"      to="user@host.com" />
+        <sub from="#EXECUTABLE#"        to="$executable" />
+	<sub from="#QUEUE#"             to="$queue" />
+	<sub from="#ACCOUNT#"           to="$account" />
+        <sub from="#ENV#"               to="$env" />
+        <sub from="#PREPROCESS#"        to="module load autoload intel openmpi/1.6.4--intel--cs-xe-2013--binary;module load mkl; source $INTEL_HOME/bin/compilervars.sh intel64" />
+        <sub from="#POSTPROCESS#"       to="cat Total_time.out" />
+        <sub from="#MEASUREMENT#"       to="time " />
+    </substitute>
+
+    <environment>
+        <env var="OMP_NUM_THREADS"  value="$threadspertask" />
+    </environment>
+
+    <command>qsub intel_PBSsubmit.job</command>
+</execute>
+
+<!-- ********************************************************** -->
+<execute cname="Intel-SandyBridge-JUROPA3">
+    <input files="$pdir/Intel-SandyBridge-JUROPA3/intel_SBATCHsubmit.job.in" />
+
+    <substitute infile="intel_SBATCHsubmit.job.in" outfile="intel_SBATCHsubmit.job">
+        <sub from="#OUTDIR#"            to="$outdir" />
+        <sub from="#STDOUTLOGFILE#"     to="$stdoutlogfile" />
+        <sub from="#STDERRLOGFILE#"     to="$stderrlogfile" />
+        <sub from="#BENCHNAME#"         to="$benchname" />
+        <sub from="#TIME_LIMIT#"        to="$walltime" />
+        <sub from="#NODES#"             to="`$nodes == 0 ? 1 : $nodes`" />
+        <sub from="#PPN#"               to="$ppn" />
+	<sub from="#NCPUS#"             to="$ncpus" />
+        <sub from="#TPN#"               to="$taskspernode" />
+        <sub from="#TPT#"               to="$threadspertask" />
+        <sub from="#THREADSPERTASK#"    to="$threadspertask" />
+	<sub from="#MEM#"               to="$mem"/>
+        <sub from="#NOTIFICATION#"      to="n" />
+        <sub from="#NOTIFY_EMAIL#"      to="user@host.com" />
+        <sub from="#EXECUTABLE#"        to="" />
+	<sub from="#QUEUE#"             to="$queue" />
+	<sub from="#PARTITION#"         to="$partition" />
+	<sub from="#ACCOUNT#"           to="$account" />
+        <sub from="#ENV#"               to="$env" />
+	<sub from="#OMP#"               to="OMP_NUM_THREADS" />
+        <sub from="#PREPROCESS#"        to="source /usr/local/etc/mic/intel_mic_env;export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MIC_LD_LIBRARY_PATH:/usr/local/intel/Composer/composer_xe_2013.5.192/mkl/lib/mic/:/usr/local/intel/Composer/composer_xe_2013.5.192/compiler/lib/mic/" />
+        <sub from="#POSTPROCESS#"       to="cat Total_time.out" />
+        <sub from="#MEASUREMENT#"       to="time " />
+   	<sub from="#STARTER#"           to="/usr/local/etc/mic/bin/mpirun-mic" />
+        <sub from="#ARGS_STARTER#"      to="-v `$nodes > 0 ? '-x $ntasks' : ' '`
+					    `$nodes > 0 ? '-c $executable.$targethost' : ' '`
+					    `$ntasks_mic > 0  ?  '-z $ntasks_mic' : ' '`
+					    `$ntasks_mic  > 0 ? '-m $executable.$targetmic' : ' '`" />
+    </substitute>
+    
+    <environment>
+      <env var="OMP_NUM_THREADS"  value="$threadspertask" />
+      <env var="MIC_OMP_NUM_THREADS"  value="$nmicthreads" />
+      <env var="MIC_NUM_PER_HOST"  value="$micnumperhost" />
+    </environment>
+    
+ <command>(tar -xv --transform='s|^.*/\(.*$\)|\1|' -f $executable; sbatch intel_SBATCHsubmit.job)</command>
+</execute>
+
+</execution>

@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- JUBE2 input file schema definition -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="unqualified">
+
+  <!-- type definitions -->
+  <xs:complexType name="benchmarkType">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:choice minOccurs="0" maxOccurs="1">
+        <xs:element name="comment" type="xs:string" />
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="parameterset" type="parametersetType" />
+        <xs:element name="patternset" type="patternsetType" />
+        <xs:element name="substituteset" type="substitutesetType" />
+        <xs:element name="fileset" type="filesetType" />
+        <xs:element name="step" type="stepType" />
+        <xs:element name="analyzer" type="analyzerType" />
+        <xs:element name="result" type="resultType" />
+        <xs:element name="include" type="includeType" />
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="outpath" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="parametersetType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="parameter" type="parameterType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="init_with" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="parameterType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="type" type="contentType" use="optional" />
+        <xs:attribute name="mode" type="xs:string" use="optional" />
+        <xs:attribute name="separator" type="xs:string"
+          use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="substitutesetType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="iofile" type="iofileType" />
+      <xs:element name="sub" type="subType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="init_with" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="iofileType">
+    <xs:attribute name="in" type="xs:string" use="required" />
+    <xs:attribute name="out" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="subType">
+    <xs:attribute name="source" type="xs:string" use="required" />
+    <xs:attribute name="dest" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="filesetType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="copy" type="fileType" />
+      <xs:element name="link" type="fileType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="init_with" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="fileType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="directory" type="xs:string"
+          use="optional" />
+        <xs:attribute name="name" type="xs:string" use="optional" />
+        <xs:attribute name="rel_path_ref" type="relPathRefType"
+          use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="patternsetType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="pattern" type="patternType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="init_with" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="patternType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="unit" type="xs:string" use="optional" />
+        <xs:attribute name="type" type="contentType" use="optional" />
+        <xs:attribute name="mode" type="xs:string" use="optional" />
+        <xs:attribute name="reduce" type="xs:string" use="optional" /> 
+      </xs:extension>
+    </xs:simpleContent> 
+  </xs:complexType>
+  
+  <xs:simpleType name="contentType">
+    <xs:restriction base="xs:string">
+       <xs:enumeration value="string" />
+       <xs:enumeration value="int" />
+       <xs:enumeration value="float" />
+    </xs:restriction>  
+  </xs:simpleType>
+
+  <xs:simpleType name="relPathRefType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="internal" />
+      <xs:enumeration value="external" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="stepType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="use" type="useType" />
+      <xs:element name="do" type="doType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="iterations" type="xs:integer" use="optional" />
+    <xs:attribute name="depend" type="xs:string" use="optional" />
+    <xs:attribute name="work_dir" type="xs:string" use="optional" />
+    <xs:attribute name="shared" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="analyzerType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="use" type="useType" />
+      <xs:element name="analyse" type="analyseType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="analyseType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="file" type="xs:string" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="step" type="xs:string" use="required" />
+  </xs:complexType>
+  
+  <xs:complexType name="resultType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="use" type="xs:string" />
+        <xs:element name="table" type="tableType" />
+        <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="result_dir" type="xs:string" use="optional"/>
+  </xs:complexType>
+  
+  <xs:complexType name="tableType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="column" type="columnType" />
+      <xs:element name="include" type="includeType" />    
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="style" type="styleType" use="optional" />
+    <xs:attribute name="sort" type="xs:string" use="optional" />
+    <xs:attribute name="separator" type="xs:string" use="optional" />
+  </xs:complexType>
+  
+  <xs:complexType name="columnType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="colw" type="xs:integer" use="optional" />
+        <xs:attribute name="format" type="xs:string" use="optional" />
+      </xs:extension>    
+    </xs:simpleContent>
+  </xs:complexType>
+  
+  <xs:simpleType name="styleType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="csv" />
+      <xs:enumeration value="pretty" />
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:complexType name="useType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="from" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="doType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="done_file" type="xs:string"
+          use="optional" />
+        <xs:attribute name="stdout" type="xs:string" use="optional" />
+        <xs:attribute name="stderr" type="xs:string" use="optional" />
+        <xs:attribute name="active" type="xs:string" use="optional" />
+        <xs:attribute name="shared" type="booleanType" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="booleanType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="true" />
+      <xs:enumeration value="false" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="jubeType">
+    <xs:sequence minOccurs="0" maxOccurs="1">
+      <xs:choice minOccurs="0" maxOccurs="2">
+        <xs:element name="include-path" type="includePathType" />
+        <xs:element name="selection" type="selectionType" />
+      </xs:choice>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="parameterset" type="parametersetType" />
+        <xs:element name="patternset" type="patternsetType" />
+        <xs:element name="substituteset" type="substitutesetType" />
+        <xs:element name="fileset" type="filesetType" />
+        <xs:element name="benchmark" type="benchmarkType">
+          <xs:unique name="localSets">
+            <xs:selector xpath="parameterset|substituteset|fileset|step" />
+            <xs:field xpath="@name" />
+          </xs:unique>
+          <xs:unique name="localPatternsets">
+            <xs:selector xpath="patternset" />
+            <xs:field xpath="@name" />
+          </xs:unique>
+        </xs:element>
+        <xs:element name="include" type="includeType" />
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="selectionType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="only" type="xs:string" />
+      <xs:element name="not" type="xs:string" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="includePathType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="path" type="xs:string" />
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="includeType">
+    <xs:attribute name="from" type="xs:string" use="required" />
+    <xs:attribute name="path" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <!-- root-node -->
+  <xs:element name="jube" type="jubeType">
+    <xs:unique name="globalSets">
+      <xs:selector xpath="parameterset|benchmark|fileset|substituteset" />
+      <xs:field xpath="@name" />
+    </xs:unique>
+    <xs:unique name="globalPatternsets">
+      <xs:selector xpath="patternset" />
+      <xs:field xpath="@name" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

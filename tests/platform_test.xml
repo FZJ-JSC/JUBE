@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jube SYSTEM "jube2.dtd">
+<jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="jube2.xsd">
+  
+  <parameterset name="compileset">
+    <parameter name="cc">gcc</parameter>
+    <parameter name="cppflagslist">-g -O1</parameter>  
+  </parameterset>
+  
+  <substituteset name="compilesub">
+    <iofile in="makefile.in" out="Makefile" />
+    <sub source="#CC#" dest="$cc" />
+    <sub source="#CPPFLAGS#" dest="$cppflagslist" />
+  </substituteset>
+  
+  <fileset name="sources">
+    <link>src/makefile.in</link>
+  </fileset>   
+</jube>

@@ -1,0 +1,32 @@
+<steps name="bonnie" platform="IBM-BGP-Jugene">
+<stepdef name="compile" cname="BGP"> 
+ <actionorder actions="cp1, cp2, sub, run" />
+
+ <action name="cp1" type="copy" 
+     from="a" to="b" />
+
+
+ <action name="cp2" type="copy" 
+     from="c" to="d" />
+
+ <action name="sub" type="substitute"
+ 	 infile="Makefile_BGP.defs.in" outfile="Makefile_BGP.defs">
+        <sub from="#EXECNAME#"      to="$execname" />
+        <sub from="#OUTDIR#"        to="$outdir" />
+        <sub from="#CPP#"           to="$cpp" />
+        <sub from="#CPPFLAGS#"      to="" />
+ </action>
+ 
+ <action name="run" type="execute"> 
+ </action>
+</stepdef>
+<stepdef name="compile2" cname="BGP"> 
+ <actionorder actions="cp1, cp2" />
+
+ <action name="cp1" type="copy" 
+     from="e" to="f" />
+
+ <action name="cp2" type="copy" 
+     from="g" to="h" />
+</stepdef>
+</steps>

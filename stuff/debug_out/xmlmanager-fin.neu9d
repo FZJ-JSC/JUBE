@@ -1,0 +1,275 @@
+-----------------------------
+$VAR1 = {
+  'bench' => {
+    'bonnie' => {
+      'const' => [
+        {
+          'min' => '0',
+          'max' => '1000'
+        }
+      ],
+      'name' => 'bonnie',
+      'include' => {
+        'Benchmarks/steps.xml' => {
+          'const' => 'xzy',
+          'file' => 'Benchmarks/steps.xml'
+        }
+      },
+      'platform' => 'IBM-BGP-Jugene',
+      'benchmark' => {
+        '32Racks' => {
+          'params' => [
+            {
+              'msgsize' => '128',
+              'srcversion' => 'mpilinktest',
+              'bgconnection' => 'prefer_torus',
+              'bgmode' => 'SMP',
+              'alltoall' => '1',
+              'iterations' => '3',
+              'bgshape' => '4x4x2',
+              'mix' => '0,1,2'
+            }
+          ],
+          'tasks' => [
+            {
+              'taskspernode' => '16384',
+              'threadspertask' => '1',
+              'nodes' => '1'
+            }
+          ],
+          'steporder' => [
+            {
+              'steps' => 'compile,prepare,execute,verify,analyse'
+            }
+          ],
+          'step' => [
+            {
+              'version' => 'new',
+              'name' => 'compile',
+              'type' => 'Opt'
+            },
+            {
+              'name' => 'prepare'
+            },
+            {
+              'name' => 'execute',
+              'timelimit' => '00:59:00',
+              'shape' => '_shape',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'verify',
+              'cname' => 'LINKTEST'
+            },
+            {
+              'name' => 'analyse',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'putDB',
+              'oraspec' => 'orasrv.fz-juelich.de',
+              'cname' => '$platform'
+            }
+          ],
+          'active' => '1',
+          'name' => '32Racks'
+        },
+        '16Racks' => {
+          'params' => [
+            {
+              'msgsize' => '128',
+              'srcversion' => 'mpilinktest',
+              'bgconnection' => 'prefer_torus',
+              'bgmode' => 'SMP',
+              'alltoall' => '1',
+              'iterations' => '3',
+              'bgshape' => '4x4x2',
+              'mix' => '0,1,2'
+            }
+          ],
+          'tasks' => [
+            {
+              'taskspernode' => '16384',
+              'threadspertask' => '1',
+              'nodes' => '1'
+            }
+          ],
+          'steporder' => [
+            {
+              'steps' => 'compile,prepare,execute,verify,analyse'
+            }
+          ],
+          'step' => [
+            {
+              'version' => 'new',
+              'name' => 'compile',
+              'type' => 'Opt'
+            },
+            {
+              'name' => 'prepare'
+            },
+            {
+              'name' => 'execute',
+              'timelimit' => '00:59:00',
+              'shape' => '_shape',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'verify',
+              'cname' => 'LINKTEST'
+            },
+            {
+              'name' => 'analyse',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'putDB',
+              'oraspec' => 'orasrv.fz-juelich.de',
+              'cname' => '$platform'
+            }
+          ],
+          'active' => '1',
+          'name' => '16Racks'
+        }
+      }
+    }
+  }
+};
+-----------------------------
+$VAR1 = {
+  'bench' => {
+    'bonnie' => {
+      'const' => [
+        {
+          'min' => '0',
+          'max' => '1000'
+        }
+      ],
+      'name' => 'bonnie',
+      'include' => {
+        'Benchmarks/steps.xml' => {
+          'const' => 'xzy',
+          'file' => 'Benchmarks/steps.xml'
+        }
+      },
+      'platform' => 'IBM-BGP-Jugene',
+      'benchmark' => {
+        '32Racks' => {
+          'params' => [
+            {
+              'msgsize' => '128',
+              'srcversion' => 'mpilinktest',
+              'bgconnection' => 'prefer_torus',
+              'bgmode' => 'SMP',
+              'alltoall' => '1',
+              'iterations' => '3',
+              'bgshape' => '4x4x2',
+              'mix' => '0,1,2'
+            }
+          ],
+          'tasks' => [
+            {
+              'taskspernode' => '16384',
+              'threadspertask' => '1',
+              'nodes' => '1'
+            }
+          ],
+          'steporder' => [
+            {
+              'steps' => 'compile,prepare,execute,verify,analyse'
+            }
+          ],
+          'step' => [
+            {
+              'version' => 'new',
+              'name' => 'compile',
+              'type' => 'Opt'
+            },
+            {
+              'name' => 'prepare'
+            },
+            {
+              'name' => 'execute',
+              'timelimit' => '00:59:00',
+              'shape' => '_shape',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'verify',
+              'cname' => 'LINKTEST'
+            },
+            {
+              'name' => 'analyse',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'putDB',
+              'oraspec' => 'orasrv.fz-juelich.de',
+              'cname' => '$platform'
+            }
+          ],
+          'active' => '1',
+          'name' => '32Racks'
+        },
+        '16Racks' => {
+          'params' => [
+            {
+              'msgsize' => '128',
+              'srcversion' => 'mpilinktest',
+              'bgconnection' => 'prefer_torus',
+              'bgmode' => 'SMP',
+              'alltoall' => '1',
+              'iterations' => '3',
+              'bgshape' => '4x4x2',
+              'mix' => '0,1,2'
+            }
+          ],
+          'tasks' => [
+            {
+              'taskspernode' => '16384',
+              'threadspertask' => '1',
+              'nodes' => '1'
+            }
+          ],
+          'steporder' => [
+            {
+              'steps' => 'compile,prepare,execute,verify,analyse'
+            }
+          ],
+          'step' => [
+            {
+              'version' => 'new',
+              'name' => 'compile',
+              'type' => 'Opt'
+            },
+            {
+              'name' => 'prepare'
+            },
+            {
+              'name' => 'execute',
+              'timelimit' => '00:59:00',
+              'shape' => '_shape',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'verify',
+              'cname' => 'LINKTEST'
+            },
+            {
+              'name' => 'analyse',
+              'cname' => '$platform'
+            },
+            {
+              'name' => 'putDB',
+              'oraspec' => 'orasrv.fz-juelich.de',
+              'cname' => '$platform'
+            }
+          ],
+          'active' => '1',
+          'name' => '16Racks'
+        }
+      }
+    }
+  }
+};
+XML-Object destroyed

@@ -1,0 +1,33 @@
+<bench name    = "PEPC" platform= "IBM-SP6-Jump" >
+<include file="Benchmarks/pepc-steps.xml" type="stepdef"/>     
+<benchmark name="test" active="0">
+    <tasks       threadspertask="1" taskspernode="32" nodes="1,2,4,8"/>
+    <params      npart="2000000"
+                 nt="10"
+                 wscheme="0"
+                 npmult="11.0"
+                 fetchmult="3"  
+		 iteration="1"  />
+    <steporder steps="compile,prepare,execute,verify,analyse"/>
+    <step        name="compile" cname="$platform"  version="new" />
+    <step        name="prepare" cname="$platform"   />
+    <step        name="execute" cname="$platform" data_limit="3.0" stack_limit="0.5" />
+    <step        name="verify"  cname="$platform"  />
+    <step        name="analyse" cname="$platform"  />
+</benchmark>
+<benchmark name="testactive" active="1">
+    <tasks       threadspertask="1" taskspernode="32" nodes="1,2,4,8"/>
+    <params      npart="2000000,100000"
+                 nt="10,11"
+                 wscheme="0"
+                 npmult="10.0"
+                 fetchmult="3"  
+		 iteration="1"  />
+    <steporder steps="compile,prepare,execute,verify,analyse"/>
+    <step        name="compile" cname="$platform"  version="new" />
+    <step        name="prepare" cname="$platform"   />
+    <step        name="execute" cname="$platform" data_limit="3.0" stack_limit="0.5" />
+    <step        name="verify"  cname="$platform"  />
+    <step        name="analyse" cname="$platform"  />
+</benchmark>
+</bench>

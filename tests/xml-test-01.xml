@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jube SYSTEM "../schema/jube.dtd">
+<jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../schema/jube.xsd">
+  
+  <selection>
+    <only>simple01</only>
+  </selection>
+ 
+  <parameterset name="global">
+    <parameter name="dummy1" type="int">1</parameter>
+    <parameter name="another_dummy" type="int">128</parameter>
+  </parameterset>
+
+  <benchmark name="16Racks" outpath="./benchmark_runs">
+    <parameterset name="executeset">
+      <parameter name="alltoall" type="int">1</parameter>
+      <parameter name="msgsize" type="int">128</parameter>
+      <parameter name="iterations">3</parameter>
+      <parameter name="bgconnection">prefer_torus</parameter>
+      <parameter name="bgmode">SMP</parameter>
+      <parameter name="bgshape">4x4x2</parameter>
+      <parameter name="srcversion">mpilinktest</parameter>
+      <parameter name="threadspertask">1</parameter>
+      <parameter name="taskspernode">8</parameter>
+      <parameter name="nodes" type="int" separator=",">1,2,4</parameter>
+      <parameter name="timelimit">00:59:00</parameter>
+      <parameter name="aa">$bb</parameter>
+      <parameter name="bb">$aa</parameter>
+    </parameterset>
+
+    <parameterset name="compileset1">
+      <parameter name="cpp">g++</parameter>
+      <parameter name="cppflagslist" type="string" separator=",">-g -O1,-g -O2</parameter>
+    </parameterset>
+
+    <parameterset name="compileset2">
+      <parameter name="cpp">g-</parameter>
+      <parameter name="cppflagslist" type="string" separator=",">-h -O1,-h -O2</parameter>
+    </parameterset>
+
+    <parameterset name="dbset">
+      <parameter name="oraspec">orasrv.fz-juelich.de</parameter>
+    </parameterset>
+
+    <substituteset name="compilesub">
+      <iofile in="makefile.in" out="makefile" />
+      <sub source="#MAKE#" dest="gmake" />
+      <sub source="#CPP#" dest="$cpp" />
+      <sub source="#CPPFLAGS#" dest="$cppflagslist -C" />
+    </substituteset>
+
+    <step name="compile">
+      <use>global</use>
+      <use>compileset1,compileset2</use>
+      <use>compilesub</use>
+      <do>echo make $$dummy1 = $dummy1 $$cppflagslist = $cppflagslist</do>
+    </step>
+
+    <step name="configure">
+      <do>echo ./configure</do>
+    </step>
+
+    <step name="execute" iterations="10" depend="configure,compile">
+      <use>executeset</use>
+      <do>echo msub job $$nodes = $nodes $$cppflagslist = $cppflagslist</do>
+      <do>echo check output $$nodes = $nodes $$cppflagslist = $cppflagslist</do>
+    </step>
+
+    <step name="putDB" depend="execute">
+      <use>dbset</use>
+      <do>echo whatever $oraspec</do>
+    </step>
+
+    <step name="preprocessing">
+      <use>executeset</use>
+      <do>echo preprocessing $$nodes = $nodes</do>
+    </step>
+
+    <step name="analyze">
+      <do>echo analyze</do>
+    </step>
+  </benchmark>
+
+  <benchmark name="simple01" outpath="./benchmark_runs">
+  
+    <comment>This is a simple Testrun.</comment>
+        
+    <parameterset name="compileset" init_with="platform_test.xml">
+      <parameter name="execname">my_exe</parameter>
+      <parameter name="cppflagslist">-g -O1,-g -O2</parameter>
+    </parameterset>
+        
+    <parameterset name="executeset">
+      <parameter name="nodes" mode="python" type="int">",".join([str(2**i) for i in range(3)])</parameter>
+    </parameterset>
+
+    <fileset name="sources" init_with="platform_test.xml">
+      <link directory="src">bench_test.c</link>
+    </fileset>
+
+    <substituteset name="compilesub" init_with="platform_test.xml">
+      <sub source="#PROGNAME#" dest="$execname" />
+    </substituteset>
+
+    <step name="compile">
+      <use>compileset</use>
+      <use>sources</use>
+      <use>compilesub</use>
+      <do>make</do>
+    </step>
+
+    <step name="execute" depend="compile" shared="shared">
+      <use>executeset</use>
+      <use>compileset</use>
+      <do>compile/$execname $nodes</do>
+    </step>
+    
+    <patternset name="pattern">
+       <pattern name="nodes_pattern" type="int"> Hello World: $jube_pat_int</pattern>
+       <pattern name="zero" mode="python" type="int">${nodes_pattern}-${nodes}</pattern>
+    </patternset>
+    
+    <analyzer name="analyze">
+       <use>pattern</use>
+       <analyse step="execute">
+         <file>stdout</file>
+       </analyse>
+    </analyzer>
+    
+    <result>
+       <use>analyze</use>
+       <table name="result" style="pretty" sort="nodes,cppflagslist">
+         <column>cppflagslist</column>
+         <column>nodes</column>
+         <column>nodes_pattern</column>
+         <column>zero</column>
+       </table>
+    </result>
+    
+  </benchmark>
+</jube>

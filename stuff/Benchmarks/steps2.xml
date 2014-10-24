@@ -1,0 +1,42 @@
+<stepdef name="compile" cname="BGP"> 
+<include file="Benchmarks/steps3.xml"/> 
+ <actionorder actions="cp, sub, run" />
+
+ <action name="cp1" type="copy" 
+     from="" to="" />
+
+
+ <action name="cp2" type="copy" 
+     from="" to="" />
+
+ <action name="sub" type="substitute"
+ 	 infile="Makefile_BGP.defs.in" outfile="Makefile_BGP.defs">
+        <sub from="#EXECNAME#"      to="$execname" />
+        <sub from="#OUTDIR#"        to="$outdir" />
+        <sub from="#CPP#"           to="$cpp" />
+        <sub from="#CPPFLAGS#"      to="" />
+ </action>
+ 
+ <action name="run" type="execute"> 
+
+
+ </action>
+
+
+ <status>
+   <!-- 
+   	 0 : failed
+	 1 : ready, ok  
+	 2 : not ready, proceed step
+	 3 : not ready, wait
+   -->
+   <cmd> 'shell cmd which return -1,0,1'
+   </cmd> 	
+
+   <message>
+   'shell cmd which return string containg error message'	
+   </message>
+ </status>
+
+ 
+</stepdef>

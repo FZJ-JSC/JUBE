@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <parameterset name="compileset">
+    <parameter name="make">gmake</parameter>
+    <parameter name="arch">_LINUX</parameter>
+    <parameter name="cc">gcc</parameter>
+    <parameter name="cflags"></parameter>  
+    <parameter name="mpi_cc">mpicc</parameter>  
+    <parameter name="mpi_cxx">mpic++</parameter>  
+    <parameter name="mpi_f90">mpif90</parameter> 
+    <parameter name="mpi_f77">mpif77</parameter>
+  </parameterset>
+
+  <parameterset name="libs">
+    <parameter name="load_module">module load</parameter>
+    <parameter name="load_sionlib">$load_module sionlib/1.5.1</parameter>
+    <parameter name="sionconfig">sionconfig</parameter>
+  </parameterset>
+
+  <substituteset name="compilesub">
+    <sub source="#CC#" dest="$cc" />
+    <sub source="#ARCH#" dest="$arch" />
+    <sub source="#MPI_CC#" dest="$mpi_cc" />
+    <sub source="#CFLAGS#" dest="$cflags" />
+  </substituteset> 
+
+  <parameterset name="executeset">
+    <parameter name="starter">mpiexec</parameter>
+    <parameter name="submit">msub</parameter>
+    <parameter name="nodes" type="int">1</parameter>
+    <parameter name="taskspernode" type="int">1</parameter>
+    <parameter name="executable"></parameter>
+    <parameter name="args_exec"></parameter>
+    <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode</parameter>
+    <parameter name="mail"></parameter>	
+    <parameter name="timelimit">00:30:00</parameter>
+    <parameter name="submit_job_script">juropa2Submit.job</parameter>
+    <parameter name="marker_file">ready</parameter>
+    <parameter name="notification">abe</parameter>
+  </parameterset>
+  
+  <substituteset name="executesub">
+    <iofile in="${submit_job_script}.in" out="$submit_job_script" />
+    <sub source="#ENV#" dest="" />
+    <sub source="#NOTIFY_EMAIL#" dest="$mail" />
+    <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
+    <sub source="#NODES#" dest="$nodes" />
+    <sub source="#NCPUS#" dest="$taskspernode" />
+    <sub source="#TIME_LIMIT#" dest="$timelimit" />
+    <sub source="#PREPROCESS#" dest="" />
+    <sub source="#POSTPROCESS#" dest="" />
+    <sub source="#STARTER#" dest="$starter" />
+    <sub source="#ARGS_STARTER#" dest="-np $tasks" />
+    <sub source="#MEASUREMENT#" dest="" />
+    <sub source="#STDOUTLOGFILE#" dest="stdout" />
+    <sub source="#STDERRLOGFILE#" dest="stderr" />
+    <sub source="#EXECUTABLE#" dest="$executable" />
+    <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
+    <sub source="#MARKER_FILE#" dest="$marker_file" />
+    <sub source="#NOTIFICATION#" dest="$notification" />
+  </substituteset>
+
+  <fileset name="jobfiles">
+    <copy>${submit_job_script}.in</copy>
+  </fileset>
+ 
+</jube>

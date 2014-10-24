@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="result_creation" outpath="bench_run">
+    <comment>A result creation example</comment>
+    
+    <!-- Configuration -->
+    <parameterset name="parameterset">
+      <!-- Create a parameterspace out of two template parameter -->
+      <parameter name="number" type="int">1,2,4</parameter>
+    </parameterset>
+    
+    <!-- Regex pattern -->
+    <patternset name="pattern">
+      <pattern name="number_pat" type="int">Number: $jube_pat_int</pattern>
+    </patternset>
+    
+    <!-- Operation -->
+    <step name="write_number">
+      <use>parameterset</use> <!-- use existing parameterset -->
+      <do>echo "Number: $number"</do> <!-- shell command -->
+    </step>
+    
+    <!-- Analyse -->
+    <analyzer name="analyse">
+      <use>pattern</use> <!-- use existing patternset -->
+      <analyse step="write_number">
+        <file>stdout</file> <!-- file which should be scanned -->
+      </analyse>
+    </analyzer>
+    
+    <!-- Create result table -->
+    <result>
+      <use>analyse</use> <!-- use existing analyzer -->
+      <table name="result" style="pretty" sort="number">
+        <column>number</column>
+        <column>number_pat</column>
+      </table>
+    </result>
+  </benchmark>
+</jube>

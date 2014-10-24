@@ -1,0 +1,5 @@
+include LICENSE
+include docs/_build/latex/JUBE.pdf
+recursive-include examples *
+recursive-include schema *
+include bin/jube

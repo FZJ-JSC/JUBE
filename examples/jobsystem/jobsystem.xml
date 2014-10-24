@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="jobsystem" outpath="bench_run">
+    <comment>A jobsystem example</comment>
+    
+    <!-- benchmark configuration -->
+    <parameterset name="parameterset">
+      <parameter name="number" type="int">1,2,4</parameter>
+    </parameterset>
+    
+    <!-- Job configuration -->
+    <parameterset name="executeset">
+      <parameter name="submit_cmd">msub</parameter>
+      <parameter name="job_file">job.run</parameter>
+      <parameter name="nodes" type="int">1</parameter>
+      <parameter name="walltime">00:01:00</parameter>
+      <parameter name="ppn" type="int">4</parameter>      
+      <parameter name="ready_file">ready</parameter>
+      <parameter name="mail_mode">abe</parameter>
+      <parameter name="mail_address"></parameter>
+      <parameter name="err_file">stderr</parameter>
+      <parameter name="out_file">stdout</parameter>
+      <parameter name="exec">echo $number</parameter>
+    </parameterset>
+    
+    <!-- Load jobfile -->
+    <fileset name="files">
+      <copy>${job_file}.in</copy>
+    </fileset>
+    
+    <!-- Substitute jobfile -->
+    <substituteset name="sub_job">
+      <iofile in="${job_file}.in" out="$job_file" />
+      <sub source="#NODES#" dest="$nodes" />
+      <sub source="#PROCS_PER_NODE#" dest="$ppn" />
+      <sub source="#WALLTIME#" dest="$walltime" />
+      <sub source="#ERROR_FILEPATH#" dest="$err_file" />
+      <sub source="#OUT_FILEPATH#" dest="$out_file" />
+      <sub source="#MAIL_ADDRESS#" dest="$mail_address" />
+      <sub source="#MAIL_MODE#" dest="$mail_mode" />
+      <sub source="#EXEC#" dest="$exec" />
+      <sub source="#READY#" dest="$ready_file" />
+    </substituteset> 
+         
+    <!-- Operation -->
+    <step name="submit" work_dir="$$WORK/jobsystem_bench_${jube_benchmark_id}_${jube_wp_id}" >
+      <use>parameterset</use>
+      <use>executeset</use>
+      <use>files,sub_job</use>
+      <do done_file="$ready_file">$submit_cmd $job_file</do> <!-- shell command -->
+    </step>    
+  </benchmark>
+</jube>

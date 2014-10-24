@@ -1,0 +1,12 @@
+#!/bin/bash -x
+#MSUB -l nodes=#NODES#:ppn=#PROCS_PER_NODE#
+#MSUB -l walltime=#WALLTIME#
+#MSUB -e #ERROR_FILEPATH#
+#MSUB -o #OUT_FILEPATH#
+#MSUB -M #MAIL_ADDRESS#
+#MSUB -m #MAIL_MODE#
+
+### start of jobscript
+
+#EXEC#
+touch #READY#

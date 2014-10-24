@@ -1,0 +1,43 @@
+CC   = #CC#
+MPCC = #MPI_CC#
+ARCH = #ARCH#
+CFLAGS = #CFLAGS#
+
+LIBOBJ = tools.o
+
+SIONCONFIG = ../../bin/sionconfig
+PREC=64
+
+SION_LDFLAGS_PAR = $(shell ${SIONCONFIG} --libs --mpi --${PREC})
+SION_CFLAGS_PAR  = $(shell ${SIONCONFIG} --cflags --mpi --${PREC})
+
+SION_LDFLAGS_SER = $(shell ${SIONCONFIG} --libs --ser --${PREC})
+SION_CFLAGS_SER  = $(shell ${SIONCONFIG} --cflags --ser --${PREC})
+
+INCLUDE_DIR     = -I.
+LIBS_PAR        = -L. -lPaRatools -lm $(SION_LDFLAGS_PAR)
+LIBS_SER        = -L. -lPaRatools -lm $(SION_LDFLAGS_SER)
+USER_CFLAGS_PAR = $(INCLUDE_DIR) -D${ARCH}  -g $(SION_CFLAGS_PAR) $(CFLAGS) 
+USER_CFLAGS_SER = $(INCLUDE_DIR) -D${ARCH}  -g $(SION_CFLAGS_SER) $(CFLAGS)
+
+all: mandelmpi mandelseq libPaRatools.a
+
+default: all
+
+clean:
+	rm -f *.o mandelmpi mandelseq mandelcol.ppm mandelcol_procs.ppm simple.sion libPaRatools.a
+
+mandelmpi.o: mandelmpi.c Makefile
+	$(MPCC) $(USER_CFLAGS_PAR) -c $<
+
+%.o: %.c Makefile
+	$(CC) $(USER_CFLAGS_SER) -c $<
+
+mandelmpi: mandelmpi.o libPaRatools.a Makefile
+	$(MPCC) $(USER_CFLAGS_PAR) -o mandelmpi mandelmpi.o $(LIBS_PAR)
+
+mandelseq: mandelseq.o ppmwrite.o libPaRatools.a Makefile
+	$(CC) $(USER_CFLAGS_SER) -o mandelseq mandelseq.o ppmwrite.o $(LIBS_SER)
+
+libPaRatools.a: $(LIBOBJ) Makefile
+	ar q libPaRatools.a $(LIBOBJ)

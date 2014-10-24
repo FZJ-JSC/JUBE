@@ -1,0 +1,195 @@
+$VAR1 = {
+  'include_besserername' => bless( {
+    '_XS' => bless( {
+      'nocollapse' => 1,
+      'def_opt' => {},
+      'opt' => {
+        'normalisespace' => 0,
+        'rootname' => 'opt',
+        'parseropts' => [],
+        'keyattr' => [
+          'name',
+          'key',
+          'id'
+        ],
+        'forcearray' => 0,
+        'contentkey' => 'content',
+        'searchpath' => []
+      }
+    }, 'XML::Simple' ),
+    '_CONTENT_TREE' => {
+      'status' => {
+        'cmd' => ' \'shell cmd which return -1,0,1\'
+   ',
+        'message' => '
+   \'shell cmd which return string containg error message\'	
+   '
+      },
+      'actionorder' => {
+        'actions' => 'cp, sub, run'
+      },
+      'action' => {
+        'run' => {
+          'type' => 'execute'
+        },
+        'sub' => {
+          'outfile' => 'Makefile_BGP.defs',
+          'sub' => [
+            {
+              'to' => '$execname',
+              'from' => '#EXECNAME#'
+            },
+            {
+              'to' => '$outdir',
+              'from' => '#OUTDIR#'
+            },
+            {
+              'to' => '$cpp',
+              'from' => '#CPP#'
+            },
+            {
+              'to' => '',
+              'from' => '#CPPFLAGS#'
+            }
+          ],
+          'infile' => 'Makefile_BGP.defs.in',
+          'type' => 'substitute'
+        },
+        'cp2' => {
+          'to' => '',
+          'from' => '',
+          'type' => 'copy'
+        },
+        'cp1' => {
+          'to' => '',
+          'from' => '',
+          'type' => 'copy'
+        }
+      },
+      'name' => 'compile',
+      'cname' => 'BGP'
+    },
+    '_XML' => 'Benchmarks/steps.xml',
+    '_CONTENT' => '<stepdef name="compile" cname="BGP"> 
+ <actionorder actions="cp, sub, run" />
+
+ <action name="cp1" type="copy" 
+     from="" to="" />
+
+
+ <action name="cp2" type="copy" 
+     from="" to="" />
+
+ <action name="sub" type="substitute"
+ 	 infile="Makefile_BGP.defs.in" outfile="Makefile_BGP.defs">
+        <sub from="#EXECNAME#"      to="$execname" />
+        <sub from="#OUTDIR#"        to="$outdir" />
+        <sub from="#CPP#"           to="$cpp" />
+        <sub from="#CPPFLAGS#"      to="" />
+ </action>
+ 
+ <action name="run" type="execute"> 
+
+
+ </action>
+
+
+ <status>
+   <!-- 
+   	 0 : failed
+	 1 : ready, ok  
+	 2 : not ready, proceed step
+	 3 : not ready, wait
+   -->
+   <cmd> \'shell cmd which return -1,0,1\'
+   </cmd> 	
+
+   <message>
+   \'shell cmd which return string containg error message\'	
+   </message>
+ </status>
+
+ 
+</stepdef>
+'
+  }, 'XML_Manager' ),
+  'const' => {
+    'min' => '0',
+    'max' => '1000'
+  },
+  'include' => {
+    'file' => 'Benchmarks/steps.xml'
+  },
+  'name' => 'bonnie',
+  'benchmark' => {
+    'params' => {
+      'msgsize' => '128',
+      'srcversion' => 'mpilinktest',
+      'bgconnection' => 'prefer_torus',
+      'bgmode' => 'SMP',
+      'alltoall' => '1',
+      'iterations' => '3',
+      'bgshape' => '4x4x2',
+      'mix' => '0,1,2'
+    },
+    'step' => {
+      'execute' => {
+        'timelimit' => '00:59:00',
+        'shape' => '_shape',
+        'cname' => '$platform'
+      },
+      'compile' => {
+        'version' => 'new',
+        'type' => 'Opt'
+      },
+      'putDB' => {
+        'oraspec' => 'orasrv.fz-juelich.de',
+        'cname' => '$platform'
+      },
+      'verify' => {
+        'cname' => 'LINKTEST'
+      },
+      'analyse' => {
+        'cname' => '$platform'
+      },
+      'prepare' => {}
+    },
+    'steporder' => {
+      'steps' => 'compile,prepare,execute,verify,analyse'
+    },
+    'tasks' => {
+      'taskspernode' => '16384',
+      'threadspertask' => '1',
+      'nodes' => '1'
+    },
+    'name' => '16Racks',
+    'active' => '1'
+  },
+  'platform' => 'IBM-BGP-Jugene'
+};
+<bench name="bonnie" platform="IBM-BGP-Jugene" >
+<include file="Benchmarks/steps.xml"/> 
+<const min="0" max="1000"/>
+<benchmark name="16Racks" active="1">
+    <tasks       threadspertask="1" taskspernode="16384" nodes="1" />
+    <params      
+                 mix="0,1,2"
+                 alltoall="1"
+                 msgsize="128"
+                 iterations="3"
+                 bgconnection="prefer_torus"
+                 bgmode="SMP"
+                 bgshape="4x4x2"
+                 srcversion="mpilinktest"
+     />
+    <steporder steps="compile,prepare,execute,verify,analyse"/>
+    <step        name="compile" type="Opt" version="new" />
+    <step        name="prepare"  />
+    <step        name="execute" cname="$platform" shape="_shape" timelimit="00:59:00" />
+    <step        name="verify"  cname="LINKTEST"  />
+    <step        name="analyse" cname="$platform"  />
+    <step        name="putDB"   cname="$platform" oraspec="orasrv.fz-juelich.de"  />
+</benchmark>
+</bench>
+XML-Object destroyed
+XML-Object destroyed
