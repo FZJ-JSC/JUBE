@@ -102,10 +102,15 @@ This benchmark will produce the follwing output:
    ######################################################################
    # benchmark: hello_world
 
-
+   A simple hello world
    ######################################################################
-   ====== say_hello ======
-   >>> echo Hello World
+
+   Running workpackages:
+   ############################################################ (  1/  1)
+   
+      stepname | all | open | wait | done
+     ----------+-----+------+------+-----
+     say_hello |   1 |    0 |    0 |    1
 
    >>>> Benchmark information and further useful commands:
    >>>>       id: 0
@@ -185,18 +190,10 @@ possible parameter combinations. In this example the step ``say_hello`` will run
 
 .. code-block:: none
 
-   ====== say_hello ======
-   >>> echo "Hello 1"
-   ====== say_hello ======
-   >>> echo "Hello 2"
-   ====== say_hello ======
-   >>> echo "Hello 4"
-   ====== say_hello ======
-   >>> echo "World 1"
-   ====== say_hello ======
-   >>> echo "World 2"
-   ====== say_hello ======
-   >>> echo "World 4"
+    stepname | all | open | wait | done
+   ----------+-----+------+------+-----
+   say_hello |   6 |    0 |    0 |    6
+
 
 Every parameter combination will run in its own sandbox directory.
 
@@ -236,18 +233,10 @@ three ``second_step`` runs each pointing to a different ``first_step``-directory
 
 .. code-block:: none
 
-   ====== first_step ======
-   >>> echo 1
-   ====== first_step ======
-   >>> echo 2
-   ====== first_step ======
-   >>> echo 4
-   ====== second_step ======
-   >>> cat first_step/stdout
-   ====== second_step ======
-   >>> cat first_step/stdout
-   ====== second_step ======
-   >>> cat first_step/stdout
+      stepname | all | open | wait | done
+   ------------+-----+------+------+-----
+    first_step |   3 |    0 |    0 |    3
+   second_step |   3 |    0 |    0 |    3
    
 .. index:: substitution, loading files, external files, files
    

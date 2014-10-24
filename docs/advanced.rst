@@ -73,7 +73,7 @@ In this example we see four different parameter.
 * ``text`` a normal parameter which uses the content of another parameter. For simple concatenation parameter you need no scripting
   parameter.
   
-For this example we get the following output:
+For this example we will find the following output inside the ``jube.log``-file:
 
 .. code-block:: none
 
@@ -140,23 +140,17 @@ You will see this Output after running the benchmark:
 
 .. code-block:: none
 
-   ====== submit ======
-   >>> msub job.run
-   Waiting for file "ready" ...
-   ====== submit ======
-   >>> msub job.run
-   Waiting for file "ready" ...
-   ====== submit ======
-   >>> msub job.run
-   Waiting for file "ready" ...
+   stepname | all | open | wait | done
+   ---------+-----+------+------+-----
+     submit |   3 |    0 |    3 |    0
    
-and this output after running the ``continue`` command:
+and this output after running the ``continue`` command (after the jobs where executed):
   
 .. code-block:: none
    
-   ====== submit ======
-   ====== submit ======
-   ====== submit ======
+   stepname | all | open | wait | done
+   ---------+-----+------+------+-----
+     submit |   3 |    0 |    0 |    3
 
 Every workpackage continue, but because there are no more additional operations there is no more work to be done.
 
@@ -177,5 +171,50 @@ The include file ``include_data.xml``:
 .. literalinclude:: ../examples/include/include_data.xml
    :language: xml
 
-All files which contains data to be included use the *XML*-format.
+All files which contains data that should be included use the *XML*-format. The include files can have a user specific structure (there can be none valid
+*JUBE* tags like ``<dos>``), but the structure must be allowed by the searching mechanism (see below). The resulting file must have a valid *JUBE* structure.
+
+The main file ``main.xml``:
+
+.. literalinclude:: ../examples/include/main.xml
+   :language: xml
+   
+In these file there are three different inlcude types.
+
+The ``init_with`` can be used inside any set definition. Inside the given file the searching mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
+``main.xml``. Inside ``main.xml`` you can add additional values or can overwrite existing ones. If your include-set use a different name inside your include file you can use ``init_with="filename.xml:new_name"``.
+
+The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the setname must
+be unique inside the include-file.
+
+The last method is the most generic include. By using ``<include />`` you can copy any nodes you want to your main-*XML* file. The ``path`` is optional and can be used to select a specific nodeset (otherwise the root-node will be included). The ``<include />`` is the only
+include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will change pathnames, which were relative to the include-file position.
+
+To run the benchmark you can use the normal command::
+
+   >>> jube run main.xml
+   
+It will search for include files inside four different positions:
+
+* inside the same directory of your ``main.xml``
+* inside a directory given over the commandline::
+   
+     >>> jube run --include-path some_path another_path -- main.xml
+   
+* inside any path given with the ``JUBE_INCLUDE_PATH`` environment variable::
+
+     >>> export JUBE_INCLUDE_PATH=some_path:another_path
+
+* inside any path given by a ``<include-path>``-tag:
+
+  .. code-block:: xml
+     :linenos:
+
+     <?xml version="1.0" encoding="UTF-8"?>
+     <benchmarks>
+       <include-path>
+         <path>some_path</path>
+         <path>another_path</path>
+       </include-path>
+       ...
    

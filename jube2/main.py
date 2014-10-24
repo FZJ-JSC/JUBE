@@ -552,7 +552,7 @@ def _get_args_parser():
     subparser["convert"] = \
         subparsers.add_parser(
             'convert', help='UNDER CONSTRUCTION!!! convert jube files')
-    subparser["convert"].add_argument("-i", "--input_path", type=str, 
+    subparser["convert"].add_argument("-i", "--input_path", type=str,
                                       default="./",
                                       help="location of jube XML files")
     subparser["convert"].add_argument("main_xml_file", type=str,

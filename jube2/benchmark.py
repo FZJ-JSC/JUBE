@@ -144,6 +144,41 @@ class Benchmark(object):
         return self._steps
 
     @property
+    def workpackage_status(self):
+        """Retun workpackage information dict"""
+        result_dict = dict()
+        for stepname in self._workpackages:
+            result_dict[stepname] = {"all": 0,
+                                     "open": 0,
+                                     "wait": 0,
+                                     "done": 0}
+            for workpackage in self._workpackages[stepname]:
+                result_dict[stepname]["all"] += 1
+                if workpackage.done:
+                    result_dict[stepname]["done"] += 1
+                elif workpackage.started:
+                    result_dict[stepname]["wait"] += 1
+                else:
+                    result_dict[stepname]["open"] += 1
+        return result_dict
+
+    @property
+    def benchmark_status(self):
+        """Retun global workpackage information dict"""
+        result_dict = {"all": 0,
+                       "open": 0,
+                       "wait": 0,
+                       "done": 0}
+
+        for status in self.workpackage_status.values():
+            result_dict["all"] += status["all"]
+            result_dict["open"] += status["open"]
+            result_dict["wait"] += status["wait"]
+            result_dict["done"] += status["done"]
+
+        return result_dict
+
+    @property
     def id(self):
         """Return benchmark id"""
         return self._id
@@ -449,10 +484,16 @@ class Benchmark(object):
         infostr = jube2.util.boxed(title)
         logger.info(infostr)
 
+        print("\nRunning workpackages:")
+        status = self.benchmark_status
+        jube2.util.print_loading_bar(status["done"], status["all"])
+
         # Handle all workpackages in given order
         while not self._work_list.empty():
             workpackage = self._work_list.get_nowait()
             workpackage.run()
+            status = self.benchmark_status
+            jube2.util.print_loading_bar(status["done"], status["all"])
             workpackage.queued = False
             for child in workpackage.children:
                 all_done = True
@@ -461,40 +502,38 @@ class Benchmark(object):
                 if all_done:
                     child.queued = True
                     self._work_list.put(child)
+        print("\n")
 
-        infostr = "\n>>>> Benchmark information and further useful commands:"
-        logger.info(infostr)
+        status_data = [("stepname", "all", "open", "wait", "done")]
+        status_data += [(stepname, str(status["all"]), str(status["open"]),
+                         str(status["wait"]), str(status["done"]))
+                        for stepname, status in
+                        self.workpackage_status.items()]
+        logger.info(jube2.util.table(status_data, use_header_line=True,
+                                     indent=2))
 
-        infostr = ">>>>       id: {0}".format(self._id)
-        logger.info(infostr)
+        logger.info("\n>>>> Benchmark information and " +
+                    "further useful commands:")
+        logger.info(">>>>       id: {0}".format(self._id))
         path = os.path.relpath(os.path.join(self._cwd, self._outpath),
                                self._org_cwd)
-        infostr = ">>>>      dir: {0}".format(path)
-        logger.info(infostr)
-        all_done = True
-        for step in self._workpackages:
-            for workpackage in self._workpackages[step]:
-                all_done = all_done and workpackage.done
+        logger.info(">>>>      dir: {0}".format(path))
 
         # Store workpackage information
         self.write_workpackage_information(
             os.path.join(self.bench_dir, jube2.util.WORKPACKAGES_FILENAME))
 
-        if not all_done:
-            infostr = (">>>> continue: jube continue {0} " +
-                       "--id {1}").format(path, self._id)
-            logger.info(infostr)
-        infostr = (">>>>  analyse: jube analyse {0} " +
-                   "--id {1}").format(path, self._id)
-        logger.info(infostr)
-        infostr = (">>>>   result: jube result {0} " +
-                   "--id {1}").format(path, self._id)
-        logger.info(infostr)
-        infostr = (">>>>     info: jube info {0} " +
-                   "--id {1}").format(path, self._id)
-        logger.info(infostr)
-        infostr = jube2.util.line()
-        logger.info(infostr + "\n")
+        status = self.benchmark_status
+        if status["all"] != status["done"]:
+            logger.info((">>>> continue: jube continue {0} " +
+                         "--id {1}").format(path, self._id))
+        logger.info((">>>>  analyse: jube analyse {0} " +
+                     "--id {1}").format(path, self._id))
+        logger.info((">>>>   result: jube result {0} " +
+                     "--id {1}").format(path, self._id))
+        logger.info((">>>>     info: jube info {0} " +
+                     "--id {1}").format(path, self._id))
+        logger.info(jube2.util.line() + "\n")
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""

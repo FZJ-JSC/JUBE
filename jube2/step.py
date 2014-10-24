@@ -227,8 +227,7 @@ class Operation(object):
                 stderr = open(os.path.join(work_dir, stderr_filename), "a")
 
             # Execute "do"
-            infostr = ">>> {}".format(do)
-            logger.info(infostr)
+            logger.debug(">>> {}".format(do))
             if not jube2.util.DEBUG_MODE:
                 try:
                     sub = subprocess.Popen(do, cwd=work_dir, stdout=stdout,
@@ -257,8 +256,8 @@ class Operation(object):
             async_filename = \
                 os.path.expandvars(os.path.expanduser(async_filename))
             if not os.path.exists(os.path.join(work_dir, async_filename)):
-                infostr = "Waiting for file \"{}\" ...".format(async_filename)
-                logger.info(infostr)
+                logger.debug("Waiting for file \"{}\" ..."
+                             .format(async_filename))
                 if jube2.util.DEBUG_MODE:
                     logger.debug("  skip waiting")
                     return True

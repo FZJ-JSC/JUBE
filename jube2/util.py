@@ -19,6 +19,7 @@ import string
 import os.path
 import subprocess
 import logging
+import sys
 import textwrap
 
 JUBE_VERSION = "2.0.0"
@@ -227,6 +228,20 @@ def script_evaluation(cmd, script_type):
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
         return sub.communicate()[0]
+
+
+def print_loading_bar(current_cnt, all_cnt):
+    """Show a simple loading animation"""
+    width = DEFAULT_WIDTH - 10
+    if all_cnt > 0:
+        done_cnt = (current_cnt * width) // all_cnt
+    else:
+        done_cnt = 0
+    todo_cnt = width - done_cnt
+
+    bar_str = "\r{0}{1} ({2:3d}/{3:3d})".format("#" * done_cnt, "." * todo_cnt,
+                                                current_cnt, all_cnt)
+    sys.stdout.write(bar_str)
 
 
 def resolve_depend(depend_dict):

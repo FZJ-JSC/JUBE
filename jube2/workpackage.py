@@ -270,20 +270,21 @@ class Workpackage(object):
         if self.done:
             return
 
+        # Create debug string
         if self._step.iterations > 1:
-            infostr = ("====== {0}(iter:{1}) ======"
+            stepstr = ("{0} ( iter:{1}"
                        .format(self._step.name, self._iteration))
         else:
-            infostr = ("====== {0} ======"
+            stepstr = ("{0} ("
                        .format(self._step.name))
-        logger.info(infostr)
 
-        debugstr = ("  id:{1} | parents:{3}"
+        stepstr += (" id:{1} | parents:{3} )"
                     .format(self._step.name, self._id, self._iteration,
                             ",".join([parent.step.name + "(" +
                                       str(parent.id) + ")"
                                       for parent in self._parents])))
-        logger.debug(debugstr)
+        stepstr = "----- {} -----".format(stepstr)
+        logger.debug(stepstr)
 
         started_before = self.started
         # --- Create directory structure ---
@@ -399,8 +400,8 @@ class Workpackage(object):
                             self._step.shared_folder_path(
                                 self._benchmark.bench_dir, shared_parameter)
 
-                        logger.info("====== {0} - shared ======"
-                                    .format(self._step.name))
+                        logger.debug("====== {0} - shared ======"
+                                     .format(self._step.name))
 
                         continue_op = operation.execute(
                             parameter_dict=shared_parameter,
@@ -419,7 +420,7 @@ class Workpackage(object):
                                 workpackage.queued = True
                                 self._benchmark.work_list.put(workpackage)
                         if continue_op:
-                            logger.info(infostr)
+                            logger.debug(stepstr)
                 else:
                     continue_op = operation.execute(
                         parameter_dict=parameter, work_dir=work_dir,
