@@ -17,12 +17,14 @@
 
 try:
     from setuptools import setup
+    SHARE_PATH = ""
 except ImportError:
     from distutils.core import setup
+    SHARE_PATH = "share/jube"
 import os
 
 
-def rel_path(directory):
+def rel_path(directory,new_root=""):
     """Return list of tuples (directory, list of files) 
     recursively from directory"""
     setup_dir = os.path.join(os.path.dirname(__file__))
@@ -36,10 +38,10 @@ def rel_path(directory):
         files = list()
         for filename in filenames:
             path = os.path.join(root, filename)
-            if os.path.isfile(path):
+            if (os.path.isfile(path)) and (filename[0] != "."):
                 files.append(path)
         if len(files) > 0:
-            result.append((root, files))
+            result.append((os.path.join(new_root,root), files))
     if setup_dir != "":
         os.chdir(cwd)
     return result
@@ -53,10 +55,10 @@ config = {'description': 'JUBE Benchmarking Environment',
           'install_requires': [],
           'packages': ['jube2'],
           'package_data': {'jube2': ['help.txt', '*.conf']},
-          'data_files': [('doku', ['docs/_build/latex/JUBE.pdf']),
-                         ('', ['LICENSE'])] +
-                         rel_path("examples") +
-                         rel_path("schema"),
+          'data_files': [(os.path.join(SHARE_PATH,'doku'), ['docs/_build/latex/JUBE.pdf']),
+                         (SHARE_PATH, ['LICENSE'])] +
+                         rel_path("examples",SHARE_PATH) +
+                         rel_path("schema",SHARE_PATH),
           'scripts': ['bin/jube'],
           'long_description': 'JUBE',
           'keywords': 'JUBE Benchmarking Environment',

@@ -71,8 +71,6 @@ class Substituteset(object):
                                              parameter_dict)
             outfile = jube2.util.substitution(outfile_name,
                                               parameter_dict)
-            infile = os.path.expandvars(os.path.expanduser(infile))
-            outfile = os.path.expandvars(os.path.expanduser(outfile))
 
             logger.debug("  substitute {0} -> {1}".format(infile, outfile))
 

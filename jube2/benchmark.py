@@ -484,16 +484,20 @@ class Benchmark(object):
         infostr = jube2.util.boxed(title)
         logger.info(infostr)
 
-        print("\nRunning workpackages:")
-        status = self.benchmark_status
-        jube2.util.print_loading_bar(status["done"], status["all"])
+        if not jube2.util.HIDE_ANIMATIONS:
+            print("\nRunning workpackages (#=done, 0=wait):")
+            status = self.benchmark_status
+            jube2.util.print_loading_bar(status["done"], status["all"],
+                                         status["wait"])
 
         # Handle all workpackages in given order
         while not self._work_list.empty():
             workpackage = self._work_list.get_nowait()
             workpackage.run()
-            status = self.benchmark_status
-            jube2.util.print_loading_bar(status["done"], status["all"])
+            if not jube2.util.HIDE_ANIMATIONS:
+                status = self.benchmark_status
+                jube2.util.print_loading_bar(status["done"], status["all"],
+                                             status["wait"])
             workpackage.queued = False
             for child in workpackage.children:
                 all_done = True

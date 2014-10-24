@@ -34,6 +34,7 @@ ALLOWED_SCRIPTTYPES = ["python", "perl"]
 DEBUG_MODE = False
 DEFAULT_SEPARATOR = ","
 MAX_TABLE_CELL_WIDTH = 40
+HIDE_ANIMATIONS = False
 
 
 class MyLogger(logging.getLoggerClass()):
@@ -230,18 +231,27 @@ def script_evaluation(cmd, script_type):
         return sub.communicate()[0]
 
 
-def print_loading_bar(current_cnt, all_cnt):
+def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
     """Show a simple loading animation"""
     width = DEFAULT_WIDTH - 10
     if all_cnt > 0:
         done_cnt = (current_cnt * width) // all_cnt
+        medium_cnt = (second_cnt * width) // all_cnt
     else:
         done_cnt = 0
-    todo_cnt = width - done_cnt
+        medium_cnt = 0
 
-    bar_str = "\r{0}{1} ({2:3d}/{3:3d})".format("#" * done_cnt, "." * todo_cnt,
-                                                current_cnt, all_cnt)
+    if (medium_cnt > 0) and (width < medium_cnt + done_cnt):
+        medium_cnt = width - done_cnt
+
+    todo_cnt = width - done_cnt - medium_cnt
+
+    bar_str = "\r{0}{1}{2} ({3:3d}/{4:3d})".format("#" * done_cnt,
+                                                   "0" * medium_cnt,
+                                                   "." * todo_cnt,
+                                                   current_cnt, all_cnt)
     sys.stdout.write(bar_str)
+    sys.stdout.flush()
 
 
 def resolve_depend(depend_dict):

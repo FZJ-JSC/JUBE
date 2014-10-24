@@ -62,7 +62,6 @@ class Link(File):
     def create(self, work_dir, parameter_dict, alt_work_dir=None):
         """Create link to file in work_dir"""
         path = jube2.util.substitution(self._path, parameter_dict)
-        path = os.path.expandvars(os.path.expanduser(path))
         name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             path = os.path.join(work_dir, path)
@@ -99,7 +98,6 @@ class Copy(File):
     def create(self, work_dir, parameter_dict, alt_work_dir=None):
         """Copy file/directory to work_dir"""
         pathname = jube2.util.substitution(self._path, parameter_dict)
-        pathname = os.path.expandvars(os.path.expanduser(pathname))
         name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             pathname = os.path.join(work_dir, pathname)

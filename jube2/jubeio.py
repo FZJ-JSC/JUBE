@@ -509,6 +509,7 @@ def _extract_step(etree_step):
     alt_work_dir = etree_step.get("work_dir")
     if alt_work_dir is not None:
         alt_work_dir = alt_work_dir.strip()
+        alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
     shared_name = etree_step.get("shared")
     if shared_name is not None:
         shared_name = shared_name.strip()
@@ -525,6 +526,8 @@ def _extract_step(etree_step):
             async_filename = element.get("done_file")
             if async_filename is not None:
                 async_filename = async_filename.strip()
+                async_filename = \
+                    os.path.expandvars(os.path.expanduser(async_filename))
             stdout_filename = element.get("stdout")
             if stdout_filename is not None:
                 stdout_filename = stdout_filename.strip()
@@ -915,6 +918,7 @@ def _extract_files(etree_fileset, rel_path=""):
                              "length in <{}>".format(etree_file.tag))
         for i, file_path in enumerate(files):
             path = os.path.join(directory, file_path.strip())
+            path = os.path.expandvars(os.path.expanduser(path))
             if etree_file.tag == "copy":
                 filelist.append(
                     jube2.fileset.Copy(path, names[i], is_internal_ref))
@@ -970,6 +974,8 @@ def _extract_subs(etree_substituteset):
         if sub.tag == "iofile":
             in_file = _attribute_from_element(sub, "in").strip()
             out_file = _attribute_from_element(sub, "out").strip()
+            in_file = os.path.expandvars(os.path.expanduser(in_file))
+            out_file = os.path.expandvars(os.path.expanduser(out_file))
             if in_file == out_file:
                 raise ValueError("Input- and outputfile must be different: " +
                                  "{}".format(in_file))

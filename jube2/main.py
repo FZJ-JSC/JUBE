@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 def continue_benchmarks(args):
     """Continue benchmarks"""
     found_benchmarks = search_for_benchmarks(args)
+    jube2.util.HIDE_ANIMATIONS = args.hide_animation
     for benchmark_folder in found_benchmarks:
         _continue_benchmark(benchmark_folder, args)
 
@@ -187,6 +188,8 @@ def _update_include_path(args, dirname):
 
 def run_new_benchmark(args):
     """Start a new benchmark run"""
+
+    jube2.util.HIDE_ANIMATIONS = args.hide_animation
 
     for path in args.files:
         # Store current working dir
@@ -412,6 +415,8 @@ def _get_args_parser():
                                   help='only run benchmark')
     subparser["run"].add_argument('--not-bench', nargs='+',
                                   help='do not run benchmark')
+    subparser["run"].add_argument('--hide-animation', action="store_true",
+                                  help='hide animations')
     subparser["run"].add_argument('--include-path', nargs='+',
                                   help='directory containing include files')
     subparser["run"].add_argument("-a", "--analyse", action="store_true",
@@ -433,6 +438,8 @@ def _get_args_parser():
     subparser["continue"].add_argument("-i", "--id", type=int,
                                        help="use benchmarks given by id",
                                        nargs="+")
+    subparser["continue"].add_argument("--hide-animation", action="store_true",
+                                       help="hide animations")
     subparser["continue"].add_argument("-a", "--analyse", action="store_true",
                                        help="run analyse")
     subparser["continue"].add_argument("-r", "--result", action="store_true",

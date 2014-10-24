@@ -253,8 +253,6 @@ class Operation(object):
             async_filename = jube2.util.substitution(
                 self._async_filename,
                 parameter_dict)
-            async_filename = \
-                os.path.expandvars(os.path.expanduser(async_filename))
             if not os.path.exists(os.path.join(work_dir, async_filename)):
                 logger.debug("Waiting for file \"{}\" ..."
                              .format(async_filename))
