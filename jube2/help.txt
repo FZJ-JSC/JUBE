@@ -68,6 +68,12 @@ comment
    be used. If benchmark directory is missing, current directory will
    be used.
 
+comment_tag
+   Add a benchmark specific comment. These comment will be stored
+   inside the benchmark directory.
+
+      <comment>...</comment>
+
 continue
    Continue an existing benchmark. Not finished steps will be
    continued, if they are leaving pending mode.
@@ -219,6 +225,16 @@ general_structure
         </benchmark>
         ...
       </jube>
+
+include-path_tag
+   Add some include pathes where to search for include files.
+
+      <include-path>
+        <path>...</path>
+        ...
+      </include-path>
+
+   * the additional path will be scanned for include files
 
 include_tag
    Include *XML*-data from an external file.

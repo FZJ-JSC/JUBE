@@ -67,6 +67,25 @@ Glossary
         * every benchmark and every (new) run will create a new folder (named by an unique benchmark id) inside this given ``outpath``
         * the path will be relative to input file location 
    
+   include-path_tag
+      Add some include pathes where to search for include files.
+      
+      .. code-block:: xml
+
+         <include-path>
+           <path>...</path>
+           ...
+         </include-path>
+         
+      * the additional path will be scanned for include files
+      
+   comment_tag
+      Add a benchmark specific comment. These comment will be stored inside the benchmark directory.
+      
+      .. code-block:: xml
+
+         <comment>...</comment>
+   
    selection_tag
       Select benchmarks by name.
       
