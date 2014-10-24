@@ -16,6 +16,7 @@ import os
 
 
 class JubeXMLConverter(object):
+    _global_counter = 0
     valid_tags = ["bench", "benchmark", "prepare", "compile",
                   "execution", "tasks", "params", "verify", "analyse"]
     valid_files = ["compile.xml", "execute.xml", "analyse.xml",
@@ -93,26 +94,12 @@ class JubeXMLConverter(object):
 
         return tree.getroot()
 
-    def gather_benchmarks(self):
-        gathered_benchmarks = []
-        for child in self._main_xml_file_root:
-            gathered_benchmarks.append(child)
-        return gathered_benchmarks
-
     def extract_input_elements(self, tag, xml_tree, store_content_here):
         for element in xml_tree.iter(tag):
             dictionary = element.attrib
             if(dictionary["cname"] == self.specifier[element]):
                 for child in element.findall():
                     print (child.text)
-
-    def get_platform(self):
-        return self.specifier["platform_specifier"]
-
-    def get_specifier(self):
-        return self.specifier
-# return self.specifier["platform_specifier"],
-# self.specifier["prepare_specifier"], self.specifier["compile_specifier"]
 
     def _convert_and_add_parameter(self, name, parameters):
         parameterset = ET.Element('parameterset')
@@ -141,24 +128,16 @@ class JubeXMLConverter(object):
         fout = open(output, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
 
-    def _convert_and_add_substitute(self, name, subs):
-        substituteset = ET.Element('substituteset')
-        substituteset.set('name', name)
-
-        for k, v in subs.attrib.items():
-            sub = ET.SubElement(substituteset, 'sub', {'source': k, 'dest': v})
-        self._root_platform_element.append(substituteset)
-
     def extract_substitutes_and_convert(self, xml_file, tag):
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
 
         for item in xml_root.iter(tag):
-            substituteset_name = item.get('cname') + "-" + tag
-            substituteset = ET.Element('substituteset')
-            substituteset.set('name', substituteset_name)
             for substitute in item.findall('substitute'):
-                #                print (substituteset_name, " --- ", substitute)
+                substituteset_name = item.get(
+                    'cname') + "_" + tag + "_" + str(self._global_counter)
+                substituteset = ET.Element('substituteset')
+                substituteset.set('name', substituteset_name)
                 for subs in substitute.findall('sub'):
                     attribs_for_sub = {}
                     for k, v in subs.attrib.items():
@@ -167,12 +146,57 @@ class JubeXMLConverter(object):
                         else:
                             attribs_for_sub["dest"] = v
                     sub = ET.SubElement(substituteset, 'sub', attribs_for_sub)
-            self._root_platform_element.append(substituteset)
+                self._root_platform_element.append(substituteset)
+                self._global_counter += 1
 #
 
-    def convert_xml(self, xml_input_file=""):
+    def convert_main_file(self):
+        self._main_element = ET.Element('jube')
+        main_tree = ET.parse(self._main_xml_file)
+        main_root = main_tree.getroot()
+
+        for benchmark in main_root.iter('benchmark'):
+            benchmark_name = benchmark.get('name')
+            parameter_dict = benchmark.find('params')
+            tasks_dict = benchmark.find('tasks')
+
+            parameterset = ET.Element('parameterset')
+            parameterset.set('name', benchmark_name)
+            for k, v in parameter_dict.items():
+                parameter = ET.SubElement(
+                    parameterset, 'parameter', {'name': k})
+                parameter.text = v
+
+            for k, v in tasks_dict.items():
+                parameter = ET.SubElement(
+                    parameterset, 'parameter', {'name': k})
+                parameter.text = v
+
+            self._main_element.append(parameterset)
+
+        self.write_main_file(self._main_dir + "benchmarks_jube2.xml")
+
+    def write_main_file(self, output="benchmarks_jube2.xml"):
+        tree = ET.ElementTree(self._main_element)
+        xml = ET.tostring(tree.getroot(), encoding="UTF-8")
+        # Using dom for pretty-print
+        dom = DOM.parseString(xml)
+        fout = open(output, "wb")
+        fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
+
+    def process_jube_main_file(self):
+        self.convert_main_file()
+
+    def convert_xml(self, jube_main_file):
+        self.process_jube_main_file()
+        self.convert_platformfile()
         self.extract_substitutes_and_convert(self._execute_xml_file, "execute")
         self.extract_substitutes_and_convert(self._compile_xml_file, "compile")
+        self.extract_substitutes_and_convert(self._prepare_xml_file, "prepare")
+        self.extract_substitutes_and_convert(self._verify_xml_file, "verify")
+
+        self.write_platformfile(self._main_dir + "platform_jube2.xml")
+
 
 if __name__ == "__main__":
     pass
