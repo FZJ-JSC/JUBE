@@ -61,6 +61,8 @@ config = {'description': 'JUBE Benchmarking Environment',
                          rel_path("schema",SHARE_PATH),
           'scripts': ['bin/jube'],
           'long_description': 'JUBE',
+          'license': 'See the file LICENSE',
+          'platforms': 'Linux',
           'keywords': 'JUBE Benchmarking Environment',
           'name': 'JUBE'}
 
