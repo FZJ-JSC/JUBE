@@ -42,7 +42,7 @@ Glossary
       directory will be used.
 
    run
-      Start a new benchmark run by parsing the given **JUBE** input file.
+      Start a new benchmark run by parsing the given *JUBE* input file.
       
    result
       Create a result table.
@@ -370,6 +370,21 @@ Glossary
       A workpackage is the combination of a :term:`step <step_tag>` (which contains all operations) and one parameter setting out of the expanded parameterspace.
       
       Every workpackage will run inside its own sandbox directory!
+      
+   tagging
+      Tagging is a simple way to include or exclude parts of your input file. 
+      
+      * Every available ``<tag>`` (not the root ``<jube>``-tag) can contain a tag-attribute
+      * The tag-attribute can contain a list of names: ``tag="a,b,c"`` or "not" names: ``tag="a,!b,c"``
+      * When running *JUBE*, multiple tags can be send to the input-file parser::
+          
+          jube run <filename> --tag a b
+      
+        * ``<tags>`` which doesn't contain one of these names will be hidden inside the include file
+        * <tags> which doesn't contain any tag-attribute will stay inside the include file
+    
+      * "not" tags are more important than normal tags: ``tag="a,!b,c"`` and running with ``a b`` will hide the ``<tag>`` because 
+        the ``!b`` is more important than the ``a`` 
       
    directory_structure
       * every (new) benchmark run will create its own directory structure

@@ -158,8 +158,8 @@ You had to run ``continue`` multiple times if not all ``done_file`` were written
 
 .. index:: include
 
-Include
-~~~~~~~
+Include external data
+~~~~~~~~~~~~~~~~~~~~~
 
 As you seen in the example before a benchmark can be become very long. To structure your benchmark using multiple files and to reuse existing
 sets there are three different include features inside of *JUBE*.
@@ -217,4 +217,48 @@ It will search for include files inside four different positions:
          <path>another_path</path>
        </include-path>
        ...
+       
+.. index:: tagging
+
+Tagging
+~~~~~~~
+
+:term:`Tagging <tagging>` is a easy way to hide selectable parts of your input file.
+
+The files used for this example can be found inside ``examples/tagging``.
+
+The input file ``tagging.xml``:
+
+.. literalinclude:: ../examples/tagging/tagging.xml
+   :language: xml
    
+When running this example::
+
+   >>> jube run tagging.xml
+   
+all ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden. ``!deu`` stands for ``not deu`` so this
+tag will not be hidden when running the command.
+
+The result inside the ``stdout`` file will be
+
+.. code-block:: none
+
+   $hello_str World
+   
+because there was no alternative to select the ``$hello_str``.
+
+When running this example using a specific ``tag``::
+
+   >>> jube run tagging.xml --tag eng
+   
+the result inside the ``stdout`` file will be
+
+.. code-block:: none
+
+   Hello World
+
+The ``tag`` attribute or the commandline expression can also contain a list of different names. The ``<tag>`` will
+be ignored completely! If there is no alternative this can produce a wrong execution behaviour!
+
+The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (except the ``<jube>``).
+ 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="tagging" outpath="bench_run">
+    <comment>A simple tagging example</comment>
+
+    <!-- Configuration -->
+    <parameterset name="parameterset">
+      <parameter name="hello_str" tag="eng">Hello</parameter>
+      <parameter name="hello_str" tag="deu">Hallo</parameter>
+      <parameter name="world_str" tag="!deu">World</parameter>
+    </parameterset>
+    
+    <!-- Operation -->
+    <step name="say_hello">
+      <use>parameterset</use> <!-- use existing parameterset -->
+      <do>echo '$hello_str $world_str'</do> <!-- shell command -->
+    </step>    
+  </benchmark>
+</jube>
