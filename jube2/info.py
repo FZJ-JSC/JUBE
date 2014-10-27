@@ -37,14 +37,15 @@ def print_benchmarks_info(path):
         if os.path.isdir(dir_path) and os.path.exists(configuration_file):
             try:
                 id_number = int(dir_name)
-                name_str, comment_str = jube2.jubeio.benchmark_info_from_xml(
-                    configuration_file)
+                name_str, comment_str, tags = \
+                    jube2.jubeio.benchmark_info_from_xml(configuration_file)
+                tags_str = jube2.util.DEFAULT_SEPARATOR.join(tags)
                 time_str = \
                     time.strftime("%Y-%m-%d %H:%M:%S",
                                   time.localtime(os.path.getmtime(dir_path)))
 
                 benchmark_info.append([id_number, name_str, time_str,
-                                       comment_str])
+                                       comment_str, tags_str])
             except ValueError:
                 pass
     # sort using id
@@ -53,7 +54,7 @@ def print_benchmarks_info(path):
     for info in benchmark_info:
         info[0] = str(info[0])
     # add header
-    benchmark_info = [("id", "name", "last change", "comment")] + \
+    benchmark_info = [("id", "name", "last change", "comment", "tags")] + \
         benchmark_info
     if len(benchmark_info) > 1:
         infostr = (jube2.util.boxed("Benchmarks found in \"{}\":".
@@ -66,10 +67,13 @@ def print_benchmarks_info(path):
 
 def print_benchmark_info(benchmark):
     """Print information concerning a single benchmark"""
-    infostr = (jube2.util.boxed("{0} id:{1}\n\n{2}"
-                                .format(benchmark.name,
-                                        benchmark.id,
-                                        benchmark.comment)))
+    infostr = \
+        jube2.util.boxed("{0} id:{1} tags:{2}\n\n{3}"
+                         .format(benchmark.name,
+                                 benchmark.id,
+                                 jube2.util.DEFAULT_SEPARATOR.join(
+                                     benchmark.tags),
+                                 benchmark.comment))
     print(infostr)
     continue_possible = False
 

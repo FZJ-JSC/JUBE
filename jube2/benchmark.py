@@ -37,7 +37,8 @@ class Benchmark(object):
     """The Benchmark class contains all data to run a benchmark"""
 
     def __init__(self, name, outpath, parametersets, substitutesets,
-                 filesets, patternsets, steps, analyzer, results, comment=""):
+                 filesets, patternsets, steps, analyzer, results, comment="",
+                 tags=None):
         self._name = name
         self._outpath = outpath
         self._parametersets = parametersets
@@ -57,6 +58,10 @@ class Benchmark(object):
         self._id = -1
         self._org_cwd = "."
         self._cwd = "."
+        if tags is None:
+            self._tags = set()
+        else:
+            self._tags = tags
 
     @property
     def name(self):
@@ -67,6 +72,11 @@ class Benchmark(object):
     def comment(self):
         """Return comment string"""
         return self._comment
+
+    @property
+    def tags(self):
+        """Return set of tags"""
+        return self._tags
 
     @comment.setter
     def comment(self, new_comment):
@@ -556,6 +566,14 @@ class Benchmark(object):
         using xml representation"""
         # Create root-tag and append single benchmark
         benchmarks_etree = ET.Element("benchmarks")
+
+        # Store tag information
+        if len(self._tags) > 0:
+            selection_etree = ET.SubElement(benchmarks_etree, "selection")
+            for tag in self._tags:
+                tag_etree = ET.SubElement(selection_etree, "tag")
+                tag_etree.text = tag
+
         benchmarks_etree.append(self.etree_repr(new_cwd=self.bench_dir))
         xml = ET.tostring(benchmarks_etree, encoding="UTF-8")
         # Using dom for pretty-print

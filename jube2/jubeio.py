@@ -39,7 +39,7 @@ INCLUDE_PATH = list()
 logger = logging.getLogger(__name__)
 
 
-def benchmarks_from_xml(filename):
+def benchmarks_from_xml(filename, tags=None):
     """Return a dict of benchmarks
 
     Here parametersets are global and accessible to all benchmarks defined
@@ -72,18 +72,25 @@ def benchmarks_from_xml(filename):
 
     valid_tags = ["selection", "include-path", "parameterset", "benchmark",
                   "substituteset", "fileset", "include", "patternset"]
-    for element in tree.getroot():
-        _check_tag(element, valid_tags)
+
+    # Preprocess xml-tree (using tags-attribute)
+    logger.debug("  Remove invalid tags using tags-attribute")
+    if tags is None:
+        tags = set()
+    logger.debug("    Available tags: {}"
+                 .format(jube2.util.DEFAULT_SEPARATOR.join(tags)))
+    _remove_invalid_tags(tree.getroot(), tags)
 
     # Read selection area
     selection = tree.findall("selection")
     if len(selection) > 1:
         raise ValueError("Only one <selection> tag allowed")
     elif len(selection) == 1:
-        only_bench, not_bench = _extract_selection(selection[0])
+        only_bench, not_bench, new_tags = _extract_selection(selection[0])
     else:
         only_bench = list()
         not_bench = list()
+        new_tags = set()
 
     # Read include-path
     include_path = tree.findall("include-path")
@@ -96,14 +103,22 @@ def benchmarks_from_xml(filename):
     logger.debug("  Preprocess xml tree")
     _preprocessor(tree.getroot())
 
+    # Add file tags and rerun removing invalid tags
+    tags.update(new_tags)
+    _remove_invalid_tags(tree.getroot(), tags)
+
+    # Check tags
+    for element in tree.getroot():
+        _check_tag(element, valid_tags)
+
     # Read all global parametersets
-    global_parametersets = _extract_parametersets(tree)
+    global_parametersets = _extract_parametersets(tree, tags)
     # Read all global substitutesets
-    global_substitutesets = _extract_substitutesets(tree)
+    global_substitutesets = _extract_substitutesets(tree, tags)
     # Read all global filesets
-    global_filesets = _extract_filesets(tree)
+    global_filesets = _extract_filesets(tree, tags)
     # Read all global patternsets
-    global_patternsets = _extract_patternsets(tree)
+    global_patternsets = _extract_patternsets(tree, tags)
 
     # At this stage we iterate over benchmarks
     benchmark_list = tree.findall("benchmark")
@@ -113,17 +128,47 @@ def benchmarks_from_xml(filename):
                                       global_parametersets,
                                       global_substitutesets,
                                       global_filesets,
-                                      global_patternsets)
+                                      global_patternsets,
+                                      tags)
         benchmarks[benchmark.name] = benchmark
     return benchmarks, only_bench, not_bench
 
 
-def _preprocessor(etree):
+def _remove_invalid_tags(etree, tags=None):
+    """Remove tags which contain an invalid tags-attribute"""
+    if tags is None:
+        tags = set()
+    children = list(etree)
+    for child in children:
+        tag_tags_str = child.get("tag")
+        if tag_tags_str is not None:
+            tag_tags = set([tag.strip() for tag in
+                            tag_tags_str.split(jube2.util.DEFAULT_SEPARATOR)])
+            valid_tags = set()
+            invalid_tags = set()
+            # Switch tags between valid and invalid tagnames
+            for tag in tag_tags:
+                if (len(tag) > 1) and (tag[0] == "!"):
+                    invalid_tags.add(tag[1:])
+                elif (len(tag) > 0) and (tag[0] != "!"):
+                    valid_tags.add(tag)
+            # Tag selection
+            if ((len(valid_tags) > 0) and
+                (len(valid_tags.intersection(tags)) == 0)) or \
+               ((len(invalid_tags) > 0) and
+                    (len(invalid_tags.intersection(tags)) > 0)):
+                etree.remove(child)
+                continue
+        _remove_invalid_tags(child, tags)
+
+
+def _preprocessor(etree, tags=None):
     """Preprocess the xml-file by replacing include-tags"""
     children = list(etree)
     new_children = list()
     include_index = 0
     for child in children:
+        # Replace include tags
         if child.tag == "include":
             filename = _attribute_from_element(child, "from")
             path = child.get("path", ".")
@@ -131,15 +176,15 @@ def _preprocessor(etree):
                 path = "."
             file_path = _find_include_file(filename)
             include_tree = ET.parse(file_path)
-            # remove include-node
+            # Remove include-node
             etree.remove(child)
-            # find external nodes
+            # Find external nodes
             includes = include_tree.findall(path)
             if len(includes) == 0:
                 raise ValueError(("Found nothing to include when using "
                                   "xpath \"{0}\" in file \"{1}\"")
                                  .format(path, filename))
-            # insert external nodes
+            # Insert external nodes
             for include in includes:
                 etree.insert(include_index, include)
                 include_index += 1
@@ -177,7 +222,7 @@ def _benchmark_preprocessor(benchmark_etree):
                     name = "jube_{0}_{1}".format(name, index)
                 if len(new_use_str) > 0:
                     new_use_str += jube2.util.DEFAULT_SEPARATOR
-                # replace set-name with a internal one
+                # Replace set-name with a internal one
                 new_use_str += name
             use.text = new_use_str
 
@@ -226,8 +271,15 @@ def _find_set_type(filename, name):
 
 
 def benchmark_info_from_xml(filename):
-    """Return name of first benchmark found in file"""
+    """Return name, comment and available tags of first benchmark
+    found in file"""
     tree = ET.parse(filename)
+    tags = set()
+    for tag_etree in tree.findall(".//selection/tag"):
+        if tag_etree.text is not None:
+            tags.update(set([tag.strip() for tag in
+                             tag_etree.text.split(
+                                 jube2.util.DEFAULT_SEPARATOR)]))
     benchmark_etree = tree.find(".//benchmark")
     if benchmark_etree is None:
         raise ValueError("benchmark-tag not found in \"{}\"".format(filename))
@@ -240,7 +292,7 @@ def benchmark_info_from_xml(filename):
     else:
         comment = ""
     comment = re.sub(r"\s+", " ", comment).strip()
-    return name, comment
+    return name, comment, tags
 
 
 def analyse_result_from_xml(filename):
@@ -379,19 +431,24 @@ def _extract_selection(selection_etree):
     Return names of benchmarks ([only,...],[not,...])
     """
     logger.debug("  Parsing <selection>")
-    valid_tags = ["only", "not"]
+    valid_tags = ["only", "not", "tag"]
     only_bench = list()
     not_bench = list()
+    tags = set()
     for element in selection_etree:
         _check_tag(element, valid_tags)
         separator = jube2.util.DEFAULT_SEPARATOR
-        if element.tag == "only":
-            only_bench = only_bench + element.text.split(separator)
-        elif element.tag == "not":
-            not_bench = not_bench + element.text.split(separator)
-        only_bench = [bench.strip() for bench in only_bench]
-        not_bench = [bench.strip() for bench in not_bench]
-    return only_bench, not_bench
+        if element.text is not None:
+            if element.tag == "only":
+                only_bench = only_bench + element.text.split(separator)
+            elif element.tag == "not":
+                not_bench = not_bench + element.text.split(separator)
+            elif element.tag == "tag":
+                tags.update(set([tag.strip() for tag in
+                                 element.text.split(separator)]))
+    only_bench = [bench.strip() for bench in only_bench]
+    not_bench = [bench.strip() for bench in not_bench]
+    return only_bench, not_bench, tags
 
 
 def _extract_include_path(include_path_etree):
@@ -412,7 +469,7 @@ def _extract_include_path(include_path_etree):
 
 def _create_benchmark(benchmark_etree, global_parametersets,
                       global_substitutesets, global_filesets,
-                      global_patternsets):
+                      global_patternsets, tags=None):
     """Create benchmark from etree
 
     Return a benchmark
@@ -438,20 +495,23 @@ def _create_benchmark(benchmark_etree, global_parametersets,
     # Combine global and local sets
     parametersets = \
         _combine_global_and_local_sets(global_parametersets,
-                                       _extract_parametersets(benchmark_etree))
+                                       _extract_parametersets(benchmark_etree,
+                                                              tags))
 
     substitutesets = \
         _combine_global_and_local_sets(global_substitutesets,
                                        _extract_substitutesets(
-                                           benchmark_etree))
+                                           benchmark_etree, tags))
 
     filesets = \
         _combine_global_and_local_sets(global_filesets,
-                                       _extract_filesets(benchmark_etree))
+                                       _extract_filesets(benchmark_etree,
+                                                         tags))
 
     patternsets = \
         _combine_global_and_local_sets(global_patternsets,
-                                       _extract_patternsets(benchmark_etree))
+                                       _extract_patternsets(benchmark_etree,
+                                                            tags))
 
     # dict of local steps
     steps = _extract_steps(benchmark_etree)
@@ -465,7 +525,7 @@ def _create_benchmark(benchmark_etree, global_parametersets,
     benchmark = jube2.benchmark.Benchmark(name, outpath,
                                           parametersets, substitutesets,
                                           filesets, patternsets, steps,
-                                          analyzer, results, comment)
+                                          analyzer, results, comment, tags)
     return benchmark
 
 
@@ -665,7 +725,7 @@ def _extract_use(etree_use):
         raise ValueError("Empty <use> found")
 
 
-def _extract_extern_set(filename, set_type, name, search_name=None):
+def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
     """Load a parameter-/file-/substitutionset from a given file"""
     if search_name is None:
         search_name = name
@@ -673,6 +733,7 @@ def _extract_extern_set(filename, set_type, name, search_name=None):
                  .format(set_type, search_name, filename))
     file_path = _find_include_file(filename)
     etree = ET.parse(file_path)
+    _remove_invalid_tags(etree.getroot(), tags)
     result_set = None
 
     # Find element in XML-tree
@@ -732,7 +793,7 @@ def _extract_extern_set(filename, set_type, name, search_name=None):
                          .format(name, file_path))
 
 
-def _extract_parametersets(etree):
+def _extract_parametersets(etree, tags=None):
     """Return parametersets from etree"""
     parametersets = dict()
     for element in etree.findall("parameterset"):
@@ -750,7 +811,8 @@ def _extract_parametersets(etree):
                 search_name = None
             parameterset = _extract_extern_set(parts[0],
                                                "parameterset", name,
-                                               search_name)
+                                               search_name,
+                                               tags)
         else:
             parameterset = jube2.parameter.Parameterset(name)
         for parameter in _extract_parameters(element):
@@ -796,7 +858,7 @@ def _extract_parameters(etree_parameterset):
     return parameters
 
 
-def _extract_patternsets(etree):
+def _extract_patternsets(etree, tags=None):
     """Return patternset from etree"""
     patternsets = dict()
     for element in etree.findall("patternset"):
@@ -814,7 +876,8 @@ def _extract_patternsets(etree):
                 search_name = None
             patternset = _extract_extern_set(parts[0],
                                              "patternset", name,
-                                             search_name)
+                                             search_name,
+                                             tags)
         else:
             patternset = jube2.pattern.Patternset(name)
         for pattern in _extract_pattern(element):
@@ -861,7 +924,7 @@ def _extract_pattern(etree_patternset):
     return patternlist
 
 
-def _extract_filesets(etree):
+def _extract_filesets(etree, tags=None):
     """Return filesets from etree"""
     filesets = dict()
     for element in etree.findall("fileset"):
@@ -881,7 +944,8 @@ def _extract_filesets(etree):
                 search_name = None
             filesets[name] = _extract_extern_set(parts[0],
                                                  "fileset", name,
-                                                 search_name)
+                                                 search_name,
+                                                 tags)
             filesets[name] += filelist
         else:
             filesets[name] = filelist
@@ -928,7 +992,7 @@ def _extract_files(etree_fileset, rel_path=""):
     return filelist
 
 
-def _extract_substitutesets(etree):
+def _extract_substitutesets(etree, tags=None):
     """Extract substitutesets from benchmark
 
     Return a dict of substitute sets, e.g.
@@ -952,7 +1016,7 @@ def _extract_substitutesets(etree):
                 search_name = None
             substitutesets[name] = \
                 _extract_extern_set(parts[0], "substituteset", name,
-                                    search_name)
+                                    search_name, tags)
             substitutesets[name].update_files(files)
             substitutesets[name].update_substitute(subs)
         else:

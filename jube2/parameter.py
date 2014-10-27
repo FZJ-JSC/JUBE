@@ -207,9 +207,11 @@ class Parameterset(object):
             # Do substition and evaluation if possible
             for par in substitution_list:
                 if par.can_substitute_and_evaluate(self):
+                    parametersets = [self]
+                    if additional_parametersets is not None:
+                        parametersets += additional_parametersets
                     new_par, param_changed = \
-                        par.substitute_and_evaluate(self,
-                                                    additional_parametersets)
+                        par.substitute_and_evaluate(parametersets)
                     set_changed = set_changed or param_changed
                     if param_changed:
                         self.add_parameter(new_par)
@@ -369,7 +371,7 @@ class Parameter(object):
 
 class StaticParameter(Parameter):
 
-    """A StaticParameter ca be substituted and evaluated."""
+    """A StaticParameter can be substituted and evaluated."""
 
     def can_substitute_and_evaluate(self, parameterset):
         """A parameter can be substituted and evaluated if there are no
@@ -388,8 +390,7 @@ class StaticParameter(Parameter):
             re.search(Parameter.parameter_regex.format(parameter.name),
                       self._value))
 
-    def substitute_and_evaluate(self, parameterset=None,
-                                additional_parametersets=None,
+    def substitute_and_evaluate(self, parametersets=None,
                                 final_sub=False):
         """Substitute all variables inside the parameter value by using the
         parameters inside the given parameterset and additional_parameterset.
@@ -409,18 +410,12 @@ class StaticParameter(Parameter):
             # $$$$$ -> $$$$$$$ -> $$$
             value = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", value)
         temp = string.Template(value)
-        if parameterset is not None:
-            parameter_dict = \
-                dict([(name, param.value) for name, param in
-                      parameterset.constant_parameter_dict.items()])
-        else:
-            parameter_dict = dict()
-        if additional_parametersets is not None:
-            for additional_parameterset in additional_parametersets:
+        parameter_dict = dict()
+        if parametersets is not None:
+            for parameterset in parametersets:
                 parameter_dict.update(
                     dict([(name, param.value) for name, param in
-                          additional_parameterset.constant_parameter_dict
-                          .items()]))
+                          parameterset.constant_parameter_dict.items()]))
         value = temp.safe_substitute(parameter_dict)
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script

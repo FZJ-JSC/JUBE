@@ -22,6 +22,7 @@
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="outpath" type="xs:string" use="required" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="parametersetType">
@@ -31,6 +32,7 @@
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="init_with" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="parameterType">
@@ -41,6 +43,7 @@
         <xs:attribute name="mode" type="xs:string" use="optional" />
         <xs:attribute name="separator" type="xs:string"
           use="optional" />
+        <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -53,16 +56,19 @@
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="init_with" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="iofileType">
     <xs:attribute name="in" type="xs:string" use="required" />
     <xs:attribute name="out" type="xs:string" use="required" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="subType">
     <xs:attribute name="source" type="xs:string" use="required" />
     <xs:attribute name="dest" type="xs:string" use="required" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="filesetType">
@@ -73,6 +79,7 @@
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="init_with" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="fileType">
@@ -83,6 +90,7 @@
         <xs:attribute name="name" type="xs:string" use="optional" />
         <xs:attribute name="rel_path_ref" type="relPathRefType"
           use="optional" />
+        <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -94,6 +102,7 @@
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="init_with" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="patternType">
@@ -103,7 +112,8 @@
         <xs:attribute name="unit" type="xs:string" use="optional" />
         <xs:attribute name="type" type="contentType" use="optional" />
         <xs:attribute name="mode" type="xs:string" use="optional" />
-        <xs:attribute name="reduce" type="xs:string" use="optional" /> 
+        <xs:attribute name="reduce" type="xs:string" use="optional" />
+        <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent> 
   </xs:complexType>
@@ -134,6 +144,7 @@
     <xs:attribute name="depend" type="xs:string" use="optional" />
     <xs:attribute name="work_dir" type="xs:string" use="optional" />
     <xs:attribute name="shared" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="analyzerType">
@@ -143,23 +154,26 @@
       <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="analyseType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="file" type="xs:string" />
+      <xs:element name="file" type="stringTagType" />
       <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="step" type="xs:string" use="required" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
   
   <xs:complexType name="resultType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element name="use" type="xs:string" />
+        <xs:element name="use" type="stringTagType" />
         <xs:element name="table" type="tableType" />
         <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="result_dir" type="xs:string" use="optional"/>
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
   
   <xs:complexType name="tableType">
@@ -171,6 +185,7 @@
     <xs:attribute name="style" type="styleType" use="optional" />
     <xs:attribute name="sort" type="xs:string" use="optional" />
     <xs:attribute name="separator" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
   
   <xs:complexType name="columnType">
@@ -178,7 +193,8 @@
       <xs:extension base="xs:string">
         <xs:attribute name="colw" type="xs:integer" use="optional" />
         <xs:attribute name="format" type="xs:string" use="optional" />
-      </xs:extension>    
+        <xs:attribute name="tag" type="xs:string" use="optional" />
+      </xs:extension> 
     </xs:simpleContent>
   </xs:complexType>
   
@@ -193,6 +209,7 @@
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="from" type="xs:string" use="optional" />
+        <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -206,6 +223,7 @@
         <xs:attribute name="stderr" type="xs:string" use="optional" />
         <xs:attribute name="active" type="xs:string" use="optional" />
         <xs:attribute name="shared" type="booleanType" use="optional" />
+        <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -245,20 +263,32 @@
 
   <xs:complexType name="selectionType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="only" type="xs:string" />
-      <xs:element name="not" type="xs:string" />
+      <xs:element name="only" type="stringTagType" />
+      <xs:element name="not" type="stringTagType" />
+      <xs:element name="tag" type="stringTagType" />
     </xs:choice>
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="includePathType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="path" type="xs:string" />
+      <xs:element name="path" type="stringTagType" />
     </xs:choice>
+    <xs:attribute name="tag" type="xs:string" use="optional" />
+  </xs:complexType>
+  
+  <xs:complexType name="stringTagType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="tag" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
   <xs:complexType name="includeType">
     <xs:attribute name="from" type="xs:string" use="required" />
     <xs:attribute name="path" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
   <!-- root-node -->

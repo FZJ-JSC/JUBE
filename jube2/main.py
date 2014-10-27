@@ -203,9 +203,14 @@ def run_new_benchmark(args):
         if len(dirname) > 0:
             os.chdir(dirname)
 
+        # Extract tags
+        tags = args.tag
+        if tags is not None:
+            tags = set(tags)
+
         # Read new benchmarks
         benchmarks, only_bench, not_bench = \
-            jube2.jubeio.benchmarks_from_xml(os.path.basename(path))
+            jube2.jubeio.benchmarks_from_xml(os.path.basename(path), tags)
 
         # Add new comment
         if args.comment is not None:
@@ -333,14 +338,24 @@ def _update_benchmark_analyse_and_result(args, benchmark, benchmark_folder):
         # Store current working dir
         cwd = os.getenv("PWD")
         dirname = os.path.dirname(args.update)
+
         # Update include path
         _update_include_path(args, dirname)
+
         # Change current working dir to filename dir
         if len(dirname) > 0:
             os.chdir(dirname)
+
+        # Extract tags
+        tags = args.tag
+        if tags is not None:
+            tags = set(tags)
+
         # Read new benchmarks
         benchmarks = \
-            jube2.jubeio.benchmarks_from_xml(os.path.basename(args.update))[0]
+            jube2.jubeio.benchmarks_from_xml(os.path.basename(args.update),
+                                             tags)[0]
+
         # Update benchmark
         os.chdir(cwd)
         for bench in benchmarks.values():
@@ -415,6 +430,8 @@ def _get_args_parser():
                                   help='only run benchmark')
     subparser["run"].add_argument('--not-bench', nargs='+',
                                   help='do not run benchmark')
+    subparser["run"].add_argument("-t", "--tag", nargs='+',
+                                  help='select tags')
     subparser["run"].add_argument('--hide-animation', action="store_true",
                                   help='hide animations')
     subparser["run"].add_argument('--include-path', nargs='+',
@@ -464,6 +481,8 @@ def _get_args_parser():
     subparser["analyse"].add_argument('--include-path', nargs='+',
                                       help="directory containing include " +
                                       "files")
+    subparser["analyse"].add_argument("-t", "--tag", nargs='+',
+                                      help='select tags')
     subparser["analyse"].set_defaults(func=analyse_benchmarks)
 
     # result subparser
@@ -484,9 +503,11 @@ def _get_args_parser():
     subparser["result"].add_argument("-u", "--update", metavar="UPDATE_FILE",
                                      help="update analyse and " +
                                      "result configuration")
-    subparser["result"].add_argument('--include-path', nargs='+',
+    subparser["result"].add_argument("--include-path", nargs="+",
                                      help="directory containing include " +
                                      "files")
+    subparser["result"].add_argument("-t", "--tag", nargs='+',
+                                     help='select tags')
     subparser["result"].add_argument("-o", "--only", nargs="+",
                                      metavar="RESULT_NAME",
                                      help="only create results " +
@@ -597,7 +618,7 @@ def main():
                 args.func(args)
             except Exception as e:
                 # Catch all possible Exceptions
-                logger.error(str(e))
+                logger.error("\n" + str(e))
 
 if __name__ == "__main__":
     main()
