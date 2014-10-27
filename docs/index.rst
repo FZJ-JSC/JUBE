@@ -18,6 +18,7 @@ Contents:
    
    tutorial
    advanced
+   commandline
    devel
    glossar
    

@@ -261,4 +261,83 @@ The ``tag`` attribute or the commandline expression can also contain a list of d
 be ignored completely! If there is no alternative this can produce a wrong execution behaviour!
 
 The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (except the ``<jube>``).
+
+.. index:: platform independent
+
+Platform independent benchmarking
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to create platform independent benchmarks you can use the include features inside *JUBE*.
+
+All platform related sets must be declared in a includeable file e.g. ``platform.xml``. There can be multiple ``platform.xml`` in different
+directories to allow different platforms. By changing the ``include-path`` the benchmark changes its platform specific data.
+
+An example benchmark structure bases on three include files:
+
+* The main benchmark include file which contain all benchmark specific but platform independent data
+* A mostly generic platform include file which contain benchmark independent but platform specific data (this can be created once and placed somewhere
+  central on the system, it can be easily accessed using the ``JUBE_INCLUDE_PATH`` environment variable.
+* A platform specific and benchmark specific include file which must be placed in a unique directory to allow inlcude-path usage
+  
+To avoid writting of long include-pathes every time you run a platform independent benchmark you can store the include-path inside your 
+input file. This can be mixed using the tagging-feature:
+
+.. code-block:: xml
+   :linenos:
+   
+   <?xml version="1.0" encoding="UTF-8"?>
+   <jube>
+     <include-path>
+       <path tag="plat1">some path</path>
+       <path tag="plat2">another path</path>
+       ...
+     </include-path>
+     ...   
+   </jube>
+
+Now you can run your benchmark using::
+  
+   >>> jube run filename.xml --tag plat1
+
+.. index:: multiple benchmarks
  
+Multiple benchmarks
+~~~~~~~~~~~~~~~~~~~
+
+Often you only have one benchmark inside your input file. But it is also possible to store multiple benchmarks inside he same input file:
+ 
+.. code-block:: xml
+   :linenos:
+   
+   <?xml version="1.0" encoding="UTF-8"?>
+   <jube>
+     <benchmark name="a" outpath="bench_runs">...</benchmark>
+     <benchmark name="b" outpath="bench_runs">...</benchmark>
+     ...   
+   </jube>
+   
+All benchmarks can use the same global (as a child of ``<jube>``) declared sets. Often it might be better to use an include feature instead.
+*JUBE* will run every benchmark in the given order. Every benchmark gets an unique benchmark id.
+
+To select only one benchmark you can use::
+
+   >>> jube run filename.xml --only-bench a
+   
+or::
+
+   >>> jube run filename.xml --not-bench b
+   
+This information can also be stored inside the input file:
+
+.. code-block:: xml
+   :linenos:
+   
+   <?xml version="1.0" encoding="UTF-8"?>
+   <jube>
+     <selection>
+       <only>a</only>
+       <not>b</not>
+     </selection>
+     ...
+   </jube> 
+   

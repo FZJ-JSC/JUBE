@@ -170,6 +170,12 @@ The third, but very important, functionality is the **logger**. Every ``run``, `
 and ``result`` execution will produce a new log file inside your execution directory.
 This file contains much useful debugging output.
 
+You can also use the debugging mode::
+
+   >>> jube --debug <command> [other-args]
+   
+This mode avoid any *shell* execution but will generate log files.
+
 .. index:: parameterspace creation
 
 Parameterspace creation
