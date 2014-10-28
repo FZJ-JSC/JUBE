@@ -31,13 +31,15 @@ class File(object):
     def __init__(self, path, name, is_internal_ref=False):
         self._path = path
         self._name = name
+        self._file_path_ref = ""
         self._is_internal_ref = is_internal_ref
 
-    def create(self, work_dir, parameter_dict, alt_work_dir=None):
+    def create(self, work_dir, parameter_dict, alt_work_dir=None,
+               file_path_ref=""):
         """Create file access"""
         raise NotImplementedError()
 
-    def etree_repr(self, new_cwd=None):
+    def etree_repr(self):
         """Return etree object representation"""
         raise NotImplementedError()
 
@@ -45,6 +47,16 @@ class File(object):
     def path(self):
         """Return filepath"""
         return self._path
+
+    @property
+    def file_path_ref(self):
+        """Get file path reference"""
+        return self._file_path_ref
+
+    @file_path_ref.setter
+    def file_path_ref(self, file_path_ref):
+        """Set file path reference"""
+        self._file_path_ref = file_path_ref
 
     @property
     def is_internal_ref(self):
@@ -59,12 +71,18 @@ class Link(File):
 
     """A link to a given path. Which can be used inside steps."""
 
-    def create(self, work_dir, parameter_dict, alt_work_dir=None):
+    def create(self, work_dir, parameter_dict, alt_work_dir=None,
+               file_path_ref=""):
         """Create link to file in work_dir"""
         path = jube2.util.substitution(self._path, parameter_dict)
+        path = os.path.expandvars(os.path.expanduser(path))
         name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             path = os.path.join(work_dir, path)
+        else:
+            path = os.path.join(self._file_path_ref, path)
+            path = os.path.join(file_path_ref, path)
+            path = os.path.normpath(path)
         if (not os.path.exists(path)) and (not jube2.util.DEBUG_MODE):
             raise RuntimeError("'{}' not found".format(path))
         if alt_work_dir is not None:
@@ -75,17 +93,15 @@ class Link(File):
         if not jube2.util.DEBUG_MODE and not os.path.exists(link_path):
             os.symlink(target_path, link_path)
 
-    def etree_repr(self, new_cwd=None):
+    def etree_repr(self):
         """Return etree object representation"""
         link_etree = ET.Element("link")
-        if (new_cwd is not None) and (not self._is_internal_ref) and \
-           (not os.path.isabs(self._path)):
-            link_etree.text = os.path.relpath(self._path, new_cwd)
-        else:
-            link_etree.text = self._path
+        link_etree.text = self._path
         link_etree.attrib["name"] = self._name
         if self._is_internal_ref:
             link_etree.attrib["rel_path_ref"] = "internal"
+        if self._file_path_ref != "":
+            link_etree.attrib["file_path_ref"] = self._file_path_ref
         return link_etree
 
 
@@ -95,12 +111,18 @@ class Copy(File):
     inside steps.
     """
 
-    def create(self, work_dir, parameter_dict, alt_work_dir=None):
+    def create(self, work_dir, parameter_dict, alt_work_dir=None,
+               file_path_ref="."):
         """Copy file/directory to work_dir"""
         pathname = jube2.util.substitution(self._path, parameter_dict)
+        pathname = os.path.expandvars(os.path.expanduser(pathname))
         name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             pathname = os.path.join(work_dir, pathname)
+        else:
+            pathname = os.path.join(self._file_path_ref, pathname)
+            pathname = os.path.join(file_path_ref, pathname)
+            pathname = os.path.normpath(pathname)
         if alt_work_dir is not None:
             work_dir = alt_work_dir
         pathes = glob.glob(pathname)
@@ -122,14 +144,10 @@ class Copy(File):
                     # Copy filemode
                     shutil.copymode(path, file_path)
 
-    def etree_repr(self, new_cwd=None):
+    def etree_repr(self):
         """Return etree object representation"""
         copy_etree = ET.Element("copy")
-        if (new_cwd is not None) and (not self._is_internal_ref) and \
-           (not os.path.isabs(self._path)):
-            copy_etree.text = os.path.relpath(self._path, new_cwd)
-        else:
-            copy_etree.text = self._path
+        copy_etree.text = self._path
         copy_etree.attrib["name"] = self._name
         if self._is_internal_ref:
             copy_etree.attrib["rel_path_ref"] = "internal"

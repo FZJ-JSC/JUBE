@@ -333,6 +333,9 @@ class Workpackage(object):
         alt_work_dir = self._step.alt_work_dir
         if alt_work_dir is not None:
             alt_work_dir = jube2.util.substitution(alt_work_dir, parameter)
+            alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
+            alt_work_dir = os.path.join(self._benchmark.file_path_ref,
+                                        alt_work_dir)
             logger.debug("  switch to alternativ work dir: \"{}\""
                          .format(alt_work_dir))
             if not jube2.util.DEBUG_MODE and not os.path.exists(alt_work_dir):
@@ -345,9 +348,11 @@ class Workpackage(object):
                 self._step.get_used_sets(self._benchmark.filesets)
             for name in fileset_names:
                 for file_handle in self._benchmark.filesets[name]:
-                    file_handle.create(work_dir=self.work_dir,
-                                       parameter_dict=parameter,
-                                       alt_work_dir=alt_work_dir)
+                    file_handle.create(
+                        work_dir=self.work_dir,
+                        parameter_dict=parameter,
+                        alt_work_dir=alt_work_dir,
+                        file_path_ref=self._benchmark.file_path_ref)
 
         work_dir = self.work_dir
         if alt_work_dir is not None:

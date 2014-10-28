@@ -58,6 +58,7 @@ class Benchmark(object):
         self._id = -1
         self._org_cwd = "."
         self._cwd = "."
+        self._file_path_ref = "."
         if tags is None:
             self._tags = set()
         else:
@@ -122,6 +123,16 @@ class Benchmark(object):
     def org_cwd(self, org_cwd):
         """Set original current working directory"""
         self._org_cwd = org_cwd
+
+    @property
+    def file_path_ref(self):
+        """Get file path reference"""
+        return self._file_path_ref
+
+    @file_path_ref.setter
+    def file_path_ref(self, file_path_ref):
+        """Set file path reference"""
+        self._file_path_ref = file_path_ref
 
     @property
     def substitutesets(self):
@@ -220,11 +231,15 @@ class Benchmark(object):
             comment_element = ET.SubElement(benchmark_etree, "comment")
             comment_element.text = self._comment
         benchmark_etree.attrib["name"] = self._name
-        if (new_cwd is not None) and (not os.path.isabs(self._outpath)):
-            benchmark_etree.attrib["outpath"] = os.path.relpath(self._outpath,
-                                                                new_cwd)
-        else:
-            benchmark_etree.attrib["outpath"] = self._outpath
+        if new_cwd is not None:
+            benchmark_etree.attrib["file_path_ref"] = \
+                os.path.relpath(self._file_path_ref, new_cwd)
+            if not os.path.isabs(self._outpath):
+                benchmark_etree.attrib["outpath"] = \
+                    os.path.relpath(self._outpath, new_cwd)
+            else:
+                benchmark_etree.attrib["outpath"] = self._outpath
+
         for parameterset in self._parametersets.values():
             benchmark_etree.append(parameterset.etree_repr())
         for substituteset in self._substitutesets.values():
@@ -233,11 +248,11 @@ class Benchmark(object):
             fileset_etree = ET.SubElement(benchmark_etree, "fileset")
             fileset_etree.attrib["name"] = fileset_name
             for file_handle in self._filesets[fileset_name]:
-                fileset_etree.append(file_handle.etree_repr(new_cwd))
+                fileset_etree.append(file_handle.etree_repr())
         for patternset in self._patternsets.values():
             benchmark_etree.append(patternset.etree_repr())
         for step in self._steps.values():
-            benchmark_etree.append(step.etree_repr(new_cwd))
+            benchmark_etree.append(step.etree_repr())
         for analyzer in self._analyzer.values():
             benchmark_etree.append(analyzer.etree_repr())
         for result in self._results.values():
@@ -565,7 +580,7 @@ class Benchmark(object):
         """The current benchmark configuration will be written to given file
         using xml representation"""
         # Create root-tag and append single benchmark
-        benchmarks_etree = ET.Element("benchmarks")
+        benchmarks_etree = ET.Element("jube")
 
         # Store tag information
         if len(self._tags) > 0:

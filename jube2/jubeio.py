@@ -491,6 +491,7 @@ def _create_benchmark(benchmark_etree, global_parametersets,
     comment = re.sub(r"\s+", " ", comment).strip()
     outpath = _attribute_from_element(benchmark_etree, "outpath").strip()
     outpath = os.path.expandvars(os.path.expanduser(outpath))
+    file_path_ref = benchmark_etree.get("file_path_ref")
 
     # Combine global and local sets
     parametersets = \
@@ -526,6 +527,13 @@ def _create_benchmark(benchmark_etree, global_parametersets,
                                           parametersets, substitutesets,
                                           filesets, patternsets, steps,
                                           analyzer, results, comment, tags)
+
+    # Change file path reference for relative file location
+    if file_path_ref is not None:
+        file_path_ref = file_path_ref.strip()
+        file_path_ref = os.path.expandvars(os.path.expanduser(file_path_ref))
+        benchmark.file_path_ref = file_path_ref
+
     return benchmark
 
 
@@ -569,7 +577,6 @@ def _extract_step(etree_step):
     alt_work_dir = etree_step.get("work_dir")
     if alt_work_dir is not None:
         alt_work_dir = alt_work_dir.strip()
-        alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
     shared_name = etree_step.get("shared")
     if shared_name is not None:
         shared_name = shared_name.strip()
@@ -586,8 +593,6 @@ def _extract_step(etree_step):
             async_filename = element.get("done_file")
             if async_filename is not None:
                 async_filename = async_filename.strip()
-                async_filename = \
-                    os.path.expandvars(os.path.expanduser(async_filename))
             stdout_filename = element.get("stdout")
             if stdout_filename is not None:
                 stdout_filename = stdout_filename.strip()
@@ -780,8 +785,12 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
         elif set_type == "fileset":
             if result_set is None:
                 result_set = list()
-            result_set += _extract_files(
-                elements[0], os.path.dirname(file_path))
+                files = _extract_files(elements[0])
+                for file_obj in files:
+                    file_obj.file_path_ref = \
+                        os.path.join(os.path.dirname(file_path),
+                                     file_obj.file_path_ref)
+                result_set += files
         elif set_type == "patternset":
             if result_set is None:
                 result_set = jube2.pattern.Patternset(name)
@@ -952,7 +961,7 @@ def _extract_filesets(etree, tags=None):
     return filesets
 
 
-def _extract_files(etree_fileset, rel_path=""):
+def _extract_files(etree_fileset):
     """Return filelist from fileset-etree"""
     filelist = list()
     valid_tags = ["copy", "link"]
@@ -960,7 +969,7 @@ def _extract_files(etree_fileset, rel_path=""):
         _check_tag(etree_file, valid_tags)
         seperator = jube2.util.DEFAULT_SEPARATOR
         directory = etree_file.get("directory", default="").strip()
-        directory = os.path.join(rel_path, directory)
+        file_path_ref = etree_file.get("file_path_ref")
         alt_name = etree_file.get("name")
         # Check if the filepath is relativly seen to working dir or the
         # position of the xml-input-file
@@ -982,13 +991,15 @@ def _extract_files(etree_fileset, rel_path=""):
                              "length in <{}>".format(etree_file.tag))
         for i, file_path in enumerate(files):
             path = os.path.join(directory, file_path.strip())
-            path = os.path.expandvars(os.path.expanduser(path))
             if etree_file.tag == "copy":
-                filelist.append(
-                    jube2.fileset.Copy(path, names[i], is_internal_ref))
+                file_obj = jube2.fileset.Copy(path, names[i], is_internal_ref)
             elif etree_file.tag == "link":
-                filelist.append(
-                    jube2.fileset.Link(path, names[i], is_internal_ref))
+                file_obj = jube2.fileset.Link(path, names[i], is_internal_ref)
+            if file_path_ref is not None:
+                file_obj.file_path_ref = \
+                    os.path.expandvars(os.path.expanduser(
+                        file_path_ref.strip()))
+            filelist.append(file_obj)
     return filelist
 
 

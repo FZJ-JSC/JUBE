@@ -40,7 +40,7 @@ class Step(object):
         self._alt_work_dir = alt_work_dir
         self._shared_name = shared_name
 
-    def etree_repr(self, new_cwd=None):
+    def etree_repr(self):
         """Return etree object representation"""
         step_etree = ET.Element("step")
         step_etree.attrib["name"] = self._name
@@ -48,12 +48,7 @@ class Step(object):
             step_etree.attrib["depend"] = \
                 jube2.util.DEFAULT_SEPARATOR.join(self._depend)
         if self._alt_work_dir is not None:
-            if (new_cwd is not None) and \
-               (not os.path.isabs(self._alt_work_dir)):
-                work_dir = os.path.relpath(self._alt_work_dir, new_cwd)
-            else:
-                work_dir = self._alt_work_dir
-            step_etree.attrib["work_dir"] = work_dir
+            step_etree.attrib["work_dir"] = self._alt_work_dir
         if self._shared_name is not None:
             step_etree.attrib["shared"] = self._shared_name
         if self._iterations > 1:
@@ -253,6 +248,8 @@ class Operation(object):
             async_filename = jube2.util.substitution(
                 self._async_filename,
                 parameter_dict)
+            async_filename = \
+                os.path.expandvars(os.path.expanduser(async_filename))
             if not os.path.exists(os.path.join(work_dir, async_filename)):
                 logger.debug("Waiting for file \"{}\" ..."
                              .format(async_filename))
