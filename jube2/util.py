@@ -38,12 +38,12 @@ HIDE_ANIMATIONS = False
 
 # logging related
 LOGFILE_NAME = "jube.log"
-LOGFILE_MODE = "w"
+LOGFILE_MODE = "a"
 LOG_CONSOLE_FORMAT = "%(message)s"
 LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
 
 
-class MyLogger(logging.getLoggerClass()):
+class JubeLogger(logging.getLoggerClass()):
 
     """Overwrite logging to handle multi line messages."""
 
@@ -54,26 +54,37 @@ class MyLogger(logging.getLoggerClass()):
         else:
             lines = str(msg).splitlines()
         for line in lines:
-            super(MyLogger, self)._log(level, line, *args, **kwargs)
+            super(JubeLogger, self)._log(level, line, *args, **kwargs)
 
 
-logging.setLoggerClass(MyLogger)
+logging.setLoggerClass(JubeLogger)
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(mode):
+def setup_logging(mode, filename=LOGFILE_NAME):
     """Setup the logging configuration.
 
-    available modes are
+    Available modes are
       default   log to console and file
       console   only console output
 
-    The setup includes setting the handlers and formatters.
+    filename can be given optionally.
+
+    The setup includes setting the handlers and formatters. Calling
+    this function multiple times causes old handlers to be removed
+    before new ones are added.
+
     """
     _logger = logging.getLogger("jube2")
     # this is needed to make the other handlers accept on low priority
     # events
     _logger.setLevel(logging.DEBUG)
+
+    # list is needed since we remove from the list we just iterate
+    # over
+    for handler in list(_logger.handlers):
+        handler.close()
+        _logger.removeHandler(handler)
 
     # create, configure and add console handler
     console_formatter = logging.Formatter(LOG_CONSOLE_FORMAT)
@@ -85,7 +96,7 @@ def setup_logging(mode):
     if mode == "default":
         # create, configure and add file handler
         file_formatter = logging.Formatter(LOG_FILE_FORMAT)
-        file_handler = logging.FileHandler(LOGFILE_NAME, LOGFILE_MODE)
+        file_handler = logging.FileHandler(filename, LOGFILE_MODE)
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(file_formatter)
         _logger.addHandler(file_handler)
