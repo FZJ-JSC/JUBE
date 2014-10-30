@@ -6,16 +6,16 @@ Advanced tutorial
 .. highlight:: bash
    :linenothreshold: 5
    
-This tutorial will show more detailed functions and tools of *JUBE*. If you want a basic overview you should
+This tutorial will show you more detailed functions and tools of *JUBE*. If you want a basic overview you should
 read the general :doc:`tutorial` first.
 
-.. index:: schema validation, validation
+.. index:: schema validation, validation, dtd
 
 Schema validation
 ~~~~~~~~~~~~~~~~~
 To validate your input files you can use DTD or schema validation. You will find ``jube.dtd`` and
 ``jube.xsd`` inside the ``schema`` folder. You had to add these schema information to your input files
-which you want to be validated.
+which you want to validate.
 
 DTD usage:
 
@@ -54,7 +54,7 @@ Example validation tools:
 
 Scripting parameter
 ~~~~~~~~~~~~~~~~~~~
-Sometimes you want to create parameter based on other parameter. In this cases you can use scripting parameter.
+Sometimes you want to create a parameter which based on the value of another paramter. In this case you can use scripting parameter.
 
 The files used for this example can be found inside ``examples/scripting_parameter``.
 
@@ -65,12 +65,12 @@ The input file ``scripting_parameter.xml``:
    
 In this example we see four different parameter.
 
-* ``number`` is a normal template which expands to three different :term:`workpackages <workpackage>`.
+* ``number`` is a normal template which will be expanded to three different :term:`workpackages <workpackage>`.
 * ``additional_number`` is a scripting parameter which creates a new template and bases on ``number``. The ``mode`` is set to the scripting language (``python`` and ``perl`` are allowed).
-  The additional ``type`` is optional and declare the result type after evaluating the expression. The ``int`` type is only used by the sort algorithm in the result step. It is not possible to
+  The additional ``type`` is optional and declare the result type after evaluating the expression. The type is only used by the sort algorithm in the result step. It is not possible to
   create a template of different scripting parameter. Because of this second template we will get six different :term:`workpackages <workpackage>`.
 * ``number_mult`` is a small calculation. You can use any other existing parameter (which is used inside the same step).
-* ``text`` a normal parameter which uses the content of another parameter. For simple concatenation parameter you need no scripting
+* ``text`` a normal parameter which uses the content of another parameter. For simple concatenation parameter you do not need scripting
   parameter.
   
 For this example we will find the following output inside the ``jube.log``-file:
@@ -120,18 +120,18 @@ The *JUBE* input file ``jobsystem.xml``:
 As you can see the jobfile is very general and several parameter will be used for replacement. By using a general jobfile and the substitution mechanism 
 you can control your jobsystem directly out of your *JUBE* input file.
 
-The submit command is a normal *Shell* command so there are no special tags needed.
+The submit command is a normal *Shell* command so there are no special *JUBE* tags to submit a job.
 
 There are two new attributes:
   
-  * ``done_file`` inside the ``<do>`` allows you set a filename/path which should be used by the jobfile to mark the end of execution. *JUBE* doesn't when the job ends.
-    normally it will return when the *Shell* command was finished. When using a jobsystem we had to wait until the jobfile was executed. If *JUBE* found a
+  * ``done_file`` inside the ``<do>`` allows you set a filename/path to a file which should be used by the jobfile to mark the end of execution. *JUBE* doesn't know when the job ends.
+    Normally it will return when the *Shell* command was finished. When using a jobsystem we had to wait until the jobfile was executed. If *JUBE* found a
     ``<do>`` containing a ``done_file`` attribute *JUBE* will return directly and will not continue automatically until the ``done_file`` exists. If you want to check the current status
     of your running steps and continue the benchmark process if possible you can type::
      
        >>> jube continue benchmark_run
     
-    This will continue your benchmark execution.
+    This will continue your benchmark execution. the position of the ``done_file`` is relativly seen to the work directory.
   * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory get a unique name. When changing the directory the user must select a
     unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id`` which are *JUBE* internal parameter and will expand to the current benchmark and workpackage id. Files and directories out of a given
     ``<fileset>`` will be copied to the new work directory. Other automatic links, like the dependency links, will not be created!
@@ -161,8 +161,8 @@ You had to run ``continue`` multiple times if not all ``done_file`` were written
 Include external data
 ~~~~~~~~~~~~~~~~~~~~~
 
-As you seen in the example before a benchmark can be become very long. To structure your benchmark using multiple files and to reuse existing
-sets there are three different include features inside of *JUBE*.
+As you seen in the example before a benchmark can become very long. To structure your benchmark youe can use multiple files and reuse existing
+sets. There are three different include features inside of *JUBE*.
 
 The files used for this example can be found inside ``examples/include``.
 
@@ -171,7 +171,7 @@ The include file ``include_data.xml``:
 .. literalinclude:: ../examples/include/include_data.xml
    :language: xml
 
-All files which contains data that should be included use the *XML*-format. The include files can have a user specific structure (there can be none valid
+All files which contains data that should be included must use the *XML*-format. The include files can have a user specific structure (there can be none valid
 *JUBE* tags like ``<dos>``), but the structure must be allowed by the searching mechanism (see below). The resulting file must have a valid *JUBE* structure.
 
 The main file ``main.xml``:
@@ -188,13 +188,13 @@ The second method is the ``<use from="...">``. This is mostly the same like the 
 be unique inside the include-file.
 
 The last method is the most generic include. By using ``<include />`` you can copy any nodes you want to your main-*XML* file. The ``path`` is optional and can be used to select a specific nodeset (otherwise the root-node will be included). The ``<include />`` is the only
-include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will change pathnames, which were relative to the include-file position.
+include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will update pathnames, which were relative to the include-file position.
 
 To run the benchmark you can use the normal command::
 
    >>> jube run main.xml
    
-It will search for include files inside four different positions:
+It will search for include files inside four different positions (in the following order):
 
 * inside the same directory of your ``main.xml``
 * inside a directory given over the commandline::
@@ -257,7 +257,7 @@ the result inside the ``stdout`` file will be
 
    Hello World
 
-The ``tag`` attribute or the commandline expression can also contain a list of different names. The ``<tag>`` will
+The ``tag`` attribute or the commandline expression can also contain a list of different names. A hidden ``<tag>`` will
 be ignored completely! If there is no alternative this can produce a wrong execution behaviour!
 
 The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (except the ``<jube>``).
@@ -304,7 +304,7 @@ Now you can run your benchmark using::
 Multiple benchmarks
 ~~~~~~~~~~~~~~~~~~~
 
-Often you only have one benchmark inside your input file. But it is also possible to store multiple benchmarks inside he same input file:
+Often you only have one benchmark inside your input file. But it is also possible to store multiple benchmarks inside the same input file:
  
 .. code-block:: xml
    :linenos:

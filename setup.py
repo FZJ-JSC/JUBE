@@ -52,9 +52,8 @@ config = {'description': 'JUBE Benchmarking Environment',
           'download_url': 'www.fz-juelich.de/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
           'version': '2.0.0',
-          'install_requires': [],
           'packages': ['jube2'],
-          'package_data': {'jube2': ['help.txt', '*.conf']},
+          'package_data': {'jube2': ['help.txt']},
           'data_files': [(os.path.join(SHARE_PATH,'doku'), ['docs/_build/latex/JUBE.pdf']),
                          (SHARE_PATH, ['LICENSE'])] +
                          rel_path("examples",SHARE_PATH) +
