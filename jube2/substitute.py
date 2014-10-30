@@ -75,12 +75,12 @@ class Substituteset(object):
             logger.debug("  substitute {0} -> {1}".format(infile, outfile))
 
             logger.debug("  substitute:\n" +
-                         jube2.util.table([("source", "dest")] +
-                                          [(source, dest)
-                                           for source, dest in
-                                           substitute_dict.items()],
-                                          use_header_line=True, indent=9,
-                                          align_right=False))
+                         jube2.util.text_table([("source", "dest")] +
+                                               [(source, dest)
+                                                for source, dest in
+                                                substitute_dict.items()],
+                                               use_header_line=True, indent=9,
+                                               align_right=False))
             if not jube2.util.DEBUG_MODE:
                 infile = os.path.join(work_dir, infile)
                 outfile = os.path.join(work_dir, outfile)

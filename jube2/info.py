@@ -57,9 +57,9 @@ def print_benchmarks_info(path):
     benchmark_info = [("id", "name", "last change", "comment", "tags")] + \
         benchmark_info
     if len(benchmark_info) > 1:
-        infostr = (jube2.util.boxed("Benchmarks found in \"{}\":".
-                                    format(path)) + "\n" +
-                   jube2.util.table(benchmark_info, use_header_line=True))
+        infostr = (jube2.util.text_boxed("Benchmarks found in \"{}\":".
+                                         format(path)) + "\n" +
+                   jube2.util.text_table(benchmark_info, use_header_line=True))
         print(infostr)
     else:
         print("No Benchmarks found in \"{}\"".format(path))
@@ -68,12 +68,12 @@ def print_benchmarks_info(path):
 def print_benchmark_info(benchmark):
     """Print information concerning a single benchmark"""
     infostr = \
-        jube2.util.boxed("{0} id:{1} tags:{2}\n\n{3}"
-                         .format(benchmark.name,
-                                 benchmark.id,
-                                 jube2.util.DEFAULT_SEPARATOR.join(
-                                     benchmark.tags),
-                                 benchmark.comment))
+        jube2.util.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
+                              .format(benchmark.name,
+                                      benchmark.id,
+                                      jube2.util.DEFAULT_SEPARATOR.join(
+                                          benchmark.tags),
+                                      benchmark.comment))
     print(infostr)
     continue_possible = False
 
@@ -123,7 +123,8 @@ def print_benchmark_info(benchmark):
     print("Last change: {}"
           .format(time.strftime("%Y-%m-%d %H:%M:%S", last_change)))
     print(
-        "\n" + jube2.util.table(step_info, use_header_line=True, indent=1))
+        "\n" + jube2.util.text_table(step_info, use_header_line=True,
+                                     indent=1))
 
     if continue_possible:
         print("\n--- Benchmark not finished! ---")
@@ -137,7 +138,7 @@ def print_benchmark_info(benchmark):
             if not file_obj.is_internal_ref:
                 print("  {}".format(os.path.abspath(file_obj.path)))
 
-    print(jube2.util.line())
+    print(jube2.util.text_line())
 
 
 def print_step_info(benchmark, step_name):
@@ -146,8 +147,8 @@ def print_step_info(benchmark, step_name):
         print("Step \"{0}\" not found in benchmark \"{1}\"."
               .format(step_name, benchmark.name))
         return
-    print(jube2.util.boxed("{0} Step: {1}".format(benchmark.name,
-                                                  step_name)))
+    print(jube2.util.text_boxed("{0} Step: {1}".format(benchmark.name,
+                                                       step_name)))
 
     step = benchmark.steps[step_name]
 
@@ -204,8 +205,8 @@ def print_step_info(benchmark, step_name):
             (id_str, started_str, done_str, os.path.abspath(work_dir)))
 
     print("Workpackages:")
-    print(jube2.util.table(wp_info, use_header_line=True, indent=1,
-                           auto_linebreak=False))
+    print(jube2.util.text_table(wp_info, use_header_line=True, indent=1,
+                                auto_linebreak=False))
 
     if useable_parameter is not None:
         print("Available parameter:")

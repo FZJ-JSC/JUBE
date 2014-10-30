@@ -322,11 +322,11 @@ class Workpackage(object):
 
         # Print debug info
         debugstr = "  available parameter:\n"
-        debugstr += jube2.util.table([("parameter", "value")] +
-                                     sorted([(name, par) for name, par in
-                                             parameter.items()]),
-                                     use_header_line=True, indent=9,
-                                     align_right=False)
+        debugstr += jube2.util.text_table([("parameter", "value")] +
+                                          sorted([(name, par) for name, par in
+                                                  parameter.items()]),
+                                          use_header_line=True, indent=9,
+                                          align_right=False)
         logger.debug(debugstr)
 
         # --- Create alternativ working dir ---

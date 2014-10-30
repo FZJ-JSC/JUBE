@@ -233,11 +233,11 @@ class Table(Result):
             if cnt > 0:
                 table_data.append(row)
 
-        result_str = jube2.util.table(table_data, use_header_line=True,
-                                      auto_linebreak=False, colw=colw,
-                                      indent=0,
-                                      pretty=(self._style == "pretty"),
-                                      separator=self._separator)
+        result_str = jube2.util.text_table(table_data, use_header_line=True,
+                                           auto_linebreak=False, colw=colw,
+                                           indent=0,
+                                           pretty=(self._style == "pretty"),
+                                           separator=self._separator)
         return result_str
 
     def etree_repr(self, new_cwd=None):

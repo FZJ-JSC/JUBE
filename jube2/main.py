@@ -23,7 +23,7 @@ import argparse
 import os
 import re
 import shutil
-import logging.config
+import logging
 import sys
 
 logger = logging.getLogger(__name__)
@@ -297,12 +297,12 @@ def _analyse_benchmark(benchmark_folder, args):
 
     # Change current working dir to benchmark_folder
     os.chdir(benchmark_folder)
-    logger.info(jube2.util.boxed(("Analyse benchmark \"{0}\" id: {1}")
-                                 .format(benchmark.name, benchmark.id)))
+    logger.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
+                                      .format(benchmark.name, benchmark.id)))
     benchmark.analyse()
     logger.info(">>> Analyse data storage: {}".format(os.path.join(
         benchmark_folder, jube2.util.ANALYSE_FILENAME)))
-    logger.info(jube2.util.line())
+    logger.info(jube2.util.text_line())
     # Restore current working dir
     os.chdir(cwd)
 
@@ -599,16 +599,15 @@ def main():
     jube2.util.DEBUG_MODE = args.debug
 
     if args.subparser:
-        if (args.func is run_new_benchmark) or \
-           (args.func is continue_benchmarks) or \
-           (args.func is analyse_benchmarks) or \
-           (args.func is benchmarks_results):
-            logger_config = os.path.join(jube2.__path__[0], "logging.conf")
+        if args.func in [run_new_benchmark, continue_benchmarks,
+                         analyse_benchmarks, benchmarks_results]:
+            logger_config = "default"
         else:
-            logger_config = os.path.join(jube2.__path__[0], "infolog.conf")
-        logging.config.fileConfig(logger_config)
-        logger = logging.getLogger(__name__)
+            logger_config = "console"
 
+        jube2.util.setup_logging(logger_config)
+
+        logger.debug("Using logger_config: '{}'".format(logger_config))
         logger.debug("Command: '{}'".format(" ".join(sys.argv)))
 
         if args.devel:
@@ -616,9 +615,9 @@ def main():
         else:
             try:
                 args.func(args)
-            except Exception as e:
+            except Exception as exeption:
                 # Catch all possible Exceptions
-                logger.error("\n" + str(e))
+                logger.error("\n" + str(exeption))
 
 if __name__ == "__main__":
     main()

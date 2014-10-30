@@ -506,7 +506,7 @@ class Benchmark(object):
         if jube2.util.DEBUG_MODE:
             title += " ---DEBUG_MODE---"
         title += "\n\n{}".format(self._comment)
-        infostr = jube2.util.boxed(title)
+        infostr = jube2.util.text_boxed(title)
         logger.info(infostr)
 
         if not jube2.util.HIDE_ANIMATIONS:
@@ -538,8 +538,8 @@ class Benchmark(object):
                          str(status["wait"]), str(status["done"]))
                         for stepname, status in
                         self.workpackage_status.items()]
-        logger.info(jube2.util.table(status_data, use_header_line=True,
-                                     indent=2))
+        logger.info(jube2.util.text_table(status_data, use_header_line=True,
+                                          indent=2))
 
         logger.info("\n>>>> Benchmark information and " +
                     "further useful commands:")
@@ -562,7 +562,7 @@ class Benchmark(object):
                      "--id {1}").format(path, self._id))
         logger.info((">>>>     info: jube info {0} " +
                      "--id {1}").format(path, self._id))
-        logger.info(jube2.util.line() + "\n")
+        logger.info(jube2.util.text_line() + "\n")
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""
