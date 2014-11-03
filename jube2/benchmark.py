@@ -222,6 +222,12 @@ class Benchmark(object):
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_benchmark_name", self._name))
+
+        # benchmark home
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_benchmark_home",
+                             os.path.abspath(self._file_path_ref)))
         return parameterset
 
     def etree_repr(self, new_cwd=None):

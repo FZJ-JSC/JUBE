@@ -482,4 +482,25 @@ Glossary
       * ``$jube_pat_wrd``: word
       * ``$jube_pat_nwrd``: word, skip
       * ``$jube_pat_bl``: blank space (variable length), skip
+      
+   jube_variables
+      List of available jube variables:
+      
+      * Benchmark:
+        
+        * ``$jube_benchmark_name``: current benchmark name
+        * ``$jube_benchmark_id``: current benchmark id
+        * ``$jube_benchmark_home``: original input file location
+        
+      * Step:
+        
+        * ``$jube_step_name``: current step name
+        * ``$jube_step_iteratuions``: number of step iterations (default: 1)
+                                      
+      * Workpackage:
+        
+        * ``$jube_wp_id``: current workpackage id
+        * ``$jube_wp_iteration``: current iteration number (default: 0)
+        * ``$jube_wp_parent_<parent_name>_id``: workpackage id of selected parent step
+        * ``$jube_wp_abspath``: absolute path to workpackage work directory
          

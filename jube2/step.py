@@ -192,11 +192,11 @@ class Operation(object):
         False => operation pending
         """
         active = jube2.util.substitution(self._active, parameter_dict)
-        if active == "false":
+        if active.lower() == "false":
             return True
-        elif active != "true":
+        elif active.lower() != "true":
             raise RuntimeError(("<do active=\"{}\"> not allowed. Must be " +
-                                "true or false").format(active))
+                                "true or false").format(active.lower()))
 
         if not only_check_pending:
             # Inline substitution

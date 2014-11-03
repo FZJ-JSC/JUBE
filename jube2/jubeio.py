@@ -601,7 +601,7 @@ def _extract_step(etree_step):
                 stderr_filename = stderr_filename.strip()
             active = element.get("active", "true").strip()
             shared_str = element.get("shared", "false").strip()
-            if shared_str == "true":
+            if shared_str.lower() == "true":
                 if shared_name is None:
                     raise ValueError("<do shared=\"true\"> only allowed "
                                      "inside a <step> which has a shared "

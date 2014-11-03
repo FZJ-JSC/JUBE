@@ -85,7 +85,7 @@
 <!ELEMENT do ANY>
 <!ATTLIST do            done_file CDATA #IMPLIED
                         active CDATA #IMPLIED
-                        shared (true|false) #IMPLIED
+                        shared (true|false|True|False) #IMPLIED
                         stdout CDATA #IMPLIED
                         stderr CDATA #IMPLIED
                         tag CDATA #IMPLIED>

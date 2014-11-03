@@ -242,17 +242,17 @@ def get_jube_pattern():
     # Pattern for integer number
     patternset.add_pattern(Pattern("jube_pat_int", r"([+-]?\d+)"))
     # Pattern for integer number, no ()
-    patternset.add_pattern(Pattern("jube_pat_nint", r"[+-]?\d+"))
+    patternset.add_pattern(Pattern("jube_pat_nint", r"(?[+-]?\d+)"))
     # Pattern for floating point number
     patternset.add_pattern(
         Pattern("jube_pat_fp", r"([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)"))
     # Pattern for floating point number, no ()
     patternset.add_pattern(
-        Pattern("jube_pat_nfp", r"[+-]?\d*\.?\d+(?:[eE][-+]?\d+)?"))
+        Pattern("jube_pat_nfp", r"(?[+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)"))
     # Pattern for word (all noblank characters)
     patternset.add_pattern(Pattern("jube_pat_wrd", r"(\s+)"))
     # Pattern for word (all noblank characters), no ()
-    patternset.add_pattern(Pattern("jube_pat_nwrd", r"\s+"))
+    patternset.add_pattern(Pattern("jube_pat_nwrd", r"(?\s+)"))
     # Pattern for blank space (variable length)
-    patternset.add_pattern(Pattern("jube_pat_bl", r"\s+"))
+    patternset.add_pattern(Pattern("jube_pat_bl", r"(?\s+)"))
     return patternset

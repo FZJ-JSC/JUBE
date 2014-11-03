@@ -40,12 +40,15 @@ def print_benchmarks_info(path):
                 name_str, comment_str, tags = \
                     jube2.jubeio.benchmark_info_from_xml(configuration_file)
                 tags_str = jube2.util.DEFAULT_SEPARATOR.join(tags)
-                time_str = \
-                    time.strftime("%Y-%m-%d %H:%M:%S",
-                                  time.localtime(os.path.getmtime(dir_path)))
+                time_cstr = time.strftime(
+                    "%Y-%m-%d %H:%M:%S",
+                    time.localtime(os.path.getctime(configuration_file)))
+                time_mstr = time.strftime(
+                    "%Y-%m-%d %H:%M:%S",
+                    time.localtime(os.path.getmtime(dir_path)))
 
-                benchmark_info.append([id_number, name_str, time_str,
-                                       comment_str, tags_str])
+                benchmark_info.append([id_number, name_str, time_cstr,
+                                       time_mstr, comment_str, tags_str])
             except ValueError:
                 pass
     # sort using id
@@ -54,8 +57,8 @@ def print_benchmarks_info(path):
     for info in benchmark_info:
         info[0] = str(info[0])
     # add header
-    benchmark_info = [("id", "name", "last change", "comment", "tags")] + \
-        benchmark_info
+    benchmark_info = [("id", "name", "started", "last change",
+                       "comment", "tags")] + benchmark_info
     if len(benchmark_info) > 1:
         infostr = (jube2.util.text_boxed("Benchmarks found in \"{}\":".
                                          format(path)) + "\n" +
@@ -83,9 +86,9 @@ def print_benchmark_info(benchmark):
     # Starttime is workpackage.xml creation time
     start_time = \
         time.strftime("%Y-%m-%d %H:%M:%S",
-                      time.localtime(os.path.getmtime(
+                      time.localtime(os.path.getctime(
                           os.path.join(benchmark.bench_dir,
-                                       jube2.util.WORKPACKAGES_FILENAME))))
+                                       jube2.util.CONFIGURATION_FILENAME))))
     print("\n    Started: {}".format(start_time))
     last_change = time.localtime(os.path.getmtime(benchmark.bench_dir))
 
