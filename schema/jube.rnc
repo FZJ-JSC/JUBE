@@ -1,0 +1,171 @@
+# added manually
+namespace xsi = "http://www.w3.org/2001/XMLSchema-instance"
+attlist.jube &= attribute xsi:noNamespaceSchemaLocation { text }
+# rest was generated using 'trang jube.dtd jube.rnc'
+jube =
+  element jube {
+    attlist.jube,
+    (selection | include-path)*,
+    (benchmark
+     | parameterset
+     | fileset
+     | substituteset
+     | patternset
+     | \include)*
+  }
+attlist.jube &= empty
+selection = element selection { attlist.selection, (only | not | tag)* }
+attlist.selection &= attribute tag { text }?
+only = element only { attlist.only, text }
+attlist.only &= attribute tag { text }?
+not = element not { attlist.not, text }
+attlist.not &= attribute tag { text }?
+tag = element tag { attlist.tag, text }
+attlist.tag &= attribute tag { text }?
+include-path = element include-path { attlist.include-path, path* }
+attlist.include-path &= attribute tag { text }?
+path = element path { attlist.path, text }
+attlist.path &= attribute tag { text }?
+benchmark =
+  element benchmark {
+    attlist.benchmark,
+    comment?,
+    (parameterset
+     | substituteset
+     | fileset
+     | step
+     | patternset
+     | analyzer
+     | result
+     | \include)*
+  }
+attlist.benchmark &=
+  attribute name { text },
+  attribute outpath { text },
+  attribute file_path_ref { text }?,
+  attribute tag { text }?
+comment = element comment { attlist.comment, text }
+attlist.comment &= attribute tag { text }?
+parameterset =
+  element parameterset { attlist.parameterset, (parameter | \include)* }
+attlist.parameterset &=
+  attribute name { text },
+  attribute init_with { text }?,
+  attribute tag { text }?
+parameter = element parameter { attlist.parameter, text }
+attlist.parameter &=
+  attribute name { text },
+  attribute type { "int" | "string" | "float" }?,
+  attribute mode { text }?,
+  attribute separator { text }?,
+  attribute tag { text }?
+substituteset =
+  element substituteset {
+    attlist.substituteset, (iofile | sub | \include)*
+  }
+attlist.substituteset &=
+  attribute name { text },
+  attribute init_with { text }?,
+  attribute tag { text }?
+iofile = element iofile { attlist.iofile, empty }
+attlist.iofile &=
+  attribute in { text },
+  attribute out { text },
+  attribute tag { text }?
+sub = element sub { attlist.sub, empty }
+attlist.sub &=
+  attribute source { text },
+  attribute dest { text },
+  attribute tag { text }?
+fileset = element fileset { attlist.fileset, (copy | link | \include)* }
+attlist.fileset &=
+  attribute name { text },
+  attribute init_with { text }?,
+  attribute tag { text }?
+link = element link { attlist.link, text }
+attlist.link &=
+  attribute directory { text }?,
+  attribute name { text }?,
+  attribute rel_path_ref { "internal" | "external" }?,
+  attribute file_path_ref { text }?,
+  attribute tag { text }?
+copy = element copy { attlist.copy, text }
+attlist.copy &=
+  attribute directory { text }?,
+  attribute name { text }?,
+  attribute rel_path_ref { "internal" | "external" }?,
+  attribute file_path_ref { text }?,
+  attribute tag { text }?
+patternset =
+  element patternset { attlist.patternset, (pattern | \include)* }
+attlist.patternset &=
+  attribute name { text },
+  attribute init_with { text }?,
+  attribute tag { text }?
+pattern = element pattern { attlist.pattern, text }
+attlist.pattern &=
+  attribute name { text },
+  attribute type { "int" | "string" | "float" }?,
+  attribute mode { text }?,
+  attribute unit { text }?,
+  attribute reduce { text }?,
+  attribute tag { text }?
+step = element step { attlist.step, (use | do | \include)* }
+attlist.step &=
+  attribute name { text },
+  attribute iterations { text }?,
+  attribute depend { text }?,
+  attribute work_dir { text }?,
+  attribute shared { text }?,
+  attribute tag { text }?
+analyzer =
+  element analyzer { attlist.analyzer, (use | analyse | \include)* }
+attlist.analyzer &=
+  attribute name { text },
+  attribute tag { text }?
+use = element use { attlist.use, text }
+attlist.use &=
+  attribute from { text }?,
+  attribute tag { text }?
+do = element do { attlist.do, any }
+attlist.do &=
+  attribute done_file { text }?,
+  attribute active { text }?,
+  attribute shared { "true" | "false" | "True" | "False" }?,
+  attribute stdout { text }?,
+  attribute stderr { text }?,
+  attribute tag { text }?
+analyse = element analyse { attlist.analyse, (file | \include)* }
+attlist.analyse &=
+  attribute step { text },
+  attribute tag { text }?
+result = element result { attlist.result, (use | table | \include)* }
+attlist.result &=
+  attribute result_dir { text }?,
+  attribute tag { text }?
+table = element table { attlist.table, (column | \include)* }
+attlist.table &=
+  attribute name { text },
+  attribute style { "csv" | "pretty" }?,
+  attribute separator { text }?,
+  attribute sort { text }?,
+  attribute tag { text }?
+column = element column { attlist.column, text }
+attlist.column &=
+  attribute colw { text }?,
+  attribute format { text }?,
+  attribute tag { text }?
+file = element file { attlist.file, text }
+attlist.file &= attribute tag { text }?
+\include = element include { attlist.include, empty }
+attlist.include &=
+  attribute from { text },
+  attribute path { text }?,
+  attribute tag { text }?
+start = jube
+any =
+  (element * {
+     attribute * { text }*,
+     any
+   }
+   | text)*
