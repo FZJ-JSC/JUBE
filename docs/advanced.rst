@@ -278,6 +278,9 @@ An example benchmark structure bases on three include files:
 * A mostly generic platform include file which contain benchmark independent but platform specific data (this can be created once and placed somewhere
   central on the system, it can be easily accessed using the ``JUBE_INCLUDE_PATH`` environment variable.
 * A platform specific and benchmark specific include file which must be placed in a unique directory to allow inlcude-path usage
+
+Inside the ``platform`` directory you will find some example benchmark independet platform configuration files for the supercomputers at
+Forschungszentrum Jülich.
   
 To avoid writting of long include-pathes every time you run a platform independent benchmark you can store the include-path inside your 
 input file. This can be mixed using the tagging-feature:
@@ -339,5 +342,52 @@ This information can also be stored inside the input file:
        <not>b</not>
      </selection>
      ...
-   </jube> 
+   </jube>
    
+.. index:: shared operations
+   
+Shared operations
+~~~~~~~~~~~~~~~~~
+
+Sometimes you want to communicate between the different workpackages of a single step or you want a single operation only run one time
+for all workpackages. Here you can use shared steps.
+
+The files used for this example can be found inside ``examples/shared``.
+
+The input file ``shared.xml``:
+
+.. literalinclude:: ../examples/shared/shared.xml
+   :language: xml
+
+The step must be marked using the ``shared`` attribute. The name, given inside this attribute, will be the name of a symbolic link, which will be created
+inside every single sandbox work directory pointing to a single shared folder. Every Workpackage can access this folder by using its own link. In this example
+every workpackage will write its own id into a shared file (``$jube_wp_id`` is an internal variable, more of these you will find :term:`here <jube_variables>`).
+
+To mark an operation to be a shared operation ``shared="true"`` inside the ``<do>`` must be used. The shared operation will start after all workpackages reached its
+execution position. The work directory for the shared operation is the shared folder itself.
+
+You will get the following directory structure:
+
+.. code-block:: none
+   
+   bench_run               # the given outpath
+   |
+   +- 000000               # the benchmark id
+      |
+      +- configuration.xml # the stored benchmark configuration
+      +- workpackages.xml  # workpackage information 
+      +- 000000_a_step     # the first workpackage
+         |
+         +- done           # workpackage finished marker
+         +- work           # user sanbox folder
+            |
+            +- stderr      # standard error messages of used shell commands
+            +- stdout      # standard output of used shell commands
+            +- shared      # symbolic link pointing to shared folder
+      +- 000001_a_step     # workpackage information
+      +- 000002_a_step     # workpackage information
+      +- a_step_shared     # the shared folder  
+         |
+         +- stdout         # standard output of used shell commands
+         +- stderr         # standard error messages of used shell commands
+         +- all_ids        # benchmark specific generated file

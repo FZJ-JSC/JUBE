@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="shared" outpath="bench_run">
+    <comment>A shared folder example</comment>
+    
+    <!-- Configuration -->
+    <parameterset name="parameterset">
+      <parameter name="number" type="int">1,2,4</parameter>
+    </parameterset>
+    
+    <!-- Operation -->
+    <step name="a_step" shared="shared">
+      <use>parameterset</use>
+      <!-- shell command will run three times -->
+      <do>echo $jube_wp_id >> shared/all_ids</do>
+      <!-- shell command will run one time -->
+      <do shared="true">cat all_ids</do>
+    </step>    
+  </benchmark>
+</jube>

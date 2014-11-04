@@ -54,10 +54,11 @@ config = {'description': 'JUBE Benchmarking Environment',
           'version': '2.0.0',
           'packages': ['jube2'],
           'package_data': {'jube2': ['help.txt']},
-          'data_files': [(os.path.join(SHARE_PATH,'doku'), ['docs/_build/latex/JUBE.pdf']),
+          'data_files': [(os.path.join(SHARE_PATH,'docu'), ['docs/_build/latex/JUBE.pdf']),
                          (SHARE_PATH, ['LICENSE'])] +
                          rel_path("examples",SHARE_PATH) +
-                         rel_path("schema",SHARE_PATH),
+                         rel_path("schema",SHARE_PATH) +
+                         rel_path("platform",SHARE_PATH),
           'scripts': ['bin/jube'],
           'long_description': 'JUBE',
           'license': 'See the file LICENSE',
