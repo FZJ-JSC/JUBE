@@ -267,6 +267,11 @@ def _continue_benchmark(benchmark_folder, args):
     cwd = os.getenv("PWD")
     # Change current working dir to benchmark_folder
     os.chdir(benchmark_folder)
+
+    # Change logfile
+    logfile = "continue.log"
+    jube2.util.setup_logging(filename=logfile)
+
     # Run existing benchmark
     benchmark.run()
 
@@ -297,6 +302,11 @@ def _analyse_benchmark(benchmark_folder, args):
 
     # Change current working dir to benchmark_folder
     os.chdir(benchmark_folder)
+
+    # Change logfile
+    logfile = "analyse.log"
+    jube2.util.setup_logging(filename=logfile)
+
     logger.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
     benchmark.analyse()
@@ -319,6 +329,10 @@ def _benchmark_result(benchmark_folder, args):
 
     # Change current working dir to benchmark_folder
     os.chdir(benchmark_folder)
+
+    # Change logfile
+    logfile = "result.log"
+    jube2.util.setup_logging(filename=logfile)
 
     # Run becnhmark analyse
     if args.analyse:

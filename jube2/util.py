@@ -41,6 +41,7 @@ LOGFILE_NAME = "jube.log"
 LOGFILE_MODE = "a"
 LOG_CONSOLE_FORMAT = "%(message)s"
 LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
+DEFAULT_LOGGING_MODE = "default"
 
 
 class JubeLogger(logging.getLoggerClass()):
@@ -59,9 +60,10 @@ class JubeLogger(logging.getLoggerClass()):
 
 logging.setLoggerClass(JubeLogger)
 logger = logging.getLogger(__name__)
+logging_mode = DEFAULT_LOGGING_MODE
 
 
-def setup_logging(mode, filename=LOGFILE_NAME):
+def setup_logging(mode=None, filename=LOGFILE_NAME):
     """Setup the logging configuration.
 
     Available modes are
@@ -75,9 +77,15 @@ def setup_logging(mode, filename=LOGFILE_NAME):
     before new ones are added.
 
     """
-    _logger = logging.getLogger("jube2")
+    global logging_mode
+    if not mode:
+        mode = logging_mode
+    else:
+        logging_mode = mode
+
     # this is needed to make the other handlers accept on low priority
     # events
+    _logger = logging.getLogger("jube2")
     _logger.setLevel(logging.DEBUG)
 
     # list is needed since we remove from the list we just iterate
