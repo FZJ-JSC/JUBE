@@ -317,6 +317,11 @@ class Workpackage(object):
             dict([[par.name, par.value] for par in
                   parameterset.constant_parameter_dict.values()])
 
+        # --- Collect export parameter ---
+        export_parameter = \
+            dict([[par.name, par.value] for par in
+                  parameterset.export_parameter_dict.values()])
+
         # --- Create shared folder connection ---
         self.create_shared_folder_link(parameter)
 
@@ -428,6 +433,7 @@ class Workpackage(object):
                 else:
                     continue_op = operation.execute(
                         parameter_dict=parameter, work_dir=work_dir,
+                        export_parameter_dict=export_parameter,
                         only_check_pending=self.operation_done(
                             operation_number))
                     self.operation_done(operation_number, True)

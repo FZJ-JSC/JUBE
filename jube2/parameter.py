@@ -109,6 +109,13 @@ class Parameterset(object):
                      for parameter in self._parameters.values()
                      if parameter.is_template])
 
+    @property
+    def export_parameter_dict(self):
+        """Return dictionary representation of all export parameters"""
+        return dict([(parameter.name, parameter)
+                     for parameter in self._parameters.values()
+                     if (not parameter.is_template) and parameter.export])
+
     def is_compatible(self, parameterset):
         """Two Parametersets are compatible, if the intersection only contains
         equivilant parameters"""
@@ -233,7 +240,7 @@ class Parameter(object):
     parameter_regex = r"(?<!\$)(?:\$\$)*\$(?!\$)(\{{)?{}(?(1)\}}|(?:\W|$))"
 
     def __init__(self, name, value, separator=None, parameter_type="string",
-                 parameter_mode="text"):
+                 parameter_mode="text", export=False):
         self._name = name
         self._value = value
         if separator is None:
@@ -243,11 +250,13 @@ class Parameter(object):
         self._type = parameter_type
         self._mode = parameter_mode
         self._based_on = None
+        self._export = export
         self._lvl = 0
 
     @staticmethod
     def create_parameter(name, value, separator=None, parameter_type="string",
-                         selected_value=None, parameter_mode="text"):
+                         selected_value=None, parameter_mode="text",
+                         export=False):
         """Parameter constructor.
         Return a Static- or TemplateParameter based on the given data."""
         if separator is None:
@@ -259,16 +268,16 @@ class Parameter(object):
         if len(values) == 1 or \
            (parameter_mode in jube2.util.ALLOWED_SCRIPTTYPES):
             result = StaticParameter(
-                name, value, separator, parameter_type, parameter_mode)
+                name, value, separator, parameter_type, parameter_mode, export)
         else:
             result = TemplateParameter(name, values, separator, parameter_type,
-                                       parameter_mode)
+                                       parameter_mode, export)
 
         if selected_value is not None:
             tmp = result
             parameter_mode = "text"
             result = StaticParameter(name, selected_value, separator,
-                                     parameter_type, parameter_mode)
+                                     parameter_type, parameter_mode, export)
             result.based_on = tmp
         return result
 
@@ -285,6 +294,11 @@ class Parameter(object):
     def lvl(self):
         """Return the Parameter level"""
         return self._lvl
+
+    @property
+    def export(self):
+        """Return if parameter should be exported"""
+        return self._export
 
     @property
     def value(self):
@@ -362,6 +376,8 @@ class Parameter(object):
             parameter_etree.attrib["selection"] = self.value
         else:
             parameter_etree.attrib["mode"] = self._mode
+        if self._export:
+            parameter_etree.attrib["export"] = "true"
 
         return parameter_etree
 
@@ -428,7 +444,8 @@ class StaticParameter(Parameter):
                                                value=value,
                                                separator=self._separator,
                                                parameter_type=self._type,
-                                               parameter_mode="text")
+                                               parameter_mode="text",
+                                               export=self._export)
             param.based_on = self
         else:
             param = self
@@ -450,7 +467,10 @@ class TemplateParameter(Parameter):
         """Expand Template and produce set of static parameter"""
         for index in range(len(self._value)):
             value = self._value[index]
-            static_param = StaticParameter(self._name, value, self._separator,
-                                           self._type)
+            static_param = StaticParameter(name=self._name,
+                                           value=value,
+                                           separator=self._separator,
+                                           parameter_type=self._type,
+                                           export=self._export)
             static_param.based_on = self
             yield static_param

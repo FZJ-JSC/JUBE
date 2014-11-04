@@ -846,6 +846,8 @@ def _extract_parameters(etree_parameterset):
                               default=jube2.util.DEFAULT_SEPARATOR)
         parameter_type = param.get("type", default="string").strip()
         parameter_mode = param.get("mode", default="text").strip()
+        export_str = param.get("export", default="false").strip()
+        export = export_str.lower() == "true"
         if parameter_mode not in ["text"] + jube2.util.ALLOWED_SCRIPTTYPES:
             raise ValueError(
                 ("parameter-mode \"{0}\" not allowed in " +
@@ -862,7 +864,8 @@ def _extract_parameters(etree_parameterset):
             jube2.parameter.Parameter.create_parameter(name, value, seperator,
                                                        parameter_type,
                                                        selected_value,
-                                                       parameter_mode)
+                                                       parameter_mode,
+                                                       export)
         parameters.append(parameter)
     return parameters
 

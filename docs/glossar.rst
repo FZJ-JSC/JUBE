@@ -156,7 +156,7 @@ Glossary
       
       .. code-block:: xml
       
-         <parameter name="..." mode="..." type="..." separator="...">...</parameter>
+         <parameter name="..." mode="..." type="..." separator="..." export="...">...</parameter>
       
       * a parameter can be seen as variable: Name is the name to use the variable, and the text between the tags 
         will be the real content
@@ -164,6 +164,7 @@ Glossary
       * type is optional (only used for sorting, default: string)
       * mode is optional (used for script-types, default: text)
       * separator is optional, default: ,
+      * export is optional, if set to true the parameter will be exported to the shell environment when using ``<do>``
       * if the text contains the given (or the implicit) separator, a template will be created
       * use of another parameter:
       

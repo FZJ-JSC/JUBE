@@ -182,7 +182,8 @@ class Operation(object):
         """Shared operation?"""
         return self._shared
 
-    def execute(self, parameter_dict, work_dir, only_check_pending=False):
+    def execute(self, parameter_dict, work_dir, export_parameter_dict=None,
+                only_check_pending=False):
         """Execute the operation. work_dir must be set to the given context
         path. The parameter_dict used for inline substitution.
         If only_check_pending is set to True, the operation will not be
@@ -191,6 +192,9 @@ class Operation(object):
         True => operation finished
         False => operation pending
         """
+        if export_parameter_dict is None:
+            export_parameter_dict = dict()
+        export_parameter_dict.update(os.environ)
         active = jube2.util.substitution(self._active, parameter_dict)
         if active.lower() == "false":
             return True
@@ -226,7 +230,8 @@ class Operation(object):
             if not jube2.util.DEBUG_MODE:
                 try:
                     sub = subprocess.Popen(do, cwd=work_dir, stdout=stdout,
-                                           stderr=stderr, shell=True)
+                                           stderr=stderr, shell=True,
+                                           env=export_parameter_dict)
                 except OSError:
                     raise RuntimeError(("Error (returncode <> 0) while " +
                                         "running \"{}\" in " +
