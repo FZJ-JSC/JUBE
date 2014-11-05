@@ -18,11 +18,13 @@ import logging
 import sys
 import glob
 import os.path
-
+import jube2.util
 
 # logging related
-LOGFILE_NAME = "jube.log"
+LOGFILE_NAME = "jube-parse.log"
+LOGFILE_DEBUG_NAME = "jube-debug.log"
 LOGFILE_MODE = "a"
+LOGFILE_DEBUG_MODE = "w"
 LOG_CONSOLE_FORMAT = "%(message)s"
 LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
 DEFAULT_LOGGING_MODE = "default"
@@ -63,6 +65,15 @@ def setup_logging(mode=None, filename=None):
 
     """
     global logging_mode, logfile_name
+
+    # Use debug file name and debug file mode when in debug mode
+    if jube2.util.DEBUG_MODE:
+        filename = LOGFILE_DEBUG_NAME
+        mode = "default"
+        filemode = LOGFILE_DEBUG_MODE
+    else:
+        filemode = LOGFILE_MODE
+
     if not mode:
         mode = logging_mode
     else:
@@ -93,7 +104,7 @@ def setup_logging(mode=None, filename=None):
     if mode == "default":
         # create, configure and add file handler
         file_formatter = logging.Formatter(LOG_FILE_FORMAT)
-        file_handler = logging.FileHandler(filename, LOGFILE_MODE)
+        file_handler = logging.FileHandler(filename, filemode)
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(file_formatter)
         _logger.addHandler(file_handler)
@@ -138,3 +149,11 @@ def safe_output_logfile(filename):
             log_print(logfile.read())
     except IOError:
         log_print("No log found in current directory")
+
+
+def change_logfile_name(path, filename):
+    """Change log file name if not in debug mode."""
+    if jube2.util.DEBUG_MODE:
+        return
+    logfile = os.path.join(path, filename)
+    setup_logging(filename=logfile)

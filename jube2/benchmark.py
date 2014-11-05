@@ -495,8 +495,7 @@ class Benchmark(object):
         self._create_bench_dir()
 
         # Change logfile
-        logfile = os.path.join(self.bench_dir, "run.log")
-        jube2.log.setup_logging(filename=logfile)
+        jube2.log.change_logfile_name("run.log", self.bench_dir)
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
