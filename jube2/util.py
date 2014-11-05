@@ -36,78 +36,7 @@ DEFAULT_SEPARATOR = ","
 MAX_TABLE_CELL_WIDTH = 40
 HIDE_ANIMATIONS = False
 
-# logging related
-LOGFILE_NAME = "jube.log"
-LOGFILE_MODE = "a"
-LOG_CONSOLE_FORMAT = "%(message)s"
-LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
-DEFAULT_LOGGING_MODE = "default"
-
-
-class JubeLogger(logging.getLoggerClass()):
-
-    """Overwrite logging to handle multi line messages."""
-
-    def _log(self, level, msg, *args, **kwargs):
-        """Log multi line messages each as a separate entry."""
-        if hasattr(msg, "splitlines"):
-            lines = msg.splitlines()
-        else:
-            lines = str(msg).splitlines()
-        for line in lines:
-            super(JubeLogger, self)._log(level, line, *args, **kwargs)
-
-
-logging.setLoggerClass(JubeLogger)
 logger = logging.getLogger(__name__)
-logging_mode = DEFAULT_LOGGING_MODE
-
-
-def setup_logging(mode=None, filename=LOGFILE_NAME):
-    """Setup the logging configuration.
-
-    Available modes are
-      default   log to console and file
-      console   only console output
-
-    filename can be given optionally.
-
-    The setup includes setting the handlers and formatters. Calling
-    this function multiple times causes old handlers to be removed
-    before new ones are added.
-
-    """
-    global logging_mode
-    if not mode:
-        mode = logging_mode
-    else:
-        logging_mode = mode
-
-    # this is needed to make the other handlers accept on low priority
-    # events
-    _logger = logging.getLogger("jube2")
-    _logger.setLevel(logging.DEBUG)
-
-    # list is needed since we remove from the list we just iterate
-    # over
-    for handler in list(_logger.handlers):
-        handler.close()
-        _logger.removeHandler(handler)
-
-    # create, configure and add console handler
-    console_formatter = logging.Formatter(LOG_CONSOLE_FORMAT)
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(console_formatter)
-    _logger.addHandler(console_handler)
-
-    if mode == "default":
-        # create, configure and add file handler
-        file_formatter = logging.Formatter(LOG_FILE_FORMAT)
-        file_handler = logging.FileHandler(filename, LOGFILE_MODE)
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(file_formatter)
-        _logger.addHandler(file_handler)
 
 
 def get_current_id(base_dir):

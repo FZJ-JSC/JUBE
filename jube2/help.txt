@@ -343,6 +343,11 @@ link_tag
    * in the execution step the given files or directories will be
      linked
 
+log
+   Show logs for the given benchmark directory or a given benchmark.
+
+   If benchmark directory is missing, current directory will be used.
+
 parameter_tag
    A parameter is a usable configuration option.
 

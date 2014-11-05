@@ -162,7 +162,7 @@ def _remove_invalid_tags(etree, tags=None):
         _remove_invalid_tags(child, tags)
 
 
-def _preprocessor(etree, tags=None):
+def _preprocessor(etree):
     """Preprocess the xml-file by replacing include-tags"""
     children = list(etree)
     new_children = list()

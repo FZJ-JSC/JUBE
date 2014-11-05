@@ -57,7 +57,7 @@ attlist.parameter &=
   attribute name { text },
   attribute type { "int" | "string" | "float" }?,
   attribute mode { text }?,
-  attribute export { "true" | "false" | "True" | "False" }?
+  attribute export { "true" | "false" | "True" | "False" }?,
   attribute separator { text }?,
   attribute tag { text }?
 substituteset =

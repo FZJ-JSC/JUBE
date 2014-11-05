@@ -233,6 +233,29 @@ Get benchmark specific information
 
 .. index:: help
 
+log
+~~~
+
+Show logs for benchmark
+
+.. code-block:: none
+
+   jube log [-h] [-i ID [ID ...]] [-c COMMAND [COMMAND ...]] [DIRECTORY]
+   
+``-h``, ``--help``
+   show command help information
+    
+``-i ID [ID ...]``, ``--id ID [ID ...]`` 
+   show logs for benchmarks with specified IDs
+    
+``-c COMMAND [COMMAND ...]``, ``--command COMMAND [COMMAND ...]``
+   show only logs for specified commands
+            
+``DIRECTORY``
+   show directory specific information
+
+.. index:: help
+
 help
 ~~~~
 

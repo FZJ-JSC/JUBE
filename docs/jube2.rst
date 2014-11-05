@@ -57,6 +57,14 @@ jube2.jubetojube2 module
     :undoc-members:
     :show-inheritance:
 
+jube2.log module
+----------------
+
+.. automodule:: jube2.log
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 jube2.main module
 -----------------
 

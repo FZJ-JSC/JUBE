@@ -496,7 +496,7 @@ class Benchmark(object):
 
         # Change logfile
         logfile = os.path.join(self.bench_dir, "run.log")
-        jube2.util.setup_logging(filename=logfile)
+        jube2.log.setup_logging(filename=logfile)
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
@@ -571,6 +571,8 @@ class Benchmark(object):
         logger.info((">>>>   result: jube result {0} " +
                      "--id {1}").format(path, self._id))
         logger.info((">>>>     info: jube info {0} " +
+                     "--id {1}").format(path, self._id))
+        logger.info((">>>>      log: jube log {0} " +
                      "--id {1}").format(path, self._id))
         logger.info(jube2.util.text_line() + "\n")
 

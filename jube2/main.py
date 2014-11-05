@@ -19,6 +19,7 @@ import jube2.util
 import jube2.info
 import jube2.help
 import jube2.jubetojube2
+import jube2.log
 import argparse
 import os
 import re
@@ -38,7 +39,7 @@ def continue_benchmarks(args):
 
 
 def benchmarks_results(args):
-    """Continue benchmarks"""
+    """Show benchmark results"""
     found_benchmarks = search_for_benchmarks(args)
     for benchmark_folder in found_benchmarks:
         _benchmark_result(benchmark_folder, args)
@@ -94,6 +95,51 @@ def info(args):
                     jube2.info.print_step_info(benchmark, step_name)
             # Restore current working dir
             os.chdir(cwd)
+
+
+def show_log(args):
+    """Show logs for benchmarks"""
+    found_benchmarks = search_for_benchmarks(args)
+    for benchmark_folder in found_benchmarks:
+        show_log_single(args, benchmark_folder)
+
+
+def show_log_single(args, benchmark_folder):
+    """Show logs for a single benchmark"""
+    benchmark = \
+        _load_existing_benchmark(benchmark_folder, restore_workpackages=False,
+                                 load_analyse=False)
+    # Store current working dir
+    cwd = os.getenv("PWD")
+    # Change current working dir to benchmark_folder
+    os.chdir(benchmark_folder)
+
+    # Find available logs
+    available_logs = jube2.log.search_for_logs()
+
+    # Use all available logs if none is selected ...
+    if not args.commands:
+        matching = available_logs
+        not_matching = list()
+    # ... otherwise find intersection between available and
+    # selected
+    else:
+        matching, not_matching = jube2.log.matching_logs(
+            args.commands, available_logs)
+
+    # Output the log file
+    for log in matching:
+        jube2.log.log_print("BenchmarkID: {} | Log: {}".format(benchmark.id,
+                                                               log))
+        jube2.log.safe_output_logfile(log)
+
+    # Inform user if any selected log was not found
+    if not_matching:
+        jube2.log.log_print("Could not find logs: {}".format(
+            not_matching))
+
+    # Restore current working dir
+    os.chdir(cwd)
 
 
 def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
@@ -270,7 +316,7 @@ def _continue_benchmark(benchmark_folder, args):
 
     # Change logfile
     logfile = "continue.log"
-    jube2.util.setup_logging(filename=logfile)
+    jube2.log.setup_logging(filename=logfile)
 
     # Run existing benchmark
     benchmark.run()
@@ -305,7 +351,7 @@ def _analyse_benchmark(benchmark_folder, args):
 
     # Change logfile
     logfile = "analyse.log"
-    jube2.util.setup_logging(filename=logfile)
+    jube2.log.setup_logging(filename=logfile)
 
     logger.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
@@ -332,7 +378,7 @@ def _benchmark_result(benchmark_folder, args):
 
     # Change logfile
     logfile = "result.log"
-    jube2.util.setup_logging(filename=logfile)
+    jube2.log.setup_logging(filename=logfile)
 
     # Run becnhmark analyse
     if args.analyse:
@@ -395,7 +441,7 @@ def _remove_benchmark(benchmark_folder, args):
         except NameError:
             inp = input("Really remove \"{}\" (y/n):"
                         .format(benchmark_folder))
-        remove = inp[0:1] == "y"
+        remove = inp.startswith("y")
     if remove:
         # Delete benchmark folder
         shutil.rmtree(benchmark_folder, ignore_errors=True)
@@ -580,7 +626,7 @@ def _get_args_parser():
                                      action='store_true')
     subparser["remove"].set_defaults(func=remove_benchmarks)
 
-    # remove subparser
+    # help subparser
     subparser["help"] = \
         subparsers.add_parser('help', help='command help',
                               description="available commands or " +
@@ -601,6 +647,22 @@ def _get_args_parser():
                                       help="Main jube XML")
     subparser["convert"].set_defaults(func=jube2jube2)
 
+    # log subparser
+    subparser["log"] = \
+        subparsers.add_parser(
+            'log', help='show benchmark logs',
+            description=jube2.help.HELP['log'],
+            formatter_class=argparse.RawDescriptionHelpFormatter)
+    subparser["log"].add_argument('dir', metavar="DIRECTORY", nargs='?',
+                                  help="benchmark directory",
+                                  default=".")
+    subparser["log"].add_argument('--commands', "-c", nargs='+',
+                                  help="show log for this command")
+    subparser["log"].add_argument("-i", "--id", type=int,
+                                  help="use benchmarks given by id",
+                                  nargs="+")
+    subparser["log"].set_defaults(func=show_log)
+
     return parser, subparser
 
 
@@ -619,7 +681,7 @@ def main():
         else:
             logger_config = "console"
 
-        jube2.util.setup_logging(logger_config)
+        jube2.log.setup_logging(logger_config)
 
         logger.debug("Using logger_config: '{}'".format(logger_config))
         logger.debug("Command: '{}'".format(" ".join(sys.argv)))
