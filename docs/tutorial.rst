@@ -29,7 +29,7 @@ To use the *JUBE* commandline tool the ``PHYTONPATH`` must contain the position 
 
 * You can move the *JUBE* package by hand to an existing Python package folder like ``site-packages``
 
-To use the *JUBE* commandline tool like a normal commandline command you can add it to the ``PATH``::
+To use the *JUBE* commandline tool like a normal commandline command you can add it to the ``PATH`` environment variable::
 
    >>> export PATH=$HOME/.local/bin:$PATH
    
@@ -50,7 +50,7 @@ The input file ``hello_world.xml``:
    :language: xml
    
 Every *JUBE* input file starts (after the general *XML* header line) with the root tag ``<jube>``.
-This root tag must be unique. XML does not allow multiple root tags.
+This root tag must be unique. *XML* does not allow multiple root tags.
 
 The first tag which contains benchmark specific information is ``<benchmark>``. ``hello_world`` is
 the benchmarkname which can be used to identify the benchmark (e.g. when there are multiple

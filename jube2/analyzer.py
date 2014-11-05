@@ -180,10 +180,15 @@ class Analyzer(object):
                 for filename in self._analyse[stepname]:
                     if step.alt_work_dir is not None:
                         file_path = step.alt_work_dir
+                        file_path = jube2.util.substitution(file_path,
+                                                            parameter)
+                        file_path = \
+                            os.path.expandvars(os.path.expanduser(file_path))
+                        file_path = os.path.join(self._benchmark.file_path_ref,
+                                                 file_path)
                     else:
                         file_path = workpackage.work_dir
                     file_path = os.path.join(file_path, filename)
-                    file_path = jube2.util.substitution(file_path, parameter)
 
                     # scan file
                     result_dict = Analyzer._analyse_file(file_path, pattern)
