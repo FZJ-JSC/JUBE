@@ -977,14 +977,14 @@ def _extract_files(etree_fileset):
         # Check if the filepath is relativly seen to working dir or the
         # position of the xml-input-file
         is_internal_ref = \
-            etree_file.get("rel_path_ref", default="external") == "internal"
+            etree_file.get("rel_path_ref", default="external").strip() == "internal"
         if etree_file.text is None:
             raise ValueError("Empty filelist in <{}> found."
                              .format(etree_file.tag))
         files = etree_file.text.split(seperator)
         if alt_name is None:
             # Use the original filenames
-            names = [os.path.basename(path) for path in files]
+            names = [os.path.basename(path.strip()) for path in files]
         else:
             # Use the new alternativ filenames
             names = [name.strip() for name in
