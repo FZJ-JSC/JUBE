@@ -5,7 +5,7 @@ CFLAGS = #CFLAGS#
 
 LIBOBJ = tools.o
 
-SIONCONFIG = ../../bin/sionconfig
+SIONCONFIG = sionconfig
 PREC=64
 
 SION_LDFLAGS_PAR = $(shell ${SIONCONFIG} --libs --mpi --${PREC})

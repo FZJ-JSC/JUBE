@@ -13,8 +13,6 @@
 
   <parameterset name="libs">
     <parameter name="load_module">module load</parameter>
-    <parameter name="load_sionlib">$load_module sionlib/1.5.2</parameter>
-    <parameter name="sionconfig">sionconfig</parameter>
   </parameterset>
 
   <substituteset name="compilesub">
@@ -27,6 +25,11 @@
   <parameterset name="executeset">
     <parameter name="starter">runjob</parameter>
     <parameter name="submit">llsubmit</parameter>
+    <parameter name="done_file">ready</parameter>
+    <parameter name="submit_script">juqueenSubmit.job</parameter>
+  </parameterset>  
+
+  <parameterset name="systemparameter">
     <parameter name="nodes" type="int">1</parameter>
     <parameter name="taskspernode" type="int">1</parameter>
     <parameter name="executable"></parameter>
@@ -34,14 +37,12 @@
     <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode</parameter>
     <parameter name="mail"></parameter>	
     <parameter name="timelimit">00:30:00</parameter>
-    <parameter name="submit_job_script">juqueenSubmit.job</parameter>
-    <parameter name="marker_file">ready</parameter>
     <parameter name="notification">always</parameter>
     <parameter name="connectivity">torus</parameter>
   </parameterset>
   
   <substituteset name="executesub">
-    <iofile in="${submit_job_script}.in" out="$submit_job_script" />
+    <iofile in="${submit_script}.in" out="$submit_script" />
     <sub source="#ENV#" dest="" />
     <sub source="#NOTIFY_EMAIL#" dest="$mail" />
     <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
@@ -56,13 +57,13 @@
     <sub source="#STDERRLOGFILE#" dest="stderr" />
     <sub source="#EXECUTABLE#" dest="$executable" />
     <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
-    <sub source="#MARKER_FILE#" dest="$marker_file" />
+    <sub source="#MARKER_FILE#" dest="$done_file" />
     <sub source="#NOTIFICATION#" dest="$notification" />
     <sub source="#BGCONNECTIVITY#" dest="$connectivity" />
   </substituteset>
 
   <fileset name="jobfiles">
-    <copy>${submit_job_script}.in</copy>
+    <copy>${submit_script}.in</copy>
   </fileset>
  
 </jube>

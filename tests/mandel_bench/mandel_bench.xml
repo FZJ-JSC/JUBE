@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
+
+  <include-path>
+     <path tag="juropa2">../../platform/juropa2</path>
+     <path tag="juropa2">juropa2</path>
+     <path tag="juqueen">juqueen</path>
+  </include-path>
+
   <benchmark name="mandel_bench" outpath="bench_run">
     <comment>Run Mandelbrot SIONlib benchmark</comment>
-    
+
     <fileset name="sources">
       <copy>src/*</copy>
     </fileset>
@@ -16,35 +23,37 @@
       <use from="platform.xml">libs</use>
       <use>compilesub</use>
       <use>sources</use>
-      <do>$load_sionlib; $make SIONCONFIG=$sionconfig</do>
+      <do>$load_module sionlib/1.5.1; $make</do>
     </step>
 
-    <parameterset name="args" init_with="mandel_bench_platform.xml">
+    <parameterset name="args">
       <parameter name="width" type="int">16384</parameter>
       <parameter name="height" type="int">$width</parameter>
       <parameter name="iterations" type="int">2048</parameter>
       <parameter name="type" type="int">0,1,2</parameter>
+      <parameter name="blocksize" type="int">16,64,128</parameter>
     </parameterset>
 
-    <parameterset name="executeset" init_with="mandel_bench_platform.xml">
+    <parameterset name="systemParameter" init_with="mandel_bench_platform.xml">
       <parameter name="executable">compile/mandelmpi</parameter>
       <parameter name="args_exec">-v -t $type -w $width -h $height -i $iterations -b $blocksize</parameter>
       <parameter name="mail"></parameter>
     </parameterset> 
 
     <step name="execute" depend="compile">
-      <use>executeset</use>
+      <use from="platform.xml">executeset</use>
+      <use>systemParameter</use>
       <use>args</use>
       <use from="platform.xml">executesub</use>
       <use from="platform.xml">jobfiles</use>
-      <do done_file="$marker_file">$submit $submit_job_script</do> 
+      <do done_file="$done_file">$submit $submit_script</do> 
     </step>
 
     <fileset name="sion_output">
       <link rel_path_ref="internal">execute/simple.sion</link>
     </fileset>
 
-    <step name="convert" depend="execute,compile">
+    <step name="convert" depend="execute,compile" tag="!no_convert">
       <use>sion_output</use>
       <do>compile/mandelseq</do>
       <do>convert mandelcol.ppm mandelcol.png</do>

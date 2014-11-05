@@ -2,7 +2,7 @@
 #MSUB -S /bin/bash
 #MSUB -N #BENCHNAME#
 #MSUB -M #NOTIFY_EMAIL#
-#MSUB -m #NOTIFICATION#
+#MSUB -m #NOTIFY_MODE#
 #MSUB -l nodes=#NODES#:ppn=#NCPUS#
 #MSUB -v tpt=#NTHREADS#
 #MSUB -l walltime=#TIME_LIMIT#

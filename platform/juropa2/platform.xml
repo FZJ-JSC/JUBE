@@ -30,7 +30,7 @@
   <parameterset name="executeset">
     <!-- Jobscript handling -->
     <parameter name="starter">mpiexec</parameter>
-    <parameter name="args_starter">-np $tasks --export=OMP_NUM_THREADS</parameter>
+    <parameter name="args_starter">-np $tasks --exports=OMP_NUM_THREADS</parameter>
     <parameter name="submit">msub</parameter>
     <parameter name="submit_script">submit.job</parameter>
     <parameter name="done_file">ready</parameter>       
