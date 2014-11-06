@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 import jube2.log
 import shutil
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 class Substituteset(object):
@@ -73,9 +73,9 @@ class Substituteset(object):
             outfile = jube2.util.substitution(outfile_name,
                                               parameter_dict)
 
-            logger.debug("  substitute {0} -> {1}".format(infile, outfile))
+            LOGGER.debug("  substitute {0} -> {1}".format(infile, outfile))
 
-            logger.debug("  substitute:\n" +
+            LOGGER.debug("  substitute:\n" +
                          jube2.util.text_table([("source", "dest")] +
                                                [(source, dest)
                                                 for source, dest in

@@ -21,7 +21,7 @@ import re
 import jube2.pattern
 import jube2.util
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 class Analyzer(object):
@@ -97,7 +97,7 @@ class Analyzer(object):
 
     def analyse(self):
         """Run the analyzer"""
-        logger.debug("Run analyser \"{}\"".format(self._name))
+        LOGGER.debug("Run analyser \"{}\"".format(self._name))
         if self._benchmark is None:
             raise RuntimeError("No benchmark found using analyser {}"
                                .format(self._name))
@@ -134,11 +134,11 @@ class Analyzer(object):
                                           patternset.derived_pattern_storage]),
                                   use_header_line=True, indent=9,
                                   align_right=False)
-        logger.debug(debugstr)
+        LOGGER.debug(debugstr)
 
         for stepname in self._analyse:
             result[stepname] = dict()
-            logger.debug("  analyse step \"{}\"".format(stepname))
+            LOGGER.debug("  analyse step \"{}\"".format(stepname))
             step = self._benchmark.steps[stepname]
             for workpackage in self._benchmark.workpackages[stepname]:
                 result[stepname][workpackage.id] = dict()
@@ -258,7 +258,7 @@ class Analyzer(object):
                         else:
                             new_match_list.append(match)
                     except ValueError:
-                        logger.warning(("\"{0}\" can't be represented " +
+                        LOGGER.warning(("\"{0}\" can't be represented " +
                                         "as a \"{1}\"")
                                        .format(match, pattern.content_type))
                 match_list = new_match_list
@@ -301,12 +301,10 @@ class Analyzer(object):
             info_str = "    scanned file \"{0}\" {1}pattern found:\n".format(
                 os.path.basename(file_path),
                 "" if len(result_dict) > 0 else "no ")
-            info_str += \
-                jube2.util.text_table([(name, str(value))
-                                       for name, value in result_dict.items()],
-                                      indent=9, align_right=True,
-                                      auto_linebreak=True)
-            logger.debug(info_str)
+            info_str += jube2.util.text_table(
+                [(_name, str(value)) for _name, value in result_dict.items()],
+                indent=9, align_right=True, auto_linebreak=True)
+            LOGGER.debug(info_str)
             file_handle.close()
         return result_dict
 

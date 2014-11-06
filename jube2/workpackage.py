@@ -21,7 +21,7 @@ import jube2.log
 import jube2.parameter
 import os
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 class Workpackage(object):
@@ -295,7 +295,7 @@ class Workpackage(object):
                                       str(parent.id) + ")"
                                       for parent in self._parents])))
         stepstr = "----- {} -----".format(stepstr)
-        logger.debug(stepstr)
+        LOGGER.debug(stepstr)
 
         started_before = self.started
         # --- Create directory structure ---
@@ -343,7 +343,7 @@ class Workpackage(object):
                                                   parameter.items()]),
                                           use_header_line=True, indent=9,
                                           align_right=False)
-        logger.debug(debugstr)
+        LOGGER.debug(debugstr)
 
         # --- Create alternativ working dir ---
         alt_work_dir = self._step.alt_work_dir
@@ -352,7 +352,7 @@ class Workpackage(object):
             alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
             alt_work_dir = os.path.join(self._benchmark.file_path_ref,
                                         alt_work_dir)
-            logger.debug("  switch to alternativ work dir: \"{}\""
+            LOGGER.debug("  switch to alternativ work dir: \"{}\""
                          .format(alt_work_dir))
             if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
                 os.makedirs(alt_work_dir)
@@ -420,7 +420,7 @@ class Workpackage(object):
                             self._step.shared_folder_path(
                                 self._benchmark.bench_dir, shared_parameter)
 
-                        logger.debug("====== {0} - shared ======"
+                        LOGGER.debug("====== {0} - shared ======"
                                      .format(self._step.name))
 
                         continue_op = operation.execute(
@@ -440,7 +440,7 @@ class Workpackage(object):
                                 workpackage.queued = True
                                 self._benchmark.work_list.put(workpackage)
                         if continue_op:
-                            logger.debug(stepstr)
+                            LOGGER.debug(stepstr)
                 else:
                     continue_op = operation.execute(
                         parameter_dict=parameter, work_dir=work_dir,

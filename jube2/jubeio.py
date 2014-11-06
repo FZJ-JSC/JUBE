@@ -37,7 +37,7 @@ import jube2.log
 import collections
 
 INCLUDE_PATH = list()
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 def benchmarks_from_xml(filename, tags=None):
@@ -47,17 +47,17 @@ def benchmarks_from_xml(filename, tags=None):
     in the corresponding XML file.
     """
     benchmarks = dict()
-    logger.debug("Parsing {}".format(filename))
+    LOGGER.debug("Parsing {}".format(filename))
 
     if not os.path.isfile(filename):
         raise IOError("Benchmark configuration file not found: \"{}\""
                       .format(filename))
     try:
         tree = ET.parse(filename)
-    except ET.ParseError as pe:
+    except ET.ParseError as parseerror:
         raise ET.ParseError(("XML parse error in \"{0}\": {1}\n" +
                              "XML is not valid, use validation tool.")
-                            .format(filename, str(pe)))
+                            .format(filename, str(parseerror)))
 
     # Check compatible terminal encoding: In some cases, the terminal env.
     # only allow ascii based encoding, print and filesystem operation will
@@ -75,10 +75,10 @@ def benchmarks_from_xml(filename, tags=None):
                   "substituteset", "fileset", "include", "patternset"]
 
     # Preprocess xml-tree (using tags-attribute)
-    logger.debug("  Remove invalid tags using tags-attribute")
+    LOGGER.debug("  Remove invalid tags using tags-attribute")
     if tags is None:
         tags = set()
-    logger.debug("    Available tags: {}"
+    LOGGER.debug("    Available tags: {}"
                  .format(jube2.conf.DEFAULT_SEPARATOR.join(tags)))
     _remove_invalid_tags(tree.getroot(), tags)
 
@@ -101,7 +101,7 @@ def benchmarks_from_xml(filename, tags=None):
         _extract_include_path(include_path[0])
 
     # Preprocess xml-tree
-    logger.debug("  Preprocess xml tree")
+    LOGGER.debug("  Preprocess xml tree")
     _preprocessor(tree.getroot())
 
     # Add file tags and rerun removing invalid tags
@@ -154,10 +154,10 @@ def _remove_invalid_tags(etree, tags=None):
                 elif (len(tag) > 0) and (tag[0] != "!"):
                     valid_tags.add(tag)
             # Tag selection
-            if ((len(valid_tags) > 0) and
-                (len(valid_tags.intersection(tags)) == 0)) or \
-               ((len(invalid_tags) > 0) and
-                    (len(invalid_tags.intersection(tags)) > 0)):
+            if (((len(valid_tags) > 0) and
+                 (len(valid_tags.intersection(tags)) == 0)) or
+                ((len(invalid_tags) > 0) and
+                 (len(invalid_tags.intersection(tags)) > 0))):
                 etree.remove(child)
                 continue
         _remove_invalid_tags(child, tags)
@@ -200,7 +200,7 @@ def _preprocessor(etree):
 
 def _benchmark_preprocessor(benchmark_etree):
     """Preprocess the xml-tree of given benchmark."""
-    logger.debug("  Preprocess benchmark xml tree")
+    LOGGER.debug("  Preprocess benchmark xml tree")
     sets = dict()
     # Search for <use from=""></use> and load external set
     uses = benchmark_etree.findall(".//use")
@@ -250,7 +250,7 @@ def _find_include_file(filename):
 
 def _find_set_type(filename, name):
     """Search for the set-type inside given file"""
-    logger.debug(
+    LOGGER.debug(
         "    Searching for type of \"{0}\" in {1}".format(name, filename))
     file_path = _find_include_file(filename)
     etree = ET.parse(file_path)
@@ -298,7 +298,7 @@ def benchmark_info_from_xml(filename):
 
 def analyse_result_from_xml(filename):
     """Read existing analyse out of xml-file"""
-    logger.debug("Parsing {}".format(filename))
+    LOGGER.debug("Parsing {}".format(filename))
     tree = ET.parse(filename)
     analyse_result = dict()
     analyzer = tree.findall(".//analyzer")
@@ -339,7 +339,7 @@ def workpackages_from_xml(filename, benchmark):
     # parents_tmp: Dict workpackage_id => list of parent_workpackage_ids
     parents_tmp = dict()
     work_list = queue.Queue()
-    logger.debug("Parsing {}".format(filename))
+    LOGGER.debug("Parsing {}".format(filename))
     if not os.path.isfile(filename):
         raise IOError("Workpackage configuration file not found: \"{}\""
                       .format(filename))
@@ -431,7 +431,7 @@ def _extract_selection(selection_etree):
 
     Return names of benchmarks ([only,...],[not,...])
     """
-    logger.debug("  Parsing <selection>")
+    LOGGER.debug("  Parsing <selection>")
     valid_tags = ["only", "not", "tag"]
     only_bench = list()
     not_bench = list()
@@ -454,7 +454,7 @@ def _extract_selection(selection_etree):
 
 def _extract_include_path(include_path_etree):
     """Extract include-path pathes from etree"""
-    logger.debug("Parsing <include-path>")
+    LOGGER.debug("Parsing <include-path>")
     valid_tags = ["path"]
     for element in include_path_etree:
         _check_tag(element, valid_tags)
@@ -572,7 +572,7 @@ def _extract_step(etree_step):
     valid_tags = ["use", "do"]
 
     name = _attribute_from_element(etree_step, "name").strip()
-    logger.debug("  Parsing <step name=\"{}\">".format(name))
+    LOGGER.debug("  Parsing <step name=\"{}\">".format(name))
     tmp = etree_step.get("depend", "").strip()
     iterations = int(etree_step.get("iterations", "1").strip())
     alt_work_dir = etree_step.get("work_dir")
@@ -584,8 +584,8 @@ def _extract_step(etree_step):
         if shared_name == "":
             raise ValueError("Empty \"shared\" attribute in " +
                              "<step> found.")
-    depend = set(filter(bool, [val.strip() for val in
-                               tmp.split(jube2.conf.DEFAULT_SEPARATOR)]))
+    depend = set(val.strip() for val in
+                 tmp.split(jube2.util.DEFAULT_SEPARATOR) if val.strip())
 
     step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name)
     for element in etree_step:
@@ -644,7 +644,7 @@ def _extract_analyzer(etree_analyzer):
     valid_tags = ["use", "analyse"]
     name = _attribute_from_element(etree_analyzer, "name").strip()
     analyzer = jube2.analyzer.Analyzer(name)
-    logger.debug("  Parsing <analyzer name=\"{}\">".format(name))
+    LOGGER.debug("  Parsing <analyzer name=\"{}\">".format(name))
     for element in etree_analyzer:
         _check_tag(element, valid_tags)
         if element.tag == "analyse":
@@ -735,7 +735,7 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
     """Load a parameter-/file-/substitutionset from a given file"""
     if search_name is None:
         search_name = name
-    logger.debug("    Searching for <{0} name=\"{1}\"> in {2}"
+    LOGGER.debug("    Searching for <{0} name=\"{1}\"> in {2}"
                  .format(set_type, search_name, filename))
     file_path = _find_include_file(filename)
     etree = ET.parse(file_path)
@@ -811,7 +811,7 @@ def _extract_parametersets(etree, tags=None):
         if name == "":
             raise ValueError("Empty \"name\" attribute in " +
                              "<parameterset> found.")
-        logger.debug("  Parsing <parameterset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <parameterset name=\"{}\">".format(name))
         init_with = element.get("init_with")
         if init_with is not None:
             parts = init_with.strip().split(":")
@@ -879,7 +879,7 @@ def _extract_patternsets(etree, tags=None):
         if name == "":
             raise ValueError("Empty \"name\" attribute in " +
                              "<patternset> found.")
-        logger.debug("  Parsing <patternset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <patternset name=\"{}\">".format(name))
         init_with = element.get("init_with")
         if init_with is not None:
             parts = init_with.strip().split(":")
@@ -944,7 +944,7 @@ def _extract_filesets(etree, tags=None):
         name = _attribute_from_element(element, "name").strip()
         if name == "":
             raise ValueError("Empty \"name\" attribute in <fileset> found.")
-        logger.debug("  Parsing <fileset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <fileset name=\"{}\">".format(name))
         init_with = element.get("init_with")
         filelist = _extract_files(element)
         if name in filesets:
@@ -1019,7 +1019,7 @@ def _extract_substitutesets(etree, tags=None):
         if name == "":
             raise ValueError("Empty \"name\" attribute in <substituteset> " +
                              "found.")
-        logger.debug("  Parsing <substituteset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <substituteset name=\"{}\">".format(name))
         init_with = element.get("init_with")
         files, subs = _extract_subs(element)
         if name in substitutesets:

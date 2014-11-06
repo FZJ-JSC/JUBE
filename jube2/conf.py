@@ -34,7 +34,7 @@ ANALYSE_FILENAME = "analyse.xml"
 RESULT_DIRNAME = "result"
 
 # logging
-LOGFILE_NAME = "jube-parse.log"
+DEFAULT_LOGFILE_NAME = "jube-parse.log"
 LOGFILE_DEBUG_NAME = "jube-debug.log"
 LOGFILE_MODE = "a"
 LOGFILE_DEBUG_MODE = "w"

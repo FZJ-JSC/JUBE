@@ -30,7 +30,7 @@ import jube2.util
 import jube2.conf
 import jube2.log
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 class Benchmark(object):
@@ -307,7 +307,7 @@ class Benchmark(object):
         """Run analyser"""
 
         if show_info:
-            logger.info(">>> Start analyse")
+            LOGGER.info(">>> Start analyse")
 
         for analyser in self._analyzer.values():
             analyser.analyse()
@@ -315,7 +315,7 @@ class Benchmark(object):
             self.write_analyse_data(os.path.join(self.bench_dir,
                                                  jube2.conf.ANALYSE_FILENAME))
         if show_info:
-            logger.info(">>> Analyse finished")
+            LOGGER.info(">>> Analyse finished")
 
     def create_result(self, only=None):
         """Show benchmark result"""
@@ -332,8 +332,8 @@ class Benchmark(object):
                 if (not os.path.exists(result_dir)) and \
                    (not jube2.conf.DEBUG_MODE):
                     os.makedirs(result_dir)
-                logger.info(result_str)
-                logger.info("\n")
+                LOGGER.info(result_str)
+                LOGGER.info("\n")
                 if not jube2.conf.DEBUG_MODE:
                     file_handle = \
                         open(os.path.join(result_dir,
@@ -345,7 +345,7 @@ class Benchmark(object):
                                   new_results, new_cwd):
         """Update analyzer and result data"""
         if os.path.exists(self.bench_dir):
-            logger.debug("Update analyse and result data")
+            LOGGER.debug("Update analyse and result data")
             self._patternsets = new_patternsets
             old_analyzer = self._analyzer
             self._analyzer = new_analyzer
@@ -390,7 +390,7 @@ class Benchmark(object):
         """Create all workpackages for given step and create graph
         structure."""
         # Create local parameterset
-        logger.debug("Create workpackages for step {}".format(step.name))
+        LOGGER.debug("Create workpackages for step {}".format(step.name))
         local_parameterset = jube2.parameter.Parameterset()
         for parameterset_name in parameterset_names:
             # The parametersets in a single step must be compatible
@@ -484,7 +484,7 @@ class Benchmark(object):
                             workpackage.queued = True
                             self._work_list.put(workpackage)
             else:
-                logger.debug("Incompatible parameterset combination found " +
+                LOGGER.debug("Incompatible parameterset combination found " +
                              "between current and parent steps.")
 
     def new_run(self):
@@ -517,7 +517,7 @@ class Benchmark(object):
             title += " ---DEBUG_MODE---"
         title += "\n\n{}".format(self._comment)
         infostr = jube2.util.text_boxed(title)
-        logger.info(infostr)
+        LOGGER.info(infostr)
 
         if not jube2.conf.HIDE_ANIMATIONS:
             print("\nRunning workpackages (#=done, 0=wait):")
@@ -544,19 +544,19 @@ class Benchmark(object):
         print("\n")
 
         status_data = [("stepname", "all", "open", "wait", "done")]
-        status_data += [(stepname, str(status["all"]), str(status["open"]),
-                         str(status["wait"]), str(status["done"]))
-                        for stepname, status in
+        status_data += [(stepname, str(_status["all"]), str(_status["open"]),
+                         str(_status["wait"]), str(_status["done"]))
+                        for stepname, _status in
                         self.workpackage_status.items()]
-        logger.info(jube2.util.text_table(status_data, use_header_line=True,
+        LOGGER.info(jube2.util.text_table(status_data, use_header_line=True,
                                           indent=2))
 
-        logger.info("\n>>>> Benchmark information and " +
+        LOGGER.info("\n>>>> Benchmark information and " +
                     "further useful commands:")
-        logger.info(">>>>       id: {0}".format(self._id))
+        LOGGER.info(">>>>       id: {0}".format(self._id))
         path = os.path.relpath(os.path.join(self._cwd, self._outpath),
                                self._org_cwd)
-        logger.info(">>>>      dir: {0}".format(path))
+        LOGGER.info(">>>>      dir: {0}".format(path))
 
         # Store workpackage information
         self.write_workpackage_information(
@@ -564,17 +564,17 @@ class Benchmark(object):
 
         status = self.benchmark_status
         if status["all"] != status["done"]:
-            logger.info((">>>> continue: jube continue {0} " +
+            LOGGER.info((">>>> continue: jube continue {0} " +
                          "--id {1}").format(path, self._id))
-        logger.info((">>>>  analyse: jube analyse {0} " +
+        LOGGER.info((">>>>  analyse: jube analyse {0} " +
                      "--id {1}").format(path, self._id))
-        logger.info((">>>>   result: jube result {0} " +
+        LOGGER.info((">>>>   result: jube result {0} " +
                      "--id {1}").format(path, self._id))
-        logger.info((">>>>     info: jube info {0} " +
+        LOGGER.info((">>>>     info: jube info {0} " +
                      "--id {1}").format(path, self._id))
-        logger.info((">>>>      log: jube log {0} " +
+        LOGGER.info((">>>>      log: jube log {0} " +
                      "--id {1}").format(path, self._id))
-        logger.info(jube2.util.text_line() + "\n")
+        LOGGER.info(jube2.util.text_line() + "\n")
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""

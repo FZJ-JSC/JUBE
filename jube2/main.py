@@ -28,7 +28,7 @@ import re
 import shutil
 import sys
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 def continue_benchmarks(args):
@@ -342,7 +342,7 @@ def _analyse_benchmark(benchmark_folder, args):
     benchmark = _load_existing_benchmark(benchmark_folder, load_analyse=False)
 
     # Update benchmark data
-    _update_benchmark_analyse_and_result(args, benchmark, benchmark_folder)
+    _update_analyse_and_result(args, benchmark, benchmark_folder)
 
     # Store current working dir
     cwd = os.getenv("PWD")
@@ -353,12 +353,12 @@ def _analyse_benchmark(benchmark_folder, args):
     # Change logfile
     jube2.log.change_logfile_name("analyse.log")
 
-    logger.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
+    LOGGER.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
     benchmark.analyse()
-    logger.info(">>> Analyse data storage: {}".format(os.path.join(
+    LOGGER.info(">>> Analyse data storage: {}".format(os.path.join(
         benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
-    logger.info(jube2.util.text_line())
+    LOGGER.info(jube2.util.text_line())
     # Restore current working dir
     os.chdir(cwd)
 
@@ -368,7 +368,7 @@ def _benchmark_result(benchmark_folder, args):
     benchmark = _load_existing_benchmark(benchmark_folder)
 
     # Update benchmark data
-    _update_benchmark_analyse_and_result(args, benchmark, benchmark_folder)
+    _update_analyse_and_result(args, benchmark, benchmark_folder)
 
     # Store current working dir
     cwd = os.getenv("PWD")
@@ -390,7 +390,7 @@ def _benchmark_result(benchmark_folder, args):
     os.chdir(cwd)
 
 
-def _update_benchmark_analyse_and_result(args, benchmark, benchmark_folder):
+def _update_analyse_and_result(args, benchmark, benchmark_folder):
     """Update analyse and result data in given benchmark by using the
     given update file"""
     if args.update is not None:
@@ -682,8 +682,8 @@ def main():
 
         jube2.log.setup_logging(logger_config)
 
-        logger.debug("Using logger_config: '{}'".format(logger_config))
-        logger.debug("Command: '{}'".format(" ".join(sys.argv)))
+        LOGGER.debug("Using logger_config: '{}'".format(logger_config))
+        LOGGER.debug("Command: '{}'".format(" ".join(sys.argv)))
 
         if args.devel:
             args.func(args)
@@ -692,7 +692,7 @@ def main():
                 args.func(args)
             except Exception as exeption:
                 # Catch all possible Exceptions
-                logger.error("\n" + str(exeption))
+                LOGGER.error("\n" + str(exeption))
 
 if __name__ == "__main__":
     main()

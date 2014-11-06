@@ -21,7 +21,7 @@ import jube2.util
 import jube2.conf
 import jube2.log
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 class Step(object):
@@ -227,7 +227,7 @@ class Operation(object):
                 stderr = open(os.path.join(work_dir, stderr_filename), "a")
 
             # Execute "do"
-            logger.debug(">>> {}".format(do))
+            LOGGER.debug(">>> {}".format(do))
             if not jube2.conf.DEBUG_MODE:
                 try:
                     sub = subprocess.Popen(do, cwd=work_dir, stdout=stdout,
@@ -257,10 +257,10 @@ class Operation(object):
             async_filename = \
                 os.path.expandvars(os.path.expanduser(async_filename))
             if not os.path.exists(os.path.join(work_dir, async_filename)):
-                logger.debug("Waiting for file \"{}\" ..."
+                LOGGER.debug("Waiting for file \"{}\" ..."
                              .format(async_filename))
                 if jube2.conf.DEBUG_MODE:
-                    logger.debug("  skip waiting")
+                    LOGGER.debug("  skip waiting")
                     return True
                 else:
                     return False

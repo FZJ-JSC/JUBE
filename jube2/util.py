@@ -23,7 +23,7 @@ import sys
 import textwrap
 import jube2.conf
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 def get_current_id(base_dir):
@@ -31,7 +31,7 @@ def get_current_id(base_dir):
     try:
         filelist = sorted(os.listdir(base_dir))
     except OSError as error:
-        logger.warning(error)
+        LOGGER.warning(error)
         filelist = list()
 
     maxi = -1
@@ -189,7 +189,7 @@ def convert_type(value_type, value, stop=True):
                 result_value = int()
             elif value_type == "float":
                 result_value = float()
-            logger.warning(("\"{0}\" can't be represented as a \"{1}\"")
+            LOGGER.warning(("\"{0}\" can't be represented as a \"{1}\"")
                            .format(value, value_type))
     return result_value
 
@@ -260,7 +260,7 @@ def resolve_depend(depend_dict):
                        format(",".join(unresolved_steps)) + "\n" +
                        "unresolved dependencies: {}".
                        format(",".join(unresolved_dependencies)))
-            logger.warning(infostr)
+            LOGGER.warning(infostr)
 
         return (possible, remain)
 

@@ -22,7 +22,7 @@ import jube2.conf
 import jube2.log
 import glob
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 class File(object):
@@ -90,7 +90,7 @@ class Link(File):
             work_dir = alt_work_dir
         target_path = os.path.relpath(path, work_dir)
         link_path = os.path.join(work_dir, name)
-        logger.debug("  link \"{0}\" <- \"{1}\"".format(path, name))
+        LOGGER.debug("  link \"{0}\" <- \"{1}\"".format(path, name))
         if not jube2.conf.DEBUG_MODE and not os.path.exists(link_path):
             os.symlink(target_path, link_path)
 
@@ -128,15 +128,15 @@ class Copy(File):
             work_dir = alt_work_dir
         pathes = glob.glob(pathname)
         if len(pathes) == 0:
-            logger.debug("no files found using \"{}\"".format(pathname))
+            LOGGER.debug("no files found using \"{}\"".format(pathname))
         for path in pathes:
             if len(pathes) > 1:
                 file_path = os.path.join(work_dir, os.path.basename(path))
-                logger.debug("  copy \"{0}\" -> \"{1}\""
+                LOGGER.debug("  copy \"{0}\" -> \"{1}\""
                              .format(path, os.path.basename(path)))
             else:
                 file_path = os.path.join(work_dir, name)
-                logger.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
+                LOGGER.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
             if not jube2.conf.DEBUG_MODE and not os.path.exists(file_path):
                 if os.path.isdir(path):
                     shutil.copytree(path, file_path, symlinks=True)

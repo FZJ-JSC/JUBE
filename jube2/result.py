@@ -23,7 +23,7 @@ import operator
 import collections
 import os
 
-logger = jube2.log.getLogger(__name__)
+LOGGER = jube2.log.get_logger(__name__)
 
 
 class Result(object):
@@ -80,7 +80,7 @@ class Result(object):
             analyse = analyzer.analyse_result
             # Ignore empty analyse results
             if analyse is None:
-                logger.warning(("No data found for analyzer \"{0}\". "
+                LOGGER.warning(("No data found for analyzer \"{0}\". "
                                 "Run analyse step first please.")
                                .format(analyzer_name))
                 continue
@@ -208,7 +208,7 @@ class Table(Result):
 
         # Sort the resultset
         if len(self._sort_names) > 0:
-            logger.debug("sort using: {0}"
+            LOGGER.debug("sort using: {0}"
                          .format(jube2.conf.DEFAULT_SEPARATOR.join(
                              self._sort_names)))
             sort_data = sorted(sort_data,

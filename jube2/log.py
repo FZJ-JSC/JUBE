@@ -36,13 +36,13 @@ class JubeLogger(logging.getLoggerClass()):
 
 logging.setLoggerClass(JubeLogger)
 
-logging_mode = jube2.conf.DEFAULT_LOGGING_MODE
-logfile_name = jube2.conf.LOGFILE_NAME
+LOGGING_MODE = jube2.conf.DEFAULT_LOGGING_MODE
+LOGFILE_NAME = jube2.conf.DEFAULT_LOGFILE_NAME
 
 
-def getLogger(name=None):
+def get_logger(name=None):
     """Return logger given by name"""
-    return logging.getLogger(__name__)
+    return logging.getLogger(name)
 
 
 def setup_logging(mode=None, filename=None):
@@ -59,7 +59,7 @@ def setup_logging(mode=None, filename=None):
     before new ones are added.
 
     """
-    global logging_mode, logfile_name
+    global LOGGING_MODE, LOGFILE_NAME
 
     # Use debug file name and debug file mode when in debug mode
     if jube2.conf.DEBUG_MODE:
@@ -70,17 +70,17 @@ def setup_logging(mode=None, filename=None):
         filemode = jube2.conf.LOGFILE_MODE
 
     if not mode:
-        mode = logging_mode
+        mode = LOGGING_MODE
     else:
-        logging_mode = mode
+        LOGGING_MODE = mode
     if not filename:
-        filename = logfile_name
+        filename = LOGFILE_NAME
     else:
-        logfile_name = filename
+        LOGFILE_NAME = filename
 
     # this is needed to make the other handlers accept on low priority
     # events
-    _logger = logging.getLogger("jube2")
+    _logger = get_logger("jube2")
     _logger.setLevel(logging.DEBUG)
 
     # list is needed since we remove from the list we just iterate
