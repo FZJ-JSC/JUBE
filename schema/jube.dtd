@@ -50,12 +50,14 @@
 <!ELEMENT link (#PCDATA)>
 <!ATTLIST link          directory CDATA #IMPLIED
                         name CDATA #IMPLIED
+                        separator CDATA #IMPLIED
                         rel_path_ref (internal|external) #IMPLIED
                         file_path_ref CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT copy (#PCDATA)>
 <!ATTLIST copy          directory CDATA #IMPLIED
                         name CDATA #IMPLIED
+                        separator CDATA #IMPLIED
                         rel_path_ref (internal|external) #IMPLIED
                         file_path_ref CDATA #IMPLIED
                         tag CDATA #IMPLIED>

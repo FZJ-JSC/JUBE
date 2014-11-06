@@ -105,7 +105,7 @@ This benchmark will produce the follwing output:
    A simple hello world
    ######################################################################
 
-   Running workpackages:
+   Running workpackages (#=done, 0=wait):
    ############################################################ (  1/  1)
    
       stepname | all | open | wait | done
@@ -121,7 +121,7 @@ This benchmark will produce the follwing output:
    ######################################################################
    
 You see, that inside the benchmark execution there was a single step ``say_hello``
-which run one shell command ``echo Hello World``.
+which run one shell command ``echo $hello_str`` which will be expanded to ``echo Hello World``.
 
 The **id** is (in addition to the benchmark directory) an important number. Every benchmark run will
 get a new unique **id** inside the benchmark directory.

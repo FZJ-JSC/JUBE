@@ -89,6 +89,7 @@ attlist.link &=
   attribute name { text }?,
   attribute rel_path_ref { "internal" | "external" }?,
   attribute file_path_ref { text }?,
+  attribute separator { text }?,
   attribute tag { text }?
 copy = element copy { attlist.copy, text }
 attlist.copy &=
@@ -96,6 +97,7 @@ attlist.copy &=
   attribute name { text }?,
   attribute rel_path_ref { "internal" | "external" }?,
   attribute file_path_ref { text }?,
+  attribute separator { text }?,
   attribute tag { text }?
 patternset =
   element patternset { attlist.patternset, (pattern | \include)* }

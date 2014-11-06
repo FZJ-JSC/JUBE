@@ -688,7 +688,7 @@ def _extract_table(etree_table):
     """Extract a table from etree"""
     name = _attribute_from_element(etree_table, "name").strip()
     separator = \
-        etree_table.get("separator", jube2.util.DEFAULT_SEPARATOR).strip()
+        etree_table.get("separator", jube2.util.DEFAULT_SEPARATOR)
     style = etree_table.get("style", "csv").strip()
     if style not in ["csv", "pretty"]:
         raise ValueError("Not allowed style-type \"{0}\" "
@@ -842,7 +842,7 @@ def _extract_parameters(etree_parameterset):
         name = _attribute_from_element(param, "name").strip()
         if name == "":
             raise ValueError("Empty \"name\" attribute in <parameter> found.")
-        seperator = param.get("separator",
+        separator = param.get("separator",
                               default=jube2.util.DEFAULT_SEPARATOR)
         parameter_type = param.get("type", default="string").strip()
         parameter_mode = param.get("mode", default="text").strip()
@@ -861,7 +861,7 @@ def _extract_parameters(etree_parameterset):
         if selected_value is not None:
             selected_value = selected_value.strip()
         parameter = \
-            jube2.parameter.Parameter.create_parameter(name, value, seperator,
+            jube2.parameter.Parameter.create_parameter(name, value, separator,
                                                        parameter_type,
                                                        selected_value,
                                                        parameter_mode,
@@ -970,7 +970,7 @@ def _extract_files(etree_fileset):
     valid_tags = ["copy", "link"]
     for etree_file in etree_fileset:
         _check_tag(etree_file, valid_tags)
-        seperator = jube2.util.DEFAULT_SEPARATOR
+        separator = etree_file.get("separator",jube2.util.DEFAULT_SEPARATOR)
         directory = etree_file.get("directory", default="").strip()
         file_path_ref = etree_file.get("file_path_ref")
         alt_name = etree_file.get("name")
@@ -982,7 +982,7 @@ def _extract_files(etree_fileset):
         if etree_file.text is None:
             raise ValueError("Empty filelist in <{}> found."
                              .format(etree_file.tag))
-        files = etree_file.text.split(seperator)
+        files = etree_file.text.split(separator)
         if alt_name is None:
             # Use the original filenames
             names = [os.path.basename(path.strip()) for path in files]
