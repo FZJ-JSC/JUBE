@@ -19,6 +19,7 @@ import shutil
 import xml.etree.ElementTree as ET
 import jube2.util
 import jube2.conf
+import jube2.step
 import jube2.log
 import glob
 
@@ -153,3 +154,30 @@ class Copy(File):
         if self._is_internal_ref:
             copy_etree.attrib["rel_path_ref"] = "internal"
         return copy_etree
+
+
+class Prepare(jube2.step.Operation):
+
+    """Prepare the workpackage work directory"""
+
+    def __init__(self, cmd, stdout_filename=None, stderr_filename=None):
+        jube2.step.Operation.__init__(self,
+                                      do=cmd,
+                                      stdout_filename=stdout_filename,
+                                      stderr_filename=stderr_filename)
+
+    def execute(self, parameter_dict, work_dir, export_parameter_dict=None):
+        """Execute the prepare command"""
+        jube2.step.Operation.execute(
+            self, parameter_dict=parameter_dict, work_dir=work_dir,
+            export_parameter_dict=export_parameter_dict)
+
+    def etree_repr(self):
+        """Return etree object representation"""
+        do_etree = ET.Element("prepare")
+        do_etree.text = self._do
+        if self._stdout_filename is not None:
+            do_etree.attrib["stdout"] = self._stdout_filename
+        if self._stderr_filename is not None:
+            do_etree.attrib["stderr"] = self._stderr_filename
+        return do_etree

@@ -17,6 +17,7 @@ from __future__ import (print_function,
 import xml.etree.ElementTree as ET
 import jube2.util
 import jube2.conf
+import jube2.fileset
 import jube2.log
 import jube2.parameter
 import os
@@ -364,11 +365,18 @@ class Workpackage(object):
                 self._step.get_used_sets(self._benchmark.filesets)
             for name in fileset_names:
                 for file_handle in self._benchmark.filesets[name]:
-                    file_handle.create(
-                        work_dir=self.work_dir,
-                        parameter_dict=parameter,
-                        alt_work_dir=alt_work_dir,
-                        file_path_ref=self._benchmark.file_path_ref)
+                    if type(file_handle) is jube2.fileset.Prepare:
+                        file_handle.execute(
+                            parameter_dict=parameter,
+                            work_dir=alt_work_dir if alt_work_dir
+                            is not None else self.work_dir,
+                            export_parameter_dict=export_parameter)
+                    else:
+                        file_handle.create(
+                            work_dir=self.work_dir,
+                            parameter_dict=parameter,
+                            alt_work_dir=alt_work_dir,
+                            file_path_ref=self._benchmark.file_path_ref)
 
         work_dir = self.work_dir
         if alt_work_dir is not None:

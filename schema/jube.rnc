@@ -78,10 +78,15 @@ attlist.sub &=
   attribute source { text },
   attribute dest { text },
   attribute tag { text }?
-fileset = element fileset { attlist.fileset, (copy | link | \include)* }
+fileset = element fileset { attlist.fileset, (copy | link | prepare | \include)* }
 attlist.fileset &=
   attribute name { text },
   attribute init_with { text }?,
+  attribute tag { text }?
+prepare = element prepare { attlist.prepare, text }
+attlist.prepare &=
+  attribute stdout { text }?,
+  attribute stderr { text }?,
   attribute tag { text }?
 link = element link { attlist.link, text }
 attlist.link &=

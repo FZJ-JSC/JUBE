@@ -585,7 +585,7 @@ def _extract_step(etree_step):
             raise ValueError("Empty \"shared\" attribute in " +
                              "<step> found.")
     depend = set(val.strip() for val in
-                 tmp.split(jube2.util.DEFAULT_SEPARATOR) if val.strip())
+                 tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
     step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name)
     for element in etree_step:
@@ -968,43 +968,61 @@ def _extract_filesets(etree, tags=None):
 def _extract_files(etree_fileset):
     """Return filelist from fileset-etree"""
     filelist = list()
-    valid_tags = ["copy", "link"]
+    valid_tags = ["copy", "link", "prepare"]
     for etree_file in etree_fileset:
         _check_tag(etree_file, valid_tags)
-        separator = etree_file.get("separator",jube2.conf.DEFAULT_SEPARATOR)
-        directory = etree_file.get("directory", default="").strip()
-        file_path_ref = etree_file.get("file_path_ref")
-        alt_name = etree_file.get("name")
-        # Check if the filepath is relativly seen to working dir or the
-        # position of the xml-input-file
-        is_internal_ref = \
-            etree_file.get(
-                "rel_path_ref", default="external").strip() == "internal"
-        if etree_file.text is None:
-            raise ValueError("Empty filelist in <{}> found."
-                             .format(etree_file.tag))
-        files = etree_file.text.split(separator)
-        if alt_name is None:
-            # Use the original filenames
-            names = [os.path.basename(path.strip()) for path in files]
-        else:
-            # Use the new alternativ filenames
-            names = [name.strip() for name in
-                     alt_name.split(jube2.conf.DEFAULT_SEPARATOR)]
-        if len(names) != len(files):
-            raise ValueError("Namelist and filelist must have same " +
-                             "length in <{}>".format(etree_file.tag))
-        for i, file_path in enumerate(files):
-            path = os.path.join(directory, file_path.strip())
-            if etree_file.tag == "copy":
-                file_obj = jube2.fileset.Copy(path, names[i], is_internal_ref)
-            elif etree_file.tag == "link":
-                file_obj = jube2.fileset.Link(path, names[i], is_internal_ref)
-            if file_path_ref is not None:
-                file_obj.file_path_ref = \
-                    os.path.expandvars(os.path.expanduser(
-                        file_path_ref.strip()))
-            filelist.append(file_obj)
+        if etree_file.tag in ["copy", "link"]:
+            separator = etree_file.get(
+                "separator", jube2.conf.DEFAULT_SEPARATOR)
+            directory = etree_file.get("directory", default="").strip()
+            file_path_ref = etree_file.get("file_path_ref")
+            alt_name = etree_file.get("name")
+            # Check if the filepath is relativly seen to working dir or the
+            # position of the xml-input-file
+            is_internal_ref = \
+                etree_file.get(
+                    "rel_path_ref", default="external").strip() == "internal"
+            if etree_file.text is None:
+                raise ValueError("Empty filelist in <{}> found."
+                                 .format(etree_file.tag))
+            files = etree_file.text.split(separator)
+            if alt_name is None:
+                # Use the original filenames
+                names = [os.path.basename(path.strip()) for path in files]
+            else:
+                # Use the new alternativ filenames
+                names = [name.strip() for name in
+                         alt_name.split(jube2.conf.DEFAULT_SEPARATOR)]
+            if len(names) != len(files):
+                raise ValueError("Namelist and filelist must have same " +
+                                 "length in <{}>".format(etree_file.tag))
+            for i, file_path in enumerate(files):
+                path = os.path.join(directory, file_path.strip())
+                if etree_file.tag == "copy":
+                    file_obj = jube2.fileset.Copy(
+                        path, names[i], is_internal_ref)
+                elif etree_file.tag == "link":
+                    file_obj = jube2.fileset.Link(
+                        path, names[i], is_internal_ref)
+                if file_path_ref is not None:
+                    file_obj.file_path_ref = \
+                        os.path.expandvars(os.path.expanduser(
+                            file_path_ref.strip()))
+                filelist.append(file_obj)
+        elif etree_file.tag == "prepare":
+            cmd = etree_file.text
+            if cmd is None:
+                cmd = ""
+            cmd = cmd.strip()
+            stdout_filename = etree_file.get("stdout")
+            if stdout_filename is not None:
+                stdout_filename = stdout_filename.strip()
+            stderr_filename = etree_file.get("stderr")
+            if stderr_filename is not None:
+                stderr_filename = stderr_filename.strip()
+            prepare_obj = jube2.fileset.Prepare(cmd, stdout_filename,
+                                                stderr_filename)
+            filelist.append(prepare_obj)
     return filelist
 
 

@@ -43,7 +43,7 @@
 <!ATTLIST sub           source CDATA #REQUIRED
                         dest CDATA #REQUIRED
                         tag CDATA #IMPLIED>
-<!ELEMENT fileset ((copy|link|include)*)>
+<!ELEMENT fileset ((copy|link|prepare|include)*)>
 <!ATTLIST fileset       name CDATA #REQUIRED
                         init_with CDATA #IMPLIED
                         tag CDATA #IMPLIED>  
@@ -61,6 +61,10 @@
                         rel_path_ref (internal|external) #IMPLIED
                         file_path_ref CDATA #IMPLIED
                         tag CDATA #IMPLIED>
+<!ELEMENT prepare (#PCDATA)>
+<!ATTLIST prepare       stdout CDATA #IMPLIED
+                        stderr CDATA #IMPLIED
+                        tag CDATA #IMPLIED>                 
 <!ELEMENT patternset ((pattern|include)*)>
 <!ATTLIST patternset    name CDATA #REQUIRED
                         init_with CDATA #IMPLIED
