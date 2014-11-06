@@ -16,6 +16,7 @@ from __future__ import (print_function,
 
 import jube2.jubeio
 import jube2.util
+import jube2.conf
 import jube2.info
 import jube2.help
 import jube2.jubetojube2
@@ -33,7 +34,7 @@ logger = jube2.log.getLogger(__name__)
 def continue_benchmarks(args):
     """Continue benchmarks"""
     found_benchmarks = search_for_benchmarks(args)
-    jube2.util.HIDE_ANIMATIONS = args.hide_animation
+    jube2.conf.HIDE_ANIMATIONS = args.hide_animation
     for benchmark_folder in found_benchmarks:
         _continue_benchmark(benchmark_folder, args)
 
@@ -152,20 +153,20 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
     os.chdir(benchmark_folder)
     # Read existing benchmark configuration
     benchmarks = jube2.jubeio.benchmarks_from_xml(
-        jube2.util.CONFIGURATION_FILENAME)[0]
+        jube2.conf.CONFIGURATION_FILENAME)[0]
     # Only one single benchmark exist inside benchmarks
     benchmark = list(benchmarks.values())[0]
     if restore_workpackages:
         # Read existing workpackage information
         workpackages, work_list = \
             jube2.jubeio.workpackages_from_xml(
-                jube2.util.WORKPACKAGES_FILENAME, benchmark)
+                jube2.conf.WORKPACKAGES_FILENAME, benchmark)
         benchmark.set_workpackage_information(workpackages, work_list)
 
-    if load_analyse and os.path.isfile(jube2.util.ANALYSE_FILENAME):
+    if load_analyse and os.path.isfile(jube2.conf.ANALYSE_FILENAME):
         # Read existing analyse data
         analyse_result = \
-            jube2.jubeio.analyse_result_from_xml(jube2.util.ANALYSE_FILENAME)
+            jube2.jubeio.analyse_result_from_xml(jube2.conf.ANALYSE_FILENAME)
         for analyzer in benchmark.analyzer.values():
             if analyzer.name in analyse_result:
                 analyzer.analyse_result = analyse_result[analyzer.name]
@@ -289,7 +290,7 @@ def run_new_benchmark(args):
                 bench.create_result()
 
             # Clean up when using debug mode
-            if jube2.util.DEBUG_MODE:
+            if jube2.conf.DEBUG_MODE:
                 bench.delete_bench_dir()
 
         # Restore current working dir
@@ -330,7 +331,7 @@ def _continue_benchmark(benchmark_folder, args):
         benchmark.create_result()
 
     # Clean up when using debug mode
-    if jube2.util.DEBUG_MODE:
+    if jube2.conf.DEBUG_MODE:
         benchmark.reset_all_workpackages()
     # Restore current working dir
     os.chdir(cwd)
@@ -356,7 +357,7 @@ def _analyse_benchmark(benchmark_folder, args):
                                       .format(benchmark.name, benchmark.id)))
     benchmark.analyse()
     logger.info(">>> Analyse data storage: {}".format(os.path.join(
-        benchmark_folder, jube2.util.ANALYSE_FILENAME)))
+        benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
     logger.info(jube2.util.text_line())
     # Restore current working dir
     os.chdir(cwd)
@@ -459,7 +460,7 @@ def _manipulate_comment(benchmark_folder, args):
     benchmark.comment = re.sub(r"\s+", " ", comment)
     benchmark.write_benchmark_configuration(
         os.path.join(benchmark_folder,
-                     jube2.util.CONFIGURATION_FILENAME))
+                     jube2.conf.CONFIGURATION_FILENAME))
 
 
 def _get_args_parser():
@@ -468,7 +469,7 @@ def _get_args_parser():
     parser.add_argument("-v", "--version", help="show version",
                         action="version",
                         version="JUBE, version {}".format(
-                            jube2.util.JUBE_VERSION))
+                            jube2.conf.JUBE_VERSION))
     parser.add_argument('--debug', action="store_true",
                         help='use debugging mode')
     parser.add_argument('--devel', action="store_true",

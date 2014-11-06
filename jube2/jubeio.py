@@ -29,6 +29,7 @@ import jube2.workpackage
 import jube2.analyzer
 import jube2.step
 import jube2.util
+import jube2.conf
 import jube2.result
 import sys
 import re
@@ -78,7 +79,7 @@ def benchmarks_from_xml(filename, tags=None):
     if tags is None:
         tags = set()
     logger.debug("    Available tags: {}"
-                 .format(jube2.util.DEFAULT_SEPARATOR.join(tags)))
+                 .format(jube2.conf.DEFAULT_SEPARATOR.join(tags)))
     _remove_invalid_tags(tree.getroot(), tags)
 
     # Read selection area
@@ -143,7 +144,7 @@ def _remove_invalid_tags(etree, tags=None):
         tag_tags_str = child.get("tag")
         if tag_tags_str is not None:
             tag_tags = set([tag.strip() for tag in
-                            tag_tags_str.split(jube2.util.DEFAULT_SEPARATOR)])
+                            tag_tags_str.split(jube2.conf.DEFAULT_SEPARATOR)])
             valid_tags = set()
             invalid_tags = set()
             # Switch tags between valid and invalid tagnames
@@ -208,7 +209,7 @@ def _benchmark_preprocessor(benchmark_etree):
         if (use.text is not None) and (use.text.strip() != "") and \
            (filename.strip() != ""):
             new_use_str = ""
-            for name in use.text.split(jube2.util.DEFAULT_SEPARATOR):
+            for name in use.text.split(jube2.conf.DEFAULT_SEPARATOR):
                 name = name.strip()
                 if name not in sets:
                     sets[name] = [filename]
@@ -221,7 +222,7 @@ def _benchmark_preprocessor(benchmark_etree):
                         index = len(sets[name] - 1)
                     name = "jube_{0}_{1}".format(name, index)
                 if len(new_use_str) > 0:
-                    new_use_str += jube2.util.DEFAULT_SEPARATOR
+                    new_use_str += jube2.conf.DEFAULT_SEPARATOR
                 # Replace set-name with a internal one
                 new_use_str += name
             use.text = new_use_str
@@ -279,7 +280,7 @@ def benchmark_info_from_xml(filename):
         if tag_etree.text is not None:
             tags.update(set([tag.strip() for tag in
                              tag_etree.text.split(
-                                 jube2.util.DEFAULT_SEPARATOR)]))
+                                 jube2.conf.DEFAULT_SEPARATOR)]))
     benchmark_etree = tree.find(".//benchmark")
     if benchmark_etree is None:
         raise ValueError("benchmark-tag not found in \"{}\"".format(filename))
@@ -419,7 +420,7 @@ def _extract_workpackage_data(workpackage_etree):
     parents_etree = workpackage_etree.find("parents")
     if parents_etree is not None:
         parents = [int(parent) for parent in
-                   parents_etree.text.split(jube2.util.DEFAULT_SEPARATOR)]
+                   parents_etree.text.split(jube2.conf.DEFAULT_SEPARATOR)]
     else:
         parents = list()
     return workpackage_id, step_name, parameterset, parents, iteration
@@ -437,7 +438,7 @@ def _extract_selection(selection_etree):
     tags = set()
     for element in selection_etree:
         _check_tag(element, valid_tags)
-        separator = jube2.util.DEFAULT_SEPARATOR
+        separator = jube2.conf.DEFAULT_SEPARATOR
         if element.text is not None:
             if element.tag == "only":
                 only_bench = only_bench + element.text.split(separator)
@@ -584,7 +585,7 @@ def _extract_step(etree_step):
             raise ValueError("Empty \"shared\" attribute in " +
                              "<step> found.")
     depend = set(filter(bool, [val.strip() for val in
-                               tmp.split(jube2.util.DEFAULT_SEPARATOR)]))
+                               tmp.split(jube2.conf.DEFAULT_SEPARATOR)]))
 
     step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name)
     for element in etree_step:
@@ -688,13 +689,13 @@ def _extract_table(etree_table):
     """Extract a table from etree"""
     name = _attribute_from_element(etree_table, "name").strip()
     separator = \
-        etree_table.get("separator", jube2.util.DEFAULT_SEPARATOR)
+        etree_table.get("separator", jube2.conf.DEFAULT_SEPARATOR)
     style = etree_table.get("style", "csv").strip()
     if style not in ["csv", "pretty"]:
         raise ValueError("Not allowed style-type \"{0}\" "
                          "in <table name=\"{1}\">".format(name, style))
     sort_names = etree_table.get("sort", "").split(
-        jube2.util.DEFAULT_SEPARATOR)
+        jube2.conf.DEFAULT_SEPARATOR)
     sort_names = [sort_name.strip() for sort_name in sort_names]
     sort_names = [sort_name for sort_name in sort_names if len(sort_name) > 0]
     table = jube2.result.Table(name, style, separator, sort_names)
@@ -720,7 +721,7 @@ def _extract_use(etree_use):
     """Extract a use from etree"""
     if etree_use.text is not None:
         use_names = [use_name.strip() for use_name in
-                     etree_use.text.split(jube2.util.DEFAULT_SEPARATOR)]
+                     etree_use.text.split(jube2.conf.DEFAULT_SEPARATOR)]
         for use_name in use_names:
             if use_names.count(use_name) > 1:
                 raise ValueError(("Can't use element \"{0}\" two times")
@@ -843,12 +844,12 @@ def _extract_parameters(etree_parameterset):
         if name == "":
             raise ValueError("Empty \"name\" attribute in <parameter> found.")
         separator = param.get("separator",
-                              default=jube2.util.DEFAULT_SEPARATOR)
+                              default=jube2.conf.DEFAULT_SEPARATOR)
         parameter_type = param.get("type", default="string").strip()
         parameter_mode = param.get("mode", default="text").strip()
         export_str = param.get("export", default="false").strip()
         export = export_str.lower() == "true"
-        if parameter_mode not in ["text"] + jube2.util.ALLOWED_SCRIPTTYPES:
+        if parameter_mode not in ["text"] + jube2.conf.ALLOWED_SCRIPTTYPES:
             raise ValueError(
                 ("parameter-mode \"{0}\" not allowed in " +
                  "<parameter name=\"{1}\">").format(parameter_mode,
@@ -912,7 +913,7 @@ def _extract_pattern(etree_patternset):
             raise ValueError("Empty \"name\" attribute in <pattern> found.")
         pattern_mode = pattern.get("mode", default="pattern").strip()
         if pattern_mode not in ["pattern", "text"] + \
-                jube2.util.ALLOWED_SCRIPTTYPES:
+                jube2.conf.ALLOWED_SCRIPTTYPES:
             raise ValueError(("pattern-mdoe \"{0}\" not allowed in " +
                               "<pattern name=\"{1}\">").format(pattern_mode,
                                                                name))
@@ -921,7 +922,7 @@ def _extract_pattern(etree_patternset):
         reduce_options_str = pattern.get("reduce", "first").strip()
         reduce_options = set([opt.strip() for opt in
                               reduce_options_str.split(
-                                  jube2.util.DEFAULT_SEPARATOR)])
+                                  jube2.conf.DEFAULT_SEPARATOR)])
         if reduce_options.difference(jube2.pattern.REDUCE_OPTIONS):
             raise ValueError(("unknown reduce option \"{0}\" in " +
                               "<pattern name=\"{1}\">")
@@ -970,7 +971,7 @@ def _extract_files(etree_fileset):
     valid_tags = ["copy", "link"]
     for etree_file in etree_fileset:
         _check_tag(etree_file, valid_tags)
-        separator = etree_file.get("separator",jube2.util.DEFAULT_SEPARATOR)
+        separator = etree_file.get("separator",jube2.conf.DEFAULT_SEPARATOR)
         directory = etree_file.get("directory", default="").strip()
         file_path_ref = etree_file.get("file_path_ref")
         alt_name = etree_file.get("name")
@@ -989,7 +990,7 @@ def _extract_files(etree_fileset):
         else:
             # Use the new alternativ filenames
             names = [name.strip() for name in
-                     alt_name.split(jube2.util.DEFAULT_SEPARATOR)]
+                     alt_name.split(jube2.conf.DEFAULT_SEPARATOR)]
         if len(names) != len(files):
             raise ValueError("Namelist and filelist must have same " +
                              "length in <{}>".format(etree_file.tag))

@@ -15,6 +15,7 @@ from __future__ import (print_function,
                         division)
 
 import jube2.util
+import jube2.conf
 import jube2.jubeio
 import os
 import time
@@ -33,13 +34,13 @@ def print_benchmarks_info(path):
     for dir_name in dir_list:
         dir_path = os.path.join(path, dir_name)
         configuration_file = \
-            os.path.join(dir_path, jube2.util.CONFIGURATION_FILENAME)
+            os.path.join(dir_path, jube2.conf.CONFIGURATION_FILENAME)
         if os.path.isdir(dir_path) and os.path.exists(configuration_file):
             try:
                 id_number = int(dir_name)
                 name_str, comment_str, tags = \
                     jube2.jubeio.benchmark_info_from_xml(configuration_file)
-                tags_str = jube2.util.DEFAULT_SEPARATOR.join(tags)
+                tags_str = jube2.conf.DEFAULT_SEPARATOR.join(tags)
                 time_cstr = time.strftime(
                     "%Y-%m-%d %H:%M:%S",
                     time.localtime(os.path.getctime(configuration_file)))
@@ -74,7 +75,7 @@ def print_benchmark_info(benchmark):
         jube2.util.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
                               .format(benchmark.name,
                                       benchmark.id,
-                                      jube2.util.DEFAULT_SEPARATOR.join(
+                                      jube2.conf.DEFAULT_SEPARATOR.join(
                                           benchmark.tags),
                                       benchmark.comment))
     print(infostr)
@@ -88,7 +89,7 @@ def print_benchmark_info(benchmark):
         time.strftime("%Y-%m-%d %H:%M:%S",
                       time.localtime(os.path.getctime(
                           os.path.join(benchmark.bench_dir,
-                                       jube2.util.CONFIGURATION_FILENAME))))
+                                       jube2.conf.CONFIGURATION_FILENAME))))
     print("\n    Started: {}".format(start_time))
     last_change = time.localtime(os.path.getmtime(benchmark.bench_dir))
 
@@ -97,7 +98,7 @@ def print_benchmark_info(benchmark):
     for step_name, workpackages in benchmark.workpackages.items():
         cnt_done = 0
         last_finish = time.localtime(0)
-        depends = jube2.util.DEFAULT_SEPARATOR.join(
+        depends = jube2.conf.DEFAULT_SEPARATOR.join(
             benchmark.steps[step_name].depend)
         for workpackage in workpackages:
             if workpackage.done:
@@ -105,7 +106,7 @@ def print_benchmark_info(benchmark):
                 last_finish = max(last_finish, time.localtime(
                     os.path.getmtime(os.path.join(
                         workpackage.workpackage_dir,
-                        jube2.util.WORKPACKAGE_DONE_FILENAME))))
+                        jube2.conf.WORKPACKAGE_DONE_FILENAME))))
                 last_change = max(last_change, last_finish)
         if last_finish > time.localtime(0):
             last_finish_str = time.strftime("%Y-%m-%d %H:%M:%S", last_finish)

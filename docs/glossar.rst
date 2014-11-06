@@ -509,3 +509,7 @@ Glossary
         * ``$jube_wp_iteration``: current iteration number (default: 0)
         * ``$jube_wp_parent_<parent_name>_id``: workpackage id of selected parent step
         * ``$jube_wp_abspath``: absolute path to workpackage work directory
+        * ``$jube_wp_envstr``: a string containing all exported parameter in shell syntax::
+        
+            export par=$par
+            export par2=$par2 

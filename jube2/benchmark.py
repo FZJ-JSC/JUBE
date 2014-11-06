@@ -27,6 +27,7 @@ except ImportError:
 import jube2.parameter
 import jube2.workpackage
 import jube2.util
+import jube2.conf
 import jube2.log
 
 logger = jube2.log.getLogger(__name__)
@@ -310,9 +311,9 @@ class Benchmark(object):
 
         for analyser in self._analyzer.values():
             analyser.analyse()
-        if not jube2.util.DEBUG_MODE:
+        if not jube2.conf.DEBUG_MODE:
             self.write_analyse_data(os.path.join(self.bench_dir,
-                                                 jube2.util.ANALYSE_FILENAME))
+                                                 jube2.conf.ANALYSE_FILENAME))
         if show_info:
             logger.info(">>> Analyse finished")
 
@@ -325,15 +326,15 @@ class Benchmark(object):
                 result_str = result.create_result()
                 if result.result_dir is None:
                     result_dir = os.path.join(self.bench_dir,
-                                              jube2.util.RESULT_DIRNAME)
+                                              jube2.conf.RESULT_DIRNAME)
                 else:
                     result_dir = jube2.util.id_dir(result.result_dir, self.id)
                 if (not os.path.exists(result_dir)) and \
-                   (not jube2.util.DEBUG_MODE):
+                   (not jube2.conf.DEBUG_MODE):
                     os.makedirs(result_dir)
                 logger.info(result_str)
                 logger.info("\n")
-                if not jube2.util.DEBUG_MODE:
+                if not jube2.conf.DEBUG_MODE:
                     file_handle = \
                         open(os.path.join(result_dir,
                                           "{}.dat".format(result.name)), "w")
@@ -366,7 +367,7 @@ class Benchmark(object):
                                         self._cwd)
             self.write_benchmark_configuration(
                 os.path.join(self.bench_dir,
-                             jube2.util.CONFIGURATION_FILENAME))
+                             jube2.conf.CONFIGURATION_FILENAME))
 
     def write_analyse_data(self, filename):
         """All analyse data will be written to given file
@@ -505,20 +506,20 @@ class Benchmark(object):
 
         # Store workpackage information
         self.write_workpackage_information(
-            os.path.join(self.bench_dir, jube2.util.WORKPACKAGES_FILENAME))
+            os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
         self.run()
 
     def run(self):
         """Run benchmark"""
         title = "benchmark: {0}".format(self._name)
-        if jube2.util.DEBUG_MODE:
+        if jube2.conf.DEBUG_MODE:
             title += " ---DEBUG_MODE---"
         title += "\n\n{}".format(self._comment)
         infostr = jube2.util.text_boxed(title)
         logger.info(infostr)
 
-        if not jube2.util.HIDE_ANIMATIONS:
+        if not jube2.conf.HIDE_ANIMATIONS:
             print("\nRunning workpackages (#=done, 0=wait):")
             status = self.benchmark_status
             jube2.util.print_loading_bar(status["done"], status["all"],
@@ -528,7 +529,7 @@ class Benchmark(object):
         while not self._work_list.empty():
             workpackage = self._work_list.get_nowait()
             workpackage.run()
-            if not jube2.util.HIDE_ANIMATIONS:
+            if not jube2.conf.HIDE_ANIMATIONS:
                 status = self.benchmark_status
                 jube2.util.print_loading_bar(status["done"], status["all"],
                                              status["wait"])
@@ -559,7 +560,7 @@ class Benchmark(object):
 
         # Store workpackage information
         self.write_workpackage_information(
-            os.path.join(self.bench_dir, jube2.util.WORKPACKAGES_FILENAME))
+            os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
         status = self.benchmark_status
         if status["all"] != status["done"]:
@@ -585,7 +586,7 @@ class Benchmark(object):
         self._id = jube2.util.get_current_id(self._outpath) + 1
         os.makedirs(self.bench_dir)
         self.write_benchmark_configuration(
-            os.path.join(self.bench_dir, jube2.util.CONFIGURATION_FILENAME))
+            os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME))
 
     def write_benchmark_configuration(self, filename):
         """The current benchmark configuration will be written to given file

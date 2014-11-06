@@ -16,6 +16,7 @@ from __future__ import (print_function,
 
 import os
 import jube2.util
+import jube2.conf
 import xml.etree.ElementTree as ET
 import jube2.log
 import shutil
@@ -81,7 +82,7 @@ class Substituteset(object):
                                                 substitute_dict.items()],
                                                use_header_line=True, indent=9,
                                                align_right=False))
-            if not jube2.util.DEBUG_MODE:
+            if not jube2.conf.DEBUG_MODE:
                 infile = os.path.join(work_dir, infile)
                 outfile = os.path.join(work_dir, outfile)
                 # Skip existing outfiles

@@ -16,6 +16,7 @@ from __future__ import (print_function,
 
 import xml.etree.ElementTree as ET
 import jube2.util
+import jube2.conf
 import jube2.log
 import jube2.parameter
 import os
@@ -62,7 +63,7 @@ class Workpackage(object):
                 self._parameterset.etree_repr(use_current_selection=True))
         if len(self._parents) > 0:
             parents_etree = ET.SubElement(workpackage_etree, "parents")
-            parents_etree.text = jube2.util.DEFAULT_SEPARATOR.join(
+            parents_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(
                 [str(parent.id) for parent in self._parents])
         return workpackage_etree
 
@@ -84,9 +85,9 @@ class Workpackage(object):
     def done(self):
         """Workpackage done?"""
         done_file = os.path.join(self.workpackage_dir,
-                                 jube2.util.WORKPACKAGE_DONE_FILENAME)
+                                 jube2.conf.WORKPACKAGE_DONE_FILENAME)
         exist = os.path.exists(done_file)
-        if jube2.util.DEBUG_MODE:
+        if jube2.conf.DEBUG_MODE:
             exist = exist or os.path.exists(done_file + "_DEBUG")
         return exist
 
@@ -94,16 +95,16 @@ class Workpackage(object):
     def done(self, set_done):
         """Set/reset Workpackage done"""
         done_file = os.path.join(self.workpackage_dir,
-                                 jube2.util.WORKPACKAGE_DONE_FILENAME)
+                                 jube2.conf.WORKPACKAGE_DONE_FILENAME)
         if set_done:
-            if jube2.util.DEBUG_MODE:
+            if jube2.conf.DEBUG_MODE:
                 fout = open(done_file + "_DEBUG", "w")
             else:
                 fout = open(done_file, "w")
             fout.close()
             self._remove_operation_info_files()
         else:
-            if jube2.util.DEBUG_MODE:
+            if jube2.conf.DEBUG_MODE:
                 if os.path.exists(done_file + "_DEBUG"):
                     os.remove(done_file + "_DEBUG")
             else:
@@ -129,7 +130,7 @@ class Workpackage(object):
         """Mark/checks operation status"""
         done_file = os.path.join(self.workpackage_dir,
                                  "wp_{0}_{1:02d}".format(
-                                     jube2.util.WORKPACKAGE_DONE_FILENAME,
+                                     jube2.conf.WORKPACKAGE_DONE_FILENAME,
                                      operation_number))
         if set_done is None:
             return os.path.exists(done_file)
@@ -213,6 +214,16 @@ class Workpackage(object):
                 create_parameter(("jube_wp_parent_{}_id")
                                  .format(parent.step.name),
                                  str(parent.id), parameter_type="int"))
+
+        env_str = ""
+        for parameter in self._parameterset.export_parameter_dict.values():
+            env_str += "export {0}=${1}\n".format(parameter.name,
+                                                  parameter.name)
+        # environment export string
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_envstr", env_str))
+
         return parameterset
 
     def create_workpackage_dir(self):
@@ -343,7 +354,7 @@ class Workpackage(object):
                                         alt_work_dir)
             logger.debug("  switch to alternativ work dir: \"{}\""
                          .format(alt_work_dir))
-            if not jube2.util.DEBUG_MODE and not os.path.exists(alt_work_dir):
+            if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
                 os.makedirs(alt_work_dir)
 
         # --- Copy files to working dir or create links ---

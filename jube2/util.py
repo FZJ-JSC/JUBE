@@ -21,20 +21,7 @@ import subprocess
 import jube2.log
 import sys
 import textwrap
-
-JUBE_VERSION = "2.0.0"
-ZERO_FILL_DEFAULT = 6
-DEFAULT_WIDTH = 70
-WORKPACKAGE_DONE_FILENAME = "done"
-CONFIGURATION_FILENAME = "configuration.xml"
-WORKPACKAGES_FILENAME = "workpackages.xml"
-ANALYSE_FILENAME = "analyse.xml"
-RESULT_DIRNAME = "result"
-ALLOWED_SCRIPTTYPES = ["python", "perl"]
-DEBUG_MODE = False
-DEFAULT_SEPARATOR = ","
-MAX_TABLE_CELL_WIDTH = 40
-HIDE_ANIMATIONS = False
+import jube2.conf
 
 logger = jube2.log.getLogger(__name__)
 
@@ -58,21 +45,22 @@ def get_current_id(base_dir):
 
 def id_dir(base_dir, id_number):
     """Return path for 'id_number' in 'base_dir'."""
-    return os.path.join(base_dir,
-                        "{id_number:0{zfill}d}".format(zfill=ZERO_FILL_DEFAULT,
-                                                       id_number=id_number))
+    return os.path.join(
+        base_dir,
+        "{id_number:0{zfill}d}".format(zfill=jube2.conf.ZERO_FILL_DEFAULT,
+                                       id_number=id_number))
 
 
 def text_boxed(text):
     """Create an ASCII boxed version of text."""
     box = "{line}\n# {text}\n{line}".format(
-        line="#" * DEFAULT_WIDTH, text=text)
+        line="#" * jube2.conf.DEFAULT_WIDTH, text=text)
     return box
 
 
 def text_line():
     """Return a horizonal ASCII line"""
-    return "#" * DEFAULT_WIDTH
+    return "#" * jube2.conf.DEFAULT_WIDTH
 
 
 def text_table(entries, use_header_line=False, indent=1, align_right=True,
@@ -101,7 +89,8 @@ def text_table(entries, use_header_line=False, indent=1, align_right=True,
             if pretty:
                 max_length[i] = max(max_length[i], len(text))
                 if auto_linebreak:
-                    max_length[i] = min(max_length[i], MAX_TABLE_CELL_WIDTH)
+                    max_length[i] = min(max_length[i],
+                                        jube2.conf.MAX_TABLE_CELL_WIDTH)
 
     if colw is not None:
         for i, maxl in enumerate(max_length):
@@ -115,7 +104,8 @@ def text_table(entries, use_header_line=False, indent=1, align_right=True,
         wraps = list()
         for text in item:
             if auto_linebreak:
-                wraps.append(textwrap.wrap(text, MAX_TABLE_CELL_WIDTH))
+                wraps.append(textwrap.wrap(text,
+                                           jube2.conf.MAX_TABLE_CELL_WIDTH))
             else:
                 wraps.append([text])
 
@@ -217,7 +207,7 @@ def script_evaluation(cmd, script_type):
 
 def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
     """Show a simple loading animation"""
-    width = DEFAULT_WIDTH - 10
+    width = jube2.conf.DEFAULT_WIDTH - 10
     if all_cnt > 0:
         done_cnt = (current_cnt * width) // all_cnt
         medium_cnt = (second_cnt * width) // all_cnt

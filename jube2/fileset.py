@@ -18,6 +18,7 @@ import os
 import shutil
 import xml.etree.ElementTree as ET
 import jube2.util
+import jube2.conf
 import jube2.log
 import glob
 
@@ -83,14 +84,14 @@ class Link(File):
             path = os.path.join(self._file_path_ref, path)
             path = os.path.join(file_path_ref, path)
             path = os.path.normpath(path)
-        if (not os.path.exists(path)) and (not jube2.util.DEBUG_MODE):
+        if (not os.path.exists(path)) and (not jube2.conf.DEBUG_MODE):
             raise RuntimeError("'{}' not found".format(path))
         if alt_work_dir is not None:
             work_dir = alt_work_dir
         target_path = os.path.relpath(path, work_dir)
         link_path = os.path.join(work_dir, name)
         logger.debug("  link \"{0}\" <- \"{1}\"".format(path, name))
-        if not jube2.util.DEBUG_MODE and not os.path.exists(link_path):
+        if not jube2.conf.DEBUG_MODE and not os.path.exists(link_path):
             os.symlink(target_path, link_path)
 
     def etree_repr(self):
@@ -136,7 +137,7 @@ class Copy(File):
             else:
                 file_path = os.path.join(work_dir, name)
                 logger.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
-            if not jube2.util.DEBUG_MODE and not os.path.exists(file_path):
+            if not jube2.conf.DEBUG_MODE and not os.path.exists(file_path):
                 if os.path.isdir(path):
                     shutil.copytree(path, file_path, symlinks=True)
                 else:

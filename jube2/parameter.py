@@ -18,6 +18,7 @@ import itertools
 import xml.etree.ElementTree as ET
 import copy
 import jube2.util
+import jube2.conf
 import re
 import string
 
@@ -244,7 +245,7 @@ class Parameter(object):
         self._name = name
         self._value = value
         if separator is None:
-            self._separator = jube2.util.DEFAULT_SEPARATOR
+            self._separator = jube2.conf.DEFAULT_SEPARATOR
         else:
             self._separator = separator
         self._type = parameter_type
@@ -260,13 +261,13 @@ class Parameter(object):
         """Parameter constructor.
         Return a Static- or TemplateParameter based on the given data."""
         if separator is None:
-            sep = jube2.util.DEFAULT_SEPARATOR
+            sep = jube2.conf.DEFAULT_SEPARATOR
         else:
             sep = separator
 
         values = [val.strip() for val in value.split(sep)]
         if len(values) == 1 or \
-           (parameter_mode in jube2.util.ALLOWED_SCRIPTTYPES):
+           (parameter_mode in jube2.conf.ALLOWED_SCRIPTTYPES):
             result = StaticParameter(
                 name, value, separator, parameter_type, parameter_mode, export)
         else:
@@ -436,7 +437,7 @@ class StaticParameter(Parameter):
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
         if (not re.search(Parameter.parameter_regex.format("(.+?)"), value)) \
-                and (self._mode in jube2.util.ALLOWED_SCRIPTTYPES):
+                and (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
             value = jube2.util.script_evaluation(value, self._mode)
         changed = value != self._value
         if changed:

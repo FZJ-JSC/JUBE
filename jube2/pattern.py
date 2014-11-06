@@ -228,7 +228,7 @@ class Pattern(jube2.parameter.StaticParameter):
         if self._unit != "":
             pattern_etree.attrib["unit"] = self._unit
         pattern_etree.attrib["reduce"] = \
-            jube2.util.DEFAULT_SEPARATOR.join(self._reduce_option)
+            jube2.conf.DEFAULT_SEPARATOR.join(self._reduce_option)
         pattern_etree.text = self.value
         return pattern_etree
 

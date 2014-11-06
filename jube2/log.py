@@ -18,16 +18,7 @@ import logging
 import sys
 import glob
 import os.path
-import jube2.util
-
-# logging related
-LOGFILE_NAME = "jube-parse.log"
-LOGFILE_DEBUG_NAME = "jube-debug.log"
-LOGFILE_MODE = "a"
-LOGFILE_DEBUG_MODE = "w"
-LOG_CONSOLE_FORMAT = "%(message)s"
-LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
-DEFAULT_LOGGING_MODE = "default"
+import jube2.conf
 
 
 class JubeLogger(logging.getLoggerClass()):
@@ -45,8 +36,8 @@ class JubeLogger(logging.getLoggerClass()):
 
 logging.setLoggerClass(JubeLogger)
 
-logging_mode = DEFAULT_LOGGING_MODE
-logfile_name = LOGFILE_NAME
+logging_mode = jube2.conf.DEFAULT_LOGGING_MODE
+logfile_name = jube2.conf.LOGFILE_NAME
 
 
 def getLogger(name=None):
@@ -71,12 +62,12 @@ def setup_logging(mode=None, filename=None):
     global logging_mode, logfile_name
 
     # Use debug file name and debug file mode when in debug mode
-    if jube2.util.DEBUG_MODE:
-        filename = LOGFILE_DEBUG_NAME
+    if jube2.conf.DEBUG_MODE:
+        filename = jube2.conf.LOGFILE_DEBUG_NAME
         mode = "default"
-        filemode = LOGFILE_DEBUG_MODE
+        filemode = jube2.conf.LOGFILE_DEBUG_MODE
     else:
-        filemode = LOGFILE_MODE
+        filemode = jube2.conf.LOGFILE_MODE
 
     if not mode:
         mode = logging_mode
@@ -99,7 +90,7 @@ def setup_logging(mode=None, filename=None):
         _logger.removeHandler(handler)
 
     # create, configure and add console handler
-    console_formatter = logging.Formatter(LOG_CONSOLE_FORMAT)
+    console_formatter = logging.Formatter(jube2.conf.LOG_CONSOLE_FORMAT)
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(console_formatter)
@@ -107,7 +98,7 @@ def setup_logging(mode=None, filename=None):
 
     if mode == "default":
         # create, configure and add file handler
-        file_formatter = logging.Formatter(LOG_FILE_FORMAT)
+        file_formatter = logging.Formatter(jube2.conf.LOG_FILE_FORMAT)
         file_handler = logging.FileHandler(filename, filemode)
         file_handler.setLevel(logging.DEBUG)
         file_handler.setFormatter(file_formatter)
@@ -157,6 +148,6 @@ def safe_output_logfile(filename):
 
 def change_logfile_name(filename):
     """Change log file name if not in debug mode."""
-    if jube2.util.DEBUG_MODE:
+    if jube2.conf.DEBUG_MODE:
         return
     setup_logging(filename=filename)

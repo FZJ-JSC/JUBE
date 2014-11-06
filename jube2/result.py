@@ -15,6 +15,7 @@ from __future__ import (print_function,
                         division)
 
 import jube2.util
+import jube2.conf
 import xml.etree.ElementTree as ET
 import re
 import jube2.log
@@ -163,7 +164,7 @@ class Table(Result):
     """A ascii based result table"""
 
     def __init__(self, name, style="csv",
-                 separator=jube2.util.DEFAULT_SEPARATOR,
+                 separator=jube2.conf.DEFAULT_SEPARATOR,
                  sort_names=None):
         Result.__init__(self, name)
         self._style = style
@@ -208,7 +209,7 @@ class Table(Result):
         # Sort the resultset
         if len(self._sort_names) > 0:
             logger.debug("sort using: {0}"
-                         .format(jube2.util.DEFAULT_SEPARATOR.join(
+                         .format(jube2.conf.DEFAULT_SEPARATOR.join(
                              self._sort_names)))
             sort_data = sorted(sort_data,
                                key=operator.itemgetter(*self._sort_names))
@@ -249,7 +250,7 @@ class Table(Result):
         table_etree.attrib["seperator"] = self._separator
         if len(self._sort_names) > 0:
             table_etree.attrib["sort"] = \
-                jube2.util.DEFAULT_SEPARATOR.join(self._sort_names)
+                jube2.conf.DEFAULT_SEPARATOR.join(self._sort_names)
         for column_name in self._columns:
             column_etree = ET.SubElement(table_etree, "column")
             column_etree.text = column_name

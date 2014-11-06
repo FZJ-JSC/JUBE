@@ -18,6 +18,7 @@ import subprocess
 import os
 import xml.etree.ElementTree as ET
 import jube2.util
+import jube2.conf
 import jube2.log
 
 logger = jube2.log.getLogger(__name__)
@@ -46,7 +47,7 @@ class Step(object):
         step_etree.attrib["name"] = self._name
         if len(self._depend) > 0:
             step_etree.attrib["depend"] = \
-                jube2.util.DEFAULT_SEPARATOR.join(self._depend)
+                jube2.conf.DEFAULT_SEPARATOR.join(self._depend)
         if self._alt_work_dir is not None:
             step_etree.attrib["work_dir"] = self._alt_work_dir
         if self._shared_name is not None:
@@ -55,7 +56,7 @@ class Step(object):
             step_etree.attrib["iterations"] = str(self._iterations)
         for use in self._use:
             use_etree = ET.SubElement(step_etree, "use")
-            use_etree.text = jube2.util.DEFAULT_SEPARATOR.join(use)
+            use_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(use)
         for operation in self._operations:
             step_etree.append(operation.etree_repr())
         return step_etree
@@ -206,7 +207,7 @@ class Operation(object):
             # Inline substitution
             do = jube2.util.substitution(self._do, parameter_dict)
 
-            if not jube2.util.DEBUG_MODE:
+            if not jube2.conf.DEBUG_MODE:
                 # Change stdout
                 if self._stdout_filename is not None:
                     stdout_filename = jube2.util.substitution(
@@ -227,7 +228,7 @@ class Operation(object):
 
             # Execute "do"
             logger.debug(">>> {}".format(do))
-            if not jube2.util.DEBUG_MODE:
+            if not jube2.conf.DEBUG_MODE:
                 try:
                     sub = subprocess.Popen(do, cwd=work_dir, stdout=stdout,
                                            stderr=stderr, shell=True,
@@ -258,7 +259,7 @@ class Operation(object):
             if not os.path.exists(os.path.join(work_dir, async_filename)):
                 logger.debug("Waiting for file \"{}\" ..."
                              .format(async_filename))
-                if jube2.util.DEBUG_MODE:
+                if jube2.conf.DEBUG_MODE:
                     logger.debug("  skip waiting")
                     return True
                 else:
