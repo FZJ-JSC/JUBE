@@ -14,7 +14,7 @@ read the general :doc:`tutorial` first.
 Schema validation
 ~~~~~~~~~~~~~~~~~
 To validate your input files you can use DTD or schema validation. You will find ``jube.dtd`` and
-``jube.xsd`` inside the ``schema`` folder. You had to add these schema information to your input files
+``jube.xsd`` inside the ``schema`` folder. You have to add these schema information to your input files
 which you want to validate.
 
 DTD usage:
@@ -36,6 +36,27 @@ Schema usage:
     <benchmarks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="<jube.xsd path>">
     ...
+ 
+RELAX NG Compact Syntax (RNC for emacs nxml-mode) usage:
+
+In order to use the provided rnc schema file ``schema/jube.rnc`` in
+emacs open an xml file and use ``C-c C-s C-f`` or ``M-x
+rng-set-schema-file-and-validate`` to choose the rnc file. You can
+also use ``M-x customize-variable rng-schema-locating-files`` after
+you loaded nxml-mode to customize the default search paths to include
+``jube.rnc``. After successful parsing emacs offers to automatically
+create a ``schema.xml`` file which looks like
+
+.. code-block:: xml
+   :linenos:
+
+   <?xml version="1.0"?>
+   <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+      <uri resource="jube-file.xml" uri="../schema/jube.rnc"/>
+   </locatingRules>
+
+The next time you open the same xml file emacs will find the correct
+rnc for the validation based on ``schema.xml``.
  
 Example validation tools:
 
