@@ -20,14 +20,14 @@ import jube2.info
 import jube2.help
 import jube2.jubetojube2
 import jube2.log
+
 import argparse
 import os
 import re
 import shutil
-import logging
 import sys
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 def continue_benchmarks(args):
@@ -312,11 +312,11 @@ def _continue_benchmark(benchmark_folder, args):
     # Store current working dir
     cwd = os.getenv("PWD")
 
-    # Change logfile
-    jube2.log.change_logfile_name(benchmark_folder, "continue.log")
-
     # Change current working dir to benchmark_folder
     os.chdir(benchmark_folder)
+
+    # Change logfile
+    jube2.log.change_logfile_name("continue.log")
 
     # Run existing benchmark
     benchmark.run()
@@ -346,11 +346,11 @@ def _analyse_benchmark(benchmark_folder, args):
     # Store current working dir
     cwd = os.getenv("PWD")
 
-    # Change logfile
-    jube2.log.change_logfile_name(benchmark_folder, "analyse.log")
-
     # Change current working dir to benchmark_folder
     os.chdir(benchmark_folder)
+
+    # Change logfile
+    jube2.log.change_logfile_name("analyse.log")
 
     logger.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
@@ -372,11 +372,11 @@ def _benchmark_result(benchmark_folder, args):
     # Store current working dir
     cwd = os.getenv("PWD")
 
-    # Change logfile
-    jube2.log.change_logfile_name(benchmark_folder, "result.log")
-
     # Change current working dir to benchmark_folder
     os.chdir(benchmark_folder)
+
+    # Change logfile
+    jube2.log.change_logfile_name("result.log")
 
     # Run becnhmark analyse
     if args.analyse:

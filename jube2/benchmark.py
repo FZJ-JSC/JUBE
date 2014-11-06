@@ -27,9 +27,9 @@ except ImportError:
 import jube2.parameter
 import jube2.workpackage
 import jube2.util
-import logging
+import jube2.log
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 class Benchmark(object):
@@ -495,7 +495,7 @@ class Benchmark(object):
         self._create_bench_dir()
 
         # Change logfile
-        jube2.log.change_logfile_name("run.log", self.bench_dir)
+        jube2.log.change_logfile_name(os.path.join(self.bench_dir, "run.log"))
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0

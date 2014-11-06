@@ -32,11 +32,11 @@ import jube2.util
 import jube2.result
 import sys
 import re
-import logging
+import jube2.log
 import collections
 
 INCLUDE_PATH = list()
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 def benchmarks_from_xml(filename, tags=None):
@@ -977,7 +977,8 @@ def _extract_files(etree_fileset):
         # Check if the filepath is relativly seen to working dir or the
         # position of the xml-input-file
         is_internal_ref = \
-            etree_file.get("rel_path_ref", default="external").strip() == "internal"
+            etree_file.get(
+                "rel_path_ref", default="external").strip() == "internal"
         if etree_file.text is None:
             raise ValueError("Empty filelist in <{}> found."
                              .format(etree_file.tag))

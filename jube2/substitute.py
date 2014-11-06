@@ -17,10 +17,10 @@ from __future__ import (print_function,
 import os
 import jube2.util
 import xml.etree.ElementTree as ET
-import logging
+import jube2.log
 import shutil
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 class Substituteset(object):
@@ -84,10 +84,13 @@ class Substituteset(object):
             if not jube2.util.DEBUG_MODE:
                 infile = os.path.join(work_dir, infile)
                 outfile = os.path.join(work_dir, outfile)
-                # Skip not existing files or existing outfiles
-                if (not (os.path.exists(infile) and os.path.isfile(infile))) \
-                        or os.path.exists(outfile):
+                # Skip existing outfiles
+                if os.path.exists(outfile):
                     continue
+                # Check not existing files
+                if not (os.path.exists(infile) and os.path.isfile(infile)):
+                    raise RuntimeError(("File \"{0}\" not found while "
+                                        "running substitution").format(infile))
                 infile_handle = open(infile, "r")
                 outfile_handle = open(outfile, "w")
                 for line in infile_handle:

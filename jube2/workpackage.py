@@ -16,11 +16,11 @@ from __future__ import (print_function,
 
 import xml.etree.ElementTree as ET
 import jube2.util
+import jube2.log
 import jube2.parameter
 import os
-import logging
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 class Workpackage(object):
@@ -443,5 +443,3 @@ class Workpackage(object):
         # --- Write information file to mark end of work ---
         if continue_op:
             self.done = True
-
-        logger.info("")

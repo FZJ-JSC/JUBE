@@ -18,9 +18,9 @@ import subprocess
 import os
 import xml.etree.ElementTree as ET
 import jube2.util
-import logging
+import jube2.log
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 class Step(object):

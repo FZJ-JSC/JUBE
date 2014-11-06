@@ -15,13 +15,13 @@ from __future__ import (print_function,
                         division)
 
 import xml.etree.ElementTree as ET
-import logging
+import jube2.log
 import os
 import re
 import jube2.pattern
 import jube2.util
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 class Analyzer(object):

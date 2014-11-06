@@ -43,11 +43,15 @@ class JubeLogger(logging.getLoggerClass()):
         for line in lines:
             super(JubeLogger, self)._log(level, line, *args, **kwargs)
 
-
 logging.setLoggerClass(JubeLogger)
-logger = logging.getLogger(__name__)
+
 logging_mode = DEFAULT_LOGGING_MODE
 logfile_name = LOGFILE_NAME
+
+
+def getLogger(name=None):
+    """Return logger given by name"""
+    return logging.getLogger(__name__)
 
 
 def setup_logging(mode=None, filename=None):
@@ -112,7 +116,7 @@ def setup_logging(mode=None, filename=None):
 
 def search_for_logs(path=None):
     """Search for files matching in path with .log extension"""
-    if not path:
+    if path is None:
         path = "."
     matches = glob.glob(os.path.join(path, "*.log"))
     return matches
@@ -151,9 +155,8 @@ def safe_output_logfile(filename):
         log_print("No log found in current directory")
 
 
-def change_logfile_name(path, filename):
+def change_logfile_name(filename):
     """Change log file name if not in debug mode."""
     if jube2.util.DEBUG_MODE:
         return
-    logfile = os.path.join(path, filename)
-    setup_logging(filename=logfile)
+    setup_logging(filename=filename)

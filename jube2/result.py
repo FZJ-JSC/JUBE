@@ -17,12 +17,12 @@ from __future__ import (print_function,
 import jube2.util
 import xml.etree.ElementTree as ET
 import re
-import logging
+import jube2.log
 import operator
 import collections
 import os
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 class Result(object):

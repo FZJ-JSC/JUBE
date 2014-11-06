@@ -18,7 +18,7 @@ import re
 import string
 import os.path
 import subprocess
-import logging
+import jube2.log
 import sys
 import textwrap
 
@@ -36,7 +36,7 @@ DEFAULT_SEPARATOR = ","
 MAX_TABLE_CELL_WIDTH = 40
 HIDE_ANIMATIONS = False
 
-logger = logging.getLogger(__name__)
+logger = jube2.log.getLogger(__name__)
 
 
 def get_current_id(base_dir):
