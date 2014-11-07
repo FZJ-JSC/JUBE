@@ -785,7 +785,7 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
                 result_set.update_substitute(subs)
         elif set_type == "fileset":
             if result_set is None:
-                result_set = list()
+                result_set = jube2.fileset.Fileset(name)
                 files = _extract_files(elements[0])
                 for file_obj in files:
                     file_obj.file_path_ref = \
@@ -959,9 +959,9 @@ def _extract_filesets(etree, tags=None):
                                                  "fileset", name,
                                                  search_name,
                                                  tags)
-            filesets[name] += filelist
         else:
-            filesets[name] = filelist
+            filesets[name] = jube2.fileset.Fileset(name)
+        filesets[name] += filelist
     return filesets
 
 

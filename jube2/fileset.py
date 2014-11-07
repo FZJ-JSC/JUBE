@@ -26,6 +26,43 @@ import glob
 LOGGER = jube2.log.get_logger(__name__)
 
 
+class Fileset(list):
+
+    """Container for file copy, link and prepare operations"""
+
+    def __init__(self, name):
+        list.__init__(self)
+        self._name = name
+
+    @property
+    def name(self):
+        """Return fileset name"""
+        return self._name
+
+    def etree_repr(self):
+        """Return etree object representation"""
+        fileset_etree = ET.Element("fileset")
+        fileset_etree.attrib["name"] = self._name
+        for file_handle in self:
+            fileset_etree.append(file_handle.etree_repr())
+        return fileset_etree
+
+    def create(self, work_dir, parameter_dict, alt_work_dir=None,
+               export_parameter_dict=None, file_path_ref=""):
+        """Copy/load/prepare all files in fileset"""
+        for file_handle in self:
+            if type(file_handle) is Prepare:
+                file_handle.execute(
+                    parameter_dict=parameter_dict,
+                    work_dir=alt_work_dir if alt_work_dir
+                    is not None else work_dir,
+                    export_parameter_dict=export_parameter_dict)
+            else:
+                file_handle.create(
+                    work_dir=work_dir, parameter_dict=parameter_dict,
+                    alt_work_dir=alt_work_dir, file_path_ref=file_path_ref)
+
+
 class File(object):
 
     """Generic file access"""

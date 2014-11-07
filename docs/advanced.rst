@@ -60,7 +60,8 @@ rnc for the validation based on ``schema.xml``.
  
 Example validation tools:
 
-* eclipse
+* eclipse (using DTD or schema)
+* emacs (using RELAX NG)
 * xmllint:
   
   * For validation (using the DTD)::

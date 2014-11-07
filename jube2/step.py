@@ -94,7 +94,6 @@ class Step(object):
     def get_used_sets(self, available_sets):
         """Get set of all used sets, which can be found in available_sets"""
         set_names = set()
-        # Filter for filesets in uses
         for use in self._use:
             for name in use:
                 if name in available_sets:

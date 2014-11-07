@@ -317,7 +317,7 @@ def _continue_benchmark(benchmark_folder, args):
     os.chdir(benchmark_folder)
 
     # Change logfile
-    jube2.log.change_logfile_name("continue.log")
+    jube2.log.change_logfile_name(jube2.conf.LOGFILE_CONTINUE_NAME)
 
     # Run existing benchmark
     benchmark.run()
@@ -351,7 +351,7 @@ def _analyse_benchmark(benchmark_folder, args):
     os.chdir(benchmark_folder)
 
     # Change logfile
-    jube2.log.change_logfile_name("analyse.log")
+    jube2.log.change_logfile_name(jube2.conf.LOGFILE_ANALYSE_NAME)
 
     LOGGER.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
@@ -377,7 +377,7 @@ def _benchmark_result(benchmark_folder, args):
     os.chdir(benchmark_folder)
 
     # Change logfile
-    jube2.log.change_logfile_name("result.log")
+    jube2.log.change_logfile_name(jube2.conf.LOGFILE_RESULT_NAME)
 
     # Run becnhmark analyse
     if args.analyse:

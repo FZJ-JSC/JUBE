@@ -139,7 +139,8 @@ def print_benchmark_info(benchmark):
     print("\nUsed files and directories:")
     for fileset in benchmark.filesets.values():
         for file_obj in fileset:
-            if not file_obj.is_internal_ref:
+            if (not type(file_obj) is jube2.fileset.Prepare) and \
+                    (not file_obj.is_internal_ref):
                 print("  {}".format(os.path.abspath(file_obj.path)))
 
     print(jube2.util.text_line())

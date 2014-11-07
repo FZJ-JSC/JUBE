@@ -251,11 +251,8 @@ class Benchmark(object):
             benchmark_etree.append(parameterset.etree_repr())
         for substituteset in self._substitutesets.values():
             benchmark_etree.append(substituteset.etree_repr())
-        for fileset_name in self._filesets:
-            fileset_etree = ET.SubElement(benchmark_etree, "fileset")
-            fileset_etree.attrib["name"] = fileset_name
-            for file_handle in self._filesets[fileset_name]:
-                fileset_etree.append(file_handle.etree_repr())
+        for fileset in self._filesets.values():
+            benchmark_etree.append(fileset.etree_repr())
         for patternset in self._patternsets.values():
             benchmark_etree.append(patternset.etree_repr())
         for step in self._steps.values():
@@ -496,7 +493,8 @@ class Benchmark(object):
         self._create_bench_dir()
 
         # Change logfile
-        jube2.log.change_logfile_name(os.path.join(self.bench_dir, "run.log"))
+        jube2.log.change_logfile_name(os.path.join(
+            self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
