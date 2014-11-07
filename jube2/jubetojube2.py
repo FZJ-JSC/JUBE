@@ -14,6 +14,7 @@ import xml.dom.minidom as DOM
 import sys
 import os
 import re
+import tarfile
 
 _global_parameterset_name = "jube_convert_parameter"
 
@@ -100,6 +101,9 @@ class JubeXMLConverter(object):
         parameter = ET.SubElement(
             global_parameterset, 'parameter', {'name': 'stdoutlogfile'})
         parameter.text = "stdout"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'benchhome'})
+        parameter.text = "$jube_benchmark_home"
 
         return global_parameterset
 
@@ -174,7 +178,7 @@ class JubeXMLConverter(object):
 
     def _create_calc_parameter(self, expression, step):
         matches = re.findall("`(.*?)`+", expression)
-    
+
         for match in matches:
             if (self._calc_parameterset_node is None):
                 self._calc_parameterset_node = ET.Element('parameterset')
@@ -183,12 +187,13 @@ class JubeXMLConverter(object):
                 self._calc_parameterset_node.set('name', set_name)
                 self._calc_parameterset_name = set_name
                 step._use_list.add(set_name)
-                
+
             parameter_name = "jube_calc_" + str(self._global_calc_counter)
 #             self._global_calc_counter += 1
-           
+
             parameter = ET.SubElement(
-                self._calc_parameterset_node, 'parameter', {'name': parameter_name})
+                self._calc_parameterset_node, 'parameter', {'name': parameter_name,
+                                                            'mode': 'perl'})
             parameter.text = match
             pattern = "`" + match + "`"
             repl = "$" + parameter_name
@@ -197,12 +202,87 @@ class JubeXMLConverter(object):
             self._global_calc_counter += 1
         return expression
 
-
     def _has_perl_expression(self, expression):
         if (re.findall("`(.*?)`+", expression)):
             return True
         else:
             return False
+
+    def _create_compile_fileset_node(self, xml_file, jube_step, benchmark):
+        xml_tree = ET.parse(xml_file)
+        xml_root = xml_tree.getroot()
+
+        tag = jube_step._name
+        if (tag != "compile"):
+            return
+
+        for item in xml_root.iter(tag):
+            prefix_name = item.get('cname')
+            if (prefix_name != jube_step._cname):
+                continue
+            src_node = item.find('src')
+            fileset_node = ET.Element('fileset')
+            fileset_name = jube_step._name + \
+                '_files_' + str(self._global_counter)
+            fileset_node.set('name', fileset_name)
+        
+            copy_node = ET.SubElement(
+                fileset_node, 'copy', {'directory': src_node.attrib["directory"],
+                                       'separator': ' '})
+            copy_node.text = src_node.attrib["files"]
+
+            tar_command = self._create_tar_command_for_compile(
+                src_node.attrib["files"])
+            prepare_node = ET.SubElement(fileset_node, 'prepare')
+            prepare_node.text = tar_command
+
+            jube_step._use_list.add(fileset_name)
+            benchmark._fileset_node.add(fileset_node)
+
+    def _create_tar_command_for_compile(self, files):
+        command = "for i in"
+        file_list = files.split(" ")
+        tarfile_list = []
+        for filename in file_list:
+            if tarfile.is_tarfile(filename):
+                tarfile_list.append(filename)
+
+        if not tarfile_list:
+            return ""
+        for filename in tarfile_list:
+            command = command + " " + filename
+        command = command + "; do tar xf $i; done"
+        return command
+
+    def _create_fileset_node(self, xml_file, jube_step, benchmark):
+        xml_tree = ET.parse(xml_file)
+        xml_root = xml_tree.getroot()
+
+        tag = jube_step._name
+#       check necessary execution (main file) but execute in execute.xml
+        if (jube_step._name == "execution"):
+            tag = "execute"
+
+        for item in xml_root.iter(tag):
+            prefix_name = item.get('cname')
+            if (prefix_name != jube_step._cname):
+                continue
+            input_node = item.find('input')
+            fileset_node = ET.Element('fileset')
+            fileset_name = jube_step._name + \
+                '_files_' + str(self._global_counter)
+            fileset_node.set('name', fileset_name)
+            copy_node = ET.SubElement(fileset_node, 'copy', {"separator": " "})
+            copy_node.text = input_node.attrib['files']
+            if(tag == "execute"):
+                copy_node = ET.SubElement(
+                    fileset_node, 'copy', {'rel_path_ref': 'internal'})
+                copy_node.text = "prepare/*"
+                link_node = ET.SubElement(
+                    fileset_node, 'link', {'rel_path_ref': 'internal'})
+                link_node.text = "compile/$execname"
+            jube_step._use_list.add(fileset_name)
+            benchmark._fileset_node.add(fileset_node)
 
     def extract_substitutes_and_convert(self, xml_file, jube_step):
         xml_tree = ET.parse(xml_file)
@@ -227,7 +307,6 @@ class JubeXMLConverter(object):
                 if (prefix_name != jube_step._cname):
                     continue
 #                     jube_step._use_list.add(substituteset_name)
-
 
                 substituteset_name = prefix_name + "_" + \
                     tag + "_" + str(self._global_counter)
@@ -254,7 +333,6 @@ class JubeXMLConverter(object):
 #
                     sub = ET.SubElement(substituteset, 'sub', attribs_for_sub)
 
-
                     jube_step._use_list.add(substituteset_name)
 
                 if(substituteset_name not in self._dummy_check_set):
@@ -263,10 +341,9 @@ class JubeXMLConverter(object):
 #                     jube_step._use_list.add(substituteset_name)
 #                     add calc set to main node if existent
                     if((self._calc_parameterset_node is not None) and (self._calc_parameterset_name not in self._dummy_check_set)):
-                        print("------------> I'm here ...")
                         self._dummy_check_set.add(self._calc_parameterset_name)
                         self._main_element.append(self._calc_parameterset_node)
-                        
+
 #                         self._calc_parameterset_node = None
                 self._global_counter += 1
 #
@@ -368,6 +445,8 @@ class JubeXMLConverter(object):
         self.extract_substitutes_and_convert(
             self._compile_xml_file, compile_step)
         self._extract_commands(self._compile_xml_file, compile_step)
+        self._create_compile_fileset_node(
+            self._compile_xml_file, compile_step, benchmark_obj)
         benchmark_obj._compile_step = compile_step
         compile_step._build_step_element()
 
@@ -380,8 +459,10 @@ class JubeXMLConverter(object):
             self._execute_xml_file, execution_step)
         self._extract_commands(self._execute_xml_file, execution_step)
         self._extract_environment(self._execute_xml_file, execution_step)
+        self._create_fileset_node(
+            self._execute_xml_file, execution_step, benchmark_obj)
         benchmark_obj._execution_step = execution_step
-        execution_step._build_step_element()
+#         execution_step._build_step_element()
 
 #       Prepare
         prepare_step = _JubeStep("prepare")
@@ -391,6 +472,8 @@ class JubeXMLConverter(object):
         self.extract_substitutes_and_convert(
             self._prepare_xml_file, prepare_step)
         self._extract_commands(self._prepare_xml_file, prepare_step)
+        self._create_fileset_node(
+            self._prepare_xml_file, prepare_step, benchmark_obj)
         benchmark_obj._prepare_step = prepare_step
         prepare_step._build_step_element()
 
@@ -402,6 +485,17 @@ class JubeXMLConverter(object):
         self.extract_substitutes_and_convert(
             self._verify_xml_file, verify_step)
         self._extract_commands(self._verify_xml_file, verify_step)
+
+#         verify command(s) are added to execute commands. In fact these two steps
+#        are merged and verify wont't exists as a step
+        for verify_do in verify_step._do_list:
+            execution_step._do_list.append(verify_do)
+#             print (verify_do)
+        for verify_use in verify_step._use_list:
+#             print (verify_use)
+            execution_step._use_list.add(verify_use)
+        execution_step._build_step_element()
+
         benchmark_obj._verify_step = verify_step
         verify_step._build_step_element()
 
@@ -574,7 +668,7 @@ class _JubeAnalyzer(object):
                 parm_dict = parm.attrib
 
 #     Adaption to jube2 attributes
-                if parm_dict['mode'] == 'line':
+                if re.search('line', parm_dict['mode']):
                     parm_dict['mode'] = 'pattern'
 
                 if parm_dict['mode'] == 'derived':
@@ -705,6 +799,8 @@ class _JubeStep(object):
 
         for item in self._do_list:
             do = ET.SubElement(step, 'do')
+            if(self._name == 'execution'):
+                do.set('done_file', 'end_info.xml')
             do.text = item
 
         if self._last_command is not None:
@@ -730,6 +826,7 @@ class _JubeBenchmark(object):
         self._prepare_step = None
         self._analyzer = None
         self._benchmark_element = None
+        self._fileset_node = set()
 
     def _build_benchmark_element(self):
         benchmark = ET.Element('benchmark')
@@ -737,8 +834,12 @@ class _JubeBenchmark(object):
         benchmark.append(self._prepare_step._step_element)
         benchmark.append(self._compile_step._step_element)
         benchmark.append(self._execution_step._step_element)
-        benchmark.append(self._verify_step._step_element)
+#         verify stuff is included in execution step
+#         benchmark.append(self._verify_step._step_element)
 
+#       Integrate filsets in benchmark
+        for fileset in self._fileset_node:
+            benchmark.append(fileset)
 #       Integrate pattern stuff in main XML
         for patternnode in self._analyzer._patternset_node_list:
             benchmark.append(patternnode)
