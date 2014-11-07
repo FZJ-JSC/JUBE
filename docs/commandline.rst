@@ -246,13 +246,13 @@ Show logs for benchmark
    show command help information
     
 ``-i ID [ID ...]``, ``--id ID [ID ...]`` 
-   show logs for benchmarks with specified IDs
+   select benchmark id, default: last found inside the benchmarks directory
     
 ``-c COMMAND [COMMAND ...]``, ``--command COMMAND [COMMAND ...]``
    show only logs for specified commands
             
 ``DIRECTORY``
-   show directory specific information
+   directory which contain benchmarks, default: .
 
 .. index:: help
 

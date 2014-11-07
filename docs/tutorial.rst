@@ -273,7 +273,10 @@ The ``<substituteset>`` describe the substitution process. The ``<iofile>`` cont
 towards the sandbox directory. Because we do/should not know that location we used the fileset to copy ``file.in`` inside the directory.
 
 The ``<sub>`` specify the substitution. All occurrence of ``source`` will be substituted by ``dest``. As you can see, you can 
-use Parameter inside the substitution to use your current parametersapce. 
+use Parameter inside the substitution. 
+
+There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
+``<sub>`` you must also use the corresponding ``<parameterset>`` inside the ``<step>`` where you use the ``<substituteset>``!
 
 In the ``sub_step`` we use all available sets. The use order isn't relevant. The normal execution process will be:
 
@@ -334,6 +337,9 @@ To use your ``<patternset>`` you had to specify the files which should be parsed
 It uses relevant patternsets, and inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
+The analyzer automatically knows all parameter which where used in the given step and in depending steps. There is no ``<use>`` to add additonal completely new
+parametersets.
+
 To run the anlayse you had to write::
 
    >>> jube analyse bench_run
@@ -341,7 +347,7 @@ To run the anlayse you had to write::
 The analyse data will be stored inside the benchmark directory.
 
 The last part is the result table creation. Here you had to used an existing analyzer. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
-the optioanl sorting order (separated by ``,``). The ``style`` attribute can be ``csv`` or ``pretty`` to get different ASCII representations.
+the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv`` or ``pretty`` to get different ASCII representations.
 
 To create the result table you had to write::
 

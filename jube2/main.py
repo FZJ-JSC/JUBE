@@ -119,14 +119,14 @@ def show_log_single(args, benchmark_folder):
     available_logs = jube2.log.search_for_logs()
 
     # Use all available logs if none is selected ...
-    if not args.commands:
+    if not args.command:
         matching = available_logs
         not_matching = list()
     # ... otherwise find intersection between available and
     # selected
     else:
         matching, not_matching = jube2.log.matching_logs(
-            args.commands, available_logs)
+            args.command, available_logs)
 
     # Output the log file
     for log in matching:
@@ -137,7 +137,7 @@ def show_log_single(args, benchmark_folder):
     # Inform user if any selected log was not found
     if not_matching:
         jube2.log.log_print("Could not find logs: {}".format(
-            not_matching))
+            ",".join(not_matching)))
 
     # Restore current working dir
     os.chdir(cwd)
@@ -655,8 +655,8 @@ def _get_args_parser():
     subparser["log"].add_argument('dir', metavar="DIRECTORY", nargs='?',
                                   help="benchmark directory",
                                   default=".")
-    subparser["log"].add_argument('--commands', "-c", nargs='+',
-                                  help="show log for this command")
+    subparser["log"].add_argument('--command', "-c",
+                                  nargs='+', help="show log for this command")
     subparser["log"].add_argument("-i", "--id", type=int,
                                   help="use benchmarks given by id",
                                   nargs="+")

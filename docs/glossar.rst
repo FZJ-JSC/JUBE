@@ -193,6 +193,7 @@ Glossary
          <fileset name="..." init_with="...">
            <link>...</link>
            <copy>...</copy>
+           <prepare>...</prepare>
            ...
          </fileset>
 
@@ -210,7 +211,7 @@ Glossary
 
      .. code-block:: xml
 
-        <link directory="..." name="..." rel_path_ref="...">...</link>
+        <link directory="..." name="..." rel_path_ref="..." separator="...">...</link>
 
      * ``directory`` is optional, it can be used if you want to link several files inside the same directory
      * ``name`` is optional, it can be used to rename the file inside your work directory
@@ -220,7 +221,8 @@ Glossary
        * ``external``: rel.-pathes based on position of xml-file
        * ``internal``: rel.-pathes based on current work directory (e.g. to link files of another step)
 
-     * each link-tag can contain a list of filenames (or directories), separated by ``,``
+     * each link-tag can contain a list of filenames (or directories), separated by ``,``, the default separator can be changed
+       by using the ``separator`` attribute
 
         * if ``name`` is present, the lists must have the same length
 
@@ -231,7 +233,7 @@ Glossary
 
      .. code-block:: xml
 
-        <copy directory="..." name="..." rel_path_ref="...">...</copy>
+        <copy directory="..." name="..." rel_path_ref="..." separator="...">...</copy>
 
      * ``directory`` is optional, it can be used if you want to copy several files inside the same directory
      * ``name`` is optional, it can be used to rename the file inside your work directory
@@ -241,7 +243,8 @@ Glossary
        * ``external``: rel.-pathes based on position of xml-file
        * ``internal``: rel.-pathes based on current work directory (e.g. to link files of another step)
 
-     * each copy-tag can contain a list of filenames (or directories), separated by ``,``
+     * each copy-tag can contain a list of filenames (or directories), separated by ``,``, the default separator can be changed
+       by using the ``separator`` attribute
 
        * if ``name`` is present, the lists must have the same length
 
@@ -250,6 +253,17 @@ Glossary
        * this can't be mixed using ``name``
 
      * in the execution step the given files or directories will be copied
+     
+   prepare_tag
+     The prepare can contain any *Shell* command you want. It will be executed like a normal :term:`<do> <step_tag>` inside the
+     step where the coresspoding fileset is used. The only difference towards the normal do is, that it will be executed
+     **before** the substitution will be executed.
+     
+     .. code-block:: xml
+     
+        <prepare stdout="..." stderr="...">...</prepare>
+        
+     * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``) 
 
    substituteset_tag
      A substituteset is a container to store a bundle of subs.
@@ -359,7 +373,42 @@ Glossary
      * any name must be unique, it is not allowed to reuse a set
      * the step-attribute contains an existing stepname
      * each file using each workpackage will be scanned seperatly
-
+     
+   result_tag
+     Container for different output types.
+     
+     .. code-block:: xml
+     
+        <result result_dir="...">
+          <use>...</use>
+          ...
+          <table>...</table>
+          ...
+        </result>
+     
+     * ``result_dir`` is optional. Here you can specify an different output directory. Inside of this directory a subfolder
+       named by the current benchmark id will be created. Default: benchmark_dir/result
+     * only analyzer are useable
+     * using analyzer ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
+     
+   table_tag
+     A simple ASCII based table ouput.
+     
+     .. code-block:: xml
+     
+        <table name="..." style="..." sort="..." separator="...">
+          <column colw="..." format="..." title="...">...</column>
+          ...        
+        </table>
+        
+     * ``style`` is optional; allowed styles: ``csv``, ``pretty``; default: ``csv``
+     * ``separator`` is optional; only used in csv-style, default: ``,``
+     * ``sort`` is optional can contain a list of parameter- or patternnames (separated by ,). 
+       Given patterntype or parametertype will be used for sorting
+     * ``<column>`` must contain an single parameter- or patternname
+     * ``colw`` is optional: column width
+     * ``title`` is optional: column title
+     * ``format`` can contain a C like format string: e.g. format=".2f"        
 
    include_tag
      Include *XML*-data from an external file.

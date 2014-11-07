@@ -175,9 +175,10 @@ class Table(Result):
         else:
             self._sort_names = sort_names
 
-    def add_column(self, name, colw=None, format_string=None):
+    def add_column(self, name, colw=None, format_string=None, title=None):
         """Add an additional column to the table"""
         self._columns[name] = {"name": name,
+                               "title": title,
                                "colw": colw,
                                "format": format_string}
 
@@ -188,7 +189,10 @@ class Table(Result):
         colw = list()
         units = self._load_units(self._columns.keys())
         for column in self._columns.values():
-            value = column["name"]
+            if column["title"] is None:
+                value = column["name"]
+            else:
+                value = column["title"]
             if column["name"] in units:
                 value += "[{}]".format(units[column["name"]])
             row.append(value)
@@ -260,4 +264,7 @@ class Table(Result):
             if self._columns[column_name]["format"] is not None:
                 column_etree.attrib["format"] = \
                     self._columns[column_name]["format"]
+            if self._columns[column_name]["title"] is not None:
+                column_etree.attrib["title"] = \
+                    self._columns[column_name]["title"]
         return result_etree

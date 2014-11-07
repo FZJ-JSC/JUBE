@@ -86,7 +86,7 @@ copy_tag
    A copy can be used to copy a file or directory from your normal
    filesytem to your sandbox work directory.
 
-      <copy directory="..." name="..." rel_path_ref="...">...</copy>
+      <copy directory="..." name="..." rel_path_ref="..." separator="...">...</copy>
 
    * "directory" is optional, it can be used if you want to copy
      several files inside the same directory
@@ -104,7 +104,8 @@ copy_tag
        to link files of another step)
 
    * each copy-tag can contain a list of filenames (or directories),
-     separated by ","
+     separated by ",", the default separator can be changed by using
+     the "separator" attribute
 
      * if "name" is present, the lists must have the same length
 
@@ -162,6 +163,7 @@ fileset_tag
       <fileset name="..." init_with="...">
         <link>...</link>
         <copy>...</copy>
+        <prepare>...</prepare>
         ...
       </fileset>
 
@@ -314,11 +316,17 @@ jube_variables
      * "$jube_wp_abspath": absolute path to workpackage work
        directory
 
+     * "$jube_wp_envstr": a string containing all exported parameter
+       in shell syntax:
+
+          export par=$par
+          export par2=$par2
+
 link_tag
    A link can be used to create a symbolic link from your sandbox work
    directory to a file or directory inside your normal filesystem.
 
-      <link directory="..." name="..." rel_path_ref="...">...</link>
+      <link directory="..." name="..." rel_path_ref="..." separator="...">...</link>
 
    * "directory" is optional, it can be used if you want to link
      several files inside the same directory
@@ -336,7 +344,8 @@ link_tag
        to link files of another step)
 
    * each link-tag can contain a list of filenames (or directories),
-     separated by ","
+     separated by ",", the default separator can be changed by using
+     the "separator" attribute
 
         * if "name" is present, the lists must have the same length
 
@@ -446,6 +455,18 @@ parameterset_tag
             <parameter name="test2">bar</parameter> <!-- Other content in set2 -->
           </parameterset>
 
+prepare_tag
+   The prepare can contain any *Shell* command you want. It will be
+   executed like a normal *<do>* inside the step where the
+   coresspoding fileset is used. The only difference towards the
+   normal do is, that it will be executed **before** the substitution
+   will be executed.
+
+      <prepare stdout="..." stderr="...">...</prepare>
+
+   * "stdout"- and "stderr"-filename are optional (default: "stdout"
+     and "stderr")
+
 remove
    The given benchmark will be removed.
 
@@ -465,6 +486,26 @@ result
    If no benchmark id is given, last benchmark found in directory will
    be used. If benchmark directory is missing, current directory will
    be used.
+
+result_tag
+   Container for different output types.
+
+      <result result_dir="...">
+        <use>...</use>
+        ...
+        <table>...</table>
+        ...
+      </result>
+
+   * "result_dir" is optional. Here you can specify an different
+     output directory. Inside of this directory a subfolder named by
+     the current benchmark id will be created. Default:
+     benchmark_dir/result
+
+   * only analyzer are useable
+
+   * using analyzer "<use>set1,set2</use>" is the same as
+     "<use>set1</use><use>set2</use>"
 
 run
    Start a new benchmark run by parsing the given *JUBE* input file.
@@ -594,6 +635,31 @@ substituteset_tag
        using "init-with="filename.xml:external_name""
 
    * substitutesets can be used inside the step-command
+
+table_tag
+   A simple ASCII based table ouput.
+
+      <table name="..." style="..." sort="..." separator="...">
+        <column colw="..." format="..." title="...">...</column>
+        ...
+      </table>
+
+   * "style" is optional; allowed styles: "csv", "pretty"; default:
+     "csv"
+
+   * "separator" is optional; only used in csv-style, default: ","
+
+   * "sort" is optional can contain a list of parameter- or
+     patternnames (separated by ,). Given patterntype or parametertype
+     will be used for sorting
+
+   * "<column>" must contain an single parameter- or patternname
+
+   * "colw" is optional: column width
+
+   * "title" is optional: column title
+
+   * "format" can contain a C like format string: e.g. format=".2f"
 
 tagging
    Tagging is a simple way to include or exclude parts of your input
