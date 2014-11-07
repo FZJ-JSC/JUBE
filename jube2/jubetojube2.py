@@ -15,10 +15,13 @@ import sys
 import os
 import re
 
+_global_parameterset_name = "jube_convert_parameter"
+
 
 class JubeXMLConverter(object):
     _global_counter = 0
     _dummy_check_set = set()
+    _global_calc_counter = 0
 
     def __init__(self, main_file, main_dir="./"):
         self._main_file = main_file
@@ -61,6 +64,44 @@ class JubeXMLConverter(object):
 
         self._global_platform_name = self._main_xml_file_root.attrib[
             "platform"]
+
+#         The global parameterset is needed in each benchmark and therefore needs
+#         to be included
+        self._global_parameterset = self._init_global_parameterset()
+
+#         Needed to gather perl expressions of corresponding substituteset
+        self._calc_parameterset_node = None
+        self._calc_parameterset_name = ""
+
+    def _init_global_parameterset(self):
+        global_parameterset = ET.Element('parameterset')
+        global_parameterset.set('name', _global_parameterset_name)
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'outdir'})
+        parameter.text = "."
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'executable'})
+        parameter.text = "./jube_exe"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'execname'})
+        parameter.text = "jube_exe"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'benchname'})
+        parameter.text = "$jube_benchmark_name"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'subid'})
+        parameter.text = "$jube_benchmark_id"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'env'})
+        parameter.text = "$jube_wp_envstr"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'stderrlogfile'})
+        parameter.text = "stderr"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'stdoutlogfile'})
+        parameter.text = "stdout"
+
+        return global_parameterset
 
     def file_availability(self, filename):
         if(os.path.isfile(filename)):
@@ -105,6 +146,12 @@ class JubeXMLConverter(object):
             parameter = ET.SubElement(parameterset, 'parameter', {'name': k})
             parameter.text = v
 
+#       Add platform as needed in jube version 1
+        if(name == self._global_platform_name):
+            parameter = ET.SubElement(
+                parameterset, 'parameter', {'name': 'platform'})
+            parameter.text = self._global_platform_name
+
         self._root_platform_element.append(parameterset)
 
     def convert_platformfile(self):
@@ -125,6 +172,38 @@ class JubeXMLConverter(object):
         fout = open(output, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
 
+    def _create_calc_parameter(self, expression, step):
+        matches = re.findall("`(.*?)`+", expression)
+    
+        for match in matches:
+            if (self._calc_parameterset_node is None):
+                self._calc_parameterset_node = ET.Element('parameterset')
+                set_name = step._name + "_calc_" + \
+                    str(self._global_counter)
+                self._calc_parameterset_node.set('name', set_name)
+                self._calc_parameterset_name = set_name
+                step._use_list.add(set_name)
+                
+            parameter_name = "jube_calc_" + str(self._global_calc_counter)
+#             self._global_calc_counter += 1
+           
+            parameter = ET.SubElement(
+                self._calc_parameterset_node, 'parameter', {'name': parameter_name})
+            parameter.text = match
+            pattern = "`" + match + "`"
+            repl = "$" + parameter_name
+
+            expression = expression.replace(pattern, repl)
+            self._global_calc_counter += 1
+        return expression
+
+
+    def _has_perl_expression(self, expression):
+        if (re.findall("`(.*?)`+", expression)):
+            return True
+        else:
+            return False
+
     def extract_substitutes_and_convert(self, xml_file, jube_step):
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
@@ -134,11 +213,22 @@ class JubeXMLConverter(object):
         if (jube_step._name == "execution"):
             tag = "execute"
 
+#            Substitution of perl expressions are also done in this loop.
+#            calc_parameterset needs to be emptied for each step to fill
+# in only those expressions which are relevant for the underlying step
+#         self._calc_parameterset_name = ""
+        self._calc_parameterset_node = None
         for item in xml_root.iter(tag):
             self._global_counter = 0
             for substitute in item.findall('substitute'):
 
                 prefix_name = item.get('cname')
+#               check if substituteset is relevant for current benchmark
+                if (prefix_name != jube_step._cname):
+                    continue
+#                     jube_step._use_list.add(substituteset_name)
+
+
                 substituteset_name = prefix_name + "_" + \
                     tag + "_" + str(self._global_counter)
                 substituteset = ET.Element('substituteset')
@@ -146,7 +236,7 @@ class JubeXMLConverter(object):
 
 #               Build iofile tag
                 iofile_dict = {
-                    "in": substitute.attrib['infile'], 
+                    "in": substitute.attrib['infile'],
                     "out": substitute.attrib['outfile']}
                 iofile = ET.SubElement(substituteset, 'iofile', iofile_dict)
 
@@ -156,18 +246,28 @@ class JubeXMLConverter(object):
                         if(k == "from"):
                             attribs_for_sub["source"] = v
                         else:
-                            attribs_for_sub["dest"] = v
+                            if(self._has_perl_expression(v)):
+                                attribs_for_sub["dest"] = self._create_calc_parameter(
+                                    v, jube_step)
+                            else:
+                                attribs_for_sub["dest"] = v
+#
                     sub = ET.SubElement(substituteset, 'sub', attribs_for_sub)
 
-    #           check if substituteset is relevant for current benchmark
-                if (prefix_name == jube_step._cname):
-                    jube_step._use_list.append(substituteset_name)
-                else:
-                    continue
+
+                    jube_step._use_list.add(substituteset_name)
 
                 if(substituteset_name not in self._dummy_check_set):
                     self._main_element.append(substituteset)
                     self._dummy_check_set.add(substituteset_name)
+#                     jube_step._use_list.add(substituteset_name)
+#                     add calc set to main node if existent
+                    if((self._calc_parameterset_node is not None) and (self._calc_parameterset_name not in self._dummy_check_set)):
+                        print("------------> I'm here ...")
+                        self._dummy_check_set.add(self._calc_parameterset_name)
+                        self._main_element.append(self._calc_parameterset_node)
+                        
+#                         self._calc_parameterset_node = None
                 self._global_counter += 1
 #
 
@@ -203,6 +303,7 @@ class JubeXMLConverter(object):
         main_tree = ET.parse(self._main_xml_file)
         main_root = main_tree.getroot()
         self._main_comment()
+        self._main_element.append(self._global_parameterset)
 
         for benchmark in main_root.iter('benchmark'):
             benchmark_name = benchmark.get('name')
@@ -224,7 +325,7 @@ class JubeXMLConverter(object):
 
 #               benchmark setup
                 self._benchmark_init(
-                    benchmark_obj, pset, compile_dict, execution_dict, 
+                    benchmark_obj, pset, compile_dict, execution_dict,
                     prepare_dict, verify_dict, analyse_dict)
 
                 self._benchmark_dict.update({benchmark_name: benchmark_obj})
@@ -261,7 +362,7 @@ class JubeXMLConverter(object):
                         verify_dict, analyse_dict):
         #       Compile
         compile_step = _JubeStep("compile")
-        compile_step._use_list.append(pset)
+        compile_step._use_list.add(pset)
         compile_step._cname = self._check_and_sub_platform_var(
             compile_dict.attrib["cname"])
         self.extract_substitutes_and_convert(
@@ -272,7 +373,7 @@ class JubeXMLConverter(object):
 
 #       Execute
         execution_step = _JubeStep("execution")
-        execution_step._use_list.append(pset)
+        execution_step._use_list.add(pset)
         execution_step._cname = self._check_and_sub_platform_var(
             execution_dict.attrib["cname"])
         self.extract_substitutes_and_convert(
@@ -284,7 +385,7 @@ class JubeXMLConverter(object):
 
 #       Prepare
         prepare_step = _JubeStep("prepare")
-        prepare_step._use_list.append(pset)
+        prepare_step._use_list.add(pset)
         prepare_step._cname = self._check_and_sub_platform_var(
             prepare_dict.attrib["cname"])
         self.extract_substitutes_and_convert(
@@ -295,7 +396,7 @@ class JubeXMLConverter(object):
 
 #       Verify
         verify_step = _JubeStep("verify")
-        verify_step._use_list.append(pset)
+        verify_step._use_list.add(pset)
         verify_step._cname = self._check_and_sub_platform_var(
             verify_dict.attrib["cname"])
         self.extract_substitutes_and_convert(
@@ -377,7 +478,7 @@ class JubeXMLConverter(object):
 
 #             check if substituteset is relevant for current benchmark
                 if (prefix_name == jube_step._cname):
-                    jube_step._use_list.append(envset_name)
+                    jube_step._use_list.add(envset_name)
                 else:
                     continue
 
@@ -386,7 +487,7 @@ class JubeXMLConverter(object):
                     self._dummy_check_set.add(envset_name)
                 self._global_counter += 1
 
-    def write_main_file(self, output="benchmarks_jube2.xml"):
+    def write_main_file(self, output="benchmarks_jube2_new.xml"):
         tree = ET.ElementTree(self._main_element)
         xml = ET.tostring(tree.getroot(), encoding="UTF-8")
         # Using dom for pretty-print
@@ -404,8 +505,8 @@ class JubeXMLConverter(object):
         for k, v in self._benchmark_dict.items():
             self._main_element.append(v._benchmark_element)
 
-        self.write_platformfile(self._main_dir + "platform_jube2.xml")
-        self.write_main_file(self._main_dir + "benchmarks_jube2.xml")
+        self.write_platformfile(self._main_dir + "platform_jube2_new.xml")
+        self.write_main_file(self._main_dir + "benchmarks_jube2_new.xml")
 
         message = """            Don't forget to have a look at 
             benchmarks_jube2.xml and platform_jube2.xml 
@@ -434,7 +535,7 @@ class _JubeAnalyzer(object):
         self._cname = cname
         self._main_dir = main_dir
         self._pattern_file_list = []
-        self._use_list = []
+        self._use_list = set()
         self._result_node = None
         self._extract_includepattern(xml_file)
 
@@ -468,7 +569,7 @@ class _JubeAnalyzer(object):
             patternset = ET.Element('patternset')
             usename = os.path.basename(patternfile)
             patternset.set('name', usename)
-            self._use_list.append(usename)
+            self._use_list.add(usename)
             for parm in root.findall('parm'):
                 parm_dict = parm.attrib
 
@@ -573,10 +674,13 @@ class _JubeStep(object):
     def __init__(self, step_name):
         self._name = step_name
         self._cname = ""
-        self._use_list = []
+        self._use_list = set()
         self._do_list = []
         self._last_command = None
         self._step_element = None
+
+# Init: each step needs global parameterset
+        self._use_list.add(_global_parameterset_name)
 
     def _build_step_element(self):
         step = ET.Element('step')
