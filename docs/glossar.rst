@@ -30,7 +30,14 @@ Glossary
    log
       Show logs for the given benchmark directory or a given benchmark.
 
-      If benchmark directory is missing, current directory will be used.
+      If no benchmark id is given, last benchmark found in directory will be used. If benchmark directory is missing, current
+      directory will be used.
+      
+   status
+      Show status string (RUNNING or FINISHED) for the given benchmark.
+      
+      If no benchmark id is given, last benchmark found in directory will be used. If benchmark directory is missing, current
+      directory will be used.
 
    continue
       Continue an existing benchmark. Not finished steps will be continued,

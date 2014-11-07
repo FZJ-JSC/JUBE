@@ -135,7 +135,8 @@ Inside the benchmark directory you will see the follwing structure:
    +- 000000               # the benchmark id
       |
       +- configuration.xml # the stored benchmark configuration
-      +- workpackages.xml  # workpackage information 
+      +- workpackages.xml  # workpackage information
+      +- run.log           # log information
       +- 000000_say_hello  # the workpackage
          |
          +- done           # workpackage finished marker
@@ -146,7 +147,7 @@ Inside the benchmark directory you will see the follwing structure:
             
 ``stdout`` will contain ``Hello World`` in this example case.
 
-.. index:: help
+.. index:: help, logging
 
 Help
 ~~~~
@@ -167,14 +168,27 @@ Another useful command is the ``info`` command. It will show you information con
    >>> jube info <benchmark-directory> -- id <id> --step <stepname>
    
 The third, but very important, functionality is the **logger**. Every ``run``, ``continue``, ``analyse``
-and ``result`` execution will produce a new log file inside your execution directory.
+and ``result`` execution will produce log information inside your benchmark directory.
 This file contains much useful debugging output.
 
-You can also use the debugging mode::
+You can easily access these log files by using the *JUBE* log viewer command::
+
+   >>> jube log [benchmark-directory] [--id id] [--command cmd]
+
+e.g.::
+
+   >>> jube log bench_runs --command run
+   
+will display the ``run.log`` of the last benchmark found inside of ``bench_runs``.
+
+Because the parsing step is done before creating the benchmark directory, there will be a
+``jube-parse.log`` inside your current workign directory, which contain the parser log information.   
+
+There is also a debugging mode inside of *JUBE*::
 
    >>> jube --debug <command> [other-args]
    
-This mode avoid any *shell* execution but will generate log files.
+This mode avoid any *shell* execution but will generate a single log file (``jube-debug.log``) in your current working directory.
 
 .. index:: parameterspace creation
 

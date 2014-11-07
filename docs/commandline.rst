@@ -254,6 +254,26 @@ Show logs for benchmark
 ``DIRECTORY``
    directory which contain benchmarks, default: .
 
+..index:: status
+
+status
+~~~~~~
+
+Show benchmark status RUNNING or FINISHED.
+
+.. code-block:: none
+
+   jube status [-h] [-i ID [ID ...]] [DIRECTORY]
+   
+``-h``, ``--help``
+   show command help information
+   
+``-i ID [ID ...]``, ``--id ID [ID ...]`` 
+   select benchmark id, default: last found inside the benchmarks directory
+            
+``DIRECTORY``
+   directory which contain benchmarks, default: .
+
 .. index:: help
 
 help

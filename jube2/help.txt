@@ -355,7 +355,9 @@ link_tag
 log
    Show logs for the given benchmark directory or a given benchmark.
 
-   If benchmark directory is missing, current directory will be used.
+   If no benchmark id is given, last benchmark found in directory will
+   be used. If benchmark directory is missing, current directory will
+   be used.
 
 parameter_tag
    A parameter is a usable configuration option.
@@ -527,6 +529,13 @@ selection_tag
    * multiple "<only>" and "<not>" are allowed
 
    * "<only>" and "<not>" can contain a name list divided by ","
+
+status
+   Show status string (RUNNING or FINISHED) for the given benchmark.
+
+   If no benchmark id is given, last benchmark found in directory will
+   be used. If benchmark directory is missing, current directory will
+   be used.
 
 step_tag
    A step give a list of *Shell* operations and a corresponding

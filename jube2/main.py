@@ -39,6 +39,21 @@ def continue_benchmarks(args):
         _continue_benchmark(benchmark_folder, args)
 
 
+def status(args):
+    """Show benchmark status"""
+    found_benchmarks = search_for_benchmarks(args)
+    for benchmark_folder in found_benchmarks:
+        benchmark = _load_existing_benchmark(benchmark_folder,
+                                             load_analyse=False)
+        # Store current working dir
+        cwd = os.getenv("PWD")
+        # Change current working dir to benchmark_folder
+        os.chdir(benchmark_folder)
+        jube2.info.print_benchmark_status(benchmark)
+        # Restore current working dir
+        os.chdir(cwd)
+
+
 def benchmarks_results(args):
     """Show benchmark results"""
     found_benchmarks = search_for_benchmarks(args)
@@ -304,7 +319,7 @@ def jube2jube2(args):
     convertit = jube2.jubetojube2.JubeXMLConverter(jube_main_file, main_dir)
     convertit.convert_platformfile()
     convertit.convert_xml(jube_main_file)
-    convertit.write_platformfile(main_dir + "platform_jube2.xml")
+    convertit.write_platformfile(os.path.join(main_dir, "platform_jube2.xml"))
 
 
 def _continue_benchmark(benchmark_folder, args):
@@ -475,155 +490,211 @@ def _get_args_parser():
     parser.add_argument('--devel', action="store_true",
                         help='show development related information')
     subparsers = parser.add_subparsers(dest="subparser", help='subparsers')
-    subparser = dict()
+
+    subparser_configuration = dict()
 
     # run subparser
-    subparser["run"] = \
-        subparsers.add_parser(
-            'run', help='processes benchmark',
-            description=jube2.help.HELP['run'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["run"].add_argument('files', metavar="FILE", nargs='+',
-                                  help="input file")
-    subparser["run"].add_argument('--only-bench', nargs='+',
-                                  help='only run benchmark')
-    subparser["run"].add_argument('--not-bench', nargs='+',
-                                  help='do not run benchmark')
-    subparser["run"].add_argument("-t", "--tag", nargs='+',
-                                  help='select tags')
-    subparser["run"].add_argument('--hide-animation', action="store_true",
-                                  help='hide animations')
-    subparser["run"].add_argument('--include-path', nargs='+',
-                                  help='directory containing include files')
-    subparser["run"].add_argument("-a", "--analyse", action="store_true",
-                                  help="run analyse")
-    subparser["run"].add_argument("-r", "--result", action="store_true",
-                                  help="show results")
-    subparser["run"].add_argument("-m", "--comment", help="add comment")
-    subparser["run"].set_defaults(func=run_new_benchmark)
+    subparser_configuration["run"] = {
+        "help": "processes benchmark",
+        "func": run_new_benchmark,
+        "arguments": {
+            ("files",):
+                {"metavar": "FILE", "nargs": "+", "help": "input file"},
+            ("--only-bench",):
+                {"nargs": "+", "help": "only run benchmark"},
+            ("--not-bench",):
+                {"nargs": "+", "help": "do not run benchmark"},
+            ("-t", "--tag"):
+                {"nargs": "+", "help": "select tags"},
+            ("--hide-animation",):
+                {"action": "store_true", "help": "hide animations"},
+            ("--include-path",):
+                {"nargs": "+", "help": "directory containing include files"},
+            ("-a", "--analyse"):
+                {"action": "store_true", "help": "run analyse"},
+            ("-r", "--result"):
+                {"action": "store_true", "help": "show results"},
+            ("-m", "--comment"):
+                {"help": "add comment"}
+        }
+    }
 
     # continue subparser
-    subparser["continue"] = \
-        subparsers.add_parser(
-            'continue', help='continue benchmark',
-            description=jube2.help.HELP['continue'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["continue"].add_argument('dir', metavar="DIRECTORY", nargs='?',
-                                       help="benchmark directory",
-                                       default=".")
-    subparser["continue"].add_argument("-i", "--id", type=int,
-                                       help="use benchmarks given by id",
-                                       nargs="+")
-    subparser["continue"].add_argument("--hide-animation", action="store_true",
-                                       help="hide animations")
-    subparser["continue"].add_argument("-a", "--analyse", action="store_true",
-                                       help="run analyse")
-    subparser["continue"].add_argument("-r", "--result", action="store_true",
-                                       help="show results")
-    subparser["continue"].set_defaults(func=continue_benchmarks)
+    subparser_configuration["continue"] = {
+        "help": "continue benchmark",
+        "func": continue_benchmarks,
+        "arguments": {
+            ("dir",):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("--hide-animation",):
+                {"action": "store_true", "help": "hide animations"},
+            ("-a", "--analyse"):
+                {"action": "store_true", "help": "run analyse"},
+            ("-r", "--result"):
+                {"action": "store_true", "help": "show results"}
+        }
+    }
 
     # analyse subparser
-    subparser["analyse"] = \
-        subparsers.add_parser(
-            'analyse', help='analyse benchmark',
-            description=jube2.help.HELP['analyse'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["analyse"].add_argument('dir', metavar="DIRECTORY", nargs='?',
-                                      help="benchmark directory",
-                                      default=".")
-    subparser["analyse"].add_argument("-i", "--id", type=int,
-                                      help="use benchmarks given by id",
-                                      nargs="+")
-    subparser["analyse"].add_argument("-u", "--update", metavar="UPDATE_FILE",
-                                      help="update analyse and " +
-                                      "result configuration")
-    subparser["analyse"].add_argument('--include-path', nargs='+',
-                                      help="directory containing include " +
-                                      "files")
-    subparser["analyse"].add_argument("-t", "--tag", nargs='+',
-                                      help='select tags')
-    subparser["analyse"].set_defaults(func=analyse_benchmarks)
+    subparser_configuration["analyse"] = {
+        "help": "analyse benchmark",
+        "func": analyse_benchmarks,
+        "arguments": {
+            ("dir",):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("-u", "--update"):
+                {"metavar": "UPDATE_FILE",
+                 "help": "update analyse and result configuration"},
+            ("--include-path",):
+                {"nargs": "+", "help": "directory containing include files"},
+            ("-t", "--tag"):
+                {"nargs": "+", "help": "select tags"}
+        }
+    }
 
     # result subparser
-    subparser["result"] = \
-        subparsers.add_parser(
-            'result', help='show benchmark results',
-            description=jube2.help.HELP['result'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["result"].add_argument('dir', metavar="DIRECTORY", nargs='?',
-                                     help="benchmark directory",
-                                     default=".")
-    subparser["result"].add_argument("-i", "--id", type=int,
-                                     help="use benchmarks given by id",
-                                     nargs="+")
-    subparser["result"].add_argument("-a", "--analyse", action="store_true",
-                                     help="run analyse before creating" +
-                                     "result")
-    subparser["result"].add_argument("-u", "--update", metavar="UPDATE_FILE",
-                                     help="update analyse and " +
-                                     "result configuration")
-    subparser["result"].add_argument("--include-path", nargs="+",
-                                     help="directory containing include " +
-                                     "files")
-    subparser["result"].add_argument("-t", "--tag", nargs='+',
-                                     help='select tags')
-    subparser["result"].add_argument("-o", "--only", nargs="+",
-                                     metavar="RESULT_NAME",
-                                     help="only create results " +
-                                     "given by specific name")
-    subparser["result"].set_defaults(func=benchmarks_results)
+    subparser_configuration["result"] = {
+        "help": "show benchmark results",
+        "func": benchmarks_results,
+        "arguments": {
+            ("dir",):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("-a", "--analyse"):
+                {"action": "store_true",
+                 "help": "run analyse before creating result"},
+            ("-u", "--update"):
+                {"metavar": "UPDATE_FILE",
+                 "help": "update analyse and result configuration"},
+            ("--include-path",):
+                {"nargs": "+", "help": "directory containing include files"},
+            ("-t", "--tag"):
+                {"nargs": '+', "help": "select tags"},
+            ("-o", "--only"):
+                {"nargs": "+", "metavar": "RESULT_NAME",
+                 "help": "only create results given by specific name"}
+        }
+    }
 
     # info subparser
-    subparser["info"] = \
-        subparsers.add_parser(
-            'info', help='benchmark information',
-            description=jube2.help.HELP['info'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["info"].add_argument('dir', metavar="DIRECTORY", nargs='?',
-                                   help="benchmark directory",
-                                   default=".")
-    subparser["info"].add_argument("-i", "--id", type=int,
-                                   help="use benchmarks given by id",
-                                   nargs="+")
-    subparser["info"].add_argument("-s", "--step",
-                                   help="show information for given step",
-                                   nargs="+")
-    subparser["info"].set_defaults(func=info)
+    subparser_configuration["info"] = {
+        "help": "benchmark information",
+        "func": info,
+        "arguments": {
+            ('dir',):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("-s", "--step"):
+                {"help": "show information for given step", "nargs": "+"}
+        }
+    }
+
+    # status subparser
+    subparser_configuration["status"] = {
+        "help": "show benchmark status",
+        "func": status,
+        "arguments": {
+            ('dir',):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"}
+        }
+    }
 
     # comment subparser
-    subparser["comment"] = \
-        subparsers.add_parser(
-            'comment', help='comment handling',
-            description=jube2.help.HELP['comment'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["comment"].add_argument('comment', help="comment")
-    subparser["comment"].add_argument('dir', metavar="DIRECTORY", nargs='?',
-                                      help="benchmark directory",
-                                      default=".")
-    subparser["comment"].add_argument("-i", "--id", type=int,
-                                      help="use benchmarks given by id",
-                                      nargs="+")
-    subparser["comment"].add_argument("-a", "--append",
-                                      help="append comment to existing one",
-                                      action='store_true')
-    subparser["comment"].set_defaults(func=manipulate_comments)
+    subparser_configuration["comment"] = {
+        "help": "comment handling",
+        "func": manipulate_comments,
+        "arguments": {
+            ('comment',):
+                {"help": "comment"},
+            ('dir',):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("-a", "--append"):
+                {"help": "append comment to existing one",
+                 "action": 'store_true'}
+        }
+    }
 
     # remove subparser
-    subparser["remove"] = \
-        subparsers.add_parser(
-            'remove', help='remove benchmark',
-            description=jube2.help.HELP['remove'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["remove"].add_argument('dir', metavar="DIRECTORY", nargs='?',
-                                     help="benchmark directory",
-                                     default=".")
-    subparser["remove"].add_argument("-i", "--id", type=int,
-                                     help="use benchmarks given by id",
-                                     nargs="+")
-    subparser["remove"].add_argument("-f", "--force",
-                                     help="force removing, never prompt",
-                                     action='store_true')
-    subparser["remove"].set_defaults(func=remove_benchmarks)
+    subparser_configuration["remove"] = {
+        "help": "remove benchmark",
+        "func": remove_benchmarks,
+        "arguments": {
+            ('dir',):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("-f", "--force"):
+                {"help": "force removing, never prompt",
+                 "action": "store_true"}
+        }
+    }
+
+    # convert subparser
+    subparser_configuration["convert"] = {
+        "help": "UNDER CONSTRUCTION!!! convert jube files",
+        "func": jube2jube2,
+        "arguments": {
+            ("-i", "--input_path"):
+                {"type": str, "default": "./",
+                 "help": "location of jube XML files"},
+            ("main_xml_file",):
+                {"type": str, "help": "Main jube XML"}
+        }
+    }
+
+    # log subparser
+    subparser_configuration["log"] = {
+        "help": "show benchmark logs",
+        "func": show_log,
+        "arguments": {
+            ('dir',):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ('--command', "-c"):
+                {"nargs": "+", "help": "show log for this command"},
+            ("-i", "--id"):
+                {"type": int, "help": "use benchmarks given by id",
+                 "nargs": "+"}
+        }
+    }
+
+    # create subparser out of subparser configuration
+    subparser = dict()
+    for name, subparser_config in subparser_configuration.items():
+        subparser[name] = \
+            subparsers.add_parser(
+                name, help=subparser_config.get("help", ""),
+                description=jube2.help.HELP.get(name, ""),
+                formatter_class=argparse.RawDescriptionHelpFormatter)
+        if "arguments" not in subparser_config:
+            continue
+        for names, arg in subparser_config["arguments"].items():
+            subparser[name].add_argument(*names, **arg)
+        subparser[name].set_defaults(func=subparser_config["func"])
 
     # help subparser
     subparser["help"] = \
@@ -634,33 +705,6 @@ def _get_args_parser():
     subparser["help"].add_argument('command', nargs='?',
                                    help="command or info element")
     subparser["help"].set_defaults(func=command_help)
-
-    # convert jube files to jube2 files
-    subparser["convert"] = \
-        subparsers.add_parser(
-            'convert', help='UNDER CONSTRUCTION!!! convert jube files')
-    subparser["convert"].add_argument("-i", "--input_path", type=str,
-                                      default="./",
-                                      help="location of jube XML files")
-    subparser["convert"].add_argument("main_xml_file", type=str,
-                                      help="Main jube XML")
-    subparser["convert"].set_defaults(func=jube2jube2)
-
-    # log subparser
-    subparser["log"] = \
-        subparsers.add_parser(
-            'log', help='show benchmark logs',
-            description=jube2.help.HELP['log'],
-            formatter_class=argparse.RawDescriptionHelpFormatter)
-    subparser["log"].add_argument('dir', metavar="DIRECTORY", nargs='?',
-                                  help="benchmark directory",
-                                  default=".")
-    subparser["log"].add_argument('--command', "-c",
-                                  nargs='+', help="show log for this command")
-    subparser["log"].add_argument("-i", "--id", type=int,
-                                  help="use benchmarks given by id",
-                                  nargs="+")
-    subparser["log"].set_defaults(func=show_log)
 
     return parser, subparser
 

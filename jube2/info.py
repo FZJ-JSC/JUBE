@@ -225,3 +225,15 @@ def print_step_info(benchmark, step_name):
     for error_file in error_dict:
         print(">>> {}:".format(error_file))
         print("{}\n".format(error_dict[error_file]))
+
+
+def print_benchmark_status(benchmark):
+    """Print FINISHED or "RUNNING" dependign on the workpackage status"""
+    all_done = True
+    for step_name in benchmark.workpackages:
+        for workpackage in benchmark.workpackages[step_name]:
+            all_done = workpackage.done and all_done
+    if all_done:
+        print("FINISHED")
+    else:
+        print("RUNNING")
