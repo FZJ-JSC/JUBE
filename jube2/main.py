@@ -317,7 +317,7 @@ def jube2jube2(args):
     main_dir = args.input_path
     jube_main_file = args.main_xml_file
     convertit = jube2.jubetojube2.JubeXMLConverter(jube_main_file, main_dir)
-    convertit.convert_platformfile()
+ #   convertit.convert_platformfile()
     convertit.convert_xml(jube_main_file)
     convertit.write_platformfile(os.path.join(main_dir, "platform_jube2.xml"))
 
