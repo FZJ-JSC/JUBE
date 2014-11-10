@@ -561,10 +561,10 @@ class JubeXMLConverter(object):
                     continue
 
     def _beautify_command(self, command_text):
-        newline = "\n"
+#         newline = "\n"
         tab = "\t"
-        command_text = re.sub(newline, "", command_text)
-        command_text = re.sub(tab, "", command_text)
+#         command_text = re.sub(newline, "", command_text)
+        command_text = re.sub(tab, " ", command_text)
         command_text = command_text.strip()
         return command_text
 
@@ -690,6 +690,8 @@ class _JubeAnalyzer(object):
             for parm in root.findall('parm'):
                 parm_dict = parm.attrib
 
+#             prefix added to pattern names to avoid possible naming conflict with parameters
+                parm_dict['name'] = "pat_" + parm_dict['name']
 #     Adaption to jube2 attributes
                 if re.search('line', parm_dict['mode']):
                     parm_dict['mode'] = 'pattern'
