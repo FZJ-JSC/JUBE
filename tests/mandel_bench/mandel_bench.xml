@@ -4,6 +4,7 @@
   <include-path>
      <path tag="juropa2">../../platform/juropa2</path>
      <path tag="juropa2">juropa2</path>
+     <path tag="juqueen">../../platform/juqueen</path>
      <path tag="juqueen">juqueen</path>
   </include-path>
 

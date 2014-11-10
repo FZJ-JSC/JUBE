@@ -70,7 +70,6 @@
   <substituteset name="executesub">
     <!-- Default jobscript substitution -->
     <iofile in="${submit_script}.in" out="$submit_script" />
-    <iofile in="${chainjob_script}.in" out="$chainjob_script" />
     <sub source="#ENV#"             dest="" />
     <sub source="#NOTIFY_EMAIL#"    dest="$mail" />
     <sub source="#NOTIFY_MODE#"     dest="$notification" />
@@ -89,6 +88,13 @@
     <sub source="#EXECUTABLE#"      dest="$executable" />
     <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
     <sub source="#DONE_FILE#"       dest="$done_file" />
+  </substituteset>
+  
+  <substituteset name="chainsub">
+    <!-- Default chainjob substitution -->
+    <iofile in="${chainjob_script}.in" out="$chainjob_script" />
+    <sub source="#BGSIZE#"          dest="$nodes" />    
+    <sub source="#BGCONNECTIVITY#"  dest="$network" />
   </substituteset>
     
   <fileset name="jobfiles">

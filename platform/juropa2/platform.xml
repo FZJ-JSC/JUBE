@@ -85,6 +85,10 @@
     <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
     <sub source="#DONE_FILE#"       dest="$done_file" />    
   </substituteset>
+  
+  <substituteset name="chainsub">
+    <!-- Default chainjob substitution -->
+  </substituteset>
     
   <fileset name="jobfiles">
     <!-- Default jobscript access -->
