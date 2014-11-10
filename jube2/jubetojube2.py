@@ -104,6 +104,19 @@ class JubeXMLConverter(object):
         parameter = ET.SubElement(
             global_parameterset, 'parameter', {'name': 'benchhome'})
         parameter.text = "$jube_benchmark_home"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'pdir'})
+        parameter.text = "../../../platform/"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'subdir'})
+        parameter.text = "."
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'stdoutfile'})
+        parameter.text = "stdout"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'stderrfile'})
+        parameter.text = "stderr"
+        
 
         return global_parameterset
 
@@ -246,7 +259,7 @@ class JubeXMLConverter(object):
         for filename in file_list:
             complete_filename = os.path.join(src_dir, filename) 
             if tarfile.is_tarfile(complete_filename):
-                tarfile_list.append(complete_filename)
+                tarfile_list.append(filename)
 
         if not tarfile_list:
             return ""
@@ -440,6 +453,7 @@ class JubeXMLConverter(object):
                         verify_dict, analyse_dict):
         #       Compile
         compile_step = _JubeStep("compile")
+        compile_step._use_list.add("jube_convert_parameter")
         compile_step._use_list.add(pset)
         compile_step._cname = self._check_and_sub_platform_var(
             compile_dict.attrib["cname"])
@@ -453,6 +467,7 @@ class JubeXMLConverter(object):
 
 #       Execute
         execution_step = _JubeStep("execution")
+        execution_step._use_list.add("jube_convert_parameter")
         execution_step._use_list.add(pset)
         execution_step._cname = self._check_and_sub_platform_var(
             execution_dict.attrib["cname"])
@@ -467,6 +482,7 @@ class JubeXMLConverter(object):
 
 #       Prepare
         prepare_step = _JubeStep("prepare")
+        prepare_step._use_list.add("jube_convert_parameter")
         prepare_step._use_list.add(pset)
         prepare_step._cname = self._check_and_sub_platform_var(
             prepare_dict.attrib["cname"])
@@ -832,6 +848,7 @@ class _JubeBenchmark(object):
     def _build_benchmark_element(self):
         benchmark = ET.Element('benchmark')
         benchmark.set("name", self._name)
+        benchmark.set("outpath", "benchmarks_jube1tojube2")
         benchmark.append(self._prepare_step._step_element)
         benchmark.append(self._compile_step._step_element)
         benchmark.append(self._execution_step._step_element)
