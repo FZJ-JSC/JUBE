@@ -232,20 +232,21 @@ class JubeXMLConverter(object):
             copy_node.text = src_node.attrib["files"]
 
             tar_command = self._create_tar_command_for_compile(
-                src_node.attrib["files"])
+                src_node.attrib["files"], src_node.attrib["directory"])
             prepare_node = ET.SubElement(fileset_node, 'prepare')
             prepare_node.text = tar_command
 
             jube_step._use_list.add(fileset_name)
             benchmark._fileset_node.add(fileset_node)
 
-    def _create_tar_command_for_compile(self, files):
+    def _create_tar_command_for_compile(self, files, src_dir):
         command = "for i in"
         file_list = files.split(" ")
         tarfile_list = []
         for filename in file_list:
-            if tarfile.is_tarfile(filename):
-                tarfile_list.append(filename)
+            complete_filename = os.path.join(src_dir, filename) 
+            if tarfile.is_tarfile(complete_filename):
+                tarfile_list.append(complete_filename)
 
         if not tarfile_list:
             return ""
