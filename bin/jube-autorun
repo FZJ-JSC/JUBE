@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+# #############################################################################
+# #  JUBE Benchmarking Environment                                           ##
+# #  http://www.fz-juelich.de/jsc/jube                                       ##
+# #############################################################################
+# #  Copyright (c) 2008-2014                                                 ##
+# #  Forschungszentrum Juelich, Juelich Supercomputing Centre                ##
+# #                                                                          ##
+# #  See the file LICENSE in the package base directory for details          ##
+# #############################################################################
+
+# This script allows automated full benchmark execution
+# Options:
+#   -r: additional run args
+#   -c: additional continue args
+#   -a: additional analyse args
+#   -s: additional result args
+#   -o: only show result output
+# Usage: jube-autorun [OPTIONS] input_file.xml
+
+OUTPUT_FILE=jube_job_output.txt
+
+# Remove existing output file
+if [ -f $OUTPUT_FILE ]
+then
+  rm $OUTPUT_FILE
+fi
+
+# Parse optional arguments
+while getopts r:c:a:s:o opt
+do
+	case $opt in
+        r) RUN_ARG=$OPTARG;;
+        c) CONTINUE_ARG=$OPTARG;;
+        a) ANALYSE_ARG=$OPTARG;;
+        s) RESULT_ARG=$OPTARG;;
+        o) ONLY_RESULT_OUTPUT=1;;
+        ?) exit 1;;
+    esac
+done
+shift $((OPTIND-1))
+
+# check if input file exists
+if [ $# -lt 1 ]
+then
+	echo "$0: ERROR (MISSING ARGUMENT, PLEASE ATTACH BENCHMARK CONFIG FILE)"
+	exit 1
+fi
+
+# start benchmark execution
+if [ $ONLY_RESULT_OUTPUT ]
+then
+    jube run $1 --hide-animation $RUN_ARG 2>&1 >> $OUTPUT_FILE
+else
+    jube run $1 --hide-animation $RUN_ARG 2>&1 | tee -a $OUTPUT_FILE
+fi
+
+# extract benchmark dir
+BENCHMARK_DIR=`egrep -o 'dir: .+$' jube_job_output.txt | cut -c6-`
+
+# BENCHMARK_DIR must exist
+if [ ! -d "$BENCHMARK_DIR" ]
+then
+    exit 1
+fi
+
+# continue benchmark execution
+while [ `jube status $BENCHMARK_DIR` = "RUNNING" ]
+do
+    sleep 30s
+    if [ $ONLY_RESULT_OUTPUT ]
+    then
+        jube continue $BENCHMARK_DIR --hide-animation $CONTINUE_ARG 2>&1 >> $OUTPUT_FILE
+    else
+        echo "Update benchmark information (`date`)"
+        jube continue $BENCHMARK_DIR --hide-animation $CONTINUE_ARG | tee -a $OUTPUT_FILE
+    fi
+done
+
+# benchmark analyse
+if [ $ONLY_RESULT_OUTPUT ]
+then
+    jube analyse $BENCHMARK_DIR $ANALYSE_ARG 2>&1 >> $OUTPUT_FILE
+else
+    jube analyse $BENCHMARK_DIR $ANALYSE_ARG | tee -a $OUTPUT_FILE
+fi
+
+# create benchmark result
+jube result $BENCHMARK_DIR $RESULT_ARG 2>&1 | tee -a $OUTPUT_FILE

@@ -59,7 +59,7 @@ config = {'description': 'JUBE Benchmarking Environment',
                          rel_path("examples",SHARE_PATH) +
                          rel_path("schema",SHARE_PATH) +
                          rel_path("platform",SHARE_PATH),
-          'scripts': ['bin/jube'],
+          'scripts': ['bin/jube','bin/jube-autorun'],
           'long_description': 'JUBE',
           'license': 'See the file LICENSE',
           'platforms': 'Linux',

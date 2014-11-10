@@ -4,3 +4,4 @@ recursive-include examples *
 recursive-include schema *
 recursive-include platform *
 include bin/jube
+include bin/jube-autorun

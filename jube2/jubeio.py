@@ -986,7 +986,7 @@ def _extract_files(etree_fileset):
             if etree_file.text is None:
                 raise ValueError("Empty filelist in <{}> found."
                                  .format(etree_file.tag))
-            files = etree_file.text.split(separator)
+            files = etree_file.text.strip().split(separator)
             if alt_name is None:
                 # Use the original filenames
                 names = [os.path.basename(path.strip()) for path in files]
