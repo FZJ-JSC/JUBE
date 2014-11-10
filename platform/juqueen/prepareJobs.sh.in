@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [ $# -lt 2 ]
+then
+    echo "$0: ERROR (MISSING ARGUMENTS)"
+    exit 1
+fi
+
+JOBINFOFILE=$1
+shift
+SUBMITSCRIPT=$*
+
+IFS='/' read -a ARR <<< "$PWD"
+LENGTH=${#ARR[@]}
+JUBE_WP_STEP="${ARR[$LENGTH-2]}"
+
+echo "${JUBE_WP_STEP}:#BGSIZE#:#BGCONNECTIVITY#:$PWD:" >> $JOBINFOFILE

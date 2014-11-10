@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
-  <!-- Default JUROPA2 Sets --> 
-   
+  <!-- Default JUQUEEN Sets --> 
+  
   <parameterset name="compileset">
     <!-- Compiler information -->
     <parameter name="make">gmake</parameter>
     <parameter name="arch">_LINUX</parameter>
-    <parameter name="cc">gcc</parameter>
-    <parameter name="cflags"></parameter>  
-    <parameter name="mpi_cc">mpicc</parameter>  
-    <parameter name="mpi_cxx">mpicxx</parameter>  
-    <parameter name="mpi_f90">mpif90</parameter>  
-    <parameter name="mpi_f77">mpif77</parameter>  
+    <parameter name="cc">bgxlc_r</parameter>
+    <parameter name="cflags">-qtune=450 -qarch=450</parameter>  
+    <parameter name="mpi_cc">mpixlc_r</parameter>  
+    <parameter name="mpi_cxx">mpixlcxx_r</parameter>  
+    <parameter name="mpi_f90">mpixlf90_r</parameter>  
+    <parameter name="mpi_f77">mpixlf77_r</parameter>  
   </parameterset>
   
   <parameterset name="libs">
     <!-- Library access information -->
     <parameter name="load_module">module load</parameter>
   </parameterset>
-
+  
   <substituteset name="compilesub">
     <!-- Default substitution -->
     <sub source="#CC#" dest="$cc" />
@@ -27,11 +27,12 @@
     <sub source="#CFLAGS#" dest="$cflags" />
   </substituteset>
   
+  
   <parameterset name="executeset">
     <!-- Jobscript handling -->
-    <parameter name="starter">mpiexec</parameter>
-    <parameter name="args_starter">-np $tasks --exports=OMP_NUM_THREADS</parameter>
-    <parameter name="submit">msub</parameter>
+    <parameter name="starter">runjob</parameter>
+    <parameter name="args_starter">--ranks-per-node $taskspernode --np $tasks --exp-env=OMP_NUM_THREADS</parameter>
+    <parameter name="submit">llsubmit</parameter>
     <parameter name="submit_script">submit.job</parameter>
     <parameter name="done_file">ready</parameter>       
     
@@ -42,38 +43,42 @@
       <do shared="true" active="$chainjob_needs_submit">$submit_chainjob</do>
       <do done_file="$done_file"></do> 
     -->
-    <parameter name="shared_folder">shared</parameter>    
-    <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
-    <parameter name="chainjob_script">juropa2-chainJobs.sh</parameter>
-    <parameter name="chainjob_needs_submit">false</parameter>    
+    <parameter name="shared_folder">shared</parameter>
+    <parameter name="shared_file">jobid</parameter>  
+    <parameter name="shared_job_info">${shared_folder}/${shared_file}</parameter>
+    <parameter name="chainjob_script">prepareJobs.sh</parameter>
+    <parameter name="chainjob_needs_submit">true</parameter>
+    <parameter name="submit_chainjob">chainJobs.py $shared_file; $submit submit.job</parameter>  
   </parameterset>
   
   <parameterset name="systemParameter">
     <!-- Default jobscript parameter  -->
-    <parameter name="nodes" type="int">1</parameter>
+    <parameter name="nodes" type="int">32</parameter>
     <parameter name="taskspernode" type="int">1</parameter>
     <parameter name="threadspertask" type="int">1</parameter>
-    <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode // $threadspertask</parameter>
+    <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode</parameter>
+    <parameter name="network">Mesh</parameter>
     <parameter name="executable"></parameter>
     <parameter name="args_exec"></parameter>
     <parameter name="mail"></parameter>
-    <parameter name="notification">abe</parameter>
+    <parameter name="notification">always</parameter>
     <parameter name="outlogfile">stdout</parameter>
     <parameter name="errlogfile">stderr</parameter>
-    <parameter name="timelimit">00:30:00</parameter>
+    <parameter name="timelimit">00:30:00</parameter>    
   </parameterset>
-  
+   
   <substituteset name="executesub">
     <!-- Default jobscript substitution -->
     <iofile in="${submit_script}.in" out="$submit_script" />
+    <iofile in="${chainjob_script}.in" out="$chainjob_script" />
     <sub source="#ENV#"             dest="" />
     <sub source="#NOTIFY_EMAIL#"    dest="$mail" />
     <sub source="#NOTIFY_MODE#"     dest="$notification" />
     <sub source="#BENCHNAME#"       dest="$jube_benchmark_name" />
-    <sub source="#NODES#"           dest="$nodes" />
-    <sub source="#NCPUS#"           dest="$taskspernode" />
-    <sub source="#NTHREADS#"        dest="$threadspertask" />
     <sub source="#TIME_LIMIT#"      dest="$timelimit" />
+    <sub source="#BGSIZE#"          dest="$nodes" /> 
+    <sub source="#NTHREADS#"        dest="$threadspertask" />
+    <sub source="#BGCONNECTIVITY#"  dest="$network" /> 
     <sub source="#PREPROCESS#"      dest="" />
     <sub source="#POSTPROCESS#"     dest="" />
     <sub source="#STARTER#"         dest="$starter" />
@@ -83,17 +88,18 @@
     <sub source="#STDERRLOGFILE#"   dest="$errlogfile" />
     <sub source="#EXECUTABLE#"      dest="$executable" />
     <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
-    <sub source="#DONE_FILE#"       dest="$done_file" />    
+    <sub source="#DONE_FILE#"       dest="$done_file" />
   </substituteset>
     
   <fileset name="jobfiles">
     <!-- Default jobscript access -->
-    <copy>${submit_script}.in</copy>
+    <copy>${submit_script}.in</copy>    
   </fileset>
   
   <fileset name="chainfiles">
     <!-- Chainjob script access -->
-    <copy>$chainjob_script</copy>
+    <copy name="$shared_folder/chainJobs.py">chainJobs.py</copy>
+    <copy>${chainjob_script}.in</copy>
   </fileset>
  
 </jube>

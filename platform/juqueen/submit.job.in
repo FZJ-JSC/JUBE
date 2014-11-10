@@ -1,0 +1,23 @@
+# @ shell            = /bin/bash
+# @ job_name         = #BENCHNAME#
+# @ output           = #STDOUTLOGFILE#
+# @ error            = #STDERRLOGFILE#
+# @ notification     = #NOTIFY_MODE#
+# @ notify_user      = #NOTIFY_EMAIL#
+# @ wall_clock_limit = #TIME_LIMIT#
+# @ job_type         = bluegene
+# @ bg_size		     = #BGSIZE#
+# @ bg_connectivity  = #BGCONNECTIVITY# 
+# @ queue
+
+export OMP_NUM_THREADS=#NTHREADS#
+
+#ENV#
+
+#PREPROCESS#
+
+#STARTER# #ARGS_STARTER# : #EXECUTABLE# #ARGS_EXECUTABLE#
+
+#POSTPROCESS#
+
+touch #DONE_FILE#
