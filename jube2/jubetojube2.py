@@ -295,7 +295,13 @@ class JubeXMLConverter(object):
                 link_node = ET.SubElement(
                     fileset_node, 'link', {'rel_path_ref': 'internal'})
                 link_node.text = "compile/$execname"
+                
+                link_node = ET.SubElement(
+                    fileset_node, 'link')
+                link_node.text = "$jube_benchmark_home/run"   
+                            
             jube_step._use_list.add(fileset_name)
+            
             benchmark._fileset_node.add(fileset_node)
 
     def extract_substitutes_and_convert(self, xml_file, jube_step):
