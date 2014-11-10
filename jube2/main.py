@@ -251,7 +251,7 @@ def _update_include_path(args, dirname):
 def run_new_benchmark(args):
     """Start a new benchmark run"""
 
-    jube2.util.HIDE_ANIMATIONS = args.hide_animation
+    jube2.conf.HIDE_ANIMATIONS = args.hide_animation
 
     for path in args.files:
         # Store current working dir
@@ -317,7 +317,7 @@ def jube2jube2(args):
     main_dir = args.input_path
     jube_main_file = args.main_xml_file
     convertit = jube2.jubetojube2.JubeXMLConverter(jube_main_file, main_dir)
- #   convertit.convert_platformfile()
+    # convertit.convert_platformfile()
     convertit.convert_xml(jube_main_file)
     convertit.write_platformfile(os.path.join(main_dir, "platform_jube2.xml"))
 

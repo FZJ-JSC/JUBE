@@ -234,7 +234,11 @@ class Analyzer(object):
             # Read file content
             data = file_handle.read()
             for pattern in patternlist:
-                regex = re.compile(pattern.value, re.MULTILINE)
+                try:
+                    regex = re.compile(pattern.value, re.MULTILINE)
+                except re.error as ree:
+                    raise RuntimeError(("Error inside pattern \"{0}\" : {1}")
+                                       .format(pattern.value, ree))
                 # Run regular expression
                 matches = re.findall(regex, data)
                 # If there are differnt groups reduce result shape
