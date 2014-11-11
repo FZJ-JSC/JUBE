@@ -231,7 +231,7 @@ Get benchmark specific information
 ``DIRECTORY``
    show directory specific information
 
-.. index:: help
+.. index:: log
 
 log
 ~~~

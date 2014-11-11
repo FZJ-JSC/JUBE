@@ -64,6 +64,7 @@
 <!ELEMENT prepare (#PCDATA)>
 <!ATTLIST prepare       stdout CDATA #IMPLIED
                         stderr CDATA #IMPLIED
+                        work_dir CDATA #IMPLIED
                         tag CDATA #IMPLIED>                 
 <!ELEMENT patternset ((pattern|include)*)>
 <!ATTLIST patternset    name CDATA #REQUIRED
@@ -94,6 +95,7 @@
                         active CDATA #IMPLIED
                         shared (true|false|True|False) #IMPLIED
                         stdout CDATA #IMPLIED
+                        work_dir CDATA #IMPLIED
                         stderr CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT analyse ((file|include)*)>

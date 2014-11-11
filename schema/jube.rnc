@@ -87,6 +87,7 @@ prepare = element prepare { attlist.prepare, text }
 attlist.prepare &=
   attribute stdout { text }?,
   attribute stderr { text }?,
+  attribute work_dir { text }?,
   attribute tag { text }?
 link = element link { attlist.link, text }
 attlist.link &=
@@ -142,6 +143,7 @@ attlist.do &=
   attribute shared { "true" | "false" | "True" | "False" }?,
   attribute stdout { text }?,
   attribute stderr { text }?,
+  attribute work_dir { text }?,
   attribute tag { text }?
 analyse = element analyse { attlist.analyse, (file | \include)* }
 attlist.analyse &=

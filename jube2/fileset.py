@@ -197,11 +197,13 @@ class Prepare(jube2.step.Operation):
 
     """Prepare the workpackage work directory"""
 
-    def __init__(self, cmd, stdout_filename=None, stderr_filename=None):
+    def __init__(self, cmd, stdout_filename=None, stderr_filename=None,
+                 work_dir=None):
         jube2.step.Operation.__init__(self,
                                       do=cmd,
                                       stdout_filename=stdout_filename,
-                                      stderr_filename=stderr_filename)
+                                      stderr_filename=stderr_filename,
+                                      work_dir=work_dir)
 
     def execute(self, parameter_dict, work_dir, export_parameter_dict=None):
         """Execute the prepare command"""
@@ -217,4 +219,6 @@ class Prepare(jube2.step.Operation):
             do_etree.attrib["stdout"] = self._stdout_filename
         if self._stderr_filename is not None:
             do_etree.attrib["stderr"] = self._stderr_filename
+        if self._work_dir is not None:
+            do_etree.attrib["work_dir"] = self._work_dir
         return do_etree

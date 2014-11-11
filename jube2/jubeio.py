@@ -602,6 +602,9 @@ def _extract_step(etree_step):
                 stderr_filename = stderr_filename.strip()
             active = element.get("active", "true").strip()
             shared_str = element.get("shared", "false").strip()
+            alt_work_dir = element.get("work_dir")
+            if alt_work_dir is not None:
+                alt_work_dir = alt_work_dir.strip()
             if shared_str.lower() == "true":
                 if shared_name is None:
                     raise ValueError("<do shared=\"true\"> only allowed "
@@ -621,7 +624,8 @@ def _extract_step(etree_step):
                                              stdout_filename,
                                              stderr_filename,
                                              active,
-                                             shared)
+                                             shared,
+                                             alt_work_dir)
             step.add_operation(operation)
         elif element.tag == "use":
             step.add_uses(_extract_use(element))
@@ -1021,8 +1025,11 @@ def _extract_files(etree_fileset):
             stderr_filename = etree_file.get("stderr")
             if stderr_filename is not None:
                 stderr_filename = stderr_filename.strip()
+            alt_work_dir = etree_file.get("work_dir")
+            if alt_work_dir is not None:
+                alt_work_dir = alt_work_dir.strip()
             prepare_obj = jube2.fileset.Prepare(cmd, stdout_filename,
-                                                stderr_filename)
+                                                stderr_filename, alt_work_dir)
             filelist.append(prepare_obj)
     return filelist
 

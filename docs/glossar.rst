@@ -268,9 +268,11 @@ Glossary
      
      .. code-block:: xml
      
-        <prepare stdout="..." stderr="...">...</prepare>
+        <prepare stdout="..." stderr="..." work_dir="...">...</prepare>
         
-     * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``) 
+     * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
+     * ``work_dir`` is optional, it can be used to change the work directory of this single command (relativly seen towards
+       the original work directory)
 
    substituteset_tag
      A substituteset is a container to store a bundle of subs.
@@ -323,6 +325,7 @@ Glossary
           <do stdout="..." stderr="..." active="...">...</do>
           <do done_file="...">...</do>
           <do shared="true">...</do>
+          <do work_dir="...">...</do>
           ...
         </step>
 
@@ -343,6 +346,8 @@ Glossary
 
      * ``do`` can contain any *Shell*-syntax-snippet (parameter will be replaced ... $nameofparameter ...)
      * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
+     * ``work_dir`` is optional, it can be used to change the work directory of this single command (relativly seen towards
+       the original work directory)
      * ``active`` is optional
 
        * can be set to ``true`` or ``false`` to enable or disable the single command

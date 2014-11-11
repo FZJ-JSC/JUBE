@@ -159,13 +159,15 @@ class Operation(object):
     """
 
     def __init__(self, do, async_filename=None, stdout_filename=None,
-                 stderr_filename=None, active="true", shared=False):
+                 stderr_filename=None, active="true", shared=False,
+                 work_dir=None):
         self._do = do
         self._async_filename = async_filename
         self._stdout_filename = stdout_filename
         self._stderr_filename = stderr_filename
         self._active = active
         self._shared = shared
+        self._work_dir = work_dir
 
     @property
     def stdout_filename(self):
@@ -201,6 +203,13 @@ class Operation(object):
         elif active.lower() != "true":
             raise RuntimeError(("<do active=\"{}\"> not allowed. Must be " +
                                 "true or false").format(active.lower()))
+
+        # Use operation specific work directory
+        if self._work_dir is not None:
+            new_work_dir = jube2.util.substitution(self._work_dir,
+                                                   parameter_dict)
+            new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
+            work_dir = os.path.join(work_dir, new_work_dir)
 
         if not only_check_pending:
             # Inline substitution
@@ -283,6 +292,8 @@ class Operation(object):
             do_etree.attrib["active"] = self._active
         if self._shared:
             do_etree.attrib["shared"] = "true"
+        if self._work_dir is not None:
+            do_etree.attrib["work_dir"] = self._work_dir
         return do_etree
 
     def __repr__(self):

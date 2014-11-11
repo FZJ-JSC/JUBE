@@ -201,12 +201,15 @@ class Workpackage(object):
             create_parameter("jube_wp_iteration",
                              str(self._iteration), parameter_type="int"))
         # workpackage absolute folder path
+        if self._step.alt_work_dir is None:
+            path = os.path.normpath(os.path.join(self._benchmark.cwd,
+                                                 self.work_dir))
+        else:
+            path = self._step.alt_work_dir
         parameterset.add_parameter(
             jube2.parameter.Parameter.
-            create_parameter("jube_wp_abspath",
-                             os.path.normpath(os.path.join(
-                                 self._benchmark.cwd,
-                                 self.work_dir))))
+            create_parameter("jube_wp_abspath", path))
+
         # parent workpackage id
         for parent in self._parents:
             parameterset.add_parameter(
@@ -336,6 +339,20 @@ class Workpackage(object):
         # --- Create shared folder connection ---
         self.create_shared_folder_link(parameter)
 
+        # --- Create alternativ working dir ---
+        alt_work_dir = self._step.alt_work_dir
+        if alt_work_dir is not None:
+            alt_work_dir = jube2.util.substitution(alt_work_dir, parameter)
+            alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
+            alt_work_dir = os.path.join(self._benchmark.file_path_ref,
+                                        alt_work_dir)
+            # update jube_wp_abspath 
+            parameter["jube_wp_abspath"] = os.path.abspath(alt_work_dir)
+            LOGGER.debug("  switch to alternativ work dir: \"{}\""
+                         .format(alt_work_dir))
+            if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
+                os.makedirs(alt_work_dir)
+                
         # Print debug info
         debugstr = "  available parameter:\n"
         debugstr += jube2.util.text_table([("parameter", "value")] +
@@ -344,18 +361,6 @@ class Workpackage(object):
                                           use_header_line=True, indent=9,
                                           align_right=False)
         LOGGER.debug(debugstr)
-
-        # --- Create alternativ working dir ---
-        alt_work_dir = self._step.alt_work_dir
-        if alt_work_dir is not None:
-            alt_work_dir = jube2.util.substitution(alt_work_dir, parameter)
-            alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
-            alt_work_dir = os.path.join(self._benchmark.file_path_ref,
-                                        alt_work_dir)
-            LOGGER.debug("  switch to alternativ work dir: \"{}\""
-                         .format(alt_work_dir))
-            if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
-                os.makedirs(alt_work_dir)
 
         # --- Copy files to working dir or create links ---
         if not started_before:
