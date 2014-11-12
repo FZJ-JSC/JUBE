@@ -15,6 +15,7 @@ import sys
 import os
 import re
 import tarfile
+import glob
 
 _global_parameterset_name = "jube_convert_parameter"
 
@@ -116,7 +117,6 @@ class JubeXMLConverter(object):
         parameter = ET.SubElement(
             global_parameterset, 'parameter', {'name': 'stderrfile'})
         parameter.text = "stderr"
-        
 
         return global_parameterset
 
@@ -238,28 +238,45 @@ class JubeXMLConverter(object):
             fileset_name = jube_step._name + \
                 '_files_' + str(self._global_counter)
             fileset_node.set('name', fileset_name)
-        
+
             copy_node = ET.SubElement(
                 fileset_node, 'copy', {'directory': src_node.attrib["directory"],
                                        'separator': ' '})
             copy_node.text = src_node.attrib["files"]
 
-            tar_command = self._create_tar_command_for_compile(
-                src_node.attrib["files"], src_node.attrib["directory"])
+#            create file list
+            file_list = self._create_compile_file_list(src_node.attrib["files"], src_node.attrib["directory"])
+            tar_command = self._create_tar_command_for_compile(file_list)
+            
             prepare_node = ET.SubElement(fileset_node, 'prepare')
             prepare_node.text = tar_command
 
             jube_step._use_list.add(fileset_name)
             benchmark._fileset_node.add(fileset_node)
+            
+    def _create_compile_file_list(self, files, directory):
+        pwd = os.path.realpath(".")
+        os.chdir(directory)
+        list_for_glob = []
+        full_list = []
+        for filename in files:
+            list_for_glob.append(os.path.join(directory,filename))
+        
+        for filename in list_for_glob:
+            full_list.extend(glob.glob(filename))
+          
+        os.chdir(pwd)   
+        return full_list
+        
+        
 
-    def _create_tar_command_for_compile(self, files, src_dir):
+    def _create_tar_command_for_compile(self, file_list):
         command = "for i in"
-        file_list = files.split(" ")
         tarfile_list = []
         for filename in file_list:
-            complete_filename = os.path.join(src_dir, filename) 
-            if tarfile.is_tarfile(complete_filename):
-                tarfile_list.append(filename)
+            if os.path.isfile(filename):
+                if tarfile.is_tarfile(filename):
+                    tarfile_list.append(filename)
 
         if not tarfile_list:
             return ""
@@ -295,13 +312,13 @@ class JubeXMLConverter(object):
                 link_node = ET.SubElement(
                     fileset_node, 'link', {'rel_path_ref': 'internal'})
                 link_node.text = "compile/$execname"
-                
+
                 link_node = ET.SubElement(
                     fileset_node, 'link')
-                link_node.text = "$jube_benchmark_home/run"   
-                            
+                link_node.text = "$jube_benchmark_home/run"
+
             jube_step._use_list.add(fileset_name)
-            
+
             benchmark._fileset_node.add(fileset_node)
 
     def extract_substitutes_and_convert(self, xml_file, jube_step):
@@ -515,7 +532,7 @@ class JubeXMLConverter(object):
             execution_step._do_list.append(verify_do)
 #             print (verify_do)
         for verify_use in verify_step._use_list:
-#             print (verify_use)
+            #             print (verify_use)
             execution_step._use_list.add(verify_use)
         execution_step._build_step_element()
 
@@ -561,7 +578,7 @@ class JubeXMLConverter(object):
                     continue
 
     def _beautify_command(self, command_text):
-#         newline = "\n"
+        #         newline = "\n"
         tab = "\t"
 #         command_text = re.sub(newline, "", command_text)
         command_text = re.sub(tab, " ", command_text)
@@ -604,7 +621,7 @@ class JubeXMLConverter(object):
                     self._dummy_check_set.add(envset_name)
                 self._global_counter += 1
 
-    def write_main_file(self, output="benchmarks_jube2_new.xml"):
+    def write_main_file(self, output="benchmarks_jube2.xml"):
         tree = ET.ElementTree(self._main_element)
         xml = ET.tostring(tree.getroot(), encoding="UTF-8")
         # Using dom for pretty-print
@@ -622,8 +639,8 @@ class JubeXMLConverter(object):
         for k, v in self._benchmark_dict.items():
             self._main_element.append(v._benchmark_element)
 
-        self.write_platformfile(self._main_dir + "platform_jube2_new.xml")
-        self.write_main_file(self._main_dir + "benchmarks_jube2_new.xml")
+        self.write_platformfile(self._main_dir + "platform_jube2.xml")
+        self.write_main_file(self._main_dir + "benchmarks_jube2.xml")
 
         message = """            Don't forget to have a look at 
             benchmarks_jube2.xml and platform_jube2.xml 
@@ -650,11 +667,13 @@ class _JubeAnalyzer(object):
     def __init__(self, name, cname, main_dir, xml_file):
         self._name = name
         self._cname = cname
+        self._analyse_xml_file = xml_file
         self._main_dir = main_dir
         self._pattern_file_list = []
         self._use_list = set()
         self._result_node = None
         self._extract_includepattern(xml_file)
+
 
 #       Needed for result table
         self._pattern_name_set = set()
@@ -680,22 +699,62 @@ class _JubeAnalyzer(object):
         file_tag = ET.SubElement(analyse_tag, "file")
         file_tag.text = "stdout"
 
+    def _exclude_pattern_from_analysexml(self, patternset):
+        xml_tree = ET.parse(self._analyse_xml_file)
+        xml_root = xml_tree.getroot()
+
+        tag = "analyzer"
+        
+        for item in xml_root.iter(tag):
+            for analyse in item.findall('analyse'):
+                prefix_name = analyse.get('cname')
+                if (prefix_name == self._cname):
+#                     print("###############")
+                    for parm in analyse.findall('parm'):
+                        parm_dict = parm.attrib
+
+# prefix added to pattern names to avoid possible naming conflict with
+# parameters
+                        parm_dict['name'] = "pat_" + parm_dict['name']
+#     Adaption to jube2 attributes
+                        if re.search('line', parm_dict['mode']):
+                            parm_dict['mode'] = 'pattern'
+
+                        if parm_dict['mode'] == 'derived':
+                            parm_dict['mode'] = 'perl'
+                        
+                        self._pattern_name_set.add(parm_dict['name'])
+                        subelement = ET.SubElement(patternset, 'pattern', parm_dict)
+                        subelement.text = self._substitute_jube_pattern(parm.text)
+
+                    self._patternset_node_list.append(patternset)
+      
+        
+
     def _create_patternset_node_list(self):
+        
         for patternfile in self._pattern_file_list:
+                
             root = self._create_root(patternfile)
+                
             patternset = ET.Element('patternset')
             usename = os.path.basename(patternfile)
             patternset.set('name', usename)
             self._use_list.add(usename)
+            if (patternfile == "analyse.xml"):
+                self._exclude_pattern_from_analysexml(patternset)
+                continue
+ 
             for parm in root.findall('parm'):
                 parm_dict = parm.attrib
 
-#             prefix added to pattern names to avoid possible naming conflict with parameters
+# prefix added to pattern names to avoid possible naming conflict with
+# parameters
                 parm_dict['name'] = "pat_" + parm_dict['name']
 #     Adaption to jube2 attributes
                 if re.search('line', parm_dict['mode']):
                     parm_dict['mode'] = 'pattern'
-
+                    
                 if parm_dict['mode'] == 'derived':
                     parm_dict['mode'] = 'perl'
 
@@ -773,6 +832,9 @@ class _JubeAnalyzer(object):
         xml_root = xml_tree.getroot()
 
         tag = self._name
+        
+#       search also in analyse.xml for patterns  
+        self._pattern_file_list.append("analyse.xml")
         for item in xml_root.iter(tag):
             for pattern in item.findall('includepattern'):
                 prefix_name = item.get('cname')
