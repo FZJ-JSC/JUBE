@@ -44,7 +44,7 @@
     -->
     <parameter name="shared_folder">shared</parameter>    
     <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
-    <parameter name="chainjob_script">juropa2-chainJobs.sh</parameter>
+    <parameter name="chainjob_script">./juropa2-chainJobs.sh</parameter>
     <parameter name="chainjob_needs_submit">false</parameter>    
   </parameterset>
   

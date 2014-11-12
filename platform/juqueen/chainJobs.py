@@ -6,7 +6,8 @@ import re
 import datetime 
 
 maxSpaceDim = 15 # max No. of steps in one JUQUEEN job
-maxWallclock=datetime.datetime.strptime("06:00:00","%H:%M:%S") # max Wallclock time for 1 step
+defaultmaxWallclock=datetime.datetime.strptime("06:00:00","%H:%M:%S") # max Wallclock time for 1 step
+smallmaxWallclock=datetime.datetime.strptime("00:30:00","%H:%M:%S") # max Wallclock time for 1 step (node <=64)
 class Job:
     globalJobSpec = []
     def __init__(self,jubeStep,pwd):
@@ -86,7 +87,7 @@ for line in f:
     lineArray=line.split(':')
     jubeStep = lineArray[0]
     jubeStepPWD = lineArray[3]
-    SystemParameter=(lineArray[1],lineArray[2])
+    SystemParameter=(lineArray[1],lineArray[2]) # nodes,topology
     if SystemParameter in SystemParameterSpace:
         SystemParameterSpace[SystemParameter].append(Job(jubeStep,jubeStepPWD))
     else:
@@ -111,11 +112,12 @@ fptr.writelines(Job.globalJobSpec)
 fptr.writelines(writeJobHead())
 for SystemParameter in SystemParameterSpace.keys():
     substep=0
+    maxWallclock = defaultmaxWallclock if int(SystemParameter[0])>64 else smallmaxWallclock
     stepWalltime=datetime.timedelta(0) # init with  0
     commandlines += ['step_{0:d}) echo "Working on $LOADL_STEP_NAME"\n'.format(step)]
     for job in SystemParameterSpace[SystemParameter]:
-        if job.walltime + stepWalltime > maxWallclock and substep == 0:
-            print('ERROR: wall_clock_limit "{0}" exceeded by one job specification - ABORTED'.format(datetime.datetime.strftime("%H:%M:%S",job.walltime)), 
+        if job.walltime  > maxWallclock:
+            print('ERROR: wall_clock_limit "{0}" exceeded by one job specification - ABORTED'.format(job.walltime), 
                   file=sys.stderr)  
             exit(2)
         elif job.walltime + stepWalltime > maxWallclock:
@@ -130,11 +132,12 @@ for SystemParameter in SystemParameterSpace.keys():
             substep += 1
             stepWalltime += job.walltime-zeroTime
         commandlines += writeJobCommands(job,cwd)
+    commandlines += [';;\n\n'] 
     fptr.writelines(initJobStep(step))
     fptr.writelines(job.specificJobSpec)
     fptr.write("#@ wall_clock_limit    = {0}\n\n".format((zeroTime + stepWalltime).strftime("%H:%M:%S")))            
     step += 1
-commandlines += [";;\nesac\n"]
+commandlines += ["esac\n"]
 fptr.writelines(commandlines)
 fptr.close()
 
