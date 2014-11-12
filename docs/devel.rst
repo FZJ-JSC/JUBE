@@ -59,7 +59,7 @@ Inside the ``docs`` directory you can use::
 
    >>> make html        #create html docu files
    >>> make pdflatex    #create pdf  docu file
-   >>> make update_help #update jube commandline help
+   >>> make update_help #update jube command line help
 
 Create distribution
 ~~~~~~~~~~~~~~~~~~~

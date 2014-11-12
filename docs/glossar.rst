@@ -113,6 +113,60 @@ Glossary
       * only selected benchmarks will run (when using the ``run`` command)
       * multiple ``<only>`` and ``<not>`` are allowed
       * ``<only>`` and ``<not>`` can contain a name list divided by ``,``
+      
+   patternset_tag
+      A patternset is a container to store a bundle of pattern.
+      
+      .. code-block:: xml
+      
+         <patternset name="..." init_with="...">
+            <pattern>...</pattern>
+            ...
+         </patternset>
+         
+      * patternset-name must be unique
+      * ``init_with`` is optional
+
+        * if the given filepath can be found inside of the ``JUBE_INCLUDE_PATH`` and if it contains a patternset
+          using the given name, all pattern will be copied to the local set
+        * local pattern will overwrite imported pattern
+        * the name of the external set can differ to the local one by using ``init-with="filename.xml:external_name"``
+     
+      * patternsets can be used inside the analyzer-command
+      * different sets, which are used inside the same analyzer, must be compatible
+      
+   pattern_tag
+      A pattern is used to parse your output files and create your result data.
+      
+      .. code-block:: xml
+      
+         <pattern name="..." unit="..." mode="..." type="..." reduce="...">...</pattern>
+
+      * ``unit`` is optional, will be used in the result table
+      * ``mode`` is optional, allowed modes:
+            
+        * ``pattern``: a regular expression (default)
+        * ``text``: simple text and variable concatenation
+        * ``perl``: snippet evaluation (using *Perl*)
+        * ``python``: snippet evaluation (using *Python*) 
+        
+      * ``type`` is optional, specify datatype (for sort operation)
+        
+        * default: ``string``
+        * allowed: ``int``, ``float`` or ``string`` 
+        
+      * ``reduce`` is optional, specify handling of multiple matches
+        
+        * ``first``: use first match (default)
+        * ``last``: use last match
+        * ``min``: use min (using float casting)
+        * ``max``: use max (using float casting)
+        * ``avg``: use avg (using float casting)
+        * ``sum``: use sum (using float casting)
+        * ``cnd``: use counter
+        * ``all``: use all of the options
+        * reduce can contain a list
+        * reduced variables can be used by name_<reduce_option> 
 
    parameterset_tag
       A parameterset is a container to store a bundle of parameter.
@@ -125,7 +179,7 @@ Glossary
          </parameterset>
 
       * parameterset-name must be unique (can't be reuse inside substitutionsets or filesets)
-      * init_with is optional
+      * ``init_with`` is optional
 
         * if the given filepath can be found inside of the ``JUBE_INCLUDE_PATH`` and if it contains a parameterset
           using the given name, all parameters will be copied to the local set
@@ -173,22 +227,22 @@ Glossary
       * a parameter can be seen as variable: Name is the name to use the variable, and the text between the tags
         will be the real content
       * name must be unique inside the given parameterset
-      * type is optional (only used for sorting, default: string)
-      * mode is optional (used for script-types, default: text)
-      * separator is optional, default: ,
-      * export is optional, if set to true the parameter will be exported to the shell environment when using ``<do>``
+      * ``type`` is optional (only used for sorting, default: ``string``)
+      * ``mode`` is optional (used for script-types, default: ``text``)
+      * ``separator`` is optional, default: ``,``
+      * ``export`` is optional, if set to ``true`` the parameter will be exported to the shell environment when using ``<do>``
       * if the text contains the given (or the implicit) separator, a template will be created
       * use of another parameter:
 
-        * inside the parameter definition, a parameter can be reused: ... $nameofparameter ...
+        * inside the parameter definition, a parameter can be reused: ``... $nameofparameter ...``
         * the parameter will be replaced multiply times (to handle complex parameter structures; max: 5 times)
         * the substitution will be run before the execution step starts with the current parameter space. Only parameters reachable
           in this step will be useable for substitution!
 
       * Scripting modes allowed:
 
-        * mode="python": allow python snippets (using ``eval <cmd>``)
-        * mode="perl" : allow perl snippets (using ``perl -e "print <cmd>"``)
+        * ``mode="python"``: allow python snippets (using ``eval <cmd>``)
+        * ``mode="perl"``: allow perl snippets (using ``perl -e "print <cmd>"``)
 
       * Templates can be created, using scripting e.g.: ``",".join([str(2**i) for i in range(3)])``
 

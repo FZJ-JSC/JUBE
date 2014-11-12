@@ -13,9 +13,9 @@ This tutorial is meant to give you an overview about the basic usage of *JUBE*.
 Installation
 ~~~~~~~~~~~~
 
-Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or higher)
+Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher version)
     
-To use the *JUBE* commandline tool the ``PHYTONPATH`` must contain the position of the *JUBE* package
+To use the *JUBE* command line tool, the ``PHYTONPATH`` must contain the position of the *JUBE* package
 
 * You can use the **installation tool** to copy all files to the right position (preferred)::
 
@@ -29,7 +29,7 @@ To use the *JUBE* commandline tool the ``PHYTONPATH`` must contain the position 
 
 * You can move the *JUBE* package by hand to an existing Python package folder like ``site-packages``
 
-To use the *JUBE* commandline tool like a normal commandline command you can add it to the ``PATH`` environment variable::
+To use the *JUBE* command line tool like a normal command line command you can add it to the ``PATH`` environment variable::
 
    >>> export PATH=$HOME/.local/bin:$PATH
    
@@ -40,7 +40,7 @@ Hello World
 ~~~~~~~~~~~
 
 In this example we will show you the basic structure of a *JUBE* input file and the
-basic commandline options. 
+basic command line options. 
 
 The files used for this example can be found inside ``examples/hello_world``.
 
@@ -120,7 +120,7 @@ This benchmark will produce the follwing output:
    >>>>     info: jube info bench_run --id 0
    ######################################################################
    
-You see, that inside the benchmark execution there was a single step ``say_hello``
+As you can see, there was a single step ``say_hello``, 
 which run one shell command ``echo $hello_str`` which will be expanded to ``echo Hello World``.
 
 The **id** is (in addition to the benchmark directory) an important number. Every benchmark run will
@@ -152,11 +152,11 @@ Inside the benchmark directory you will see the follwing structure:
 Help
 ~~~~
 
-*JUBE* contains a commandline based help functionality::
+*JUBE* contains a command line based help functionality::
 
    >>> jube help <keyword>
    
-With this command you will have direct access to all keywords inside the :doc:`glossary <glossar>`.
+By using this command you will have direct access to all keywords inside the :doc:`glossary <glossar>`.
 
 Another useful command is the ``info`` command. It will show you information concerning your existing benchmarks::
    
@@ -264,7 +264,7 @@ Loading files and substitution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Every step runs inside a unique sandbox directory. In normal cases you need external files inside this directory (e.g. the source files)
-and in some cases you want to change a parameter inside the file based on your current parameterspace. there are two addition set-types
+and in some cases you want to change a parameter inside the file based on your current parameterspace. There are two additional set-types
 which handle this behaviour inside of *JUBE*.
 
 The files used for this example can be found inside ``examples/files_and_sub``.
@@ -283,8 +283,10 @@ Inside the ``<fileset>`` the current location (relativly seen towards the curren
 file should be copied to the sandbox directory when the fileset is used. Also a ``<link>`` option is available to create a symbolic link to the given file
 inside the sandbox directory.
 
-The ``<substituteset>`` describe the substitution process. The ``<iofile>`` contains the input and output file. The path is relativly seen
-towards the sandbox directory. Because we do/should not know that location we used the fileset to copy ``file.in`` inside the directory.
+If there are additional operations needed to :term:`prepare <prepare_tag>` your files (e.g. expand a tar-file). You can use the ``<prepare>``-tag inside your ``<fileset>``.
+
+The ``<substituteset>`` describe the substitution process. The ``<iofile>`` contains the input and output filename. The path is relativly seen
+towards the sandbox directory. Because we do/should not know that location we used the fileset to copy ``file.in`` to this directory.
 
 The ``<sub>`` specify the substitution. All occurrence of ``source`` will be substituted by ``dest``. As you can see, you can 
 use Parameter inside the substitution. 
@@ -296,6 +298,7 @@ In the ``sub_step`` we use all available sets. The use order isn't relevant. The
 
 #. Parameterspace expansion
 #. Copy/link files
+#. Prepare operations
 #. File substitution
 #. Run shell operations
 
@@ -340,18 +343,20 @@ The input file ``result_creation.xml``:
    
 Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``stdout``.
 
-Now we want to parse these stdout files to extract information (in this example case the written number). First of all we had to declare a
+Now we want to parse these ``stdout`` files to extract information (in this example case the written number). First of all we had to declare a
 ``<patternset>``. Here we can describe a set of ``<pattern>``. A ``<pattern>`` is a regular expression which will be used to parse your result files
 and search for a given string. In this example we only have the ``<pattern>`` ``number_pat``. The name of the pattern must be unique (based on the usage of the ``<patternset>``).
 The ``type`` is optional. It is used when the extracted data will be sorted. The regular expression can contain other pattern or parameter. The example uses ``$jube_pat_int`` which
-is a *JUBE* given default pattern matching integer values. The pattern must contain a group, given by brackets ``(...)``, to declare the extraction part 
+is a *JUBE* given :term:`default pattern <jube_pattern>` matching integer values. The pattern must contain a group, given by brackets ``(...)``, to declare the extraction part 
 (``$jube_pat_int`` already contains these brackets).
 
+If there are multiple matches inside a single file you can add a :term:`reduce option <pattern_tag>`. Normally only the first match will be available. 
+
 To use your ``<patternset>`` you had to specify the files which should be parsed. This can be done using the ``<analyzer>``.
-It uses relevant patternsets, and inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
+It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
-The analyzer automatically knows all parameter which where used in the given step and in depending steps. There is no ``<use>`` to add additonal completely new
+The analyzer automatically knows all parameter which where used in the given step and in depending steps. There is no ``<use>`` option to add additonal completely new
 parametersets.
 
 To run the anlayse you had to write::

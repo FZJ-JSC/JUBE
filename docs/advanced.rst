@@ -13,8 +13,8 @@ read the general :doc:`tutorial` first.
 
 Schema validation
 ~~~~~~~~~~~~~~~~~
-To validate your input files you can use DTD or schema validation. You will find ``jube.dtd`` and
-``jube.xsd`` inside the ``schema`` folder. You have to add these schema information to your input files
+To validate your input files you can use DTD or schema validation. You will find ``jube.dtd``, ``jube.xsd``
+and ``jube.rnc`` inside the ``schema`` folder. You have to add these schema information to your input files
 which you want to validate.
 
 DTD usage:
@@ -95,7 +95,7 @@ In this example we see four different parameter.
 * ``text`` a normal parameter which uses the content of another parameter. For simple concatenation parameter you do not need scripting
   parameter.
   
-For this example we will find the following output inside the ``jube.log``-file:
+For this example we will find the following output inside the ``run.log``-file:
 
 .. code-block:: none
 
@@ -118,13 +118,14 @@ For this example we will find the following output inside the ``jube.log``-file:
    >>> echo "number: 4, additional_number: 8"
    >>> echo "number_mult: 32, text: Number: 4" 
 
-Scripting inside the ``<do>`` or any other position is not possible. If you want to use some scripting expressions you had to create a new parameter.
+Implicit Perl or Python scripting inside the ``<do>`` or any other position is not possible.
+If you want to use some scripting expressions you had to create a new parameter.
 
 .. index:: jobsystem
 
 Jobsystem
 ~~~~~~~~~
-In most cases you want to submit jobs by *JUBE* to your local machines jobsystem. You can use the normal file access and substitution system to prepare 
+In most cases you want to submit jobs by *JUBE* to your local jobsystem. You can use the normal file access and substitution system to prepare 
 your jobfile and send it to the jobsystem. *JUBE* also provide some additional features.
 
 The files used for this example can be found inside ``examples/jobsystem``.
@@ -153,9 +154,9 @@ There are two new attributes:
      
        >>> jube continue benchmark_run
     
-    This will continue your benchmark execution. the position of the ``done_file`` is relativly seen to the work directory.
+    This will continue your benchmark execution (``benchmark_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relativly seen towards the work directory.
   * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory get a unique name. When changing the directory the user must select a
-    unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id`` which are *JUBE* internal parameter and will expand to the current benchmark and workpackage id. Files and directories out of a given
+    unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id``, which are *JUBE* :term:`internal parameter <jube_variables>` and will expand to the current benchmark and workpackage id. Files and directories out of a given
     ``<fileset>`` will be copied to the new work directory. Other automatic links, like the dependency links, will not be created!
 
 You will see this Output after running the benchmark:
@@ -174,8 +175,6 @@ and this output after running the ``continue`` command (after the jobs where exe
    ---------+-----+------+------+-----
      submit |   3 |    0 |    0 |    3
 
-Every workpackage continue, but because there are no more additional operations there is no more work to be done.
-
 You had to run ``continue`` multiple times if not all ``done_file`` were written when running ``continue`` for the first time.
 
 .. index:: include
@@ -183,7 +182,7 @@ You had to run ``continue`` multiple times if not all ``done_file`` were written
 Include external data
 ~~~~~~~~~~~~~~~~~~~~~
 
-As you seen in the example before a benchmark can become very long. To structure your benchmark youe can use multiple files and reuse existing
+As you seen in the example before a benchmark can become very long. To structure your benchmark you can use multiple files and reuse existing
 sets. There are three different include features inside of *JUBE*.
 
 The files used for this example can be found inside ``examples/include``.
@@ -206,10 +205,10 @@ In these file there are three different inlcude types.
 The ``init_with`` can be used inside any set definition. Inside the given file the searching mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
 ``main.xml``. Inside ``main.xml`` you can add additional values or can overwrite existing ones. If your include-set use a different name inside your include file you can use ``init_with="filename.xml:new_name"``.
 
-The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the setname must
+The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure, but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the setname must
 be unique inside the include-file.
 
-The last method is the most generic include. By using ``<include />`` you can copy any nodes you want to your main-*XML* file. The ``path`` is optional and can be used to select a specific nodeset (otherwise the root-node will be included). The ``<include />`` is the only
+The last method is the most generic include. By using ``<include />`` you can copy any *XML*-nodes you want to your main-*XML* file. The ``path`` is optional and can be used to select a specific nodeset (otherwise the root-node will be included). The ``<include />`` is the only
 include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will update pathnames, which were relative to the include-file position.
 
 To run the benchmark you can use the normal command::
@@ -219,7 +218,7 @@ To run the benchmark you can use the normal command::
 It will search for include files inside four different positions (in the following order):
 
 * inside the same directory of your ``main.xml``
-* inside a directory given over the commandline::
+* inside a directory given over the command line::
    
      >>> jube run --include-path some_path another_path -- main.xml
    
@@ -279,7 +278,7 @@ the result inside the ``stdout`` file will be
 
    Hello World
 
-The ``tag`` attribute or the commandline expression can also contain a list of different names. A hidden ``<tag>`` will
+The ``tag`` attribute or the command line expression can also contain a list of different names. A hidden ``<tag>`` will
 be ignored completely! If there is no alternative this can produce a wrong execution behaviour!
 
 The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (except the ``<jube>``).
@@ -289,7 +288,7 @@ The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (
 Platform independent benchmarking
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you want to create platform independent benchmarks you can use the include features inside *JUBE*.
+If you want to create platform independent benchmarks you can use the include features inside of *JUBE*.
 
 All platform related sets must be declared in a includeable file e.g. ``platform.xml``. There can be multiple ``platform.xml`` in different
 directories to allow different platforms. By changing the ``include-path`` the benchmark changes its platform specific data.

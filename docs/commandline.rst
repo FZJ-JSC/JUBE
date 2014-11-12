@@ -1,12 +1,12 @@
 .. index:: commandline
    
-Commandline documentation
-=========================
+Command line documentation
+==========================
 
 .. highlight:: bash
    :linenothreshold: 5
 
-Here you will find a list of all available *JUBE* commandline options. You can also use::
+Here you will find a list of all available *JUBE* command line options. You can also use::
 
    jube -h
    
