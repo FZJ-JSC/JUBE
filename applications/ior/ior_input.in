@@ -1,0 +1,287 @@
+IOR START
+#
+#  * api                  - must be set to one of POSIX, MPIIO, HDF5, or NCMPI
+#                           depending on test [POSIX]
+api=#api#
+#
+#  * refNum               - user supplied reference number, included in
+#                           long summary [0]
+refNum=#refNum#
+#
+#  * testFile             - name of the output file [testFile]
+#                           NOTE: with filePerProc set, the tasks can round 
+#                                 robin across multiple file names '-o S@S@S'
+testFile=#testFile#
+#
+#  * hintsFileName        - name of the hints file []
+hintsFileName=hintsFile
+#
+#  * repetitions          - number of times to run each test [1]
+repetitions=#repetitions#
+#
+#  * multiFile            - creates multiple files for single-shared-file or
+#                           file-per-process modes; i.e. each iteration creates
+#                           a new file [0=FALSE]
+multiFile=#multiFile#
+#
+#  * reorderTasksConstant - reorders tasks by a constant node offset for writing/reading neighbor's
+#                           data from different nodes [0=FALSE]
+reorderTasksConstant=#reorderTasksConstant#
+#
+#  * taskPerNodeOffset    - for read tests. Use with -C & -Z options. [1]
+#                           With reorderTasks, constant N. With reordertasksrandom, >= N
+taskPerNodeOffset=#taskPerNodeOffset#
+#
+#  * reorderTasksRandom   - reorders tasks to random ordering for readback [0=FALSE]
+reorderTasksRandom=#reorderTasksRandom#
+#
+#  * reorderTasksRandomSeed - random seed for reordertasksrandom option. [0]
+#                              >0, same seed for all iterations. <0, different seed for each iteration
+reorderTasksRandomSeed=#reorderTasksRandomSeed#
+#
+#  * quitOnError          - upon error encountered on checkWrite or checkRead,
+#                           display current error and then stop execution;
+#                           if not set, count errors and continue [0=FALSE]
+#quitOnError=#quitOnError#
+#
+#  * numTasks             - number of tasks that should participate in the test
+#                           [0]
+#                           NOTE: 0 denotes all tasks
+numTasks=#numTasks#
+#
+#  * interTestDelay       - this is the time in seconds to delay before
+#                           beginning a write or read in a series of tests [0]
+#                           NOTE: it does not delay before a check write or
+#                                 check read
+interTestDelay=#interTestDelay#
+#
+#  * outlierThreshold     - gives warning if any task is more than this number
+#                           of seconds from the mean of all participating tasks.
+#                           If so, the task is identified, its time (start,
+#                           elapsed create, elapsed transfer, elapsed close, or
+#                           end) is reported, as is the mean and standard
+#                           deviation for all tasks.  The default for this is 0,
+#                           which turns it off.  If set to a positive value, for
+#                           example 3, any task not within 3 seconds of the mean
+#                           displays its times. [0]
+outlierThreshold=#outlierThreshold#
+#
+#
+#  * intraTestBarriers    - use barrier between open, write/read, and close [0=FALSE]
+intraTestBarriers=#intraTestBarriers#
+#
+#  * uniqueDir            - create and use unique directory for each
+#                           file-per-process [0=FALSE]
+uniqueDir=#uniqueDir#
+#
+#  * writeFile            - writes file(s), first deleting any existing file [1=TRUE]
+#                           NOTE: the defaults for writeFile and readFile are
+#                                 set such that if there is not at least one of
+#                                 the following -w, -r, -W, or -R, it is assumed
+#                                 that -w and -r are expected and are
+#                                 consequently used -- this is only true with
+#                                 the command line, and may be overridden in
+#                                 a script
+writeFile=#writeFile#
+#
+#  * readFile             - reads existing file(s) (from current or previous
+#                           run) [1=TRUE]
+#                           NOTE: see writeFile notes
+readFile=#readFile#
+#
+#  * filePerProc          - accesses a single file for each processor; default
+#                           is a single file accessed by all processors [0=FALSE]
+filePerProc=#filePerProc#
+#
+#  * checkWrite           - read data back and check for errors against known
+#                           pattern; can be used independently of writeFile [0=FALSE]
+#                           NOTES: * data checking is not timed and does not
+#                                    affect other performance timings
+#                                  * all errors tallied and returned as program
+#                                    exit code, unless quitOnError set
+checkWrite=#checkWrite#
+#
+#  * checkRead            - reread data and check for errors between reads; can
+#                           be used independently of readFile [0=FALSE]
+#                           NOTE: see checkWrite notes
+checkRead=#checkRead#
+#
+#  * keepFile             - stops removal of test file(s) on program exit [0=FALSE]
+keepFile=#keepFile#
+#
+#  * keepFileWithError    - ensures that with any error found in data-checking,
+#                           the error-filled file(s) will not be deleted [0=FALSE]
+keepFileWithError=#keepFileWithError#
+#
+#  * useExistingTestFile  - do not remove test file before write access [0=FALSE]
+useExistingTestFile=#useExistingTestFile#
+#
+#  * segmentCount         - number of segments in file [1]
+#                           NOTES: * a segment is a contiguous chunk of data
+#                                    accessed by multiple clients each writing/
+#                                    reading their own contiguous data;
+#                                    comprised of blocks accessed by multiple
+#                                    clients
+#                                  * with HDF5 this repeats the pattern of an
+#                                    entire shared dataset
+segmentCount=#segmentCount#
+#
+#  * blockSize            - size (in bytes) of a contiguous chunk of data
+#                           accessed by a single client; it is comprised of one
+#                           or more transfers [1048576]
+blockSize=#blockSize#
+#
+#  * transferSize         - size (in bytes) of a single data buffer to be
+#                           transferred in a single I/O call [262144]
+transferSize=#transferSize#
+#
+#  * verbose              - output information [0]
+#                           NOTE: this can be set to levels 0-5 on the command
+#                                 line; repeating the -v flag will increase
+#                                 verbosity level
+verbose=#verbose#
+#
+#  * setTimeStampSignature - set value for time stamp signature [0]
+#                            NOTE: used to rerun tests with the exact data
+#                                  pattern by setting data signature to contain
+#                                  positive integer value as timestamp to be
+#                                  written in data file; if set to 0, is
+#                                  disabled
+#
+#  * showHelp             - display options and help [0=FALSE]
+#
+#  * storeFileOffset      - use file offset as stored signature when writing
+#                           file [0=FALSE]
+#                           NOTE: this will affect performance measurements
+storeFileOffset=#storeFileOffset#
+#
+#  * memoryPerNode        - Allocate memory on each node to simulate real
+#                           application memory usage.  Accepts a percentage of
+#                           node memory (e.g. "50%") on machines that support
+#                           sysconf(_SC_PHYS_PAGES) or a size.  Allocation will
+#                           be split between tasks that share the node.
+memoryPerNode=#memoryPerNode#
+#
+#  * memoryPerTask        - Allocate secified amount of memory per task to
+#                           simulate real application memory usage.
+#memoryPerTask=#memoryPerTask#
+#
+#  * maxTimeDuration      - max time in minutes to run tests [0]
+#                           NOTES: * setting this to zero (0) unsets this option
+#                                  * this option allows the current read/write
+#                                    to complete without interruption
+maxTimeDuration=#maxTimeDuration#
+#
+#  * deadlineForStonewalling - seconds before stopping write or read phase [0]
+#                           NOTES: * used for measuring the amount of data moved
+#                                    in a fixed time.  After the barrier, each
+#                                    task starts its own timer, begins moving
+#                                    data, and the stops moving data at a pre-
+#                                    arranged time.  Instead of measuring the
+#                                    amount of time to move a fixed amount of
+#                                    data, this option measures the amount of
+#                                    data moved in a fixed amount of time.  The
+#                                    objective is to prevent tasks slow to
+#                                    complete from skewing the performance. 
+#                                  * setting this to zero (0) unsets this option
+#                                  * this option is incompatible w/data checking
+deadlineForStonewalling=#deadlineForStonewalling#
+#
+#  * randomOffset         - access is to random, not sequential, offsets within a file [0=FALSE]
+#                           NOTES: * this option is currently incompatible with:
+#                                    -checkRead
+#                                    -storeFileOffset
+#                                    -MPIIO collective or useFileView
+#                                    -HDF5 or NCMPI
+randomOffset=#randomOffset#
+#  * summaryAlways        - Always print the long summary for each test.
+#                           Useful for long runs that may be interrupted, preventing
+#                           the final long summary for ALL tests to be printed.
+summaryAlways=#summaryAlways#
+#
+#
+#POSIX-ONLY:
+#===========
+#  * useO_DIRECT          - use O_DIRECT for POSIX, bypassing I/O buffers [0]
+useO_DIRECT=#useO_DIRECT#
+#
+#  * singleXferAttempt    - will not continue to retry transfer entire buffer
+#                           until it is transferred [0=FALSE]
+#                           NOTE: when performing a write() or read() in POSIX,
+#                                 there is no guarantee that the entire
+#                                 requested size of the buffer will be
+#                                 transferred; this flag keeps the retrying a
+#                                 single transfer until it completes or returns
+#                                 an error
+singleXferAttempt=#singleXferAttempt#
+#
+#  * fsyncPerWrite        - perform fsync after each POSIX write  [0=FALSE]
+fsyncPerWrite=#fsyncPerWrite#
+#  * fsync                - perform fsync after POSIX write close [0=FALSE]
+fsync=#fsync#
+#
+#MPIIO-ONLY:
+#===========
+#  * preallocate          - preallocate the entire file before writing [0=FALSE]
+preallocate=#preallocate#
+#
+#  * useFileView          - use an MPI datatype for setting the file view option
+#                           to use individual file pointer [0=FALSE]
+#                           NOTE: default IOR uses explicit file pointers
+useFileView=#useFileView#
+#
+#  * useSharedFilePointer - use a shared file pointer [0=FALSE] (not working)
+#                           NOTE: default IOR uses explicit file pointers
+useSharedFilePointer=#useSharedFilePointer#
+#
+#  * useStridedDatatype   - create a datatype (max=2GB) for strided access; akin
+#                           to MULTIBLOCK_REGION_SIZE [0] (not working)
+useStridedDatatype=#useStridedDatatype#
+#
+#HDF5-ONLY:
+#==========
+#  * individualDataSets   - within a single file each task will access its own
+#                           dataset [0=FALSE] (not working)
+#                           NOTE: default IOR creates a dataset the size of
+#                                 numTasks * blockSize to be accessed by all
+#                                 tasks
+# 
+#  * noFill               - no pre-filling of data in HDF5 file creation [0=FALSE]
+#
+#  * setAlignment         - HDF5 alignment in bytes (e.g.: 8, 4k, 2m, 1g) [1]
+#
+#MPIIO-, HDF5-, AND NCMPI-ONLY:
+#==============================
+#  * collective           - uses collective operations for access [0=FALSE]
+collective=#collective#
+#
+#  * showHints            - show hint/value pairs attached to open file [0=FALSE]
+#                           NOTE: not available in NCMPI
+showHints=#showHints#
+#
+#LUSTRE-SPECIFIC:
+#================
+#  * lustreStripeCount    - set the lustre stripe count for the test file(s) [0]
+#lustre#lustreStripeCount=#lustreStripeCount#
+#
+#  * lustreStripeSize     - set the lustre stripe size for the test file(s) [0]
+#lustre#lustreStripeSize=#lustreStripeSize#
+#
+#  * lustreStartOST       - set the starting OST for the test file(s) [-1]
+#lustre#lustreStartOST=#lustreStartOST#
+#
+#  * lustreIgnoreLocks    - disable lustre range locking [0]
+#lustre#lustreIgnoreLocks=#lustreIgnoreLocks#
+#
+#GPFS-SPECIFIC:
+#================
+#  * gpfsHintAccess
+#       - use gpfs_fcntl hints to pre-declare accesses
+#gpfs#gpfsHintAccess=#gpfsHintAccess#
+#
+#  * gpfsReleaseToken     - immediately after opening or creating file, release
+#			   all locks.  Might help mitigate lock-revocation
+#			   traffic when many proceses write/read to same file.
+#gpfs#gpfsReleaseToken=#gpfsReleaseToken#
+#
+RUN

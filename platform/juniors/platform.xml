@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jube SYSTEM "jube2.dtd">
+<jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="jube2.xsd">
+  
+  <parameterset name="compileset">
+    <parameter name="make">make</parameter>
+    <parameter name="cc">gcc</parameter>
+    <parameter name="cflags"></parameter>  
+    <parameter name="mpi_cc">mpicc</parameter>  
+    <parameter name="mpi_cxx">mpicxx</parameter>  
+    <parameter name="mpi_f90">mpif90</parameter>  
+    <parameter name="mpi_f77">mpif77</parameter>  
+  </parameterset>
+
+  <substituteset name="compilesub">
+    <sub source="#MPI_CC#" dest="$mpi_cc" />
+  </substituteset>
+  <parameterset name="executeset">
+    <parameter name="starter">mpiexec</parameter>
+    <parameter name="submit">qsub</parameter>
+    <parameter name="submit_script">./juniors-execute.sh</parameter>
+    <parameter name="shared_folder">shared</parameter>
+    <parameter name="shared_job_info">${shared_folder}/jobid</parameter>   
+    <parameter name="chainjob_script">./juniors-serializeJobs.sh</parameter>
+    <parameter name="chainjob_needs_submit">false</parameter>
+    <parameter name="done_file">ready</parameter>
+  </parameterset>
+  
+  <substituteset name="chainsub"></substituteset>
+
+  <substituteset name="executesub">
+    <iofile in="juniors-execute.sh.in" out="juniors-execute.sh" />
+    <sub source="#ENV#" dest="" />
+    <sub source="#TASKSPERNODE#" dest="$taskspernode" />
+    <sub source="#HOSTFILE#" dest="$hostfile" />
+    <sub source="#PREPROCESS#" dest="ssh $contactnode mkdir -p ${testdir}" />
+    <sub source="#STARTER#" dest="mpiexec" />
+    <sub source="#ARGS_STARTER#" dest="-machinefile hostfile.dat -n $tasks" />
+    <sub source="#MEASUREMENT#" dest="" />
+    <sub source="#EXECUTABLE#" dest="${jube_wp_abspath}/mdtest4jube2" />
+    <sub source="#ARGS_EXECUTABLE#" dest="" />
+    <sub source="#POSTPROCESS#" dest="ssh $contactnode rm -rf ${testdir}" />
+    <sub source="#HOSTFILE#" dest="$hostfile" />
+    <sub source="#FLAG#" dest="touch $done_file" />
+    <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
+    <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
+  </substituteset>
+  
+  <parameterset name="systemParameter">
+    <parameter name="nodes">1</parameter>  
+    <parameter name="taskspernode">1</parameter>  
+    <parameter name="threadspertask">1</parameter>
+    <parameter name="contactnode" type="string" >juniors1</parameter>
+    <parameter name="hostfile">hostfile-juniors1+2+3+4+5+6+7+8</parameter>
+    <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode</parameter>
+    <parameter name="outlogfile">stdout</parameter>
+    <parameter name="errlogfile">stderr</parameter>
+  </parameterset>
+  
+  <fileset name="jobfiles">
+    <copy>${submit_script}.in</copy>
+    <copy>hostfile-juniors*</copy>
+  </fileset>
+  
+  <fileset name="chainfiles">
+    <copy>$chainjob_script</copy>
+  </fileset>
+ 
+</jube>

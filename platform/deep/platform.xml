@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jube SYSTEM "jube2.dtd">
+<jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="jube2.xsd">
+  
+  <parameterset name="compileset">
+    <parameter name="make">gmake</parameter>
+    <parameter name="cc">gcc</parameter>
+    <parameter name="cflags"></parameter>  
+    <parameter name="mpi_cc">mpicc</parameter>  
+    <parameter name="mpi_cxx">mpic++</parameter>  
+    <parameter name="mpi_f90">mpif90</parameter>  
+    <parameter name="mpi_f77">mpif77</parameter>  
+  </parameterset>
+
+  <substituteset name="compilesub">
+    <sub source="#MPI_CC#" dest="$mpi_cc" />
+  </substituteset>
+  
+  <parameterset name="executeset">
+    <parameter name="starter">mpiexec</parameter>
+    <parameter name="submit">qsub</parameter>
+    <parameter name="submit_script">submit.job</parameter>
+    <parameter name="shared_folder">shared</parameter>
+    <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
+    <parameter name="chainjob_script">./deep-chainJobs.sh</parameter>
+    <parameter name="chainjob_needs_submit">false</parameter>
+    <parameter name="done_file">ready</parameter>
+  </parameterset>
+  
+  <substituteset name="executesub">
+    <iofile in="${submit_script}.in" out="$submit_script" />
+    <sub source="#ENV#" dest="" />
+    <sub source="#NOTIFY_EMAIL#" dest="" />
+    <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
+    <sub source="#NODES#" dest="$nodes" />
+    <sub source="#NCPUS#" dest="$taskspernode" />
+    <sub source="#QUEUE#" dest="common" />
+    <sub source="#JOBPOLICY#" dest="NACCESSPOLICY:SINGLEJOB" />
+    <sub source="#TIME_LIMIT#" dest="$timelimit" />
+    <sub source="#PREPROCESS#" dest="" />
+    <sub source="#POSTPROCESS#" dest="" />
+    <sub source="#STARTER#" dest="$starter" />
+    <sub source="#ARGS_STARTER#" dest="-n $tasks" />
+    <sub source="#MEASUREMENT#" dest="" />
+    <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
+    <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
+    <sub source="#EXECUTABLE#" dest="" />
+    <sub source="#ARGS_EXECUTABLE#" dest="" />
+    <sub source="#FLAG#" dest="touch $done_file" />
+  </substituteset>
+
+  <substituteset name="chainsub"></substituteset>
+  
+  <parameterset name="systemParameter">
+    <parameter name="timelimit">00:30:00</parameter>  
+    <parameter name="nodes">1</parameter>  
+    <parameter name="taskspernode">1</parameter>  
+    <parameter name="threadspertask">1</parameter>
+    <parameter name="outlogfile">stdout</parameter>
+    <parameter name="errlogfile">stderr</parameter>
+    <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode</parameter>
+  </parameterset>
+  
+  <fileset name="jobfiles">
+    <copy>${submit_script}.in</copy>
+  </fileset>
+  
+  <fileset name="chainfiles">
+    <copy>$chainjob_script</copy>
+  </fileset>
+ 
+</jube>

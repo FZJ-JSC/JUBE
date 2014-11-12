@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="jube2.xsd">
+
+  <selection>
+    <only>mdtest</only>
+  </selection>
+  <include-path>
+    <path tag="juqueen">../../platform/juqueen</path>
+    <path tag="juropa2">../../platform/juropa2</path>
+    <path tag="juropa3,juropatest">../../platform/juropa3</path>
+    <path tag="judge">../../platform/judge</path>
+    <path tag="deep">../../platform/deep</path>
+    <path tag="juniors">../../platform/juniors</path>
+  </include-path>
+
+
+  <!-- global sets -->
+  
+  <!-- mdtest --> 
+
+  <benchmark name="mdtest" outpath="./benchmark_runs">
+
+    <fileset name="sources">
+      <copy>mdtest.tar.gz</copy>
+      <prepare>tar -xzf mdtest.tar.gz</prepare>
+    </fileset>
+
+    <parameterset name="mdtestParameter" init_with="mdtest_specs.xml">
+      <parameter name="filespertask" mode="python" type="int">int($totalfiles/$tasks)</parameter>
+      <parameter name="iterations" type="int" >3</parameter>
+      <parameter name="depth" type="int" >0,1,2</parameter>      
+      <parameter name="totalfiles" type="int" >16384</parameter>
+      <parameter name="totalfiles" type="int" tag='juniors'>4096</parameter>
+    </parameterset>
+    
+    <parameterset name="systemParameter" init_with="mdtest_specs.xml">
+      <parameter name="testdir" type="string" >$$WORK/mdtest/$jube_wp_id</parameter>
+      <parameter name="testdir" type="string" tag="deep">/work/zdv124/mdtest/$jube_wp_id</parameter>
+      <parameter name="testdir" type="string" tag="juniors">/gpfs/afmcache/source/mdtest/$jube_wp_id</parameter>
+      <parameter name="nodes" type="int" >4</parameter>  
+      <parameter name="taskspernode" type="int" >1,2,4,8</parameter>  
+      <parameter name="contactnode" type="string" tag="juniors">juniors6</parameter>
+      <parameter name="hostfile" tag="juniors">hostfile-juniors5+6+7+8</parameter>
+      <parameter name="outlogfile">job.log</parameter>
+      <parameter name="errlogfile">job.err</parameter>
+    </parameterset>
+
+    <substituteset name="compilesub" init_with="platform.xml">
+      <iofile in="Makefile.jube" out="Makefile" />
+    </substituteset>
+    
+    <substituteset name="executesub" init_with="platform.xml">
+      <sub source="#QUEUE#" dest="jube" tag="deep"/>
+      <sub source="#QUEUE#" dest="psslurm" tag="juropa3,juropatest"/>
+      <sub source="#RESERVATION#" dest="psslurm" tag="juropa3,juropatest"/>
+      <sub source="#NOTIFY_EMAIL#" dest="st.graf@fz-juelich.de" />
+      <sub source="#PREPROCESS#" dest="date +'(start) %F %T (%s)';mkdir -p ${testdir}" />
+      <sub source="#PREPROCESS#" dest="date +'(start) %F %T (%s)';ssh $contactnode mkdir -p ${testdir}" tag="juniors" />
+      <sub source="#POSTPROCESS#" dest="rm -rf ${testdir};date +'(finished) %F %T (%s)'" />
+      <sub source="#POSTPROCESS#" dest="ssh $contactnode rm -rf ${testdir};date +'(finished) %F %T (%s)'" tag="juniors"/>
+      <sub source="#EXECUTABLE#" dest="compile/mdtest" />
+      <sub source="#EXECUTABLE#" dest="${jube_wp_abspath}/compile/mdtest" tag="juniors"/>
+      <sub source="#ARGS_EXECUTABLE#" dest="-n $filespertask -z $depth -i $iterations -F -C -v -d ${testdir}" />
+    </substituteset>
+        
+    <step name="compile">
+      <use>sources</use>
+      <use from="platform.xml">compileset</use>
+      <use>compilesub</use>
+      <do>make</do>
+    </step>
+
+    <step name="execute" depend="compile" shared="$shared_folder">
+      <use from="platform.xml">executeset</use>
+      <use>executesub</use>
+      <use from="platform.xml">chainsub</use>
+      <use>systemParameter</use>
+      <use>mdtestParameter</use>
+      <use from="platform.xml">jobfiles</use>
+      <use from="platform.xml">chainfiles</use>
+      <do>$chainjob_script $shared_job_info $submit_script</do>
+      <do shared="true" active="$chainjob_needs_submit">$submit_chainjob</do>
+      <do done_file="$done_file"></do>
+    </step>
+
+    <analyzer name="analyse">
+      <use from="mdtest_specs.xml">pattern</use>
+      <analyse step="execute">
+        <file>job.log</file>
+      </analyse>
+    </analyzer>
+
+    <result>
+      <use>analyse</use>
+      <table name="result" style="pretty" sort="nodes,taskspernode">
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>tasks</column>
+        <column>usedFileNo</column>
+        <column format=".3f">FCreateMax</column>
+        <column format=".3f">FCreateMin</column>
+        <column format=".3f">FCreateMean</column>
+        <column format=".3f">TCreateMax</column>
+        <column format=".3f">TCreateMin</column>
+        <column format=".3f">TCreateMean</column>
+      </table>
+    </result>
+
+  </benchmark>
+
+</jube>

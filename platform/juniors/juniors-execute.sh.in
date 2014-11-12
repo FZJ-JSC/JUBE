@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+#ENV#
+echo $PWD
+echo "create hostfile.dat"
+for ((i=0; i< #TASKSPERNODE#; i++)) 
+do 
+    cat #HOSTFILE# >> hostfile.dat
+done
+
+#PREPROCESS#
+if [ ! -z "#STDOUTLOGFILE#" ]
+then 
+    exec 3>&1
+    exec 4>&2
+    exec >#STDOUTLOGFILE#
+    exec 2>#STDERRLOGFILE#
+fi
+#STARTER# #ARGS_STARTER# #MEASUREMENT# #EXECUTABLE# #ARGS_EXECUTABLE#
+if [ ! -z "#STDOUTLOGFILE#" ]
+then 
+    exec 1>&3 3>&-
+    exec 2>&4 4>&-
+fi
+#POSTPROCESS#
+
+#FLAG#
+
+
