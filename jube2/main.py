@@ -655,12 +655,12 @@ def _get_args_parser():
 
     # convert subparser
     subparser_configuration["convert"] = {
-        "help": "UNDER CONSTRUCTION!!! convert jube files",
+        "help": "Convert jube version 1 files to jube version 2 files",
         "func": jube2jube2,
         "arguments": {
             ("-i", "--input_path"):
                 {"type": str, "default": "./",
-                 "help": "location of jube XML files"},
+                 "help": "Location of jube XML files"},
             ("main_xml_file",):
                 {"type": str, "help": "Main jube XML"}
         }

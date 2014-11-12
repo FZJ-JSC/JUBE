@@ -61,6 +61,21 @@ Run a new benchmark.
 
 .. index:: continue
 
+convert
+~~~~~~~
+
+Convert jube version 1 files to jube version 2 files.
+
+.. code-block:: none
+   
+   jube convert [-h] [-i INPUT_PATH] main_xml_file
+
+``-h``, ``--help``
+   show command help information
+   
+``-i INPUT_PATH main_xml_file`` 
+  select root directory of jube version 1 benchmark along with the corresponding main XML file
+
 continue
 ~~~~~~~~
 

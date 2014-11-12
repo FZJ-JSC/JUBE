@@ -4,6 +4,10 @@ Glossary
 .. glossary::
    :sorted:
 
+
+   convert
+      Convert jube version 1 files to jube version 2 files.
+
    remove
       The given benchmark will be removed.
 
