@@ -346,13 +346,13 @@ class Workpackage(object):
             alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
             alt_work_dir = os.path.join(self._benchmark.file_path_ref,
                                         alt_work_dir)
-            # update jube_wp_abspath 
+            # update jube_wp_abspath
             parameter["jube_wp_abspath"] = os.path.abspath(alt_work_dir)
             LOGGER.debug("  switch to alternativ work dir: \"{}\""
                          .format(alt_work_dir))
             if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
                 os.makedirs(alt_work_dir)
-                
+
         # Print debug info
         debugstr = "  available parameter:\n"
         debugstr += jube2.util.text_table([("parameter", "value")] +

@@ -85,9 +85,6 @@ class Substituteset(object):
             if not jube2.conf.DEBUG_MODE:
                 infile = os.path.join(work_dir, infile)
                 outfile = os.path.join(work_dir, outfile)
-                # Skip existing outfiles
-                if os.path.exists(outfile):
-                    continue
                 # Check not existing files
                 if not (os.path.exists(infile) and os.path.isfile(infile)):
                     raise RuntimeError(("File \"{0}\" not found while "
