@@ -303,7 +303,7 @@ An example benchmark structure bases on three include files:
 Inside the ``platform`` directory you will find some example benchmark independet platform configuration files for the supercomputers at
 Forschungszentrum Jülich.
   
-To avoid writting of long include-pathes every time you run a platform independent benchmark you can store the include-path inside your 
+To avoid writting long include-pathes every time you run a platform independent benchmark, you can store the include-path inside your 
 input file. This can be mixed using the tagging-feature:
 
 .. code-block:: xml
