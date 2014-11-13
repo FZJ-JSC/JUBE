@@ -28,7 +28,7 @@ class JubeXMLConverter(object):
     def __init__(self, main_file, main_dir="./"):
         self._main_file = main_file
         self._main_dir = main_dir
-        self._main_xml_file = self._main_dir + main_file
+        self._main_xml_file = os.path.join(self._main_dir, main_file)
 
         self._compile_xml_file = os.path.join(self._main_dir, "compile.xml")
         self.file_availability(self._compile_xml_file)
@@ -74,6 +74,8 @@ class JubeXMLConverter(object):
 #         Needed to gather perl expressions of corresponding substituteset
         self._calc_parameterset_node = None
         self._calc_parameterset_name = ""
+        self._root_platform_element = None
+        self._main_element = None
 
     @staticmethod
     def _init_global_parameterset():
@@ -118,6 +120,9 @@ class JubeXMLConverter(object):
         parameter = ET.SubElement(
             global_parameterset, 'parameter', {'name': 'stderrfile'})
         parameter.text = "stderr"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'execnamepath'})
+        parameter.text = "$jube_wp_abspath"
 
         return global_parameterset
 
@@ -390,8 +395,8 @@ class JubeXMLConverter(object):
 
     def _main_comment(self):
         text = """ Hint for the user!
-        Jube version 2 provides some help variables which are not necessarily 
-        available in jube version 2. 
+        Jube version 2 provides some help variables which are not necessarily
+        available in jube version 2.
         These variables are as follows:
             benchxmlfile
             pwd
@@ -406,15 +411,15 @@ class JubeXMLConverter(object):
             platform
             cmpdir
             benddate
-            
-            Have a look at the "do" tags of this file and check whether some of 
-            these variables are used. Not all of them make sense in the context 
-            of jube version 2 and might be removed. Furthermore type "jube help 
-            jube_variables" to get a list of variables available in 
+
+            Have a look at the "do" tags of this file and check whether some of
+            these variables are used. Not all of them make sense in the context
+            of jube version 2 and might be removed. Furthermore type "jube help
+            jube_variables" to get a list of variables available in
             jube version 2.
-            
-            In the case you used "lastcommand" in jube version 1 you need to 
-            give a value for $shared_dir given in the corresponding execution 
+
+            In the case you used "lastcommand" in jube version 1 you need to
+            give a value for $shared_dir given in the corresponding execution
             step (just grep for "$shared_dir")."""
 
         comment = ET.Comment(text)
@@ -644,16 +649,16 @@ class JubeXMLConverter(object):
         self.process_jube_main_file()
         self.convert_platformfile()
 
-        for key, val in self._benchmark_dict.items():
+        for val in self._benchmark_dict.values():
             self._main_element.append(val.benchmark_element)
 
         self.write_platformfile(self._main_dir + "platform_jube2.xml")
         self.write_main_file(self._main_dir + "benchmarks_jube2.xml")
 
         message = """            Don't forget to have a look at
-            benchmarks_jube2.xml and platform_jube2.xml 
+            benchmarks_jube2.xml and platform_jube2.xml
             and check whether you get what you  expect.
-            In particular, notice the comments in 
+            In particular, notice the comments in
             benchmarks_jube2.xml."""
         print(message)
 
@@ -687,12 +692,12 @@ class _JubeAnalyzer(object):
         self._create_analyzer_node()
 
         self._create_result_node()
-        
+
     @property
     def patternset_node_list(self):
         """Get patternset node list"""
         return self._patternset_node_list
-    
+
     @property
     def analyzer_node(self):
         """Get analyzer node"""
@@ -706,7 +711,7 @@ class _JubeAnalyzer(object):
     def _create_analyzer_node(self):
         self._analyzer_node = ET.Element("analyzer")
         self._analyzer_node.set('name', 'analyze')
-        for use in  self._use_list:
+        for use in self._use_list:
             use_tag = ET.SubElement(self._analyzer_node, "use")
             use_tag.text = use
 
@@ -877,7 +882,7 @@ class _JubeStep(object):
     @property
     def step_element(self):
         """Get step element"""
-        return self._step_element   
+        return self._step_element
 
     @property
     def name(self):
@@ -909,6 +914,11 @@ class _JubeStep(object):
         """Get last command"""
         return self._last_command
 
+    @last_command.setter
+    def last_command(self, value):
+        """Set last command"""
+        self._last_command = value
+
     def build_step_element(self):
         step = ET.Element('step')
         step.set("name", self._name)
@@ -938,6 +948,7 @@ class _JubeStep(object):
 
         if self._last_command is not None:
             do_node = ET.SubElement(step, 'do', {"shared": "True"})
+            do_node.text = self._last_command
 
         self._step_element = step
 
@@ -988,7 +999,7 @@ class _JubeBenchmark(object):
     def prepare_step(self):
         """Get prepare step"""
         return self._prepare_step
-    
+
     @prepare_step.setter
     def prepare_step(self, value):
         """Set prepare step"""
@@ -1003,12 +1014,12 @@ class _JubeBenchmark(object):
     def verify_step(self, value):
         """Set verify step"""
         self._verify_step = value
-    
+
     @property
     def analyzer(self):
         """Get analyzer"""
         return self._analyzer
-    
+
     @analyzer.setter
     def analyzer(self, value):
         """Set jube analyzer"""
