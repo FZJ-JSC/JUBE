@@ -114,4 +114,4 @@ class Substituteset(object):
         return substituteset_etree
 
     def __repr__(self):
-        return "Substitute({})".format(self.__dict__)
+        return "Substitute({0})".format(self.__dict__)

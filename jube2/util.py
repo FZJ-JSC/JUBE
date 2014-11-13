@@ -166,7 +166,7 @@ def format_value(format_string, value):
           ("f" in format_string) or ("F" in format_string) or
           ("g" in format_string) or ("G" in format_string)):
         value = float(value)
-    format_string = "{{:{}}}".format(format_string)
+    format_string = "{{0:{0}}}".format(format_string)
     return format_string.format(value)
 
 
@@ -256,9 +256,9 @@ def resolve_depend(depend_dict):
             for step in unresolved_steps:
                 unresolved_dependencies.update(depend_dict[step] -
                                                finished)
-            infostr = ("unresolved steps: {}".
+            infostr = ("unresolved steps: {0}".
                        format(",".join(unresolved_steps)) + "\n" +
-                       "unresolved dependencies: {}".
+                       "unresolved dependencies: {0}".
                        format(",".join(unresolved_dependencies)))
             LOGGER.warning(infostr)
 
@@ -286,5 +286,5 @@ def consistency_check(benchmark):
                 if (use not in benchmark.parametersets) and \
                    (use not in benchmark.filesets) and \
                    (use not in benchmark.substitutesets):
-                    raise ValueError(("<use>{}</use> not found in available " +
-                                      "sets").format(use))
+                    raise ValueError(("<use>{0}</use> not found in "
+                                      "available sets").format(use))

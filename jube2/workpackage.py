@@ -214,7 +214,7 @@ class Workpackage(object):
         for parent in self._parents:
             parameterset.add_parameter(
                 jube2.parameter.Parameter.
-                create_parameter(("jube_wp_parent_{}_id")
+                create_parameter(("jube_wp_parent_{0}_id")
                                  .format(parent.step.name),
                                  str(parent.id), parameter_type="int"))
 
@@ -297,7 +297,7 @@ class Workpackage(object):
                             ",".join([parent.step.name + "(" +
                                       str(parent.id) + ")"
                                       for parent in self._parents])))
-        stepstr = "----- {} -----".format(stepstr)
+        stepstr = "----- {0} -----".format(stepstr)
         LOGGER.debug(stepstr)
 
         started_before = self.started
@@ -348,7 +348,7 @@ class Workpackage(object):
                                         alt_work_dir)
             # update jube_wp_abspath
             parameter["jube_wp_abspath"] = os.path.abspath(alt_work_dir)
-            LOGGER.debug("  switch to alternativ work dir: \"{}\""
+            LOGGER.debug("  switch to alternativ work dir: \"{0}\""
                          .format(alt_work_dir))
             if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
                 os.makedirs(alt_work_dir)

@@ -87,7 +87,7 @@ def command_help(args):
             else:
                 print(jube2.help.HELP[args.command])
         else:
-            print("no help found for {}".format(args.command))
+            print("no help found for {0}".format(args.command))
             subparser["help"].print_help()
 
 
@@ -145,13 +145,13 @@ def show_log_single(args, benchmark_folder):
 
     # Output the log file
     for log in matching:
-        jube2.log.log_print("BenchmarkID: {} | Log: {}".format(benchmark.id,
-                                                               log))
+        jube2.log.log_print("BenchmarkID: {0} | Log: {1}".format(benchmark.id,
+                                                                 log))
         jube2.log.safe_output_logfile(log)
 
     # Inform user if any selected log was not found
     if not_matching:
-        jube2.log.log_print("Could not find logs: {}".format(
+        jube2.log.log_print("Could not find logs: {0}".format(
             ",".join(not_matching)))
 
     # Restore current working dir
@@ -206,13 +206,13 @@ def search_for_benchmarks(args):
     """Search for existing benchmarks"""
     found_benchmarks = list()
     if not os.path.isdir(args.dir):
-        raise OSError("Not a directory: \"{}\"".format(args.dir))
+        raise OSError("Not a directory: \"{0}\"".format(args.dir))
     if args.id is not None:
         for benchmark_id in args.id:
             # Restart existing benchmark
             benchmark_folder = jube2.util.id_dir(args.dir, benchmark_id)
             if not os.path.isdir(benchmark_folder):
-                raise OSError("Benchmark directory not found: \"{}\""
+                raise OSError("Benchmark directory not found: \"{0}\""
                               .format(benchmark_folder))
             found_benchmarks.append(benchmark_folder)
     else:
@@ -223,7 +223,7 @@ def search_for_benchmarks(args):
         if os.path.isdir(benchmark_folder):
             found_benchmarks.append(benchmark_folder)
         else:
-            raise OSError("No benchmark directory found in \"{}\""
+            raise OSError("No benchmark directory found in \"{0}\""
                           .format(args.dir))
     return found_benchmarks
 
@@ -371,7 +371,7 @@ def _analyse_benchmark(benchmark_folder, args):
     LOGGER.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
     benchmark.analyse()
-    LOGGER.info(">>> Analyse data storage: {}".format(os.path.join(
+    LOGGER.info(">>> Analyse data storage: {0}".format(os.path.join(
         benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
     LOGGER.info(jube2.util.text_line())
     # Restore current working dir
@@ -450,10 +450,10 @@ def _remove_benchmark(benchmark_folder, args):
     remove = True
     if not args.force:
         try:
-            inp = raw_input("Really remove \"{}\" (y/n):"
+            inp = raw_input("Really remove \"{0}\" (y/n):"
                             .format(benchmark_folder))
         except NameError:
-            inp = input("Really remove \"{}\" (y/n):"
+            inp = input("Really remove \"{0}\" (y/n):"
                         .format(benchmark_folder))
         remove = inp.startswith("y")
     if remove:
@@ -483,7 +483,7 @@ def _get_args_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--version", help="show version",
                         action="version",
-                        version="JUBE, version {}".format(
+                        version="JUBE, version {0}".format(
                             jube2.conf.JUBE_VERSION))
     parser.add_argument('--debug', action="store_true",
                         help='use debugging mode')
@@ -726,8 +726,8 @@ def main():
 
         jube2.log.setup_logging(logger_config)
 
-        LOGGER.debug("Using logger_config: '{}'".format(logger_config))
-        LOGGER.debug("Command: '{}'".format(" ".join(sys.argv)))
+        LOGGER.debug("Using logger_config: '{0}'".format(logger_config))
+        LOGGER.debug("Command: '{0}'".format(" ".join(sys.argv)))
 
         if args.devel:
             args.func(args)

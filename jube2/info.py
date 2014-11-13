@@ -27,7 +27,7 @@ def print_benchmarks_info(path):
     """Print list of all benchmarks, found in given directory"""
     # Get list of all files and directories in given path
     if not os.path.isdir(path):
-        raise OSError("Not a directory: \"{}\"".format(path))
+        raise OSError("Not a directory: \"{0}\"".format(path))
     dir_list = os.listdir(path)
     benchmark_info = list()
     # Search for possible benchmark dirs
@@ -61,12 +61,12 @@ def print_benchmarks_info(path):
     benchmark_info = [("id", "name", "started", "last change",
                        "comment", "tags")] + benchmark_info
     if len(benchmark_info) > 1:
-        infostr = (jube2.util.text_boxed("Benchmarks found in \"{}\":".
+        infostr = (jube2.util.text_boxed("Benchmarks found in \"{0}\":".
                                          format(path)) + "\n" +
                    jube2.util.text_table(benchmark_info, use_header_line=True))
         print(infostr)
     else:
-        print("No Benchmarks found in \"{}\"".format(path))
+        print("No Benchmarks found in \"{0}\"".format(path))
 
 
 def print_benchmark_info(benchmark):
@@ -81,7 +81,7 @@ def print_benchmark_info(benchmark):
     print(infostr)
     continue_possible = False
 
-    print("  Directory: {}"
+    print("  Directory: {0}"
           .format(os.path.abspath(benchmark.bench_dir)))
 
     # Starttime is workpackage.xml creation time
@@ -90,7 +90,7 @@ def print_benchmark_info(benchmark):
                       time.localtime(os.path.getctime(
                           os.path.join(benchmark.bench_dir,
                                        jube2.conf.CONFIGURATION_FILENAME))))
-    print("\n    Started: {}".format(start_time))
+    print("\n    Started: {0}".format(start_time))
     last_change = time.localtime(os.path.getmtime(benchmark.bench_dir))
 
     # Create step overview
@@ -124,7 +124,7 @@ def print_benchmark_info(benchmark):
 
         step_info.append((step_name, depends, cnt,
                           str(cnt_done), last_finish_str))
-    print("Last change: {}"
+    print("Last change: {0}"
           .format(time.strftime("%Y-%m-%d %H:%M:%S", last_change)))
     print(
         "\n" + jube2.util.text_table(step_info, use_header_line=True,
@@ -141,7 +141,7 @@ def print_benchmark_info(benchmark):
         for file_obj in fileset:
             if (not type(file_obj) is jube2.fileset.Prepare) and \
                     (not file_obj.is_internal_ref):
-                print("  {}".format(os.path.abspath(file_obj.path)))
+                print("  {0}".format(os.path.abspath(file_obj.path)))
 
     print(jube2.util.text_line())
 
@@ -223,8 +223,8 @@ def print_step_info(benchmark, step_name):
     if len(error_dict) > 0:
         print("!!! Errors found !!!:")
     for error_file in error_dict:
-        print(">>> {}:".format(error_file))
-        print("{}\n".format(error_dict[error_file]))
+        print(">>> {0}:".format(error_file))
+        print("{0}\n".format(error_dict[error_file]))
 
 
 def print_benchmark_status(benchmark):

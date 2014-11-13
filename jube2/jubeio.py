@@ -47,10 +47,10 @@ def benchmarks_from_xml(filename, tags=None):
     in the corresponding XML file.
     """
     benchmarks = dict()
-    LOGGER.debug("Parsing {}".format(filename))
+    LOGGER.debug("Parsing {0}".format(filename))
 
     if not os.path.isfile(filename):
-        raise IOError("Benchmark configuration file not found: \"{}\""
+        raise IOError("Benchmark configuration file not found: \"{0}\""
                       .format(filename))
     try:
         tree = ET.parse(filename)
@@ -78,7 +78,7 @@ def benchmarks_from_xml(filename, tags=None):
     LOGGER.debug("  Remove invalid tags using tags-attribute")
     if tags is None:
         tags = set()
-    LOGGER.debug("    Available tags: {}"
+    LOGGER.debug("    Available tags: {0}"
                  .format(jube2.conf.DEFAULT_SEPARATOR.join(tags)))
     _remove_invalid_tags(tree.getroot(), tags)
 
@@ -243,7 +243,7 @@ def _find_include_file(filename):
         if os.path.exists(file_path):
             break
     else:
-        raise ValueError(("\"{}\" not found in possible " +
+        raise ValueError(("\"{0}\" not found in possible " +
                           "include pathes").format(filename))
     return file_path
 
@@ -283,7 +283,7 @@ def benchmark_info_from_xml(filename):
                                  jube2.conf.DEFAULT_SEPARATOR)]))
     benchmark_etree = tree.find(".//benchmark")
     if benchmark_etree is None:
-        raise ValueError("benchmark-tag not found in \"{}\"".format(filename))
+        raise ValueError("benchmark-tag not found in \"{0}\"".format(filename))
     name = _attribute_from_element(benchmark_etree, "name").strip()
     comment_element = benchmark_etree.find("comment")
     if comment_element is not None:
@@ -298,7 +298,7 @@ def benchmark_info_from_xml(filename):
 
 def analyse_result_from_xml(filename):
     """Read existing analyse out of xml-file"""
-    LOGGER.debug("Parsing {}".format(filename))
+    LOGGER.debug("Parsing {0}".format(filename))
     tree = ET.parse(filename)
     analyse_result = dict()
     analyzer = tree.findall(".//analyzer")
@@ -339,9 +339,9 @@ def workpackages_from_xml(filename, benchmark):
     # parents_tmp: Dict workpackage_id => list of parent_workpackage_ids
     parents_tmp = dict()
     work_list = queue.Queue()
-    LOGGER.debug("Parsing {}".format(filename))
+    LOGGER.debug("Parsing {0}".format(filename))
     if not os.path.isfile(filename):
-        raise IOError("Workpackage configuration file not found: \"{}\""
+        raise IOError("Workpackage configuration file not found: \"{0}\""
                       .format(filename))
     tree = ET.parse(filename)
     for element in tree.getroot():
@@ -542,7 +542,7 @@ def _combine_global_and_local_sets(global_sets, local_sets):
     """Combine global and local sets """
     result_sets = dict(global_sets)
     if set(result_sets) & set(local_sets):
-        raise ValueError("\"{}\" not unique"
+        raise ValueError("\"{0}\" not unique"
                          .format(",".join([name for name in
                                            (set(result_sets) &
                                             set(local_sets))])))
@@ -559,7 +559,7 @@ def _extract_steps(etree):
     for element in etree.findall("step"):
         step = _extract_step(element)
         if step.name in steps:
-            raise ValueError("\"{}\" not unique".format(step.name))
+            raise ValueError("\"{0}\" not unique".format(step.name))
         steps[step.name] = step
     return steps
 
@@ -572,7 +572,7 @@ def _extract_step(etree_step):
     valid_tags = ["use", "do"]
 
     name = _attribute_from_element(etree_step, "name").strip()
-    LOGGER.debug("  Parsing <step name=\"{}\">".format(name))
+    LOGGER.debug("  Parsing <step name=\"{0}\">".format(name))
     tmp = etree_step.get("depend", "").strip()
     iterations = int(etree_step.get("iterations", "1").strip())
     alt_work_dir = etree_step.get("work_dir")
@@ -614,7 +614,7 @@ def _extract_step(etree_step):
             elif shared_str == "false":
                 shared = False
             else:
-                raise ValueError("shared=\"{}\" not allowed. Must be " +
+                raise ValueError("shared=\"{0}\" not allowed. Must be " +
                                  "\"true\" or \"false\"".format(shared_str))
             cmd = element.text
             if cmd is None:
@@ -638,7 +638,7 @@ def _extract_analyzers(etree):
     for element in etree.findall("analyzer"):
         analyzer = _extract_analyzer(element)
         if analyzer.name in analyzers:
-            raise ValueError("\"{}\" not unique".format(analyzer.name))
+            raise ValueError("\"{0}\" not unique".format(analyzer.name))
         analyzers[analyzer.name] = analyzer
     return analyzers
 
@@ -648,7 +648,7 @@ def _extract_analyzer(etree_analyzer):
     valid_tags = ["use", "analyse"]
     name = _attribute_from_element(etree_analyzer, "name").strip()
     analyzer = jube2.analyzer.Analyzer(name)
-    LOGGER.debug("  Parsing <analyzer name=\"{}\">".format(name))
+    LOGGER.debug("  Parsing <analyzer name=\"{0}\">".format(name))
     for element in etree_analyzer:
         _check_tag(element, valid_tags)
         if element.tag == "analyse":
@@ -816,7 +816,7 @@ def _extract_parametersets(etree, tags=None):
         if name == "":
             raise ValueError("Empty \"name\" attribute in " +
                              "<parameterset> found.")
-        LOGGER.debug("  Parsing <parameterset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <parameterset name=\"{0}\">".format(name))
         init_with = element.get("init_with")
         if init_with is not None:
             parts = init_with.strip().split(":")
@@ -833,7 +833,7 @@ def _extract_parametersets(etree, tags=None):
         for parameter in _extract_parameters(element):
             parameterset.add_parameter(parameter)
         if parameterset.name in parametersets:
-            raise ValueError("\"{}\" not unique".format(parameterset.name))
+            raise ValueError("\"{0}\" not unique".format(parameterset.name))
         parametersets[parameterset.name] = parameterset
     return parametersets
 
@@ -884,7 +884,7 @@ def _extract_patternsets(etree, tags=None):
         if name == "":
             raise ValueError("Empty \"name\" attribute in " +
                              "<patternset> found.")
-        LOGGER.debug("  Parsing <patternset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <patternset name=\"{0}\">".format(name))
         init_with = element.get("init_with")
         if init_with is not None:
             parts = init_with.strip().split(":")
@@ -901,7 +901,7 @@ def _extract_patternsets(etree, tags=None):
         for pattern in _extract_pattern(element):
             patternset.add_pattern(pattern)
         if patternset.name in patternsets:
-            raise ValueError("\"{}\" not unique".format(patternset.name))
+            raise ValueError("\"{0}\" not unique".format(patternset.name))
         patternsets[patternset.name] = patternset
     return patternsets
 
@@ -949,11 +949,11 @@ def _extract_filesets(etree, tags=None):
         name = _attribute_from_element(element, "name").strip()
         if name == "":
             raise ValueError("Empty \"name\" attribute in <fileset> found.")
-        LOGGER.debug("  Parsing <fileset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <fileset name=\"{0}\">".format(name))
         init_with = element.get("init_with")
         filelist = _extract_files(element)
         if name in filesets:
-            raise ValueError("\"{}\" not unique".format(name))
+            raise ValueError("\"{0}\" not unique".format(name))
         if init_with is not None:
             parts = init_with.strip().split(":")
             if len(parts) > 1:
@@ -988,7 +988,7 @@ def _extract_files(etree_fileset):
                 etree_file.get(
                     "rel_path_ref", default="external").strip() == "internal"
             if etree_file.text is None:
-                raise ValueError("Empty filelist in <{}> found."
+                raise ValueError("Empty filelist in <{0}> found."
                                  .format(etree_file.tag))
             files = etree_file.text.strip().split(separator)
             if alt_name is None:
@@ -1000,7 +1000,7 @@ def _extract_files(etree_fileset):
                          alt_name.split(jube2.conf.DEFAULT_SEPARATOR)]
             if len(names) != len(files):
                 raise ValueError("Namelist and filelist must have same " +
-                                 "length in <{}>".format(etree_file.tag))
+                                 "length in <{0}>".format(etree_file.tag))
             for i, file_path in enumerate(files):
                 path = os.path.join(directory, file_path.strip())
                 if etree_file.tag == "copy":
@@ -1045,11 +1045,11 @@ def _extract_substitutesets(etree, tags=None):
         if name == "":
             raise ValueError("Empty \"name\" attribute in <substituteset> " +
                              "found.")
-        LOGGER.debug("  Parsing <substituteset name=\"{}\">".format(name))
+        LOGGER.debug("  Parsing <substituteset name=\"{0}\">".format(name))
         init_with = element.get("init_with")
         files, subs = _extract_subs(element)
         if name in substitutesets:
-            raise ValueError("\"{}\" not unique".format(name))
+            raise ValueError("\"{0}\" not unique".format(name))
         if init_with is not None:
             parts = init_with.strip().split(":")
             if len(parts) > 1:
@@ -1084,7 +1084,7 @@ def _extract_subs(etree_substituteset):
             out_file = os.path.expandvars(os.path.expanduser(out_file))
             if in_file == out_file:
                 raise ValueError("Input- and outputfile must be different: " +
-                                 "{}".format(in_file))
+                                 "{0}".format(in_file))
             files[out_file] = in_file
         elif sub.tag == "sub":
             source = _attribute_from_element(sub, "source").strip()
@@ -1113,4 +1113,4 @@ def _check_tag(element, valid_tags):
     valid_tags -- list of valid strings
     """
     if element.tag not in valid_tags:
-        raise ValueError("Unknown tag <{}>".format(element.tag))
+        raise ValueError("Unknown tag <{0}>".format(element.tag))

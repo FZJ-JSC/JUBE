@@ -127,7 +127,7 @@ def matching_logs(commands, available_logs):
     Only compares basenames.
 
     """
-    requested_logs = set("{}.log".format(command) for command in commands)
+    requested_logs = set("{0}.log".format(command) for command in commands)
 
     available_base = set(os.path.basename(log) for log in available_logs)
 

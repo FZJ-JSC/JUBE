@@ -97,9 +97,9 @@ class Analyzer(object):
 
     def analyse(self):
         """Run the analyzer"""
-        LOGGER.debug("Run analyser \"{}\"".format(self._name))
+        LOGGER.debug("Run analyser \"{0}\"".format(self._name))
         if self._benchmark is None:
-            raise RuntimeError("No benchmark found using analyser {}"
+            raise RuntimeError("No benchmark found using analyser {0}"
                                .format(self._name))
 
         result = dict()
@@ -108,7 +108,7 @@ class Analyzer(object):
         patternset = jube2.pattern.Patternset()
         for use in self._use:
             if use not in self._benchmark.patternsets:
-                raise RuntimeError(("<patternset name=\"{}\"> used but not " +
+                raise RuntimeError(("<patternset name=\"{0}\"> used but not " +
                                     "found").format(use))
             if not patternset.is_compatible(self._benchmark.patternsets[use]):
                 raise RuntimeError(("Can't use patternset \"{0}\" " +
@@ -138,7 +138,7 @@ class Analyzer(object):
 
         for stepname in self._analyse:
             result[stepname] = dict()
-            LOGGER.debug("  analyse step \"{}\"".format(stepname))
+            LOGGER.debug("  analyse step \"{0}\"".format(stepname))
             step = self._benchmark.steps[stepname]
             for workpackage in self._benchmark.workpackages[stepname]:
                 result[stepname][workpackage.id] = dict()
@@ -170,7 +170,7 @@ class Analyzer(object):
                         local_patternset.derived_pattern_storage)):
                     raise RuntimeError(("A pattern and a parameter "
                                         "using the same name in "
-                                        "analyzer \"{}\"").format(self._name))
+                                        "analyzer \"{0}\"").format(self._name))
 
                 # Do pattern substitution
                 local_patternset.pattern_substitution(

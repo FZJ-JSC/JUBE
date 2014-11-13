@@ -126,7 +126,7 @@ class Result(object):
         alt_pattern_names = list(pattern_names)
         for i, pattern_name in enumerate(alt_pattern_names):
             for option in ["last", "min", "max", "avg", "sum"]:
-                matcher = re.match("^(.+)_{}$".format(option), pattern_name)
+                matcher = re.match("^(.+)_{0}$".format(option), pattern_name)
                 if matcher:
                     alt_pattern_names[i] = matcher.group(1)
 
@@ -194,7 +194,7 @@ class Table(Result):
             else:
                 value = column["title"]
             if column["name"] in units:
-                value += "[{}]".format(units[column["name"]])
+                value += "[{0}]".format(units[column["name"]])
             row.append(value)
             if column["colw"] is None:
                 colw.append(0)

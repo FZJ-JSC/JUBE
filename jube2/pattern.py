@@ -110,7 +110,7 @@ class Patternset(object):
                 patternset.pattern_storage)
 
     def __repr__(self):
-        return "Patternset: pattern:{} derived pattern:{}".format(
+        return "Patternset: pattern:{0} derived pattern:{1}".format(
             dict([[pattern.name, pattern.value]
                   for pattern in self._pattern]),
             dict([[pattern.name, pattern.value]
@@ -233,7 +233,7 @@ class Pattern(jube2.parameter.StaticParameter):
         return pattern_etree
 
     def __repr__(self):
-        return "Pattern({})".format(self.__dict__)
+        return "Pattern({0})".format(self.__dict__)
 
 
 def get_jube_pattern():

@@ -334,7 +334,7 @@ class Benchmark(object):
                 if not jube2.conf.DEBUG_MODE:
                     file_handle = \
                         open(os.path.join(result_dir,
-                                          "{}.dat".format(result.name)), "w")
+                                          "{0}.dat".format(result.name)), "w")
                     file_handle.write(result_str)
                     file_handle.close()
 
@@ -387,7 +387,7 @@ class Benchmark(object):
         """Create all workpackages for given step and create graph
         structure."""
         # Create local parameterset
-        LOGGER.debug("Create workpackages for step {}".format(step.name))
+        LOGGER.debug("Create workpackages for step {0}".format(step.name))
         local_parameterset = jube2.parameter.Parameterset()
         for parameterset_name in parameterset_names:
             # The parametersets in a single step must be compatible
@@ -513,7 +513,7 @@ class Benchmark(object):
         title = "benchmark: {0}".format(self._name)
         if jube2.conf.DEBUG_MODE:
             title += " ---DEBUG_MODE---"
-        title += "\n\n{}".format(self._comment)
+        title += "\n\n{0}".format(self._comment)
         infostr = jube2.util.text_boxed(title)
         LOGGER.info(infostr)
 

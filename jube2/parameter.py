@@ -183,7 +183,7 @@ class Parameterset(object):
         return len(self._parameters)
 
     def __repr__(self):
-        return "Parameterset:{}".format(
+        return "Parameterset:{0}".format(
             dict([[parameter.name, parameter.value]
                   for parameter in self.all_parameters]))
 
@@ -238,7 +238,7 @@ class Parameter(object):
     value, a template or a specific value out of a given template"""
 
     # This regex can be used to find variables inside parameter values
-    parameter_regex = r"(?<!\$)(?:\$\$)*\$(?!\$)(\{{)?{}(?(1)\}}|(?:\W|$))"
+    parameter_regex = r"(?<!\$)(?:\$\$)*\$(?!\$)(\{{)?{0}(?(1)\}}|(?:\W|$))"
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", export=False):
@@ -383,7 +383,7 @@ class Parameter(object):
         return parameter_etree
 
     def __repr__(self):
-        return "Parameter({})".format(self.__dict__)
+        return "Parameter({0})".format(self.__dict__)
 
 
 class StaticParameter(Parameter):

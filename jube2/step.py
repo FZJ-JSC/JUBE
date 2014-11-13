@@ -62,7 +62,7 @@ class Step(object):
         return step_etree
 
     def __repr__(self):
-        return "{}".format(vars(self))
+        return "{0}".format(vars(self))
 
     def add_operation(self, operation):
         """Add operation"""
@@ -201,7 +201,7 @@ class Operation(object):
         if active.lower() == "false":
             return True
         elif active.lower() != "true":
-            raise RuntimeError(("<do active=\"{}\"> not allowed. Must be " +
+            raise RuntimeError(("<do active=\"{0}\"> not allowed. Must be " +
                                 "true or false").format(active.lower()))
 
         # Use operation specific work directory
@@ -235,7 +235,7 @@ class Operation(object):
                 stderr = open(os.path.join(work_dir, stderr_filename), "a")
 
             # Execute "do"
-            LOGGER.debug(">>> {}".format(do))
+            LOGGER.debug(">>> {0}".format(do))
             if not jube2.conf.DEBUG_MODE:
                 try:
                     sub = subprocess.Popen(do, cwd=work_dir, stdout=stdout,
@@ -243,8 +243,8 @@ class Operation(object):
                                            env=export_parameter_dict)
                 except OSError:
                     raise RuntimeError(("Error (returncode <> 0) while " +
-                                        "running \"{}\" in " +
-                                        "directory \"{}\"")
+                                        "running \"{0}\" in " +
+                                        "directory \"{1}\"")
                                        .format(do, os.path.abspath(work_dir)))
                 returncode = sub.wait()
 
@@ -254,8 +254,8 @@ class Operation(object):
 
                 if returncode != 0:
                     raise RuntimeError(("Error (returncode <> 0) while " +
-                                        "running \"{}\" in " +
-                                        "directory \"{}\"")
+                                        "running \"{0}\" in " +
+                                        "directory \"{1}\"")
                                        .format(do, os.path.abspath(work_dir)))
 
         if self._async_filename is not None:
@@ -265,7 +265,7 @@ class Operation(object):
             async_filename = \
                 os.path.expandvars(os.path.expanduser(async_filename))
             if not os.path.exists(os.path.join(work_dir, async_filename)):
-                LOGGER.debug("Waiting for file \"{}\" ..."
+                LOGGER.debug("Waiting for file \"{0}\" ..."
                              .format(async_filename))
                 if jube2.conf.DEBUG_MODE:
                     LOGGER.debug("  skip waiting")

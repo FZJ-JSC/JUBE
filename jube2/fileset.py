@@ -123,7 +123,7 @@ class Link(File):
             path = os.path.join(file_path_ref, path)
             path = os.path.normpath(path)
         if (not os.path.exists(path)) and (not jube2.conf.DEBUG_MODE):
-            raise RuntimeError("'{}' not found".format(path))
+            raise RuntimeError("'{0}' not found".format(path))
         if alt_work_dir is not None:
             work_dir = alt_work_dir
         target_path = os.path.relpath(path, work_dir)
@@ -166,7 +166,7 @@ class Copy(File):
             work_dir = alt_work_dir
         pathes = glob.glob(pathname)
         if len(pathes) == 0:
-            LOGGER.debug("no files found using \"{}\"".format(pathname))
+            LOGGER.debug("no files found using \"{0}\"".format(pathname))
         for path in pathes:
             if len(pathes) > 1:
                 file_path = os.path.join(work_dir, os.path.basename(path))
