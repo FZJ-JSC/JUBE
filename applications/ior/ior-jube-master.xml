@@ -8,7 +8,7 @@
   <include-path>
     <path tag="juqueen">../../platform/juqueen</path>
     <path tag="juropa2">../../platform/juropa2</path>
-    <path tag="juropa3,juropatest">../../platform/juropa3</path>
+    <path tag="juropatest">../../platform/juropatest</path>
     <path tag="judge">../../platform/judge</path>
     <path tag="deep">../../platform/deep</path>
     <path tag="juniors">../../platform/juniors</path>
@@ -34,21 +34,19 @@
       <parameter name="testdir" type="string" >$$WORK/IOR/$jube_wp_id</parameter>
       <parameter name="testdir" type="string" tag="deep">/work/zdv124/IOR/$jube_wp_id</parameter>
       <parameter name="testdir" type="string" tag="juniors">/gpfs/afmcache/source/IOR/$jube_wp_id</parameter>
-      <parameter name="nodes" type="int" >4,8</parameter>  
+      <parameter name="nodes" type="int" >2,4</parameter>  
       <parameter name="taskspernode" type="int" >1,2,4,8</parameter>  
       <parameter name="contactnode" type="string" tag="juniors">juniors6</parameter>
       <parameter name="hostfile" tag="juniors">hostfile-juniors5+6+7+8</parameter>
       <parameter name="outlogfile">job.log</parameter>
       <parameter name="errlogfile">job.err</parameter>
+      <parameter name="queue" tag="deep">jube</parameter>
     </parameterset>
 
     <substituteset name="iorInputSub" init_with="ior_specs.xml">
     </substituteset>
 
     <substituteset name="executesub" init_with="platform.xml">
-      <sub source="#QUEUE#" dest="jube" tag="deep"/>
-      <sub source="#QUEUE#" dest="psslurm" tag="juropa3,juropatest"/>
-      <sub source="#RESERVATION#" dest="psslurm" tag="juropa3,juropatest"/>
       <sub source="#NOTIFY_EMAIL#" dest="st.graf@fz-juelich.de" />
       <sub source="#PREPROCESS#" dest="date +'(start) %F %T (%s)';mkdir -p ${testdir}" />
       <sub source="#PREPROCESS#" dest="date +'(start) %F %T (%s)';ssh $contactnode mkdir -p ${testdir}" tag="juniors" />
