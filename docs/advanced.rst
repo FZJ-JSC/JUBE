@@ -413,15 +413,16 @@ You will get the following directory structure:
          +- stderr         # standard error messages of used shell commands
          +- all_ids        # benchmark specific generated file
 
+.. index:: convert
          
-convert option
+Convert option
 ~~~~~~~~~~~~~~
  
-For the jube version 1 file conversion jube seeks in specific directories for the files which need to be converted.
-For instance, the default directory for ``platform.xml`` is relative to the jube version 1 benchmark directory, i.e. jube seeks in
-``../../..platform/`` for this file. If it can't be found jube tries to find it in the current directory. 
+For the *JUBE* version 1 file conversion *JUBE* seeks in specific directories for the files which need to be converted.
+For instance, the default directory for ``platform.xml`` is relative to the *JUBE* version 1 benchmark directory, i.e. jube seeks in
+``../../..platform/`` for this file. If it can't be found *JUBE* tries to find it in the current directory.
+
 Generally, if the convertion fails because files can't be found it is recommend to copy them to the current directory.
 jube creates two files, namely ``benchmarks_jube2.xml`` and ``platform_jube2.xml``. Have a look in ``benchmarks_jube2.xml``
-and take note of the given comments.
- 
+and take note of the given comments. 
   
