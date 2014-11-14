@@ -3,11 +3,19 @@
     new XML format
 """
 
+# #############################################################################
+# #  JUBE Benchmarking Environment                                           ##
+# #  http://www.fz-juelich.de/jsc/jube                                       ##
+# #############################################################################
+# #  Copyright (c) 2008-2014                                                 ##
+# #  Forschungszentrum Juelich, Juelich Supercomputing Centre                ##
+# #                                                                          ##
+# #  See the file LICENSE in the package base directory for details          ##
+# #############################################################################
 
 from __future__ import (print_function,
                         unicode_literals,
-                        division,
-                        )
+                        division)
 
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as DOM
