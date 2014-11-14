@@ -45,8 +45,8 @@ class Benchmark(object):
     """The Benchmark class contains all data to run a benchmark"""
 
     def __init__(self, name, outpath, parametersets, substitutesets,
-                 filesets, patternsets, steps, analyzer, results, results_order,
-                 comment="", tags=None):
+                 filesets, patternsets, steps, analyzer, results,
+                 results_order, comment="", tags=None):
         self._name = name
         self._outpath = outpath
         self._parametersets = parametersets

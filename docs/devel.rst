@@ -26,10 +26,13 @@ Coding standards
 ~~~~~~~~~~~~~~~~
 
 * *Python* code must be **pep8** conform
+* check your code using **pylint**
 * do not use tabs! Use four whitespaces instead
 * avoid ``map``, ``filter`` or ``lambda`` commands
+* use ``format`` instead of ``%``
 * avoid very long methods
 * use multiple files for completely different classes
+* try to stay **Python2.6** conform
 * ``import`` of package files should use the complete path (avoid ``from``)
 * all files must include the **Python3** compatible header:
 
@@ -44,8 +47,6 @@ Coding standards
   * must be downward compatible
   * must be added to schema files
   * must be documented and there must be a small example
-
-* create a new repository branch for a completely new feature
 
 Pylint
 ------
