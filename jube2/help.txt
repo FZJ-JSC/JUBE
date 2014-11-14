@@ -82,6 +82,9 @@ continue
    be used. If benchmark directory is missing, current directory will
    be used.
 
+convert
+   Convert jube version 1 files to jube version 2 files.
+
 copy_tag
    A copy can be used to copy a file or directory from your normal
    filesytem to your sandbox work directory.
