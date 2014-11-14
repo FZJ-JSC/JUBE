@@ -45,8 +45,8 @@ class Benchmark(object):
     """The Benchmark class contains all data to run a benchmark"""
 
     def __init__(self, name, outpath, parametersets, substitutesets,
-                 filesets, patternsets, steps, analyzer, results, comment="",
-                 tags=None):
+                 filesets, patternsets, steps, analyzer, results, results_order,
+                 comment="", tags=None):
         self._name = name
         self._outpath = outpath
         self._parametersets = parametersets
@@ -58,6 +58,7 @@ class Benchmark(object):
         for analyzer in self._analyzer.values():
             analyzer.benchmark = self
         self._results = results
+        self._results_order = results_order
         for result in self._results.values():
             result.benchmark = self
         self._workpackages = dict()
@@ -111,6 +112,11 @@ class Benchmark(object):
     def results(self):
         """Return results"""
         return self._results
+
+    @property
+    def results_order(self):
+        """Return results_order"""
+        return self._results_order
 
     @property
     def cwd(self):
@@ -266,7 +272,8 @@ class Benchmark(object):
             benchmark_etree.append(step.etree_repr())
         for analyzer in self._analyzer.values():
             benchmark_etree.append(analyzer.etree_repr())
-        for result in self._results.values():
+        for result_name in self._results_order:
+            result = self._results[result_name]
             benchmark_etree.append(result.etree_repr(new_cwd))
         return benchmark_etree
 
@@ -325,7 +332,8 @@ class Benchmark(object):
         """Show benchmark result"""
         if only is None:
             only = [result_name for result_name in self._results]
-        for result in self._results.values():
+        for result_name in self._results_order:
+            result = self._results[result_name]
             if result.name in only:
                 result_str = result.create_result()
                 if result.result_dir is None:
@@ -346,7 +354,7 @@ class Benchmark(object):
                     file_handle.close()
 
     def update_analyse_and_result(self, new_patternsets, new_analyzer,
-                                  new_results, new_cwd):
+                                  new_results, new_results_order, new_cwd):
         """Update analyzer and result data"""
         if os.path.exists(self.bench_dir):
             LOGGER.debug("Update analyse and result data")
@@ -354,6 +362,7 @@ class Benchmark(object):
             old_analyzer = self._analyzer
             self._analyzer = new_analyzer
             self._results = new_results
+            self._results_order = new_results_order
             for analyzer in self._analyzer.values():
                 if analyzer.name in old_analyzer:
                     analyzer.analyse_result = \

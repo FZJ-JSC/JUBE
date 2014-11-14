@@ -452,6 +452,7 @@ def _update_analyse_and_result(args, benchmark, benchmark_folder):
                 benchmark.update_analyse_and_result(bench.patternsets,
                                                     bench.analyzer,
                                                     bench.results,
+                                                    bench.results_order,
                                                     os.path.join(cwd, dirname))
                 # Restore current working dir
                 os.chdir(cwd)

@@ -27,7 +27,6 @@ import xml.etree.ElementTree as ET
 import re
 import jube2.log
 import operator
-import collections
 import os
 
 LOGGER = jube2.log.get_logger(__name__)
@@ -176,7 +175,7 @@ class Table(Result):
         Result.__init__(self, name)
         self._style = style
         self._separator = separator
-        self._columns = collections.OrderedDict()
+        self._columns = list()
         if sort_names is None:
             self._sort_names = list()
         else:
@@ -184,18 +183,18 @@ class Table(Result):
 
     def add_column(self, name, colw=None, format_string=None, title=None):
         """Add an additional column to the table"""
-        self._columns[name] = {"name": name,
-                               "title": title,
-                               "colw": colw,
-                               "format": format_string}
+        self._columns.append({"name": name,
+                              "title": title,
+                              "colw": colw,
+                              "format": format_string})
 
     def create_result(self):
         """Create result representation"""
         table_data = list()
         row = list()
         colw = list()
-        units = self._load_units(self._columns.keys())
-        for column in self._columns.values():
+        units = self._load_units([column["name"] for column in self._columns])
+        for column in self._columns:
             if column["title"] is None:
                 value = column["name"]
             else:
@@ -228,17 +227,15 @@ class Table(Result):
         for dataset in sort_data:
             row = list()
             cnt = 0
-            for column_name in self._columns:
-                if column_name in dataset:
+            for column in self._columns:
+                if column["name"] in dataset:
                     cnt += 1
-                    if (column_name in self._columns) and \
-                       (self._columns[column_name]["format"] is not None):
+                    if column["format"] is not None:
                         value = \
-                            jube2.util.format_value(
-                                self._columns[column_name]["format"],
-                                dataset[column_name])
+                            jube2.util.format_value(column["format"],
+                                                    dataset[column["name"]])
                     else:
-                        value = str(dataset[column_name])
+                        value = str(dataset[column["name"]])
                     row.append(value)
                 else:
                     row.append("")
@@ -262,16 +259,16 @@ class Table(Result):
         if len(self._sort_names) > 0:
             table_etree.attrib["sort"] = \
                 jube2.conf.DEFAULT_SEPARATOR.join(self._sort_names)
-        for column_name in self._columns:
+        for column in self._columns:
             column_etree = ET.SubElement(table_etree, "column")
-            column_etree.text = column_name
-            if self._columns[column_name]["colw"] is not None:
+            column_etree.text = column["name"]
+            if column["colw"] is not None:
                 column_etree.attrib["colw"] = \
-                    str(self._columns[column_name]["colw"])
-            if self._columns[column_name]["format"] is not None:
+                    str(column["colw"])
+            if column["format"] is not None:
                 column_etree.attrib["format"] = \
-                    self._columns[column_name]["format"]
-            if self._columns[column_name]["title"] is not None:
+                    column["format"]
+            if column["title"] is not None:
                 column_etree.attrib["title"] = \
-                    self._columns[column_name]["title"]
+                    column["title"]
         return result_etree

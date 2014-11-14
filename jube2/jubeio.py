@@ -41,7 +41,6 @@ import jube2.result
 import sys
 import re
 import jube2.log
-import collections
 
 INCLUDE_PATH = list()
 LOGGER = jube2.log.get_logger(__name__)
@@ -529,12 +528,13 @@ def _create_benchmark(benchmark_etree, global_parametersets,
     analyzer = _extract_analyzers(benchmark_etree)
 
     # dict of local results
-    results = _extract_results(benchmark_etree)
+    results, results_order = _extract_results(benchmark_etree)
 
     benchmark = jube2.benchmark.Benchmark(name, outpath,
                                           parametersets, substitutesets,
                                           filesets, patternsets, steps,
-                                          analyzer, results, comment, tags)
+                                          analyzer, results, results_order,
+                                          comment, tags)
 
     # Change file path reference for relative file location
     if file_path_ref is not None:
@@ -672,14 +672,15 @@ def _extract_analyzer(etree_analyzer):
 
 def _extract_results(etree):
     """Extract all results from etree"""
-    results = collections.OrderedDict()
+    results = dict()
+    results_order = list()
     valid_tags = ["use", "table"]
     for result_etree in etree.findall("result"):
         result_dir = result_etree.get("result_dir")
         if result_dir is not None:
             result_dir = \
                 os.path.expandvars(os.path.expanduser(result_dir.strip()))
-        sub_results = collections.OrderedDict()
+        sub_results = dict()
         uses = list()
         for element in result_etree:
             _check_tag(element, valid_tags)
@@ -689,11 +690,13 @@ def _extract_results(etree):
                 result = _extract_table(element)
                 result.result_dir = result_dir
                 sub_results[result.name] = result
+                if result.name not in results_order:
+                    results_order.append(result.name)
         for result in sub_results.values():
             for use in uses:
                 result.add_uses(use)
         results.update(sub_results)
-    return results
+    return results, results_order
 
 
 def _extract_table(etree_table):
