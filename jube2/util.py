@@ -127,7 +127,7 @@ def text_table(entries, use_header_line=False, indent=1, align_right=True,
                 else:
                     align = "<"
                 line_str += \
-                    ("{:" + align + str(max_length[i]) + "s}").format(text)
+                    ("{0:" + align + str(max_length[i]) + "s}").format(text)
                 if pretty:
                     if i < len(max_length) - 1:
                         line_str += " | "
@@ -230,14 +230,14 @@ def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
     sys.stdout.flush()
 
 
-def element_tree_tostring(element, encoding=None, method=None):
+def element_tree_tostring(element, encoding=None):
     """A more encoding friendly ElementTree.tostring method"""
     class dummy:
         pass
     data = []
     file_dummy = dummy()
     file_dummy.write = data.append
-    ET.ElementTree(element).write(file_dummy, encoding, method=method)
+    ET.ElementTree(element).write(file_dummy, encoding)
     return "".join(dat.decode(encoding) for dat in data)
 
 
