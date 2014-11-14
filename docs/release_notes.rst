@@ -32,4 +32,4 @@ Release: 2014-11-14
 Older JUBE Version
 ~~~~~~~~~~~~~~~~~~
 
-* please see our website `www.fz-juelich.de/jsc/jube`_ to get further information concerning *JUBE* 1.
+* please see our website `www.fz-juelich.de/jsc/jube <http://www.fz-juelich.de/jsc/jube>`_ to get further information concerning *JUBE* 1.
