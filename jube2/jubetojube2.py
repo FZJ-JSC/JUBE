@@ -780,6 +780,7 @@ class _JubeAnalyzer(object):
 
                         if parm_dict['mode'] == 'derived':
                             parm_dict['mode'] = 'perl'
+                            parm.text = self.adapt_derived_pattern(parm.text)
 
                         self._pattern_name_set.add(parm_dict['name'])
                         subelement = ET.SubElement(
@@ -816,12 +817,22 @@ class _JubeAnalyzer(object):
 
                 if parm_dict['mode'] == 'derived':
                     parm_dict['mode'] = 'perl'
+                    parm.text = self.adapt_derived_pattern(parm.text)
 
                 self._pattern_name_set.add(parm_dict['name'])
                 subelement = ET.SubElement(patternset, 'pattern', parm_dict)
                 subelement.text = self._substitute_jube_pattern(parm.text)
 
             self._patternset_node_list.append(patternset)
+
+    def adapt_derived_pattern(self, regex):
+        """Check derived pattern and adapt accordingly"""
+        for name in self._pattern_name_set:
+            pat = r"\$" + name.split("pat_")[1]
+            repl = "$" + name
+            regex = re.sub(pat, repl, regex)
+
+        return regex
 
     def _create_result_node(self):
         """Create result node for benchmark"""
