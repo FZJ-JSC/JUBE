@@ -1,11 +1,29 @@
+.. # JUBE Benchmarking Environment
+   # Copyright (C) 2008-2014
+   # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
+   # http://www.fz-juelich.de/jsc/jube
+   #
+   # This program is free software: you can redistribute it and/or modify
+   # it under the terms of the GNU General Public License as published by
+   # the Free Software Foundation, either version 3 of the License, or
+   # any later version.
+   #
+   # This program is distributed in the hope that it will be useful,
+   # but WITHOUT ANY WARRANTY; without even the implied warranty of
+   # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   # GNU General Public License for more details.
+   #
+   # You should have received a copy of the GNU General Public License
+   # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 .. index:: advanced tutorial
-   
+
 Advanced tutorial
 =================
 
 .. highlight:: bash
    :linenothreshold: 5
-   
+
 This tutorial will show you more detailed functions and tools of *JUBE*. If you want a basic overview you should
 read the general :doc:`tutorial` first.
 
@@ -36,7 +54,7 @@ Schema usage:
     <benchmarks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="<jube.xsd path>">
     ...
- 
+
 RELAX NG Compact Syntax (RNC for emacs nxml-mode) usage:
 
 In order to use the provided rnc schema file ``schema/jube.rnc`` in
@@ -57,19 +75,19 @@ create a ``schema.xml`` file which looks like
 
 The next time you open the same xml file emacs will find the correct
 rnc for the validation based on ``schema.xml``.
- 
+
 Example validation tools:
 
 * eclipse (using DTD or schema)
 * emacs (using RELAX NG)
 * xmllint:
-  
+
   * For validation (using the DTD)::
-  
+
        >>> xmllint --noout --valid <xml input file>
-       
+
   * For validation (using the DTD and Schema)::
-  
+
        >>> xmllint --noout --valid --schema <schema file> <xml input file>
 
 .. index:: scripting, perl, python
@@ -84,7 +102,7 @@ The input file ``scripting_parameter.xml``:
 
 .. literalinclude:: ../examples/scripting_parameter/scripting_parameter.xml
    :language: xml
-   
+
 In this example we see four different parameter.
 
 * ``number`` is a normal template which will be expanded to three different :term:`workpackages <workpackage>`.
@@ -94,7 +112,7 @@ In this example we see four different parameter.
 * ``number_mult`` is a small calculation. You can use any other existing parameter (which is used inside the same step).
 * ``text`` a normal parameter which uses the content of another parameter. For simple concatenation parameter you do not need scripting
   parameter.
-  
+
 For this example we will find the following output inside the ``run.log``-file:
 
 .. code-block:: none
@@ -116,7 +134,7 @@ For this example we will find the following output inside the ``run.log``-file:
    >>> echo "number_mult: 16, text: Number: 4"
    ====== operation ======
    >>> echo "number: 4, additional_number: 8"
-   >>> echo "number_mult: 32, text: Number: 4" 
+   >>> echo "number_mult: 32, text: Number: 4"
 
 Implicit Perl or Python scripting inside the ``<do>`` or any other position is not possible.
 If you want to use some scripting expressions you had to create a new parameter.
@@ -125,7 +143,7 @@ If you want to use some scripting expressions you had to create a new parameter.
 
 Jobsystem
 ~~~~~~~~~
-In most cases you want to submit jobs by *JUBE* to your local jobsystem. You can use the normal file access and substitution system to prepare 
+In most cases you want to submit jobs by *JUBE* to your local jobsystem. You can use the normal file access and substitution system to prepare
 your jobfile and send it to the jobsystem. *JUBE* also provide some additional features.
 
 The files used for this example can be found inside ``examples/jobsystem``.
@@ -134,26 +152,26 @@ The input jobsystem file ``job.run.in`` for *Torque/Moab* (you can easily adapt 
 
 .. literalinclude:: ../examples/jobsystem/job.run.in
    :language: bash
-   
+
 The *JUBE* input file ``jobsystem.xml``:
 
 .. literalinclude:: ../examples/jobsystem/jobsystem.xml
    :language: xml
-   
-As you can see the jobfile is very general and several parameter will be used for replacement. By using a general jobfile and the substitution mechanism 
+
+As you can see the jobfile is very general and several parameter will be used for replacement. By using a general jobfile and the substitution mechanism
 you can control your jobsystem directly out of your *JUBE* input file.
 
 The submit command is a normal *Shell* command so there are no special *JUBE* tags to submit a job.
 
 There are two new attributes:
-  
+
   * ``done_file`` inside the ``<do>`` allows you set a filename/path to a file which should be used by the jobfile to mark the end of execution. *JUBE* doesn't know when the job ends.
     Normally it will return when the *Shell* command was finished. When using a jobsystem we had to wait until the jobfile was executed. If *JUBE* found a
     ``<do>`` containing a ``done_file`` attribute *JUBE* will return directly and will not continue automatically until the ``done_file`` exists. If you want to check the current status
     of your running steps and continue the benchmark process if possible you can type::
-     
+
        >>> jube continue benchmark_run
-    
+
     This will continue your benchmark execution (``benchmark_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relativly seen towards the work directory.
   * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory get a unique name. When changing the directory the user must select a
     unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id``, which are *JUBE* :term:`internal parameter <jube_variables>` and will expand to the current benchmark and workpackage id. Files and directories out of a given
@@ -166,11 +184,11 @@ You will see this Output after running the benchmark:
    stepname | all | open | wait | done
    ---------+-----+------+------+-----
      submit |   3 |    0 |    3 |    0
-   
+
 and this output after running the ``continue`` command (after the jobs where executed):
-  
+
 .. code-block:: none
-   
+
    stepname | all | open | wait | done
    ---------+-----+------+------+-----
      submit |   3 |    0 |    0 |    3
@@ -199,7 +217,7 @@ The main file ``main.xml``:
 
 .. literalinclude:: ../examples/include/main.xml
    :language: xml
-   
+
 In these file there are three different inlcude types.
 
 The ``init_with`` can be used inside any set definition. Inside the given file the searching mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
@@ -214,14 +232,14 @@ include-method that can be used to include any tag you want. The ``<include />``
 To run the benchmark you can use the normal command::
 
    >>> jube run main.xml
-   
+
 It will search for include files inside four different positions (in the following order):
 
 * inside the same directory of your ``main.xml``
 * inside a directory given over the command line::
-   
+
      >>> jube run --include-path some_path another_path -- main.xml
-   
+
 * inside any path given with the ``JUBE_INCLUDE_PATH`` environment variable::
 
      >>> export JUBE_INCLUDE_PATH=some_path:another_path
@@ -238,7 +256,7 @@ It will search for include files inside four different positions (in the followi
          <path>another_path</path>
        </include-path>
        ...
-       
+
 .. index:: tagging
 
 Tagging
@@ -252,11 +270,11 @@ The input file ``tagging.xml``:
 
 .. literalinclude:: ../examples/tagging/tagging.xml
    :language: xml
-   
+
 When running this example::
 
    >>> jube run tagging.xml
-   
+
 all ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden. ``!deu`` stands for ``not deu`` so this
 tag will not be hidden when running the command.
 
@@ -265,13 +283,13 @@ The result inside the ``stdout`` file will be
 .. code-block:: none
 
    $hello_str World
-   
+
 because there was no alternative to select the ``$hello_str``.
 
 When running this example using a specific ``tag``::
 
    >>> jube run tagging.xml --tag eng
-   
+
 the result inside the ``stdout`` file will be
 
 .. code-block:: none
@@ -302,13 +320,13 @@ An example benchmark structure bases on three include files:
 
 Inside the ``platform`` directory you will find some example benchmark independet platform configuration files for the supercomputers at
 Forschungszentrum Jülich.
-  
-To avoid writting long include-pathes every time you run a platform independent benchmark, you can store the include-path inside your 
+
+To avoid writting long include-pathes every time you run a platform independent benchmark, you can store the include-path inside your
 input file. This can be mixed using the tagging-feature:
 
 .. code-block:: xml
    :linenos:
-   
+
    <?xml version="1.0" encoding="UTF-8"?>
    <jube>
      <include-path>
@@ -316,46 +334,46 @@ input file. This can be mixed using the tagging-feature:
        <path tag="plat2">another path</path>
        ...
      </include-path>
-     ...   
+     ...
    </jube>
 
 Now you can run your benchmark using::
-  
+
    >>> jube run filename.xml --tag plat1
 
 .. index:: multiple benchmarks
- 
+
 Multiple benchmarks
 ~~~~~~~~~~~~~~~~~~~
 
 Often you only have one benchmark inside your input file. But it is also possible to store multiple benchmarks inside the same input file:
- 
+
 .. code-block:: xml
    :linenos:
-   
+
    <?xml version="1.0" encoding="UTF-8"?>
    <jube>
      <benchmark name="a" outpath="bench_runs">...</benchmark>
      <benchmark name="b" outpath="bench_runs">...</benchmark>
-     ...   
+     ...
    </jube>
-   
+
 All benchmarks can use the same global (as a child of ``<jube>``) declared sets. Often it might be better to use an include feature instead.
 *JUBE* will run every benchmark in the given order. Every benchmark gets an unique benchmark id.
 
 To select only one benchmark you can use::
 
    >>> jube run filename.xml --only-bench a
-   
+
 or::
 
    >>> jube run filename.xml --not-bench b
-   
+
 This information can also be stored inside the input file:
 
 .. code-block:: xml
    :linenos:
-   
+
    <?xml version="1.0" encoding="UTF-8"?>
    <jube>
      <selection>
@@ -364,9 +382,9 @@ This information can also be stored inside the input file:
      </selection>
      ...
    </jube>
-   
+
 .. index:: shared operations
-   
+
 Shared operations
 ~~~~~~~~~~~~~~~~~
 
@@ -390,13 +408,13 @@ execution position. The work directory for the shared operation is the shared fo
 You will get the following directory structure:
 
 .. code-block:: none
-   
+
    bench_run               # the given outpath
    |
    +- 000000               # the benchmark id
       |
       +- configuration.xml # the stored benchmark configuration
-      +- workpackages.xml  # workpackage information 
+      +- workpackages.xml  # workpackage information
       +- 000000_a_step     # the first workpackage
          |
          +- done           # workpackage finished marker
@@ -407,22 +425,21 @@ You will get the following directory structure:
             +- shared      # symbolic link pointing to shared folder
       +- 000001_a_step     # workpackage information
       +- 000002_a_step     # workpackage information
-      +- a_step_shared     # the shared folder  
+      +- a_step_shared     # the shared folder
          |
          +- stdout         # standard output of used shell commands
          +- stderr         # standard error messages of used shell commands
          +- all_ids        # benchmark specific generated file
 
 .. index:: convert
-         
+
 Convert option
 ~~~~~~~~~~~~~~
- 
+
 For the *JUBE* version 1 file conversion *JUBE* seeks in specific directories for the files which need to be converted.
 For instance, the default directory for ``platform.xml`` is relative to the *JUBE* version 1 benchmark directory, i.e. jube seeks in
 ``../../..platform/`` for this file. If it can't be found *JUBE* tries to find it in the current directory.
 
 Generally, if the convertion fails because files can't be found it is recommend to copy them to the current directory.
 jube creates two files, namely ``benchmarks_jube2.xml`` and ``platform_jube2.xml``. Have a look in ``benchmarks_jube2.xml``
-and take note of the given comments. 
-  
+and take note of the given comments.

@@ -1,3 +1,21 @@
+.. # JUBE Benchmarking Environment
+   # Copyright (C) 2008-2014
+   # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
+   # http://www.fz-juelich.de/jsc/jube
+   #
+   # This program is free software: you can redistribute it and/or modify
+   # it under the terms of the GNU General Public License as published by
+   # the Free Software Foundation, either version 3 of the License, or
+   # any later version.
+   #
+   # This program is distributed in the hope that it will be useful,
+   # but WITHOUT ANY WARRANTY; without even the implied warranty of
+   # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   # GNU General Public License for more details.
+   #
+   # You should have received a copy of the GNU General Public License
+   # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 Glossary
 ========
 
@@ -36,10 +54,10 @@ Glossary
 
       If no benchmark id is given, last benchmark found in directory will be used. If benchmark directory is missing, current
       directory will be used.
-      
+
    status
       Show status string (RUNNING or FINISHED) for the given benchmark.
-      
+
       If no benchmark id is given, last benchmark found in directory will be used. If benchmark directory is missing, current
       directory will be used.
 
@@ -117,17 +135,17 @@ Glossary
       * only selected benchmarks will run (when using the ``run`` command)
       * multiple ``<only>`` and ``<not>`` are allowed
       * ``<only>`` and ``<not>`` can contain a name list divided by ``,``
-      
+
    patternset_tag
       A patternset is a container to store a bundle of pattern.
-      
+
       .. code-block:: xml
-      
+
          <patternset name="..." init_with="...">
             <pattern>...</pattern>
             ...
          </patternset>
-         
+
       * patternset-name must be unique
       * ``init_with`` is optional
 
@@ -135,32 +153,32 @@ Glossary
           using the given name, all pattern will be copied to the local set
         * local pattern will overwrite imported pattern
         * the name of the external set can differ to the local one by using ``init-with="filename.xml:external_name"``
-     
+
       * patternsets can be used inside the analyzer-command
       * different sets, which are used inside the same analyzer, must be compatible
-      
+
    pattern_tag
       A pattern is used to parse your output files and create your result data.
-      
+
       .. code-block:: xml
-      
+
          <pattern name="..." unit="..." mode="..." type="..." reduce="...">...</pattern>
 
       * ``unit`` is optional, will be used in the result table
       * ``mode`` is optional, allowed modes:
-            
+
         * ``pattern``: a regular expression (default)
         * ``text``: simple text and variable concatenation
         * ``perl``: snippet evaluation (using *Perl*)
-        * ``python``: snippet evaluation (using *Python*) 
-        
+        * ``python``: snippet evaluation (using *Python*)
+
       * ``type`` is optional, specify datatype (for sort operation)
-        
+
         * default: ``string``
-        * allowed: ``int``, ``float`` or ``string`` 
-        
+        * allowed: ``int``, ``float`` or ``string``
+
       * ``reduce`` is optional, specify handling of multiple matches
-        
+
         * ``first``: use first match (default)
         * ``last``: use last match
         * ``min``: use min (using float casting)
@@ -170,7 +188,7 @@ Glossary
         * ``cnd``: use counter
         * ``all``: use all of the options
         * reduce can contain a list
-        * reduced variables can be used by name_<reduce_option> 
+        * reduced variables can be used by name_<reduce_option>
 
    parameterset_tag
       A parameterset is a container to store a bundle of parameter.
@@ -318,16 +336,16 @@ Glossary
        * this can't be mixed using ``name``
 
      * in the execution step the given files or directories will be copied
-     
+
    prepare_tag
      The prepare can contain any *Shell* command you want. It will be executed like a normal :term:`<do> <step_tag>` inside the
      step where the coresspoding fileset is used. The only difference towards the normal do is, that it will be executed
      **before** the substitution will be executed.
-     
+
      .. code-block:: xml
-     
+
         <prepare stdout="..." stderr="..." work_dir="...">...</prepare>
-        
+
      * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
      * ``work_dir`` is optional, it can be used to change the work directory of this single command (relativly seen towards
        the original work directory)
@@ -443,42 +461,42 @@ Glossary
      * any name must be unique, it is not allowed to reuse a set
      * the step-attribute contains an existing stepname
      * each file using each workpackage will be scanned seperatly
-     
+
    result_tag
      Container for different output types.
-     
+
      .. code-block:: xml
-     
+
         <result result_dir="...">
           <use>...</use>
           ...
           <table>...</table>
           ...
         </result>
-     
+
      * ``result_dir`` is optional. Here you can specify an different output directory. Inside of this directory a subfolder
        named by the current benchmark id will be created. Default: benchmark_dir/result
      * only analyzer are useable
      * using analyzer ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
-     
+
    table_tag
      A simple ASCII based table ouput.
-     
+
      .. code-block:: xml
-     
+
         <table name="..." style="..." sort="..." separator="...">
           <column colw="..." format="..." title="...">...</column>
-          ...        
+          ...
         </table>
-        
+
      * ``style`` is optional; allowed styles: ``csv``, ``pretty``; default: ``csv``
      * ``separator`` is optional; only used in csv-style, default: ``,``
-     * ``sort`` is optional can contain a list of parameter- or patternnames (separated by ,). 
+     * ``sort`` is optional can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
      * ``<column>`` must contain an single parameter- or patternname
      * ``colw`` is optional: column width
      * ``title`` is optional: column title
-     * ``format`` can contain a C like format string: e.g. format=".2f"        
+     * ``format`` can contain a C like format string: e.g. format=".2f"
 
    include_tag
      Include *XML*-data from an external file.
@@ -629,6 +647,6 @@ Glossary
         * ``$jube_wp_parent_<parent_name>_id``: workpackage id of selected parent step
         * ``$jube_wp_abspath``: absolute path to workpackage work directory
         * ``$jube_wp_envstr``: a string containing all exported parameter in shell syntax::
-        
+
             export par=$par
-            export par2=$par2 
+            export par2=$par2
