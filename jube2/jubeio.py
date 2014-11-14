@@ -64,9 +64,9 @@ def benchmarks_from_xml(filename, tags=None):
     # be broken if there is a special char inside the input file.
     # In such cases the encode will stop, using an UnicodeEncodeError
     try:
-        xml = ET.tostringlist(tree.getroot(), encoding="UTF-8")
-        for line in xml:
-            line.decode("UTF-8").encode(sys.getfilesystemencoding())
+        xml = jube2.util.element_tree_tostring(tree.getroot(),
+                                               encoding="UTF-8")
+        xml.encode(sys.getfilesystemencoding())
     except UnicodeEncodeError as uee:
         raise ValueError("Your terminal only allow '{0}' encoding. {1}"
                          .format(sys.getfilesystemencoding(), str(uee)))

@@ -376,9 +376,9 @@ class Benchmark(object):
             analyzer_etree.attrib["name"] = analyzer_name
             for etree in self._analyzer[analyzer_name].analyse_etree_repr():
                 analyzer_etree.append(etree)
-        xml = ET.tostring(analyse_etree, encoding="UTF-8")
+        xml = jube2.util.element_tree_tostring(analyse_etree, encoding="UTF-8")
         # Using dom for pretty-print
-        dom = DOM.parseString(xml)
+        dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(filename, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
         fout.close()
@@ -600,9 +600,10 @@ class Benchmark(object):
                 tag_etree.text = tag
 
         benchmarks_etree.append(self.etree_repr(new_cwd=self.bench_dir))
-        xml = ET.tostring(benchmarks_etree, encoding="UTF-8")
+        xml = jube2.util.element_tree_tostring(benchmarks_etree,
+                                               encoding="UTF-8")
         # Using dom for pretty-print
-        dom = DOM.parseString(xml)
+        dom = DOM.parseString(xml.encode('UTF-8'))
         fout = open(filename, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
         fout.close()
@@ -621,9 +622,10 @@ class Benchmark(object):
         for workpackages in self._workpackages.values():
             for workpackage in workpackages:
                 workpackages_etree.append(workpackage.etree_repr())
-        xml = ET.tostring(workpackages_etree, encoding="UTF-8")
+        xml = jube2.util.element_tree_tostring(workpackages_etree,
+                                               encoding="UTF-8")
         # Using dom for pretty-print
-        dom = DOM.parseString(xml)
+        dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(filename, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
         fout.close()

@@ -24,11 +24,13 @@ import os
 import re
 import tarfile
 import glob
+import jube2.util
 
 GLOBAL_PARAMETERSET_NAME = "jube_convert_parameter"
 
 
 class JubeXMLConverter(object):
+
     """Convert jube version 1 files in jube version 2 readable format"""
     _global_counter = 0
     _dummy_check_set = set()
@@ -162,9 +164,9 @@ class JubeXMLConverter(object):
         # be broken if there is a special char inside the input file.
         # In such cases the encode will stop, using an UnicodeEncodeError
         try:
-            xml = ET.tostringlist(tree.getroot(), encoding="UTF-8")
-            for line in xml:
-                line.decode("UTF-8").encode(sys.getfilesystemencoding())
+            xml = jube2.util.element_tree_tostring(tree.getroot(),
+                                                   encoding="UTF-8")
+            xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
             raise ValueError("Your terminal only allow '{0}' encoding. {1}"
                              .format(sys.getfilesystemencoding(), str(uee)))
@@ -205,9 +207,10 @@ class JubeXMLConverter(object):
     def write_platformfile(self, output="platform_converted.xml"):
         """Write out converted platform.xml"""
         tree = ET.ElementTree(self._root_platform_element)
-        xml = ET.tostring(tree.getroot(), encoding="UTF-8")
+        xml = jube2.util.element_tree_tostring(tree.getroot(),
+                                               encoding="UTF-8")
         # Using dom for pretty-print
-        dom = DOM.parseString(xml)
+        dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(output, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
 
@@ -667,9 +670,10 @@ class JubeXMLConverter(object):
     def write_main_file(self, output="benchmarks_jube2.xml"):
         """Write file resulting from convertion"""
         tree = ET.ElementTree(self._main_element)
-        xml = ET.tostring(tree.getroot(), encoding="UTF-8")
+        xml = jube2.util.element_tree_tostring(tree.getroot(),
+                                               encoding="UTF-8")
         # Using dom for pretty-print
-        dom = DOM.parseString(xml)
+        dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(output, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
 
@@ -704,6 +708,7 @@ class JubeXMLConverter(object):
 
 
 class _JubeAnalyzer(object):
+
     """Handle analyse issues"""
 
     def __init__(self, name, cname, main_dir, xml_file):
@@ -881,9 +886,9 @@ class _JubeAnalyzer(object):
         """Create main root for analyse.xml"""
         tree = ET.parse(self._main_dir + "/" + filename)
         try:
-            xml = ET.tostringlist(tree.getroot(), encoding="UTF-8")
-            for line in xml:
-                line.decode("UTF-8").encode(sys.getfilesystemencoding())
+            xml = jube2.util.element_tree_tostring(tree.getroot(),
+                                                   encoding="UTF-8")
+            xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
             raise ValueError("Your terminal only allow '{0}' encoding. {1}"
                              .format(sys.getfilesystemencoding(), str(uee)))
@@ -909,6 +914,7 @@ class _JubeAnalyzer(object):
 
 
 class _JubeStep(object):
+
     """Represent jube 1 xml files as steps and combine input"""
 
     def __init__(self, step_name):
@@ -999,6 +1005,7 @@ class _JubeStep(object):
 
 
 class _JubeBenchmark(object):
+
     """Represent jube 1 benchmark as jube 2 benchmark and fill in steps"""
 
     def __init__(self, benchmark_name):

@@ -14,6 +14,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+import xml.etree.ElementTree as ET
 import re
 import string
 import os.path
@@ -22,6 +23,7 @@ import jube2.log
 import sys
 import textwrap
 import jube2.conf
+
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -226,6 +228,17 @@ def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
                                                    current_cnt, all_cnt)
     sys.stdout.write(bar_str)
     sys.stdout.flush()
+
+
+def element_tree_tostring(element, encoding=None, method=None):
+    """A more encoding friendly ElementTree.tostring method"""
+    class dummy:
+        pass
+    data = []
+    file_dummy = dummy()
+    file_dummy.write = data.append
+    ET.ElementTree(element).write(file_dummy, encoding, method=method)
+    return "".join(dat.decode(encoding) for dat in data)
 
 
 def resolve_depend(depend_dict):
