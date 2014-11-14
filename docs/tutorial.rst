@@ -14,6 +14,9 @@ Installation
 ~~~~~~~~~~~~
 
 Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher version)
+
+You also can use **Python 2.6** to run *JUBE*. In this case you had to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to 
+your *Python* module library on your own.
     
 To use the *JUBE* command line tool, the ``PHYTONPATH`` must contain the position of the *JUBE* package
 
