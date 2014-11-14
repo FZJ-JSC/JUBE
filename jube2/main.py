@@ -22,11 +22,17 @@ import jube2.help
 import jube2.jubetojube2
 import jube2.log
 
-import argparse
+import sys
 import os
 import re
 import shutil
-import sys
+
+try:
+    import argparse
+except ImportError:
+    print("argparse module not available; either install it, or "
+          "switch to a Python version that includes it.")
+    sys.exit(1)
 
 LOGGER = jube2.log.get_logger(__name__)
 
