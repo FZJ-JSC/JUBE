@@ -21,7 +21,7 @@ import os.path
 import jube2.conf
 
 
-class JubeLogger(logging.getLoggerClass()):
+class JubeLogger(logging.getLoggerClass(), object):
 
     """Overwrite logging to handle multi line messages."""
 
