@@ -21,13 +21,14 @@ GLOBAL_PARAMETERSET_NAME = "jube_convert_parameter"
 
 
 class JubeXMLConverter(object):
+    """Convert jube version 1 files in jube version 2 readable format"""
     _global_counter = 0
     _dummy_check_set = set()
     _global_calc_counter = 0
 
     def __init__(self, main_file, main_dir="./"):
         self._main_file = main_file
-        self._main_dir = main_dir
+        self._main_dir = main_dir + "/"
         self._main_xml_file = os.path.join(self._main_dir, main_file)
 
         self._compile_xml_file = os.path.join(self._main_dir, "compile.xml")
@@ -79,6 +80,7 @@ class JubeXMLConverter(object):
 
     @staticmethod
     def _init_global_parameterset():
+        """"Set jube version 1 specific variables to reasonable values"""
         global_parameterset = ET.Element('parameterset')
         global_parameterset.set('name', GLOBAL_PARAMETERSET_NAME)
         parameter = ET.SubElement(
@@ -127,6 +129,7 @@ class JubeXMLConverter(object):
         return global_parameterset
 
     def file_availability(self, filename):
+        """Check whether all needed jube version 1 XML files are available"""
         if os.path.isfile(filename):
             return True
         elif os.path.basename(filename) == "platform.xml":
@@ -143,6 +146,7 @@ class JubeXMLConverter(object):
 
     @staticmethod
     def build_xml_tree(filename):
+        """Build XML tree from corresponding jube version 1 XML file"""
         tree = ET.parse(filename)
 
         # Check compatible terminal encoding: In some cases, the terminal env.
@@ -163,6 +167,7 @@ class JubeXMLConverter(object):
 # is used for platform file only, parameter from main file are not
 # converted with this function
     def _convert_and_add_parameter(self, name, parameters):
+        """Convert jube version 1 parameter and add it to parameterset"""
         parameterset = ET.Element('parameterset')
         parameterset.set('name', name)
 
@@ -179,6 +184,7 @@ class JubeXMLConverter(object):
         self._root_platform_element.append(parameterset)
 
     def convert_platformfile(self):
+        """Convert jube version 1 platform.xml into parametersets"""
         self._root_platform_element = ET.Element('jube')
         platform_tree = ET.parse(self._platform_xml_file)
         platform_root = platform_tree.getroot()
@@ -189,6 +195,7 @@ class JubeXMLConverter(object):
             self._convert_and_add_parameter(parameterset_name, parameter_dict)
 
     def write_platformfile(self, output="platform_converted.xml"):
+        """Write out converted platform.xml"""
         tree = ET.ElementTree(self._root_platform_element)
         xml = ET.tostring(tree.getroot(), encoding="UTF-8")
         # Using dom for pretty-print
@@ -197,6 +204,7 @@ class JubeXMLConverter(object):
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
 
     def _create_calc_parameter(self, expression, step):
+        """Convert perl expressions from sub tags into parameter"""
         matches = re.findall("`(.*?)`+", expression)
 
         for match in matches:
@@ -224,12 +232,14 @@ class JubeXMLConverter(object):
 
     @staticmethod
     def _has_perl_expression(expression):
+        """Check whether jube version 1 tag includes perl expressions"""
         if re.findall("`(.*?)`+", expression):
             return True
         else:
             return False
 
     def _create_compile_fileset_node(self, xml_file, jube_step, benchmark):
+        """Create a fileset node for compile step"""
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
 
@@ -266,6 +276,7 @@ class JubeXMLConverter(object):
 
     @staticmethod
     def _create_compile_file_list(files, directory):
+        """"Create file list of all files to be copied in compile step"""
         pwd = os.path.realpath(".")
         os.chdir(directory)
         list_for_glob = []
@@ -281,6 +292,7 @@ class JubeXMLConverter(object):
 
     @staticmethod
     def _create_tar_command_for_compile(file_list):
+        """Create shell command for tar if tar files exist for compile step"""
         command = "for i in"
         tarfile_list = []
         for filename in file_list:
@@ -296,6 +308,7 @@ class JubeXMLConverter(object):
         return command
 
     def create_fileset_node(self, xml_file, jube_step, benchmark):
+        """Create fileset for all steps but compile"""
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
 
@@ -332,6 +345,7 @@ class JubeXMLConverter(object):
             benchmark.fileset_node.add(fileset_node)
 
     def extract_substitutes_and_convert(self, xml_file, jube_step):
+        """Convert jube version 1 subs into jube version 2 substituteset"""
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
 
@@ -394,6 +408,7 @@ class JubeXMLConverter(object):
                 self._global_counter += 1
 
     def _main_comment(self):
+        """Create user hint in resulting file"""
         text = """ Hint for the user!
         Jube version 2 provides some help variables which are not necessarily
         available in jube version 2.
@@ -426,6 +441,7 @@ class JubeXMLConverter(object):
         self._main_element.append(comment)
 
     def convert_main_file(self):
+        """Convert parameters from main jube 1 file and gather step infos"""
         self._main_element = ET.Element('jube')
         main_tree = ET.parse(self._main_xml_file)
         main_root = main_tree.getroot()
@@ -487,6 +503,7 @@ class JubeXMLConverter(object):
     def _benchmark_init(self, benchmark_obj, pset, compile_dict,
                         execution_dict, prepare_dict,
                         verify_dict, analyse_dict):
+        """Create benchmark"""
         #       Compile
         compile_step = _JubeStep("compile")
         compile_step.use_list.add("jube_convert_parameter")
@@ -539,12 +556,14 @@ class JubeXMLConverter(object):
         self._extract_commands(self._verify_xml_file, verify_step)
 
 #      verify command(s) are added to execute commands. In fact these two steps
-#      are merged and verify wont't exists as a step
+#      are merged and verify wont't exists as a separate step. However eventual
+#      must be appended firstlast_command
+        if execution_step.last_command is not None:
+            execution_step.do_list.append(execution_step.last_command)
         for verify_do in verify_step.do_list:
             execution_step.do_list.append(verify_do)
-#             print (verify_do)
+
         for verify_use in verify_step.use_list:
-            #             print (verify_use)
             execution_step.use_list.add(verify_use)
         execution_step.build_step_element()
 
@@ -563,6 +582,7 @@ class JubeXMLConverter(object):
         benchmark_obj.build_benchmark_element()
 
     def _extract_commands(self, xml_file, jube_step):
+        """Extract commands from jube 1 files"""
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
 
@@ -591,6 +611,7 @@ class JubeXMLConverter(object):
 
     @staticmethod
     def beautify_command(command_text):
+        """Format extracted commands"""
         #         newline = "\n"
         tab = "\t"
 #         command_text = re.sub(newline, "", command_text)
@@ -599,6 +620,7 @@ class JubeXMLConverter(object):
         return command_text
 
     def _extract_environment(self, xml_file, jube_step):
+        """Extract environment tag from jube 1 execute.xml"""
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
 
@@ -635,6 +657,7 @@ class JubeXMLConverter(object):
                 self._global_counter += 1
 
     def write_main_file(self, output="benchmarks_jube2.xml"):
+        """Write file resulting from convertion"""
         tree = ET.ElementTree(self._main_element)
         xml = ET.tostring(tree.getroot(), encoding="UTF-8")
         # Using dom for pretty-print
@@ -643,9 +666,11 @@ class JubeXMLConverter(object):
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
 
     def process_jube_main_file(self):
+        """Call function for main file conversion"""
         self.convert_main_file()
 
     def convert_xml(self):
+        """Trigger convertion and put everything together"""
         self.process_jube_main_file()
         self.convert_platformfile()
 
@@ -663,6 +688,7 @@ class JubeXMLConverter(object):
         print(message)
 
     def _check_and_sub_platform_var(self, cname):
+        """Define parameter for jube 1 $platform in converted platform file"""
         if cname == "$platform":
             return self._global_platform_name
         else:
@@ -670,6 +696,7 @@ class JubeXMLConverter(object):
 
 
 class _JubeAnalyzer(object):
+    """Handle analyse issues"""
 
     def __init__(self, name, cname, main_dir, xml_file):
         self._name = name
@@ -709,6 +736,7 @@ class _JubeAnalyzer(object):
         return self._result_node
 
     def _create_analyzer_node(self):
+        """Create analyzer node for benchmark"""
         self._analyzer_node = ET.Element("analyzer")
         self._analyzer_node.set('name', 'analyze')
         for use in self._use_list:
@@ -721,6 +749,7 @@ class _JubeAnalyzer(object):
         file_tag.text = "stdout"
 
     def exclude_pattern_from_analysexml(self, patternset):
+        """Gather and convert regex from jube 1"""
         xml_tree = ET.parse(self._analyse_xml_file)
         xml_root = xml_tree.getroot()
 
@@ -752,6 +781,7 @@ class _JubeAnalyzer(object):
                     self._patternset_node_list.append(patternset)
 
     def _create_patternset_node_list(self):
+        """Create patternset from jube 1 regex"""
 
         for patternfile in self._pattern_file_list:
 
@@ -785,6 +815,7 @@ class _JubeAnalyzer(object):
             self._patternset_node_list.append(patternset)
 
     def _create_result_node(self):
+        """Create result node for benchmark"""
         self._result_node = ET.Element('result')
         text = """All pattern names appear in the table. This might be more
         than you need. Remove accordingly"""
@@ -805,6 +836,7 @@ class _JubeAnalyzer(object):
 
     @staticmethod
     def _substitute_jube_pattern(regexp):
+        """Convert standard jube 1 patterns into standard jube 2 patterns"""
         jube1pat1 = r"\$patint"
         jube2pat1 = "$jube_pat_int"
 
@@ -838,6 +870,7 @@ class _JubeAnalyzer(object):
         return new_regexp
 
     def _create_root(self, filename):
+        """Create main root for analyse.xml"""
         tree = ET.parse(self._main_dir + "/" + filename)
         try:
             xml = ET.tostringlist(tree.getroot(), encoding="UTF-8")
@@ -850,6 +883,7 @@ class _JubeAnalyzer(object):
         return tree.getroot()
 
     def _extract_includepattern(self, xml_file):
+        """Gather files with patterns to be converted"""
         xml_tree = ET.parse(xml_file)
         xml_root = xml_tree.getroot()
 
@@ -867,6 +901,7 @@ class _JubeAnalyzer(object):
 
 
 class _JubeStep(object):
+    """Represent jube 1 xml files as steps and combine input"""
 
     def __init__(self, step_name):
         self._name = step_name
@@ -920,6 +955,7 @@ class _JubeStep(object):
         self._last_command = value
 
     def build_step_element(self):
+        """Create step for benchmark"""
         step = ET.Element('step')
         step.set("name", self._name)
 
@@ -946,14 +982,16 @@ class _JubeStep(object):
                 do_node.set('done_file', 'end_info.xml')
             do_node.text = item
 
-        if self._last_command is not None:
-            do_node = ET.SubElement(step, 'do', {"shared": "True"})
-            do_node.text = self._last_command
+# AS!
+#         if self._last_command is not None:
+#             do_node = ET.SubElement(step, 'do', {"shared": "True"})
+#             do_node.text = self._last_command
 
         self._step_element = step
 
 
 class _JubeBenchmark(object):
+    """Represent jube 1 benchmark as jube 2 benchmark and fill in steps"""
 
     def __init__(self, benchmark_name):
         self._name = benchmark_name
@@ -1026,6 +1064,7 @@ class _JubeBenchmark(object):
         self._analyzer = value
 
     def build_benchmark_element(self):
+        """Build node for corresponding benchmark"""
         benchmark = ET.Element('benchmark')
         benchmark.set("name", self._name)
         benchmark.set("outpath", "benchmarks_jube1tojube2")
