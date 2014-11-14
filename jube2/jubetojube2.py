@@ -142,6 +142,9 @@ class JubeXMLConverter(object):
         parameter = ET.SubElement(
             global_parameterset, 'parameter', {'name': 'execnamepath'})
         parameter.text = "$jube_wp_abspath"
+        parameter = ET.SubElement(
+            global_parameterset, 'parameter', {'name': 'rundir'})
+        parameter.text = "$jube_wp_abspath"
 
         return global_parameterset
 
@@ -428,32 +431,21 @@ class JubeXMLConverter(object):
     def _main_comment(self):
         """Create user hint in resulting file"""
         text = """ Hint for the user!
-        Jube version 2 provides some help variables which are not necessarily
-        available in jube version 2.
-        These variables are as follows:
-            benchxmlfile
-            pwd
-            benchhome
-            tmpdir
-            rundir
-            tmplogdir
-            configdir
-            bstartdate
-            benchname
-            name
-            platform
-            cmpdir
-            benddate
+        jube version 1 provides plenty of help variables which are not
+        necessarily available in jube version 2. So it might be necessary to
+        define suitable parameters.
 
-            Have a look at the "do" tags of this file and check whether some of
-            these variables are used. Not all of them make sense in the context
-            of jube version 2 and might be removed. Furthermore type "jube help
-            jube_variables" to get a list of variables available in
-            jube version 2.
+        Have a look at the "do" tags of this file and check whether the used
+        variables are actually defined. In some cases predefined jube
+        variables might help. Type "jube help jube_variables" to get a list of
+        them.
 
-            In the case you used "lastcommand" in jube version 1 you need to
-            give a value for $shared_dir given in the corresponding execution
-            step (just grep for "$shared_dir")."""
+        In the case you used "lastcommand" in jube version 1 you need to
+        give a value for $shared_dir given in the corresponding execution
+        step (just grep for "$shared_dir").
+        Please note that the commands in the "do" tags come straight from jube
+        1 files. If you copy files to other places etc. jube 2 can't recognize
+        it and you need to adapt the commands."""
 
         comment = ET.Comment(text)
         self._main_element.append(comment)
@@ -574,12 +566,9 @@ class JubeXMLConverter(object):
         self._extract_commands(self._verify_xml_file, verify_step)
 
 #      verify command(s) are added to execute commands. In fact these two steps
-#      are merged and verify wont't exists as a separate step. However eventual
-#      must be appended firstlast_command
-        if execution_step.last_command is not None:
-            execution_step.do_list.append(execution_step.last_command)
+#      are merged and verify wont't exists as a separate step.
         for verify_do in verify_step.do_list:
-            execution_step.do_list.append(verify_do)
+            execution_step.verify_do_list.append(verify_do)
 
         for verify_use in verify_step.use_list:
             execution_step.use_list.add(verify_use)
@@ -931,9 +920,20 @@ class _JubeStep(object):
         self._do_list = []
         self._last_command = None
         self._step_element = None
+        self._verify_do_list = []
 
 # Init: each step needs the global parameterset
         self._use_list.add(GLOBAL_PARAMETERSET_NAME)
+
+    @property
+    def verify_do_list(self):
+        """Get do list from verify step"""
+        return self._verify_do_list
+
+    @verify_do_list.setter
+    def verify_do_list(self, value):
+        """Set do list from verify step"""
+        self._verify_do_list = value
 
     @property
     def step_element(self):
@@ -999,14 +999,18 @@ class _JubeStep(object):
 
         for item in self._do_list:
             do_node = ET.SubElement(step, 'do')
-            if self._name == 'execution':
-                do_node.set('done_file', 'end_info.xml')
             do_node.text = item
 
-# AS!
-#         if self._last_command is not None:
-#             do_node = ET.SubElement(step, 'do', {"shared": "True"})
-#             do_node.text = self._last_command
+        if self._last_command is not None:
+            do_node = ET.SubElement(step, 'do', {"shared": "True"})
+            do_node.text = self._last_command
+
+        if self._name == 'execution':
+            ET.SubElement(step, 'do', {"done_file": "end_info.xml"})
+            if self._verify_do_list:
+                for item in self._verify_do_list:
+                    do_node = ET.SubElement(step, 'do')
+                    do_node.text = item
 
         self._step_element = step
 
