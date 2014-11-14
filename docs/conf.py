@@ -87,7 +87,8 @@ release = '2.0.0'
 # directories to ignore when looking for source files.
 exclude_patterns = ['_build']
 if tags.has('latex'):
-    exclude_patterns += ['index.rst','jube2.rst','devel.rst']
+    exclude_patterns += ['index.rst','jube2.rst','devel.rst',
+                         'release_notes.rst']
 else:
     exclude_patterns += ['index_user.rst']
 
@@ -123,7 +124,7 @@ html_theme = 'default'
 # documentation.
 html_theme_options = {
     "stickysidebar": "true",
-    "footerbgcolor": "#005B82",
+    "footerbgcolor": "#FFFFFF",
     "headtextcolor": "#005B82",
     "relbarbgcolor": "#005B82",
     "sidebartextcolor": "#000000",

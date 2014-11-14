@@ -16,22 +16,20 @@
    # You should have received a copy of the GNU General Public License
    # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Welcome to JUBE's documentation!
-================================
+.. index:: release notes
 
-Contents:
+Release notes
+=============
 
-.. toctree::
-   :maxdepth: 4
+Version 2.0.0
+~~~~~~~~~~~~~
+Release: 2014-11-14
 
-   tutorial
-   advanced
-   commandline
-   release_notes
-   devel
-   glossar
+* complete new **Python** kernel
+* new input file format
+* please see new documentation to get further information
 
-.. toctree::
-   :hidden:
+Older JUBE Version
+~~~~~~~~~~~~~~~~~~
 
-   jube2
+* please see our website `www.fz-juelich.de/jsc/jube`_ to get further information concerning *JUBE* 1.
