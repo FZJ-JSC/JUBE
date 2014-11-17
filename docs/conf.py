@@ -125,6 +125,7 @@ html_theme = 'default'
 html_theme_options = {
     "stickysidebar": "true",
     "footerbgcolor": "#FFFFFF",
+    "footertextcolor": "#000000",
     "headtextcolor": "#005B82",
     "relbarbgcolor": "#005B82",
     "sidebartextcolor": "#000000",
