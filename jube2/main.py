@@ -729,7 +729,7 @@ def main():
     parser = _get_args_parser()[0]
     args = parser.parse_args()
 
-    jube2.util.DEBUG_MODE = args.debug
+    jube2.conf.DEBUG_MODE = args.debug
 
     if args.subparser:
         if args.func in [run_new_benchmark, continue_benchmarks,
