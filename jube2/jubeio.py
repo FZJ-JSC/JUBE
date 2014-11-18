@@ -803,9 +803,10 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
                 result_set = jube2.fileset.Fileset(name)
                 files = _extract_files(elements[0])
                 for file_obj in files:
-                    file_obj.file_path_ref = \
-                        os.path.join(os.path.dirname(file_path),
-                                     file_obj.file_path_ref)
+                    if type(file_obj) is not jube2.fileset.Prepare:
+                        file_obj.file_path_ref = \
+                            os.path.join(os.path.dirname(file_path),
+                                         file_obj.file_path_ref)
                 result_set += files
         elif set_type == "patternset":
             if result_set is None:
