@@ -60,10 +60,10 @@ def benchmarks_from_xml(filename, tags=None):
                       .format(filename))
     try:
         tree = ET.parse(filename)
-    except ET.ParseError as parseerror:
-        raise ET.ParseError(("XML parse error in \"{0}\": {1}\n" +
-                             "XML is not valid, use validation tool.")
-                            .format(filename, str(parseerror)))
+    except Exception as parseerror:
+        raise IOError(("XML parse error in \"{0}\": {1}\n" +
+                       "XML is not valid, use validation tool.")
+                      .format(filename, str(parseerror)))
 
     # Check compatible terminal encoding: In some cases, the terminal env.
     # only allow ascii based encoding, print and filesystem operation will
@@ -209,7 +209,7 @@ def _benchmark_preprocessor(benchmark_etree):
     LOGGER.debug("  Preprocess benchmark xml tree")
     sets = dict()
     # Search for <use from=""></use> and load external set
-    uses = benchmark_etree.findall(".//use")
+    uses = jube2.util.get_tree_elements(benchmark_etree, "use")
     for use in uses:
         filename = use.get("from", "")
         if (use.text is not None) and (use.text.strip() != "") and \
@@ -259,8 +259,9 @@ def _find_set_type(filename, name):
     LOGGER.debug(
         "    Searching for type of \"{0}\" in {1}".format(name, filename))
     file_path = _find_include_file(filename)
-    etree = ET.parse(file_path)
-    found_set = etree.findall(".//*[@name='{0}']".format(name))
+    etree = ET.parse(file_path).getroot()
+    found_set = jube2.util.get_tree_elements(etree,
+                                             attribute_dict={"name": name})
     if len(found_set) > 1:
         raise ValueError(("name=\"{0}\" can be found multible times inside " +
                           "\"{1}\"").format(name, file_path))
@@ -280,14 +281,14 @@ def _find_set_type(filename, name):
 def benchmark_info_from_xml(filename):
     """Return name, comment and available tags of first benchmark
     found in file"""
-    tree = ET.parse(filename)
+    tree = ET.parse(filename).getroot()
     tags = set()
-    for tag_etree in tree.findall(".//selection/tag"):
+    for tag_etree in jube2.util.get_tree_elements(tree, "selection/tag"):
         if tag_etree.text is not None:
             tags.update(set([tag.strip() for tag in
                              tag_etree.text.split(
                                  jube2.conf.DEFAULT_SEPARATOR)]))
-    benchmark_etree = tree.find(".//benchmark")
+    benchmark_etree = jube2.util.get_tree_element(tree, "benchmark")
     if benchmark_etree is None:
         raise ValueError("benchmark-tag not found in \"{0}\"".format(filename))
     name = _attribute_from_element(benchmark_etree, "name").strip()
@@ -305,9 +306,9 @@ def benchmark_info_from_xml(filename):
 def analyse_result_from_xml(filename):
     """Read existing analyse out of xml-file"""
     LOGGER.debug("Parsing {0}".format(filename))
-    tree = ET.parse(filename)
+    tree = ET.parse(filename).getroot()
     analyse_result = dict()
-    analyzer = tree.findall(".//analyzer")
+    analyzer = jube2.util.get_tree_elements(tree, "analyzer")
     for analyzer_etree in analyzer:
         analyzer_name = _attribute_from_element(analyzer_etree, "name")
         analyse_result[analyzer_name] = dict()
@@ -753,13 +754,21 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
     LOGGER.debug("    Searching for <{0} name=\"{1}\"> in {2}"
                  .format(set_type, search_name, filename))
     file_path = _find_include_file(filename)
-    etree = ET.parse(file_path)
-    _remove_invalid_tags(etree.getroot(), tags)
+    etree = ET.parse(file_path).getroot()
+    _remove_invalid_tags(etree, tags)
     result_set = None
 
     # Find element in XML-tree
-    elements = etree.findall(".//{0}[@name='{1}']".format(set_type,
-                                                          search_name))
+    elements = jube2.util.get_tree_elements(etree, set_type,
+                                            {"name": search_name})
+    # Element can also be the root element itself
+    if etree.tag == set_type:
+        element = \
+            jube2.util.get_tree_element(etree,
+                                        attribute_dict={"name": search_name})
+        if element is not None:
+            elements.append(element)
+
     if elements is not None:
         if len(elements) > 1:
             raise ValueError("\"{0}\" found multiple times in \"{1}\""

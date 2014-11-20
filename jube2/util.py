@@ -248,6 +248,40 @@ def element_tree_tostring(element, encoding=None):
     return "".join(dat.decode(encoding) for dat in data)
 
 
+def get_tree_element(node, tag_path=None, attribute_dict=None):
+    """Can be used instead of node.find(.//tag_path[@attrib=value])"""
+    result = get_tree_elements(node, tag_path, attribute_dict)
+    if len(result) > 0:
+        return result[0]
+    else:
+        return None
+
+
+def get_tree_elements(node, tag_path=None, attribute_dict=None):
+    """Can be used instead of node.findall(.//tag_path[@attrib=value])"""
+    if attribute_dict is None:
+        attribute_dict = dict()
+
+    result = list()
+
+    if tag_path is not None:
+        node_list = node.findall(tag_path)
+    else:
+        node_list = [node]
+
+    for found_node in node_list:
+        for attribute, value in attribute_dict.items():
+            if found_node.get(attribute) != value:
+                break
+        else:
+            result.append(found_node)
+
+    for subtree in node:
+        result += get_tree_elements(subtree, tag_path, attribute_dict)
+
+    return result
+
+
 def resolve_depend(depend_dict):
     """Generate a serialization of dependent steps.
 
