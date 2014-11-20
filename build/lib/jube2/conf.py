@@ -1,0 +1,54 @@
+# JUBE Benchmarking Environment
+# Copyright (C) 2008-2014
+# Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
+# http://www.fz-juelich.de/jsc/jube
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""Configuration"""
+
+from __future__ import (print_function,
+                        unicode_literals,
+                        division)
+
+# general
+JUBE_VERSION = "2.0.0"
+ALLOWED_SCRIPTTYPES = ["python", "perl"]
+DEBUG_MODE = False
+
+# input/output
+DEFAULT_SEPARATOR = ","
+ZERO_FILL_DEFAULT = 6
+DEFAULT_WIDTH = 70
+MAX_TABLE_CELL_WIDTH = 40
+HIDE_ANIMATIONS = False
+
+# filenames
+WORKPACKAGE_DONE_FILENAME = "done"
+CONFIGURATION_FILENAME = "configuration.xml"
+WORKPACKAGES_FILENAME = "workpackages.xml"
+ANALYSE_FILENAME = "analyse.xml"
+RESULT_DIRNAME = "result"
+
+# logging
+DEFAULT_LOGFILE_NAME = "jube-parse.log"
+LOGFILE_DEBUG_NAME = "jube-debug.log"
+LOGFILE_RUN_NAME = "run.log"
+LOGFILE_CONTINUE_NAME = "continue.log"
+LOGFILE_ANALYSE_NAME = "analyse.log"
+LOGFILE_RESULT_NAME = "result.log"
+LOGFILE_MODE = "a"
+LOGFILE_DEBUG_MODE = "w"
+LOG_CONSOLE_FORMAT = "%(message)s"
+LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
+DEFAULT_LOGGING_MODE = "default"
