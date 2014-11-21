@@ -39,6 +39,7 @@ CONFIGURATION_FILENAME = "configuration.xml"
 WORKPACKAGES_FILENAME = "workpackages.xml"
 ANALYSE_FILENAME = "analyse.xml"
 RESULT_DIRNAME = "result"
+ENVIRONMENT_INFO = "jube_environment_information.dat"
 
 # logging
 DEFAULT_LOGFILE_NAME = "jube-parse.log"

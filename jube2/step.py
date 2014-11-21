@@ -23,6 +23,7 @@ from __future__ import (print_function,
 
 import subprocess
 import os
+import re
 import xml.etree.ElementTree as ET
 import jube2.util
 import jube2.conf
@@ -241,13 +242,20 @@ class Operation(object):
                     stderr_filename = "stderr"
                 stderr = open(os.path.join(work_dir, stderr_filename), "a")
 
+            # Remove leading and trailing ; because otherwise ;; will cause
+            # trouble when adding ; env
+            do.strip(";")
+
             # Execute "do"
             LOGGER.debug(">>> {0}".format(do))
             if not jube2.conf.DEBUG_MODE:
                 try:
-                    sub = subprocess.Popen(do, cwd=work_dir, stdout=stdout,
-                                           stderr=stderr, shell=True,
-                                           env=export_parameter_dict)
+                    sub = subprocess.Popen(
+                        "{0} ; env > {1}".format(do,
+                                                 jube2.conf.ENVIRONMENT_INFO),
+                        cwd=work_dir, stdout=stdout,
+                        stderr=stderr, shell=True,
+                        env=export_parameter_dict)
                 except OSError:
                     raise RuntimeError(("Error (returncode <> 0) while " +
                                         "running \"{0}\" in " +
@@ -258,6 +266,9 @@ class Operation(object):
                 # Close filehandles
                 stdout.close()
                 stderr.close()
+
+                # TODO
+                Operation.read_process_environment(work_dir)
 
                 if returncode != 0:
                     raise RuntimeError(("Error (returncode <> 0) while " +
@@ -305,3 +316,19 @@ class Operation(object):
 
     def __repr__(self):
         return self._do
+
+    @staticmethod
+    def read_process_environment(work_dir, remove_after_read=True):
+        """Read standard environment info file in given directory."""
+        env = dict()
+        env_file_path = os.path.join(work_dir, jube2.conf.ENVIRONMENT_INFO)
+        if os.path.isfile(env_file_path):
+            env_file = open(env_file_path, "r")
+            for line in env_file:
+                matcher = re.match("^(.*?)=(.*?)$", line)
+                if matcher:
+                    env[matcher.group(1)] = matcher.group(2)
+            env_file.close()
+            if remove_after_read:
+                os.remove(env_file_path)
+        return env
