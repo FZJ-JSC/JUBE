@@ -431,6 +431,28 @@ You will get the following directory structure:
          +- stderr         # standard error messages of used shell commands
          +- all_ids        # benchmark specific generated file
 
+.. index:: environment handling
+
+Environment handling
+~~~~~~~~~~~~~~~~~~~~
+
+*Shell* environment handling can be very important to configure pathes or parameter of your program.
+
+The files used for this example can be found inside ``examples/environment``.
+
+The input file ``environment.xml``:
+
+.. literalinclude:: ../examples/environment/environment.xml
+   :language: xml
+
+In normal cases all ``<do>`` within one ``<step>`` shares the same environment. All **exported** variables of one ``<do>``
+will be available inside the next ``<do>`` within the same ``<step>``.
+
+By using ``export="true"`` inside of a ``<parameter>`` you can export additonal variables to your *Shell* environment. Be aware that this example uses
+``$$`` to explicitly use *Shell* substitution instead of *JUBE* substitution.
+
+You can also export the complete environment of a step to a dependent step by using ``export="true"`` inside of ``<step>``.
+
 .. index:: convert
 
 Convert option

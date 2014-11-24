@@ -300,7 +300,7 @@ The content of file ``file.in``:
 .. literalinclude:: ../examples/files_and_sub/file.in
    :language: none
 
-Inside the ``<fileset>`` the current location (relativly seen towards the current input file) of files is given. ``<copy>`` specify that the
+Inside the ``<fileset>`` the current location (relativly seen towards the current input file, also absolute pathes are allowed) of files is given. ``<copy>`` specify that the
 file should be copied to the sandbox directory when the fileset is used. Also a ``<link>`` option is available to create a symbolic link to the given file
 inside the sandbox directory.
 
