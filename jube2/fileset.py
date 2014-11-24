@@ -55,7 +55,7 @@ class Fileset(list):
         return fileset_etree
 
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
-               export_parameter_dict=None, file_path_ref=""):
+               environment=None, file_path_ref=""):
         """Copy/load/prepare all files in fileset"""
         for file_handle in self:
             if type(file_handle) is Prepare:
@@ -63,11 +63,12 @@ class Fileset(list):
                     parameter_dict=parameter_dict,
                     work_dir=alt_work_dir if alt_work_dir
                     is not None else work_dir,
-                    export_parameter_dict=export_parameter_dict)
+                    environment=environment)
             else:
                 file_handle.create(
                     work_dir=work_dir, parameter_dict=parameter_dict,
-                    alt_work_dir=alt_work_dir, file_path_ref=file_path_ref)
+                    alt_work_dir=alt_work_dir, file_path_ref=file_path_ref,
+                    environment=environment)
 
 
 class File(object):
@@ -81,7 +82,7 @@ class File(object):
         self._is_internal_ref = is_internal_ref
 
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
-               file_path_ref=""):
+               file_path_ref="", environment=None):
         """Create file access"""
         raise NotImplementedError()
 
@@ -118,10 +119,14 @@ class Link(File):
     """A link to a given path. Which can be used inside steps."""
 
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
-               file_path_ref=""):
+               file_path_ref="", environment=None):
         """Create link to file in work_dir"""
         path = jube2.util.substitution(self._path, parameter_dict)
-        path = os.path.expandvars(os.path.expanduser(path))
+        path = os.path.expanduser(path)
+        if environment is not None:
+            path = jube2.util.substitution(path, environment)
+        else:
+            path = os.path.expandvars(path)
         name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             path = os.path.join(work_dir, path)
@@ -158,10 +163,14 @@ class Copy(File):
     """
 
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
-               file_path_ref="."):
+               file_path_ref=".", environment=None):
         """Copy file/directory to work_dir"""
         pathname = jube2.util.substitution(self._path, parameter_dict)
-        pathname = os.path.expandvars(os.path.expanduser(pathname))
+        pathname = os.path.expanduser(pathname)
+        if environment is not None:
+            pathname = jube2.util.substitution(pathname, environment)
+        else:
+            pathname = os.path.expandvars(pathname)
         name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             pathname = os.path.join(work_dir, pathname)
@@ -212,11 +221,11 @@ class Prepare(jube2.step.Operation):
                                       stderr_filename=stderr_filename,
                                       work_dir=work_dir)
 
-    def execute(self, parameter_dict, work_dir, export_parameter_dict=None):
+    def execute(self, parameter_dict, work_dir, environment=None):
         """Execute the prepare command"""
         jube2.step.Operation.execute(
             self, parameter_dict=parameter_dict, work_dir=work_dir,
-            export_parameter_dict=export_parameter_dict)
+            environment=environment)
 
     def etree_repr(self):
         """Return etree object representation"""

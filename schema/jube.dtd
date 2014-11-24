@@ -39,9 +39,9 @@
 <!ATTLIST iofile        in CDATA #REQUIRED
                         out CDATA #REQUIRED
                         tag CDATA #IMPLIED>
-<!ELEMENT sub EMPTY>
+<!ELEMENT sub (#PCDATA)>
 <!ATTLIST sub           source CDATA #REQUIRED
-                        dest CDATA #REQUIRED
+                        dest CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT fileset ((copy|link|prepare|include)*)>
 <!ATTLIST fileset       name CDATA #REQUIRED
@@ -81,6 +81,7 @@
 <!ATTLIST step          name CDATA #REQUIRED
                         iterations CDATA #IMPLIED
                         depend CDATA #IMPLIED
+                        export (true|false|True|False) #IMPLIED
                         work_dir CDATA #IMPLIED
                         shared CDATA #IMPLIED
                         tag CDATA #IMPLIED>

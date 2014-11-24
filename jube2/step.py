@@ -40,7 +40,7 @@ class Step(object):
     """
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
-                 shared_name=None):
+                 shared_name=None, export=False):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -48,6 +48,7 @@ class Step(object):
         self._depend = depend
         self._alt_work_dir = alt_work_dir
         self._shared_name = shared_name
+        self._export = export
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -60,6 +61,8 @@ class Step(object):
             step_etree.attrib["work_dir"] = self._alt_work_dir
         if self._shared_name is not None:
             step_etree.attrib["shared"] = self._shared_name
+        if self._export:
+            step_etree.attrib["export"] = "true"
         if self._iterations > 1:
             step_etree.attrib["iterations"] = str(self._iterations)
         for use in self._use:
@@ -88,6 +91,11 @@ class Step(object):
     def name(self):
         """Return step name"""
         return self._name
+
+    @property
+    def export(self):
+        """Return export behaviour"""
+        return self._export
 
     @property
     def iterations(self):
@@ -192,8 +200,8 @@ class Operation(object):
         """Shared operation?"""
         return self._shared
 
-    def execute(self, parameter_dict, work_dir, export_parameter_dict=None,
-                only_check_pending=False):
+    def execute(self, parameter_dict, work_dir, only_check_pending=False,
+                environment=None):
         """Execute the operation. work_dir must be set to the given context
         path. The parameter_dict used for inline substitution.
         If only_check_pending is set to True, the operation will not be
@@ -202,15 +210,17 @@ class Operation(object):
         True => operation finished
         False => operation pending
         """
-        if export_parameter_dict is None:
-            export_parameter_dict = dict()
-        export_parameter_dict.update(os.environ)
         active = jube2.util.substitution(self._active, parameter_dict)
         if active.lower() == "false":
             return True
         elif active.lower() != "true":
             raise RuntimeError(("<do active=\"{0}\"> not allowed. Must be " +
                                 "true or false").format(active.lower()))
+
+        if environment is not None:
+            env = environment
+        else:
+            env = os.environ
 
         # Use operation specific work directory
         if self._work_dir is not None:
@@ -251,11 +261,11 @@ class Operation(object):
             if not jube2.conf.DEBUG_MODE:
                 try:
                     sub = subprocess.Popen(
-                        "{0} ; env > {1}".format(do,
-                                                 jube2.conf.ENVIRONMENT_INFO),
+                        "{0} && env > {1}".format(do,
+                                                  jube2.conf.ENVIRONMENT_INFO),
                         cwd=work_dir, stdout=stdout,
                         stderr=stderr, shell=True,
-                        env=export_parameter_dict)
+                        env=env)
                 except OSError:
                     raise RuntimeError(("Error (returncode <> 0) while " +
                                         "running \"{0}\" in " +
@@ -267,8 +277,12 @@ class Operation(object):
                 stdout.close()
                 stderr.close()
 
-                # TODO
-                Operation.read_process_environment(work_dir)
+                env = Operation.read_process_environment(work_dir)
+
+                # Read and store new environment
+                if environment is not None:
+                    environment.clear()
+                    environment.update(env)
 
                 if returncode != 0:
                     raise RuntimeError(("Error (returncode <> 0) while " +
@@ -321,13 +335,18 @@ class Operation(object):
     def read_process_environment(work_dir, remove_after_read=True):
         """Read standard environment info file in given directory."""
         env = dict()
+        last = None
         env_file_path = os.path.join(work_dir, jube2.conf.ENVIRONMENT_INFO)
         if os.path.isfile(env_file_path):
             env_file = open(env_file_path, "r")
             for line in env_file:
+                line = line.strip()
                 matcher = re.match("^(.*?)=(.*?)$", line)
                 if matcher:
                     env[matcher.group(1)] = matcher.group(2)
+                    last = matcher.group(1)
+                elif last is not None:
+                    env[last] += "\n" + line
             env_file.close()
             if remove_after_read:
                 os.remove(env_file_path)
