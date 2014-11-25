@@ -57,6 +57,7 @@ class Workpackage(object):
         self._parents = list()
         self._children = list()
         self._queued = False
+        self._env = dict(os.environ)
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -72,6 +73,19 @@ class Workpackage(object):
             parents_etree = ET.SubElement(workpackage_etree, "parents")
             parents_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(
                 [str(parent.id) for parent in self._parents])
+        environment_etree = ET.SubElement(workpackage_etree, "environment")
+        for env_name, value in self._env.items():
+            if (env_name not in ["PWD", "OLDPWD", "_"]) and \
+                    (env_name not in os.environ or
+                     os.environ[env_name] != value):
+                env_etree = ET.SubElement(environment_etree, "env")
+                env_etree.attrib["name"] = env_name
+                env_etree.text = value
+        for env_name in os.environ:
+            if (env_name not in ["PWD", "OLDPWD", "_"]) and \
+                    (env_name not in self._env):
+                env_etree = ET.SubElement(environment_etree, "nonenv")
+                env_etree.attrib["name"] = env_name
         return workpackage_etree
 
     def __repr__(self):
@@ -87,6 +101,11 @@ class Workpackage(object):
             return self.id == other.id
         else:
             return False
+
+    @property
+    def env(self):
+        """Return workpackage environment"""
+        return self._env
 
     @property
     def done(self):
@@ -312,6 +331,12 @@ class Workpackage(object):
         if not started_before:
             self.create_workpackage_dir()
 
+        # --- Load environment of parent steps ---
+        if not started_before:
+            for parent in self._parents:
+                if parent.step.export:
+                    self._env.update(parent.env)
+
         # --- Add internal jube parameter ---
         parameterset = self._parameterset.copy()
         parameterset.add_parameterset(self._benchmark.get_jube_parameterset())
@@ -339,9 +364,10 @@ class Workpackage(object):
                   parameterset.constant_parameter_dict.values()])
 
         # --- Collect export parameter ---
-        export_parameter = \
-            dict([[par.name, par.value] for par in
-                  parameterset.export_parameter_dict.values()])
+        if not started_before:
+            self._env.update(
+                dict([[par.name, par.value] for par in
+                      parameterset.export_parameter_dict.values()]))
 
         # --- Create shared folder connection ---
         self.create_shared_folder_link(parameter)
@@ -379,7 +405,7 @@ class Workpackage(object):
                     work_dir=self.work_dir,
                     parameter_dict=parameter,
                     alt_work_dir=alt_work_dir,
-                    export_parameter_dict=export_parameter,
+                    environment=self._env,
                     file_path_ref=self._benchmark.file_path_ref)
 
         work_dir = self.work_dir
@@ -438,6 +464,7 @@ class Workpackage(object):
                         continue_op = operation.execute(
                             parameter_dict=shared_parameter,
                             work_dir=shared_dir,
+                            environment=self._env,
                             only_check_pending=self.operation_done(
                                 operation_number))
 
@@ -456,7 +483,7 @@ class Workpackage(object):
                 else:
                     continue_op = operation.execute(
                         parameter_dict=parameter, work_dir=work_dir,
-                        export_parameter_dict=export_parameter,
+                        environment=self._env,
                         only_check_pending=self.operation_done(
                             operation_number))
                     self.operation_done(operation_number, True)

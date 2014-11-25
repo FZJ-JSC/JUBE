@@ -395,7 +395,7 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." work_dir="..." shared="...">
+        <step name="..." work_dir="..." shared="..." export="...">
           <use from="">...</use>
           ...
           <do stdout="..." stderr="..." active="...">...</do>
@@ -439,6 +439,10 @@ Glossary
        * cmd will be **executed inside the shared folder**
        * cmd will run once (synchronize all workpackages)
        * ``$jube_wp_...`` - parameter can't be used inside the shared command
+       
+     * ``export="true"``
+     
+       * the environment of the current step will be exported to an dependent step 
 
    analyzer_tag
      The analyzer describe the steps and files which should be scanned using a set of pattern.

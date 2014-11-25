@@ -96,14 +96,15 @@
     </parameterset>
 
     <fileset name="sources" init_with="platform_test.xml">
-      <link directory="src">bench_test.c</link>
+      <prepare>export TEST_PATH="src"</prepare>
+      <link directory="$$TEST_PATH">bench_test.c</link>
     </fileset>
 
     <substituteset name="compilesub" init_with="platform_test.xml">
       <sub source="#PROGNAME#" dest="$execname" />
     </substituteset>
 
-    <step name="compile">
+    <step name="compile" export="true">
       <use>compileset</use>
       <use>sources</use>
       <use>compilesub</use>
@@ -113,6 +114,7 @@
     <step name="execute" depend="compile" shared="shared">
       <use>executeset</use>
       <use>compileset</use>
+      <do>echo $$TEST_PATH</do>
       <do>compile/$execname $nodes</do>
     </step>
     

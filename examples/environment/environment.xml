@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="environment" outpath="bench_run">
+    <comment>An environment handling example</comment>
+    
+    <!-- Configuration -->
+    <parameterset name="parameterset">
+      <parameter name="EXPORT_ME" export="true">VALUE</parameter>
+    </parameterset>
+    
+    <!-- Operations -->
+    <step name="first_step" export="true">
+      <do>export SHELL_VAR=Hello</do> <!-- export a Shell var -->
+      <do>echo "$$SHELL_VAR world"</do><!-- use exported Shell var --> 
+    </step>
+    
+    <!-- Create a dependency between both steps -->
+    <step name="second_step" depend="first_step">
+      <use>parameterset</use>
+      <do>echo $$EXPORT_ME</do>
+      <do>echo "$$SHELL_VAR again"</do> <!-- use exported Shell var out of privious step -->
+    </step>    
+  </benchmark>
+</jube>

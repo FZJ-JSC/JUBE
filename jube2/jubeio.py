@@ -320,21 +320,16 @@ def analyse_result_from_xml(filename):
                 _check_tag(workpackage_etree, ["workpackage"])
                 wp_id = int(_attribute_from_element(workpackage_etree, "id"))
                 analyse_result[analyzer_name][step_name][wp_id] = dict()
-                for file_etree in workpackage_etree:
-                    _check_tag(file_etree, ["file"])
-                    filename = _attribute_from_element(file_etree, "name")
-                    analyse_result[analyzer_name][step_name][wp_id][
-                        filename] = dict()
-                    for pattern_etree in file_etree:
-                        _check_tag(pattern_etree, ["pattern"])
-                        pattern_name = _attribute_from_element(pattern_etree,
-                                                               "name")
-                        pattern_type = _attribute_from_element(pattern_etree,
-                                                               "type")
-                        value = pattern_etree.text
-                        value = jube2.util.convert_type(pattern_type, value)
-                        analyse_result[analyzer_name][step_name][
-                            wp_id][filename][pattern_name] = value
+                for pattern_etree in workpackage_etree:
+                    _check_tag(pattern_etree, ["pattern"])
+                    pattern_name = \
+                        _attribute_from_element(pattern_etree, "name")
+                    pattern_type = \
+                        _attribute_from_element(pattern_etree, "type")
+                    value = pattern_etree.text
+                    value = jube2.util.convert_type(pattern_type, value)
+                    analyse_result[analyzer_name][step_name][
+                        wp_id][pattern_name] = value
     return analyse_result
 
 
@@ -354,8 +349,8 @@ def workpackages_from_xml(filename, benchmark):
     for element in tree.getroot():
         _check_tag(element, ["workpackage"])
         # Read XML-data
-        workpackage_id, step_name, parameterset, parents, iteration = \
-            _extract_workpackage_data(element)
+        (workpackage_id, step_name, parameterset, parents, iteration, set_env,
+         unset_env) = _extract_workpackage_data(element)
         # Search for step
         step = benchmark.steps[step_name]
         tmp[workpackage_id] = \
@@ -363,6 +358,10 @@ def workpackages_from_xml(filename, benchmark):
                                           jube2.parameter.Parameterset(),
                                           workpackage_id, iteration)
         parents_tmp[workpackage_id] = parents
+        tmp[workpackage_id].env.update(set_env)
+        for env_name in unset_env:
+            if env_name in tmp[workpackage_id].env:
+                del tmp[workpackage_id].env[env_name]
         if len(parents) == 0:
             work_list.put(tmp[workpackage_id])
 
@@ -409,7 +408,7 @@ def _extract_workpackage_data(workpackage_etree):
     Return workpackage id, name of step, local parameterset and list of
     parent ids
     """
-    valid_tags = ["step", "parameterset", "parents"]
+    valid_tags = ["step", "parameterset", "parents", "environment"]
     for element in workpackage_etree:
         _check_tag(element, valid_tags)
     workpackage_id = int(_attribute_from_element(workpackage_etree, "id"))
@@ -430,7 +429,19 @@ def _extract_workpackage_data(workpackage_etree):
                    parents_etree.text.split(jube2.conf.DEFAULT_SEPARATOR)]
     else:
         parents = list()
-    return workpackage_id, step_name, parameterset, parents, iteration
+    environment_etree = workpackage_etree.find("environment")
+    set_env = dict()
+    unset_env = list()
+    if environment_etree is not None:
+        for env_etree in environment_etree:
+            env_name = _attribute_from_element(env_etree, "name")
+            if env_etree.tag == "env":
+                if env_etree.text is not None:
+                    set_env[env_name] = env_etree.text.strip()
+            elif env_etree.tag == "nonenv":
+                unset_env.append(env_name)
+    return (workpackage_id, step_name, parameterset, parents, iteration,
+            set_env, unset_env)
 
 
 def _extract_selection(selection_etree):
@@ -586,6 +597,7 @@ def _extract_step(etree_step):
     alt_work_dir = etree_step.get("work_dir")
     if alt_work_dir is not None:
         alt_work_dir = alt_work_dir.strip()
+    export = etree_step.get("export", "false").strip().lower() == "true"
     shared_name = etree_step.get("shared")
     if shared_name is not None:
         shared_name = shared_name.strip()
@@ -595,7 +607,8 @@ def _extract_step(etree_step):
     depend = set(val.strip() for val in
                  tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
-    step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name)
+    step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name,
+                           export)
     for element in etree_step:
         _check_tag(element, valid_tags)
         if element.tag == "do":
@@ -1102,15 +1115,17 @@ def _extract_subs(etree_substituteset):
             out_file = _attribute_from_element(sub, "out").strip()
             in_file = os.path.expandvars(os.path.expanduser(in_file))
             out_file = os.path.expandvars(os.path.expanduser(out_file))
-            if in_file == out_file:
-                raise ValueError("Input- and outputfile must be different: " +
-                                 "{0}".format(in_file))
             files[out_file] = in_file
         elif sub.tag == "sub":
             source = _attribute_from_element(sub, "source").strip()
             if source == "":
                 raise ValueError("Empty \"source\" attribute in <sub> found.")
-            dest = _attribute_from_element(sub, "dest").strip()
+            dest = sub.get("dest")
+            if dest is None:
+                dest = sub.text
+                if dest is None:
+                    dest = ""
+            dest = dest.strip()
             subs[source] = dest
     return (files, subs)
 

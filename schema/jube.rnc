@@ -73,10 +73,10 @@ attlist.iofile &=
   attribute in { text },
   attribute out { text },
   attribute tag { text }?
-sub = element sub { attlist.sub, empty }
+sub = element sub { attlist.sub, any }
 attlist.sub &=
   attribute source { text },
-  attribute dest { text },
+  attribute dest { text }?,
   attribute tag { text }?
 fileset = element fileset { attlist.fileset, (copy | link | prepare | \include)* }
 attlist.fileset &=
@@ -125,6 +125,7 @@ attlist.step &=
   attribute iterations { text }?,
   attribute depend { text }?,
   attribute work_dir { text }?,
+  attribute export { "true" | "false" | "True" | "False" }?,
   attribute shared { text }?,
   attribute tag { text }?
 analyzer =
