@@ -320,21 +320,16 @@ def analyse_result_from_xml(filename):
                 _check_tag(workpackage_etree, ["workpackage"])
                 wp_id = int(_attribute_from_element(workpackage_etree, "id"))
                 analyse_result[analyzer_name][step_name][wp_id] = dict()
-                for file_etree in workpackage_etree:
-                    _check_tag(file_etree, ["file"])
-                    filename = _attribute_from_element(file_etree, "name")
-                    analyse_result[analyzer_name][step_name][wp_id][
-                        filename] = dict()
-                    for pattern_etree in file_etree:
-                        _check_tag(pattern_etree, ["pattern"])
-                        pattern_name = _attribute_from_element(pattern_etree,
-                                                               "name")
-                        pattern_type = _attribute_from_element(pattern_etree,
-                                                               "type")
-                        value = pattern_etree.text
-                        value = jube2.util.convert_type(pattern_type, value)
-                        analyse_result[analyzer_name][step_name][
-                            wp_id][filename][pattern_name] = value
+                for pattern_etree in workpackage_etree:
+                    _check_tag(pattern_etree, ["pattern"])
+                    pattern_name = \
+                        _attribute_from_element(pattern_etree, "name")
+                    pattern_type = \
+                        _attribute_from_element(pattern_etree, "type")
+                    value = pattern_etree.text
+                    value = jube2.util.convert_type(pattern_type, value)
+                    analyse_result[analyzer_name][step_name][
+                        wp_id][pattern_name] = value
     return analyse_result
 
 

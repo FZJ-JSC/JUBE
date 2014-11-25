@@ -71,8 +71,9 @@ class Analyzer(object):
     def add_analyse(self, step_name, filename):
         """Add an addtional analyse file"""
         if step_name not in self._analyse:
-            self._analyse[step_name] = set()
-        self._analyse[step_name].add(filename)
+            self._analyse[step_name] = list()
+        if filename not in self._analyse[step_name]:
+            self._analyse[step_name].append(filename)
 
     def add_uses(self, use_names):
         """Add an addtional patternset name"""
@@ -184,6 +185,7 @@ class Analyzer(object):
                     [parameterset, jube_pattern.pattern_storage])
                 pattern = [p for p in local_patternset.pattern_storage]
 
+                files = list()
                 for filename in self._analyse[stepname]:
                     if step.alt_work_dir is not None:
                         file_path = step.alt_work_dir
@@ -196,56 +198,63 @@ class Analyzer(object):
                     else:
                         file_path = workpackage.work_dir
                     file_path = os.path.join(file_path, filename)
+                    files.append(file_path)
 
-                    # scan file
-                    result_dict = Analyzer._analyse_file(file_path, pattern)
+                # scan files
+                LOGGER.debug("    scan workpackage (id={0})".format(
+                    workpackage.id))
+                result_dict = Analyzer._analyse_files(files, pattern)
 
-                    if len(result_dict) > 0:
-                        resultset = jube2.parameter.Parameterset()
-                        for name in result_dict:
-                            resultset.add_parameter(
-                                jube2.parameter.Parameter.
-                                create_parameter(name,
-                                                 value=str(
-                                                     result_dict[name])))
+                if len(result_dict) > 0:
+                    resultset = jube2.parameter.Parameterset()
+                    for name in result_dict:
+                        resultset.add_parameter(
+                            jube2.parameter.Parameter.
+                            create_parameter(name,
+                                             value=str(result_dict[name])))
 
-                        # calculate derived pattern
-                        derived_pattern = \
-                            local_patternset.derived_pattern_storage.copy()
-                        derived_pattern.parameter_substitution(
-                            [parameterset, resultset,
-                             jube_pattern.pattern_storage],
-                            final_sub=True)
+                    # calculate derived pattern
+                    derived_pattern = \
+                        local_patternset.derived_pattern_storage.copy()
+                    derived_pattern.parameter_substitution(
+                        [parameterset, resultset,
+                            jube_pattern.pattern_storage],
+                        final_sub=True)
 
-                        # Convert content type
-                        for par in derived_pattern:
-                            result_dict[par.name] = \
-                                jube2.util.convert_type(par.content_type,
-                                                        par.value,
-                                                        stop=False)
+                    # Convert content type
+                    for par in derived_pattern:
+                        result_dict[par.name] = \
+                            jube2.util.convert_type(par.content_type,
+                                                    par.value, stop=False)
 
-                        # Store result data
-                        result[stepname][workpackage.id][filename] = \
-                            result_dict
+                    # Store result data
+                    result[stepname][workpackage.id] = result_dict
 
         self._analyse_result = result
 
     @staticmethod
-    def _analyse_file(file_path, patternlist):
-        """Scan given file with given pattern and produce a result
+    def _analyse_files(files, patternlist):
+        """Scan given files with given pattern and produce a result
         parameterset"""
         result_dict = dict()
 
-        if os.path.isfile(file_path):
+        for file_path in files:
+            if not os.path.isfile(file_path):
+                continue
+
             file_handle = open(file_path, "r")
             # Read file content
             data = file_handle.read()
             for pattern in patternlist:
+                if pattern.name not in result_dict:
+                    result_dict[pattern.name] = dict()
                 try:
                     regex = re.compile(pattern.value, re.MULTILINE)
                 except re.error as ree:
-                    raise RuntimeError(("Error inside pattern \"{0}\" : {1}")
-                                       .format(pattern.value, ree))
+                    raise RuntimeError(("Error inside pattern \"{0}\" : " +
+                                        "\"{1}\" : {2}")
+                                       .format(pattern.name,
+                                               pattern.value, ree))
                 # Run regular expression
                 matches = re.findall(regex, data)
                 # If there are differnt groups reduce result shape
@@ -275,41 +284,47 @@ class Analyzer(object):
                 match_list = new_match_list
 
                 if len(match_list) > 0:
-                    result = dict()
                     # First match is default
-                    result["first"] = match_list[0]
-                    number_sum = 0
+                    if "first" not in result_dict[pattern.name]:
+                        result_dict[pattern.name]["first"] = match_list[0]
                     if pattern.content_type in ["int", "float"]:
                         for match in match_list:
-                            number_sum += match
 
                             if "min" in pattern.reduce_option:
-                                if "min" in result:
-                                    result["min"] = min(result["min"], match)
+                                if "min" in result_dict[pattern.name]:
+                                    result_dict[pattern.name]["min"] = \
+                                        min(result_dict[pattern.name]["min"],
+                                            match)
                                 else:
-                                    result["min"] = match
+                                    result_dict[pattern.name]["min"] = match
                             if "max" in pattern.reduce_option:
-                                if "max" in result:
-                                    result["max"] = max(result["max"], match)
+                                if "max" in result_dict[pattern.name]:
+                                    result_dict[pattern.name]["max"] = \
+                                        max(result_dict[pattern.name]["max"],
+                                            match)
                                 else:
-                                    result["max"] = match
-                        if "sum" in pattern.reduce_option:
-                            result["sum"] = number_sum
-                        if "avg" in pattern.reduce_option:
-                            result["avg"] = number_sum / len(match_list)
-                    if "last" in pattern.reduce_option:
-                        result["last"] = match_list[-1]
-                    if "cnt" in pattern.reduce_option:
-                        result["cnt"] = len(match_list)
+                                    result_dict[pattern.name]["max"] = match
+                            if ("sum" in pattern.reduce_option) or \
+                                    ("avg" in pattern.reduce_option):
+                                if "sum" in result_dict[pattern.name]:
+                                    result_dict[pattern.name]["sum"] += match
+                                else:
+                                    result_dict[pattern.name]["sum"] = match
+                            if ("cnt" in pattern.reduce_option) or \
+                                    ("avg" in pattern.reduce_option):
+                                if "cnt" in result_dict[pattern.name]:
+                                    result_dict[pattern.name]["cnt"] += 1
+                                else:
+                                    result_dict[pattern.name]["cnt"] = 1
 
-                    # Create parameter of result dict
-                    for option in result:
-                        if option == "first":
-                            name = pattern.name
-                        else:
-                            name = "{0}_{1}".format(pattern.name, option)
-                        result_dict[name] = result[option]
-            info_str = "    scanned file \"{0}\" {1}pattern found:\n".format(
+                    if "last" in pattern.reduce_option:
+                        result_dict[pattern.name]["last"] = match_list[-1]
+                    if "avg" in pattern.reduce_option:
+                        result_dict[pattern.name]["avg"] = \
+                            (result_dict[pattern.name]["sum"] /
+                             result_dict[pattern.name]["cnt"])
+
+            info_str = "      file \"{0}\" scanned {1}pattern found:\n".format(
                 os.path.basename(file_path),
                 "" if len(result_dict) > 0 else "no ")
             info_str += jube2.util.text_table(
@@ -317,7 +332,18 @@ class Analyzer(object):
                 indent=9, align_right=True, auto_linebreak=True)
             LOGGER.debug(info_str)
             file_handle.close()
-        return result_dict
+
+        # Create result dict
+        result = dict()
+        for pattern_name in result_dict:
+            for option in result_dict[pattern_name]:
+                if option == "first":
+                    name = pattern_name
+                else:
+                    name = "{0}_{1}".format(pattern_name, option)
+                result[name] = result_dict[pattern_name][option]
+
+        return result
 
     def analyse_etree_repr(self):
         """Create an etree representation of a analyse dict:
@@ -330,24 +356,20 @@ class Analyzer(object):
             for workpackage_id in self._analyse_result[stepname]:
                 workpackage_etree = ET.SubElement(step_etree, "workpackage")
                 workpackage_etree.attrib["id"] = str(workpackage_id)
-                for filename in self._analyse_result[stepname][workpackage_id]:
-                    file_etree = ET.SubElement(workpackage_etree, "file")
-                    file_etree.attrib["name"] = filename
-                    for pattern in self._analyse_result[
-                            stepname][workpackage_id][filename]:
-                        if type(self._analyse_result[stepname][workpackage_id][
-                                filename][pattern]) is int:
-                            content_type = "int"
-                        elif type(self._analyse_result[stepname][
-                                  workpackage_id][filename][pattern]) is float:
-                            content_type = "float"
-                        else:
-                            content_type = "string"
-                        pattern_etree = ET.SubElement(file_etree, "pattern")
-                        pattern_etree.attrib["name"] = pattern
-                        pattern_etree.attrib["type"] = content_type
-                        pattern_etree.text = \
-                            str(self._analyse_result[stepname][workpackage_id][
-                                filename][pattern])
+                for pattern in self._analyse_result[stepname][workpackage_id]:
+                    if type(self._analyse_result[stepname][workpackage_id]
+                            [pattern]) is int:
+                        content_type = "int"
+                    elif type(self._analyse_result[stepname][
+                              workpackage_id][pattern]) is float:
+                        content_type = "float"
+                    else:
+                        content_type = "string"
+                    pattern_etree = ET.SubElement(workpackage_etree, "pattern")
+                    pattern_etree.attrib["name"] = pattern
+                    pattern_etree.attrib["type"] = content_type
+                    pattern_etree.text = \
+                        str(self._analyse_result[stepname][workpackage_id]
+                            [pattern])
             etree.append(step_etree)
         return etree
