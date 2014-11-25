@@ -1,6 +1,6 @@
 # added manually
 namespace xsi = "http://www.w3.org/2001/XMLSchema-instance"
-attlist.jube &= attribute xsi:noNamespaceSchemaLocation { text }
+attlist.jube &= attribute xsi:noNamespaceSchemaLocation { text }?
 # rest was generated using 'trang jube.dtd jube.rnc'
 jube =
   element jube {

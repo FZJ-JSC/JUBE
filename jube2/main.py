@@ -751,6 +751,8 @@ def main():
             except Exception as exeption:
                 # Catch all possible Exceptions
                 LOGGER.error("\n" + str(exeption))
+    else:
+        parser.print_usage()
 
 if __name__ == "__main__":
     main()
