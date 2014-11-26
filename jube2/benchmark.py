@@ -542,7 +542,13 @@ class Benchmark(object):
         # Handle all workpackages in given order
         while not self._work_list.empty():
             workpackage = self._work_list.get_nowait()
-            workpackage.run()
+            if not workpackage.done:
+                workpackage.run()
+                if workpackage.done:
+                    # Store workpackage information
+                    self.write_workpackage_information(
+                        os.path.join(self.bench_dir,
+                                     jube2.conf.WORKPACKAGES_FILENAME))
             if not jube2.conf.HIDE_ANIMATIONS:
                 status = self.benchmark_status
                 jube2.util.print_loading_bar(status["done"], status["all"],
