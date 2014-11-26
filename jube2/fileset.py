@@ -206,6 +206,8 @@ class Copy(File):
         copy_etree.attrib["name"] = self._name
         if self._is_internal_ref:
             copy_etree.attrib["rel_path_ref"] = "internal"
+        if self._file_path_ref != "":
+            copy_etree.attrib["file_path_ref"] = self._file_path_ref
         return copy_etree
 
 
