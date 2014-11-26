@@ -3,7 +3,9 @@
 #SBATCH --mail-user=#NOTIFY_EMAIL#
 #SBATCH --mail-type=#NOTIFICATION_TYPE#
 #SBATCH --nodes=#NODES#
+#SBATCH --ntasks=#TASKS#
 #SBATCH --ntasks-per-node=#NCPUS#
+#SBATCH --cpus-per-task=#NTHREADS#
 #SBATCH --time=#TIME_LIMIT#
 #SBATCH --output=#STDOUTLOGFILE#
 #SBATCH --error=#STDERRLOGFILE#
