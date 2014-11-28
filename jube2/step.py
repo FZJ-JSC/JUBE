@@ -258,7 +258,7 @@ class Operation(object):
 
             # Execute "do"
             LOGGER.debug(">>> {0}".format(do))
-            if not jube2.conf.DEBUG_MODE:
+            if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 try:
                     sub = subprocess.Popen(
                         "{0} && env > {1}".format(do,
