@@ -195,9 +195,7 @@ class Copy(File):
                 if os.path.isdir(path):
                     shutil.copytree(path, file_path, symlinks=True)
                 else:
-                    shutil.copyfile(path, file_path)
-                    # Copy filemode
-                    shutil.copymode(path, file_path)
+                    shutil.copy2(path, file_path)
 
     def etree_repr(self):
         """Return etree object representation"""
