@@ -22,7 +22,7 @@ from __future__ import (print_function,
                         division)
 
 # general
-JUBE_VERSION = "2.0.0"
+JUBE_VERSION = "2.0.1"
 ALLOWED_SCRIPTTYPES = ["python", "perl"]
 DEBUG_MODE = False
 
@@ -39,6 +39,7 @@ CONFIGURATION_FILENAME = "configuration.xml"
 WORKPACKAGES_FILENAME = "workpackages.xml"
 ANALYSE_FILENAME = "analyse.xml"
 RESULT_DIRNAME = "result"
+ENVIRONMENT_INFO = "jube_environment_information.dat"
 
 # logging
 DEFAULT_LOGFILE_NAME = "jube-parse.log"

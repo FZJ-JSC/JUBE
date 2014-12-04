@@ -36,7 +36,7 @@ Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher versi
 You also can use **Python 2.6** to run *JUBE*. In this case you had to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
 your *Python* module library on your own.
 
-To use the *JUBE* command line tool, the ``PHYTONPATH`` must contain the position of the *JUBE* package
+To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package
 
 * You can use the **installation tool** to copy all files to the right position (preferred)::
 
@@ -44,9 +44,9 @@ To use the *JUBE* command line tool, the ``PHYTONPATH`` must contain the positio
 
   This will install the *JUBE* package and the binary to your ``$HOME/.local`` directory.
 
-* You can also add **parent folder path** of the *JUBE* package-folder to the ``PHYTONPATH`` environment variable::
+* You can also add **parent folder path** of the *JUBE* package-folder to the ``PYTHONPATH`` environment variable::
 
-   >>> export PHYTONPATH=<parent folder path>:$PHYTONPATH
+   >>> export PYTHONPATH=<parent folder path>:$PYTHONPATH
 
 * You can move the *JUBE* package by hand to an existing Python package folder like ``site-packages``
 
@@ -300,7 +300,7 @@ The content of file ``file.in``:
 .. literalinclude:: ../examples/files_and_sub/file.in
    :language: none
 
-Inside the ``<fileset>`` the current location (relativly seen towards the current input file) of files is given. ``<copy>`` specify that the
+Inside the ``<fileset>`` the current location (relativly seen towards the current input file, also absolute pathes are allowed) of files is given. ``<copy>`` specify that the
 file should be copied to the sandbox directory when the fileset is used. Also a ``<link>`` option is available to create a symbolic link to the given file
 inside the sandbox directory.
 

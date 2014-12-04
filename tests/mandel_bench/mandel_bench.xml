@@ -24,7 +24,8 @@
       <use from="platform.xml">libs</use>
       <use>compilesub</use>
       <use>sources</use>
-      <do>$load_module sionlib/1.5.1; $make</do>
+      <do>$load_module sionlib/1.5.1</do>
+      <do>$make</do>
     </step>
 
     <parameterset name="args">

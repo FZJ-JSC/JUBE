@@ -60,10 +60,10 @@ def benchmarks_from_xml(filename, tags=None):
                       .format(filename))
     try:
         tree = ET.parse(filename)
-    except ET.ParseError as parseerror:
-        raise ET.ParseError(("XML parse error in \"{0}\": {1}\n" +
-                             "XML is not valid, use validation tool.")
-                            .format(filename, str(parseerror)))
+    except Exception as parseerror:
+        raise IOError(("XML parse error in \"{0}\": {1}\n" +
+                       "XML is not valid, use validation tool.")
+                      .format(filename, str(parseerror)))
 
     # Check compatible terminal encoding: In some cases, the terminal env.
     # only allow ascii based encoding, print and filesystem operation will
@@ -209,7 +209,7 @@ def _benchmark_preprocessor(benchmark_etree):
     LOGGER.debug("  Preprocess benchmark xml tree")
     sets = dict()
     # Search for <use from=""></use> and load external set
-    uses = benchmark_etree.findall(".//use")
+    uses = jube2.util.get_tree_elements(benchmark_etree, "use")
     for use in uses:
         filename = use.get("from", "")
         if (use.text is not None) and (use.text.strip() != "") and \
@@ -259,8 +259,9 @@ def _find_set_type(filename, name):
     LOGGER.debug(
         "    Searching for type of \"{0}\" in {1}".format(name, filename))
     file_path = _find_include_file(filename)
-    etree = ET.parse(file_path)
-    found_set = etree.findall(".//*[@name='{0}']".format(name))
+    etree = ET.parse(file_path).getroot()
+    found_set = jube2.util.get_tree_elements(etree,
+                                             attribute_dict={"name": name})
     if len(found_set) > 1:
         raise ValueError(("name=\"{0}\" can be found multible times inside " +
                           "\"{1}\"").format(name, file_path))
@@ -280,14 +281,14 @@ def _find_set_type(filename, name):
 def benchmark_info_from_xml(filename):
     """Return name, comment and available tags of first benchmark
     found in file"""
-    tree = ET.parse(filename)
+    tree = ET.parse(filename).getroot()
     tags = set()
-    for tag_etree in tree.findall(".//selection/tag"):
+    for tag_etree in jube2.util.get_tree_elements(tree, "selection/tag"):
         if tag_etree.text is not None:
             tags.update(set([tag.strip() for tag in
                              tag_etree.text.split(
                                  jube2.conf.DEFAULT_SEPARATOR)]))
-    benchmark_etree = tree.find(".//benchmark")
+    benchmark_etree = jube2.util.get_tree_element(tree, "benchmark")
     if benchmark_etree is None:
         raise ValueError("benchmark-tag not found in \"{0}\"".format(filename))
     name = _attribute_from_element(benchmark_etree, "name").strip()
@@ -305,9 +306,9 @@ def benchmark_info_from_xml(filename):
 def analyse_result_from_xml(filename):
     """Read existing analyse out of xml-file"""
     LOGGER.debug("Parsing {0}".format(filename))
-    tree = ET.parse(filename)
+    tree = ET.parse(filename).getroot()
     analyse_result = dict()
-    analyzer = tree.findall(".//analyzer")
+    analyzer = jube2.util.get_tree_elements(tree, "analyzer")
     for analyzer_etree in analyzer:
         analyzer_name = _attribute_from_element(analyzer_etree, "name")
         analyse_result[analyzer_name] = dict()
@@ -319,21 +320,16 @@ def analyse_result_from_xml(filename):
                 _check_tag(workpackage_etree, ["workpackage"])
                 wp_id = int(_attribute_from_element(workpackage_etree, "id"))
                 analyse_result[analyzer_name][step_name][wp_id] = dict()
-                for file_etree in workpackage_etree:
-                    _check_tag(file_etree, ["file"])
-                    filename = _attribute_from_element(file_etree, "name")
-                    analyse_result[analyzer_name][step_name][wp_id][
-                        filename] = dict()
-                    for pattern_etree in file_etree:
-                        _check_tag(pattern_etree, ["pattern"])
-                        pattern_name = _attribute_from_element(pattern_etree,
-                                                               "name")
-                        pattern_type = _attribute_from_element(pattern_etree,
-                                                               "type")
-                        value = pattern_etree.text
-                        value = jube2.util.convert_type(pattern_type, value)
-                        analyse_result[analyzer_name][step_name][
-                            wp_id][filename][pattern_name] = value
+                for pattern_etree in workpackage_etree:
+                    _check_tag(pattern_etree, ["pattern"])
+                    pattern_name = \
+                        _attribute_from_element(pattern_etree, "name")
+                    pattern_type = \
+                        _attribute_from_element(pattern_etree, "type")
+                    value = pattern_etree.text
+                    value = jube2.util.convert_type(pattern_type, value)
+                    analyse_result[analyzer_name][step_name][
+                        wp_id][pattern_name] = value
     return analyse_result
 
 
@@ -353,8 +349,8 @@ def workpackages_from_xml(filename, benchmark):
     for element in tree.getroot():
         _check_tag(element, ["workpackage"])
         # Read XML-data
-        workpackage_id, step_name, parameterset, parents, iteration = \
-            _extract_workpackage_data(element)
+        (workpackage_id, step_name, parameterset, parents, iteration, set_env,
+         unset_env) = _extract_workpackage_data(element)
         # Search for step
         step = benchmark.steps[step_name]
         tmp[workpackage_id] = \
@@ -362,6 +358,10 @@ def workpackages_from_xml(filename, benchmark):
                                           jube2.parameter.Parameterset(),
                                           workpackage_id, iteration)
         parents_tmp[workpackage_id] = parents
+        tmp[workpackage_id].env.update(set_env)
+        for env_name in unset_env:
+            if env_name in tmp[workpackage_id].env:
+                del tmp[workpackage_id].env[env_name]
         if len(parents) == 0:
             work_list.put(tmp[workpackage_id])
 
@@ -408,7 +408,7 @@ def _extract_workpackage_data(workpackage_etree):
     Return workpackage id, name of step, local parameterset and list of
     parent ids
     """
-    valid_tags = ["step", "parameterset", "parents"]
+    valid_tags = ["step", "parameterset", "parents", "environment"]
     for element in workpackage_etree:
         _check_tag(element, valid_tags)
     workpackage_id = int(_attribute_from_element(workpackage_etree, "id"))
@@ -429,7 +429,19 @@ def _extract_workpackage_data(workpackage_etree):
                    parents_etree.text.split(jube2.conf.DEFAULT_SEPARATOR)]
     else:
         parents = list()
-    return workpackage_id, step_name, parameterset, parents, iteration
+    environment_etree = workpackage_etree.find("environment")
+    set_env = dict()
+    unset_env = list()
+    if environment_etree is not None:
+        for env_etree in environment_etree:
+            env_name = _attribute_from_element(env_etree, "name")
+            if env_etree.tag == "env":
+                if env_etree.text is not None:
+                    set_env[env_name] = env_etree.text.strip()
+            elif env_etree.tag == "nonenv":
+                unset_env.append(env_name)
+    return (workpackage_id, step_name, parameterset, parents, iteration,
+            set_env, unset_env)
 
 
 def _extract_selection(selection_etree):
@@ -585,6 +597,7 @@ def _extract_step(etree_step):
     alt_work_dir = etree_step.get("work_dir")
     if alt_work_dir is not None:
         alt_work_dir = alt_work_dir.strip()
+    export = etree_step.get("export", "false").strip().lower() == "true"
     shared_name = etree_step.get("shared")
     if shared_name is not None:
         shared_name = shared_name.strip()
@@ -594,7 +607,8 @@ def _extract_step(etree_step):
     depend = set(val.strip() for val in
                  tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
-    step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name)
+    step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name,
+                           export)
     for element in etree_step:
         _check_tag(element, valid_tags)
         if element.tag == "do":
@@ -753,13 +767,21 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
     LOGGER.debug("    Searching for <{0} name=\"{1}\"> in {2}"
                  .format(set_type, search_name, filename))
     file_path = _find_include_file(filename)
-    etree = ET.parse(file_path)
-    _remove_invalid_tags(etree.getroot(), tags)
+    etree = ET.parse(file_path).getroot()
+    _remove_invalid_tags(etree, tags)
     result_set = None
 
     # Find element in XML-tree
-    elements = etree.findall(".//{0}[@name='{1}']".format(set_type,
-                                                          search_name))
+    elements = jube2.util.get_tree_elements(etree, set_type,
+                                            {"name": search_name})
+    # Element can also be the root element itself
+    if etree.tag == set_type:
+        element = \
+            jube2.util.get_tree_element(etree,
+                                        attribute_dict={"name": search_name})
+        if element is not None:
+            elements.append(element)
+
     if elements is not None:
         if len(elements) > 1:
             raise ValueError("\"{0}\" found multiple times in \"{1}\""
@@ -803,9 +825,10 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
                 result_set = jube2.fileset.Fileset(name)
                 files = _extract_files(elements[0])
                 for file_obj in files:
-                    file_obj.file_path_ref = \
-                        os.path.join(os.path.dirname(file_path),
-                                     file_obj.file_path_ref)
+                    if type(file_obj) is not jube2.fileset.Prepare:
+                        file_obj.file_path_ref = \
+                            os.path.join(os.path.dirname(file_path),
+                                         file_obj.file_path_ref)
                 result_set += files
         elif set_type == "patternset":
             if result_set is None:
@@ -1092,15 +1115,17 @@ def _extract_subs(etree_substituteset):
             out_file = _attribute_from_element(sub, "out").strip()
             in_file = os.path.expandvars(os.path.expanduser(in_file))
             out_file = os.path.expandvars(os.path.expanduser(out_file))
-            if in_file == out_file:
-                raise ValueError("Input- and outputfile must be different: " +
-                                 "{0}".format(in_file))
             files[out_file] = in_file
         elif sub.tag == "sub":
             source = _attribute_from_element(sub, "source").strip()
             if source == "":
                 raise ValueError("Empty \"source\" attribute in <sub> found.")
-            dest = _attribute_from_element(sub, "dest").strip()
+            dest = sub.get("dest")
+            if dest is None:
+                dest = sub.text
+                if dest is None:
+                    dest = ""
+            dest = dest.strip()
             subs[source] = dest
     return (files, subs)
 

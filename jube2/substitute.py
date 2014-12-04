@@ -96,15 +96,21 @@ class Substituteset(object):
                 if not (os.path.exists(infile) and os.path.isfile(infile)):
                     raise RuntimeError(("File \"{0}\" not found while "
                                         "running substitution").format(infile))
-                infile_handle = open(infile, "r")
-                outfile_handle = open(outfile, "w")
-                for line in infile_handle:
-                    for source, dest in substitute_dict.items():
-                        line = line.replace(source, dest)
-                    outfile_handle.write(line)
-                infile_handle.close()
-                outfile_handle.close()
-                shutil.copymode(infile, outfile)
+                # Read in-file
+                file_handle = open(infile, "r")
+                text = file_handle.read()
+                file_handle.close()
+
+                # Substitute
+                for source, dest in substitute_dict.items():
+                    text = text.replace(source, dest)
+
+                # Write out-file
+                file_handle = open(outfile, "w")
+                file_handle.write(text)
+                file_handle.close()
+                if infile != outfile:
+                    shutil.copymode(infile, outfile)
 
     def etree_repr(self):
         """Return etree object representation"""

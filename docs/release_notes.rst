@@ -21,6 +21,19 @@
 Release notes
 =============
 
+Version 2.0.1
+~~~~~~~~~~~~~
+Release: 2014-11-25
+
+* ``--debug`` option should work now
+* fixes problem when including an external ``<prepare>``
+* update *Python 2.6* compatibility
+* all ``<do>`` within a single ``<step>`` now shares the same environment (including all exported variables)
+* a ``<step>`` can export its environment to a dependent ``<step>`` by using the new ``export="true"`` attribute (see new environment handling example)
+* update analyse behaviour when scanning multiple files (new ``analyse`` run needed for existing benchmarks)
+* in and out substitution files (given by ``<iofile>``) can now be the same
+* ``<sub>`` now also supports multiline expressions inside the tag instead of the ``dest``-attribute: ``<sub source="..."></sub>``
+
 Version 2.0.0
 ~~~~~~~~~~~~~
 Release: 2014-11-14

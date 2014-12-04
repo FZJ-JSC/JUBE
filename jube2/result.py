@@ -113,17 +113,15 @@ class Result(object):
                             jube2.util.convert_type(par.parameter_type,
                                                     par.value, stop=False)
 
-                    for filename in analyse[stepname][wp_id]:
-                        analyse_dict = analyse[stepname][wp_id][filename]
+                    analyse_dict = analyse[stepname][wp_id]
 
-                        analyse_dict.update(parameter_dict)
+                    analyse_dict.update(parameter_dict)
 
-                        # Add jube additional information
-                        analyse_dict.update({
-                            "jube_res_analyzer": analyzer_name,
-                            "jube_res_file": filename,
-                        })
-                        yield analyse_dict
+                    # Add jube additional information
+                    analyse_dict.update({
+                        "jube_res_analyzer": analyzer_name,
+                    })
+                    yield analyse_dict
 
     def _load_units(self, pattern_names):
         """Load units"""

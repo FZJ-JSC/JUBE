@@ -68,9 +68,13 @@
   </xs:complexType>
 
   <xs:complexType name="subType">
-    <xs:attribute name="source" type="xs:string" use="required" />
-    <xs:attribute name="dest" type="xs:string" use="required" />
-    <xs:attribute name="tag" type="xs:string" use="optional" />
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="source" type="xs:string" use="required" />
+        <xs:attribute name="dest" type="xs:string" use="optional" />
+        <xs:attribute name="tag" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
   <xs:complexType name="filesetType">
@@ -160,6 +164,7 @@
     <xs:attribute name="iterations" type="xs:integer" use="optional" />
     <xs:attribute name="depend" type="xs:string" use="optional" />
     <xs:attribute name="work_dir" type="xs:string" use="optional" />
+    <xs:attribute name="export" type="booleanType" use="optional" />
     <xs:attribute name="shared" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
