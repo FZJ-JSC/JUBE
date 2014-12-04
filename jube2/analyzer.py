@@ -107,7 +107,7 @@ class Analyzer(object):
         """Run the analyzer"""
         LOGGER.debug("Run analyser \"{0}\"".format(self._name))
         if self._benchmark is None:
-            raise RuntimeError("No benchmark found using analyser {0}"
+            raise RuntimeError("No benchmark found using analyzer {0}"
                                .format(self._name))
 
         result = dict()
@@ -147,6 +147,10 @@ class Analyzer(object):
         for stepname in self._analyse:
             result[stepname] = dict()
             LOGGER.debug("  analyse step \"{0}\"".format(stepname))
+            if stepname not in self._benchmark.steps:
+                raise RuntimeError(("Does not found <step name=\"{0}\"> "
+                                    "when using analyzer \"{1}\"").format(
+                                        stepname, self._name))
             step = self._benchmark.steps[stepname]
             for workpackage in self._benchmark.workpackages[stepname]:
                 result[stepname][workpackage.id] = dict()
@@ -176,9 +180,18 @@ class Analyzer(object):
                         local_patternset.pattern_storage)) or \
                    (not parameterset.is_compatible(
                         local_patternset.derived_pattern_storage)):
-                    raise RuntimeError(("A pattern and a parameter "
+
+                    incompatible_names = \
+                        parameterset.get_incompatible_parameter(
+                            local_patternset.pattern_storage)
+                    incompatible_names.update(
+                        parameterset.get_incompatible_parameter(
+                            local_patternset.derived_pattern_storage))
+                    raise RuntimeError(("A pattern and a parameter (\"{0}\") "
                                         "using the same name in "
-                                        "analyzer \"{0}\"").format(self._name))
+                                        "analyzer \"{1}\"").format(
+                                            ",".join(incompatible_names),
+                                            self._name))
 
                 # Do pattern substitution
                 local_patternset.pattern_substitution(

@@ -881,6 +881,10 @@ def _extract_parameters(etree_parameterset):
         name = _attribute_from_element(param, "name").strip()
         if name == "":
             raise ValueError("Empty \"name\" attribute in <parameter> found.")
+        if not re.match(r"^[^\d\W]\w*$", name, re.UNICODE):
+            raise ValueError(("name=\"{0}\" in <parameter> " +
+                              "contains a not allowed " +
+                              "character").format(name))
         separator = param.get("separator",
                               default=jube2.conf.DEFAULT_SEPARATOR)
         parameter_type = param.get("type", default="string").strip()
@@ -949,6 +953,10 @@ def _extract_pattern(etree_patternset):
         name = _attribute_from_element(pattern, "name").strip()
         if name == "":
             raise ValueError("Empty \"name\" attribute in <pattern> found.")
+        if not re.match(r"^[^\d\W]\w*$", name, re.UNICODE):
+            raise ValueError(("name=\"{0}\" in <pattern> " +
+                              "contains a not allowed " +
+                              "character").format(name))
         pattern_mode = pattern.get("mode", default="pattern").strip()
         if pattern_mode not in ["pattern", "text"] + \
                 jube2.conf.ALLOWED_SCRIPTTYPES:
