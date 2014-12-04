@@ -233,7 +233,11 @@ class Operation(object):
             # Inline substitution
             do = jube2.util.substitution(self._do, parameter_dict)
 
-            if not jube2.conf.DEBUG_MODE:
+            # Remove leading and trailing ; because otherwise ;; will cause
+            # trouble when adding ; env
+            do.strip(";")
+
+            if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 # Change stdout
                 if self._stdout_filename is not None:
                     stdout_filename = jube2.util.substitution(
@@ -251,10 +255,6 @@ class Operation(object):
                 else:
                     stderr_filename = "stderr"
                 stderr = open(os.path.join(work_dir, stderr_filename), "a")
-
-            # Remove leading and trailing ; because otherwise ;; will cause
-            # trouble when adding ; env
-            do.strip(";")
 
             # Execute "do"
             LOGGER.debug(">>> {0}".format(do))
