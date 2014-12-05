@@ -61,6 +61,7 @@
     <parameter name="outlogfile">stdout</parameter>
     <parameter name="errlogfile">stderr</parameter>
     <parameter name="timelimit">00:30:00</parameter>
+    <parameter name="modules"></parameter>
   </parameterset>
   
   <substituteset name="executesub">

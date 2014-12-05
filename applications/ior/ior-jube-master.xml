@@ -18,7 +18,7 @@
   
   <!-- IOR --> 
 
-  <benchmark name="ior" outpath="./benchmark_runs">
+  <benchmark name="ior" outpath="./benchmarks">
 
     <fileset name="sources">
       <copy>ior.tar.gz</copy>

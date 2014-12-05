@@ -13,6 +13,11 @@
     <parameter name="mpi_f77">mpif77</parameter>  
   </parameterset>
 
+  <parameterset name="libs">
+    <!-- Library access information -->
+    <parameter name="load_module">module load</parameter>
+  </parameterset>
+
   <substituteset name="compilesub">
     <sub source="#MPI_CC#" dest="$mpi_cc" />
   </substituteset>
@@ -33,8 +38,7 @@
     <sub source="#ENV#" dest="" />
     <sub source="#NOTIFY_EMAIL#" dest="" />
     <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
-    <sub source="#NODES#" dest="$nodes" />
-    <sub source="#NCPUS#" dest="$taskspernode" />
+    <sub source="#NODELIST#" dest="nodes=$nodes:ppn=$taskspernode" />
     <sub source="#QUEUE#" dest="$queue" />
     <sub source="#JOBPOLICY#" dest="NACCESSPOLICY:SINGLEJOB" />
     <sub source="#TIME_LIMIT#" dest="$timelimit" />
@@ -61,6 +65,7 @@
     <parameter name="errlogfile">stderr</parameter>
     <parameter name="queue">common</parameter>
     <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode</parameter>
+    <parameter name="modules"></parameter>
   </parameterset>
   
   <fileset name="jobfiles">
