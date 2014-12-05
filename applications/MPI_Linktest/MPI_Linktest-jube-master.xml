@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <include-path>
+    <path tag="juqueen">../../platform/juqueen</path>
+    <path tag="juropa2">../../platform/juropa2</path>
+    <path tag="juropatest">../../platform/juropatest</path>
+    <path tag="judge">../../platform/judge</path>
+    <path tag="deep">../../platform/deep</path>
+    <path tag="juniors">../../platform/juniors</path>
+  </include-path>
+
+  <benchmark name="MPI_Linktest" outpath="benchmarks">
+
+    <parameterset name="LinktestParameter" init_with="MPI_Linktest-specs.xml">
+    </parameterset>
+
+    <parameterset name="compileset" init_with="platform.xml">
+      <parameter name="cc" tag="!juqueen">icc</parameter>
+    </parameterset>
+
+    <parameterset init_with="platform.xml" name="systemParameter">
+      <parameter name="nodes">4,8</parameter>
+      <parameter name="taskspernode">8</parameter>
+      <parameter name="iteration">1</parameter>
+      <parameter name="outlogfile">job.log</parameter>
+      <parameter name="errlogfile">job.err</parameter>
+      <parameter name="queue" tag="deep">jube</parameter>
+    </parameterset>
+
+    <substituteset name="compilesub" init_with="MPI_Linktest-specs.xml">
+      <sub source="#SION_LIB_INST#" dest="/usr/local/sionlib/v1.3p7"/>
+      <sub source="#SION_LIB_INST#" dest="/usr/local/sionlib" tag="deep"/>
+      <sub source="#SIONFLAG#" dest="--64" tag="judge,juropatest,juropa2"/>
+    </substituteset>
+
+    <substituteset name="executesub" init_with="platform.xml">
+      <sub source="#NOTIFY_EMAIL#" dest="st.graf@fz-juelich.de" />
+      <sub source="#NOTIFICATION#" dest="ae"/>
+      <sub source="#EXECUTABLE#" dest="compile/mpilinktest" />
+      <sub source="#ARGS_EXECUTABLE#" dest="-i $iterations $msgunit $msgsize -S $serial"/>
+    </substituteset>
+
+    <fileset name="source">
+      <copy>MPI_Linktest.tar.gz</copy>
+      <prepare>tar -xzf MPI_Linktest.tar.gz</prepare>
+    </fileset>
+
+    <step name="compile">
+      <use>source</use>
+      <use>compileset</use>
+      <use>compilesub</use>
+      <do>make -f Makefile_LINUX mpilinktest</do>
+    </step>
+
+    <step depend="compile" name="execution">
+      <use>LinktestParameter</use>
+      <use>systemParameter</use>
+      <use from="platform.xml">executeset</use>
+      <use>executesub</use>
+      <use from="platform.xml">jobfiles</use>
+      <do>$submit $submit_script</do>
+      <do done_file="$done_file"/>
+    </step>
+
+    <analyzer name="analyze">
+      <use from="MPI_Linktest-specs.xml">pattern</use>
+      <analyse step="execution">
+        <file>job.log</file>
+      </analyse>
+    </analyzer>
+    <result>
+      <use>analyze</use>
+      <table name="result" style="pretty">
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>pat_avgtimems</column>
+        <column>pat_maxtime</column>
+        <column>pat_maxtimems</column>
+        <column>pat_Rmsglen</column>
+        <column>pat_sionopen</column>
+        <column>pat_Rexecorder</column>
+        <column>pat_timeall</column>
+        <column>pat_Rsleept</column>
+        <column>pat_mintimems</column>
+        <column>pat_sionclose</column>
+        <column>pat_maxtimeus</column>
+        <column>pat_avgtimeus</column>
+        <column>pat_mintime</column>
+        <column>pat_avgbw</column>
+        <column>pat_Riter</column>
+        <column>pat_sionflush</column>
+        <column>pat_Ratoa</column>
+        <column>pat_mintimeus</column>
+        <column>pat_minbw</column>
+        <column>pat_Rtasks</column>
+        <column>pat_sionwrite</column>
+        <column>pat_RmsglenKB</column>
+        <column>pat_maxbw</column>
+        <column>pat_walltime</column>
+        <column>pat_Rlevel</column>
+        <column>pat_avgtime</column>
+      </table>
+    </result>
+  </benchmark>
+</jube>

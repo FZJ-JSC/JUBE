@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <parameterset name="LinktestParameter">
+    <parameter name="iterations">50</parameter>
+    <parameter name="serial">1</parameter>
+    <parameter name="msgunit">-k</parameter>
+    <parameter name="msgsize">256</parameter>
+  </parameterset>
+
+  <substituteset name="compilesub">
+    <iofile in="Makefile.in" out="Makefile_LINUX"/>
+    <sub dest="" source="#SIONFLAG#"/>
+    <sub dest="$outdir" source="#OUTDIR#"/>
+    <sub dest="/usr/local/sionlib" source="#SION_LIB_INST#"/>
+    <sub dest="$cc" source="#CC#"/>
+    <sub dest="$mpi_cc" source="#MPICC#"/>
+    <sub dest="$mpi_cc" source="#MPIGCC#"/>
+    <sub dest="-D_LINUX  -g -DUSELQBUFFERSEND -DBCASTDT $(PLATFORM_FLAG)" source="#CFLAGS#"/>
+    <sub dest="-g -DUSELQBUFFERSEND -DBCASTDT -Wall" source="#CFLAGS_MPI#"/>
+    <sub dest="-D_LINUX $(LARGEFILE) -g -DUSELQBUFFERSEND -DBCASTDT" source="#GCCFLAGS#"/>
+    <sub dest="-g" source="#LIBS_MPI#"/>
+    <sub dest="-lm -g" source="#LIBS#"/>
+  </substituteset>
+
+  <patternset name="pattern">
+      <pattern mode="pattern" name="pat_walltime" type="float" unit="s">timings\[000\] \[work\]\s*t=\s*$jube_pat_fp[s]</pattern>
+      <pattern mode="pattern" name="pat_mintimeus" type="float" unit="us">RESULT: Min Time:\s*$jube_pat_fp[u]s \(\s*$jube_pat_nfp MB\/s\)</pattern>
+      <pattern mode="pattern" name="pat_minbw" type="float" unit="MB/s">RESULT: Min Time:\s*$jube_pat_nfp[u]s \(\s*$jube_pat_fp MB\/s\)</pattern>
+      <pattern mode="pattern" name="pat_maxtimeus" type="float" unit="us">RESULT: Max Time:\s*$jube_pat_fp[u]s \(\s*$jube_pat_nfp MB\/s\)</pattern>
+      <pattern mode="pattern" name="pat_maxbw" type="float" unit="MB/s">RESULT: Max Time:\s*$jube_pat_nfp[u]s \(\s*$jube_pat_fp MB\/s\)</pattern>
+      <pattern mode="pattern" name="pat_avgtimeus" type="float" unit="us">RESULT: Avg Time:\s*$jube_pat_fp[u]s \(\s*$jube_pat_nfp MB\/s\)</pattern>
+      <pattern mode="pattern" name="pat_avgbw" type="float" unit="MB/s">RESULT: Avg Time:\s*$jube_pat_nfp[u]s \(\s*$jube_pat_fp MB\/s\)</pattern>
+      <pattern mode="perl" name="pat_mintimems" type="float" unit="s">$pat_mintimeus/1000</pattern>
+      <pattern mode="perl" name="pat_maxtimems" type="float" unit="s">$pat_maxtimeus/1000</pattern>
+      <pattern mode="perl" name="pat_avgtimems" type="float" unit="s">$pat_avgtimeus/1000</pattern>
+      <pattern mode="perl" name="pat_mintime" type="float" unit="s">$pat_mintimeus/1000/1000</pattern>
+      <pattern mode="perl" name="pat_maxtime" type="float" unit="s">$pat_maxtimeus/1000/1000</pattern>
+      <pattern mode="perl" name="pat_avgtime" type="float" unit="s">$pat_avgtimeus/1000/1000</pattern>
+      <pattern mode="pattern" name="pat_sionopen" type="float" unit="s">timings\[000\] \[sionopen\]\s*t=\s*$jube_pat_fp[s]</pattern>
+      <pattern mode="pattern" name="pat_sionwrite" type="float" unit="s">timings\[000\] \[sionwrite\]\s*t=\s*$jube_pat_fp[s]</pattern>
+      <pattern mode="pattern" name="pat_sionflush" type="float" unit="s">timings\[000\] \[sionflush\]\s*t=\s*$jube_pat_fp[s]</pattern>
+      <pattern mode="pattern" name="pat_sionclose" type="float" unit="s">timings\[000\] \[sionclose\]\s*t=\s*$jube_pat_fp[s]</pattern>
+      <pattern mode="pattern" name="pat_timeall" type="float" unit="s">timings\[000\] \[all\]\s*t=\s*$jube_pat_fp[s]</pattern>
+      <pattern mode="pattern" name="pat_Rtasks" type="int" unit="#">linktest: Number of MPI-Task:\s*$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_Rmsglen" type="int" unit="Bytes">linktest: Message length:\s*$jube_pat_int Bytes</pattern>
+      <pattern mode="pattern" name="pat_RmsglenKB" type="float" unit="KB">linktest: Message length:\s*$jube_pat_fp KBytes</pattern>
+      <pattern mode="pattern" name="pat_Riter" type="int" unit="#">linktest: Number of Iteration:\s*$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_Rlevel" type="float" unit="BW">linktest: Level for suspected Links: .\s*$jube_pat_fp MB\/s</pattern>
+      <pattern mode="pattern" name="pat_Ratoa" type="int" unit="#">linktest: alltoall:\s*$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_Rsleept" type="int" unit="#">linktest: sleeptime:\s*$jube_pat_int us</pattern>
+      <pattern mode="pattern" name="pat_Rexecorder" type="int" unit="#">linktest: execution order:\s*$jube_pat_int</pattern>
+
+    </patternset>
+</jube>

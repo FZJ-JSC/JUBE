@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <parameterset name="hplParameter">
+    <parameter name="hpl_N" type="int">30</parameter>
+    <parameter name="hpl_NB" type="int">1</parameter>
+    <parameter name="hpl_PMAP" type="int">0</parameter>
+    <parameter name="hpl_PQ" >(2;2)</parameter>
+       <parameter name="hpl_P" mode="python" type="int">"$hpl_PQ"[1:"$hpl_PQ".find(";")]</parameter>
+       <parameter name="hpl_Q" mode="python" type="int">"$hpl_PQ"["$hpl_PQ".find(";")+1:-1]</parameter>
+    <parameter name="hpl_threshold" type="float">16.0</parameter>
+    <parameter name="hpl_PFACT" type="int">0</parameter>
+    <parameter name="hpl_NBMIN" type="int">2</parameter>
+    <parameter name="hpl_NDIV" type="int">2</parameter>
+    <parameter name="hpl_RFACT" type="int">0</parameter>
+    <parameter name="hpl_BCAST" type="int">0</parameter>
+    <parameter name="hpl_DEPTH" type="int">0</parameter>
+    <parameter name="hpl_SWAP" type="int">2</parameter>
+    <parameter name="hpl_swapping_threshold" type="int">64</parameter>
+    <parameter name="hpl_L1" type="int">0</parameter>
+    <parameter name="hpl_U" type="int">0</parameter>
+    <parameter name="hpl_equilibration" type="int">1</parameter>
+    <parameter name="hpl_memory_alignment" type="int">8</parameter>
+  </parameterset>
+
+  <parameterset name="hplSystemParameter">
+    <parameter name="hpl_arch">icc_psmpi_mkl</parameter>
+    <parameter name="target">xhpl</parameter>
+    <parameter name="hpl_exec">bin/${hpl_arch}/$target</parameter>
+  </parameterset>
+
+
+  <substituteset name="compilesub">
+    <iofile in="Makefile.in" out="Make.${hpl_arch}"/>
+    <sub dest="${mpi_cc}" source="#MPICC#"/>
+    <sub dest="${hpl_arch}" source="#ARCH#"/>
+    <sub dest="${jube_wp_abspath}" source="#TOPDIR#"/>
+  </substituteset>
+
+
+  <fileset name="hplInputFile">
+    <copy>HPL.dat.in</copy>
+  </fileset>
+
+  <substituteset name="hplInputFileSub">
+    <iofile in=" HPL.dat.in" out="HPL.dat" />
+    <sub source="#N#" dest="$hpl_N" />
+    <sub source="#NB#" dest="$hpl_NB" />
+    <sub source="#PMAP#" dest="$hpl_PMAP" />
+    <sub source="#P#" dest="$hpl_P" />
+    <sub source="#Q#" dest="$hpl_Q" />
+    <sub source="#THRESHOLD#" dest="$hpl_threshold" />
+    <sub source="#PFACT#" dest="$hpl_PFACT" />
+    <sub source="#NBMIN#" dest="$hpl_NBMIN" />
+    <sub source="#NDIV#" dest="$hpl_NDIV" />
+    <sub source="#RFACT#" dest="$hpl_RFACT" />
+    <sub source="#BCAST#" dest="$hpl_BCAST" />
+    <sub source="#DEPTH#" dest="$hpl_DEPTH" />
+    <sub source="#SWAP#" dest="$hpl_SWAP" />
+    <sub source="#SWPTHRES#" dest="$hpl_swapping_threshold" />
+    <sub source="#L1#" dest="$hpl_L1" />
+    <sub source="#U#" dest="$hpl_U" />
+    <sub source="#EQUILIB#" dest="$hpl_equilibration" />
+    <sub source="#MALIGN#" dest="$hpl_memory_alignment" />
+  </substituteset>
+ 
+
+  <patternset name="pattern">
+      <pattern mode="pattern" name="pat_N" type="int" unit=""              >^W\S+\s+$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_NB" type="int" unit=""             >^W\S+\s+$jube_pat_nint\s+$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_P" type="int" unit=""              >^W\S+\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_Q" type="int" unit=""              >^W\S+\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_time" type="float" unit="s"         >^W\S+\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_fp</pattern>
+      <pattern mode="pattern" name="pat_perf_all" type="float" unit="Gflops">^W\S+\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_nint\s+$jube_pat_nfp\s+$jube_pat_fp</pattern>
+      <pattern mode="perl" name="pat_perf_avg_node" type="float" unit="Gflops"> $pat_perf_all/$nodes </pattern>
+    </patternset>
+</jube>

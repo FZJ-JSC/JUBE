@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <include-path>
+    <path tag="juqueen">../../platform/juqueen</path>
+    <path tag="juropa2">../../platform/juropa2</path>
+    <path tag="juropatest">../../platform/juropatest</path>
+    <path tag="judge">../../platform/judge</path>
+    <path tag="deep">../../platform/deep</path>
+    <path tag="juniors">../../platform/juniors</path>
+  </include-path>
+
+  <benchmark name="HPL" outpath="benchmarks">
+
+    <parameterset name="hplParameter" init_with="hpl-specs.xml">
+      <parameter name="hpl_N" type="int">61488</parameter>
+      <parameter name="hpl_NB" type="int">168</parameter>
+      <parameter name="hpl_PQ" >(2;8)</parameter>
+      <parameter name="hpl_PFACT" type="int">2</parameter>
+      <parameter name="hpl_NBMIN" type="int">4</parameter>
+      <parameter name="hpl_RFACT" type="int">1</parameter>
+      <parameter name="hpl_BCAST" type="int">1</parameter>
+    </parameterset>
+
+    <parameterset init_with="platform.xml" name="systemParameter">
+      <parameter name="modules" tag="juropatest">intel-para</parameter>
+      <parameter name="nodes">2</parameter>
+      <parameter name="taskspernode">8</parameter>
+      <parameter name="iteration">1</parameter>
+      <parameter name="outlogfile">job.log</parameter>
+      <parameter name="errlogfile">job.err</parameter>
+      <parameter name="queue" tag="deep">jube</parameter>
+    </parameterset>
+
+    <substituteset name="executesub" init_with="platform.xml">
+      <sub source="#NOTIFY_EMAIL#" dest="st.graf@fz-juelich.de" />
+      <sub source="#NOTIFICATION#" dest="ae"/>
+      <sub source="#EXECUTABLE#" dest="compile/${hpl_exec}" />
+    </substituteset>
+
+    <fileset name="source">
+      <copy>hpl.tar.gz</copy>
+      <prepare>tar -xzf hpl.tar.gz</prepare>
+    </fileset>
+
+    <step name="compile">
+      <use>systemParameter</use>
+      <use from="hpl-specs.xml">hplSystemParameter</use>
+      <use>source</use>
+      <use from="platform.xml">libs</use>
+      <use from="platform.xml">compileset</use>
+      <use from="hpl-specs.xml">compilesub</use>
+      <do>${load_module} $modules</do>
+      <do>make arch=${hpl_arch}</do>
+    </step>
+    <step depend="compile" name="execution">
+      <use from="hpl-specs.xml">hplInputFile</use>
+      <use from="hpl-specs.xml">hplInputFileSub</use>
+      <use>hplParameter</use>
+      <use>systemParameter</use>
+      <use from="hpl-specs.xml">hplSystemParameter</use>
+      <use from="platform.xml">executeset</use>
+      <use>executesub</use>
+      <use from="platform.xml">jobfiles</use>
+      <use from="platform.xml">libs</use>
+      <do>${load_module} $modules</do>
+      <do>$submit $submit_script</do>
+      <do done_file="$done_file"/>
+    </step>
+
+    <analyzer name="analyze">
+      <use from="hpl-specs.xml">pattern</use>
+      <analyse step="execution">
+        <file>job.log</file>
+      </analyse>
+    </analyzer>
+    <result>
+      <use>analyze</use>
+      <table name="result" style="pretty">
+        <column>nodes</column>
+        <column>taskspernode</column>
+        <column>pat_N</column>
+        <column>pat_Q</column>
+        <column>pat_P</column>
+        <column>pat_NB</column>
+        <column format=".3e">pat_perf_all</column>
+        <column format=".3e">pat_perf_avg_node</column>
+        <column>pat_time</column>
+      </table>
+    </result>
+  </benchmark>
+</jube>
