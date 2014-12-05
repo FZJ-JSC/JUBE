@@ -1,6 +1,7 @@
 """Nose-test routines"""
 
 from __future__ import (print_function,
+                        unicode_literals,
                         division)
 
 import jube2.parameter
