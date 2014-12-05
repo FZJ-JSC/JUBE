@@ -133,11 +133,9 @@ class Patternset(object):
                     self._derived_pattern[pattern.name])
             else:
                 return False
-        elif isinstance(pattern, str):
+        else:
             return (pattern in self._pattern) or \
                    (pattern in self._derived_pattern)
-        else:
-            return False
 
     def __getitem__(self, name):
         """Returns pattern given by name. Is pattern not found, None will

@@ -98,7 +98,7 @@ class Parameterset(object):
         name = ""
         if isinstance(parameter, Parameter):
             name = parameter.name
-        elif isinstance(parameter, str):
+        else:
             name = parameter
         if name in self._parameters:
             del self._parameters[name]
@@ -161,10 +161,8 @@ class Parameterset(object):
                     self._parameters[parameter.name])
             else:
                 return False
-        elif isinstance(parameter, str):
-            return parameter in self._parameters
         else:
-            return False
+            return parameter in self._parameters
 
     def __getitem__(self, name):
         if name in self._parameters:
