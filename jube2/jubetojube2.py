@@ -348,7 +348,8 @@ class JubeXMLConverter(object):
                 '_files_' + str(self._global_counter)
             fileset_node.set('name', fileset_name)
             copy_node = ET.SubElement(fileset_node, 'copy', {"separator": " "})
-            copy_node.text = input_node.attrib['files']
+            if input_node is not None:
+                copy_node.text = input_node.attrib['files']
             if tag == "execute":
                 copy_node = ET.SubElement(
                     fileset_node, 'copy', {'rel_path_ref': 'internal'})

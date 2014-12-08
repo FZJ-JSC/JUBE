@@ -19,7 +19,7 @@
   
   <!-- mdtest --> 
 
-  <benchmark name="mdtest" outpath="./benchmark_runs">
+  <benchmark name="mdtest" outpath="./benchmarks">
 
     <fileset name="sources">
       <copy>mdtest.tar.gz</copy>

@@ -1,0 +1,31 @@
+HPLinpack benchmark input file
+Innovative Computing Laboratory, University of Tennessee
+HPL.out      output file name (if any)
+6            device out (6=stdout,7=stderr,file)
+1            # of problems sizes (N)
+#N#
+1            # of NBs
+#NB#
+#PMAP#       PMAP process mapping (0=Row-,1=Column-major)
+1            # of process grids (P x Q)
+#P#          Ps
+#Q#          Qs
+#THRESHOLD#  threshold
+1            # of panel fact
+#PFACT#      PFACTs (0=left, 1=Crout, 2=Right)
+1            # of recursive stopping criterium
+#NBMIN#      NBMINs (>= 1)
+1            # of panels in recursion
+#NDIV#       NDIVs
+1            # of recursive panel fact.
+#RFACT#      RFACTs (0=left, 1=Crout, 2=Right)
+1            # of broadcast
+#BCAST#      BCASTs (0=1rg,1=1rM,2=2rg,3=2rM,4=Lng,5=LnM)
+1            # of lookahead depth
+#DEPTH#      DEPTHs (>=0)
+#SWAP#       SWAP (0=bin-exch,1=long,2=mix)
+#SWPTHRES#   swapping threshold
+#L1#         L1 in (0=transposed,1=no-transposed) form
+#U#          U  in (0=transposed,1=no-transposed) form
+#EQUILIB#    Equilibration (0=no,1=yes)
+#MALIGN#     memory alignment in double (> 0)

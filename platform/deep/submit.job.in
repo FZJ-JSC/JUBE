@@ -3,7 +3,7 @@
 #PBS -N #BENCHNAME#
 #PBS -q #QUEUE#
 #PBS -M #NOTIFY_EMAIL#
-#PBS -l nodes=#NODES#:ppn=#NCPUS#
+#PBS -l #NODELIST#
 #PBS -W x=#JOBPOLICY#
 #PBS -l walltime=#TIME_LIMIT#
 #PBS -e #STDERRLOGFILE#
