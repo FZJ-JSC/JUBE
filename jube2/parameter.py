@@ -135,6 +135,17 @@ class Parameterset(object):
                 return False
         return True
 
+    def get_incompatible_parameter(self, parameterset):
+        """Return a set of incompatible parameter names between the current
+        and the given parameterset"""
+        result = set()
+        intersection = set(self.all_parameter_names) & \
+            set(parameterset.all_parameter_names)
+        for name in intersection:
+            if not self[name].is_equivalent(parameterset[name]):
+                result.add(name)
+        return result
+
     def expand_templates(self):
         """Expand all remaining templates in the Parameterset and returns the
         resulting parametersets

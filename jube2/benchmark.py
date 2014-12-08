@@ -409,9 +409,15 @@ class Benchmark(object):
             # The parametersets in a single step must be compatible
             if not local_parameterset.is_compatible(
                     self._parametersets[parameterset_name]):
+                incompatible_names = \
+                    local_parameterset.get_incompatible_parameter(
+                        self._parametersets[parameterset_name])
                 raise ValueError(("Can't use parameterset '{0}' in " +
-                                  "step '{1}'.")
-                                 .format(parameterset_name, step.name))
+                                  "step '{1}'.\nParameter '{2}' is/are " +
+                                  "already defined by a different " +
+                                  "parameterset.")
+                                 .format(parameterset_name, step.name,
+                                         ",".join(incompatible_names)))
             local_parameterset.add_parameterset(
                 self._parametersets[parameterset_name])
 

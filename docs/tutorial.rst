@@ -90,11 +90,13 @@ You can also use normal *XML*-comments to structure your input-file:
    <!-- your comment -->
 
 In this benchmark a ``<parameterset>`` is used to store the single ``<parameter name="hello_str">`` parameter.
+The ``name`` of the parameter should only contain letters, numbers (should not be the first character) or the ``_`` (like a normal *Python* identifier). 
 The ``name`` of the parameterset must be unique (relative to the current benchmark). In further examples we
 will see that there are more types of sets, which can be distinguished by their names. Also the ``name`` of the
 parameter must be unique (relative to the parameterset).
 
-The ``<step>`` contains the operation tasks. The ``name`` must be unique. It can use different types of existing sets.
+The ``<step>`` contains the operation tasks. The ``name`` must be unique.
+It can use different types of existing sets.
 Only sets, which are explicitly used, are available inside the step! The ``<do>`` contains a single **shell command**.
 This command will run inside of a sandbox directory environment (inside the ``outpath`` directory tree).
 The step and its corresponding parameterspace is named :term:`workpackage`.
