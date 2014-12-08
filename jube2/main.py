@@ -723,11 +723,14 @@ def _get_args_parser():
     return parser, subparser
 
 
-def main():
+def main(command=None):
     """Parse the command line and run the requested command."""
     jube2.help.load_help()
     parser = _get_args_parser()[0]
-    args = parser.parse_args()
+    if command is None:
+        args = parser.parse_args()
+    else:
+        args = parser.parse_args(command)
 
     jube2.conf.DEBUG_MODE = args.debug
 
