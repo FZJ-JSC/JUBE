@@ -33,11 +33,15 @@ class TestParameter(unittest.TestCase):
         parameter = jube2.parameter.Parameter.create_parameter("test", "2")
         self.assertEqual(parameter.value, "2")
         self.assertFalse(parameter.is_template)
+        self.assertEqual(parameter.parameter_type, "string")
+        self.assertTrue(repr(parameter).startswith("Parameter({"))
+        self.assertTrue(repr(parameter).endswith("})"))
 
     def test_template(self):
         """Test Template"""
         values = ["2", "3", "4"]
-        parameter = jube2.parameter.Parameter.create_parameter("test", "2,3,4")
+        parameter = jube2.parameter.Parameter.create_parameter("test", "2,3,4",
+                                                               export=True)
         self.assertTrue(parameter.is_template)
         self.assertEqual(parameter.value, "2,3,4")
 
@@ -81,6 +85,8 @@ class TestParameterSet(unittest.TestCase):
                                                                 "2,3,4")
         parameterset.add_parameter(parameter)
         parameterset.add_parameter(parameter2)
+        self.assertEqual(parameterset.name, "test")
+        self.assertTrue(parameterset.has_templates)
         self.assertTrue(parameter in parameterset)
         self.assertTrue((["test", "test2"] ==
                          sorted(parameterset.all_parameter_names)))
@@ -94,15 +100,37 @@ class TestParameterSet(unittest.TestCase):
         # Test not compatible parameterset
         parameterset2 = jube2.parameter.Parameterset("test2")
         parameter3 = jube2.parameter.Parameter.create_parameter("test3", "5")
-        parameter4 = jube2.parameter.Parameter.create_parameter("test2", "4")
+        parameter4 = jube2.parameter.Parameter.create_parameter("test2", "4",
+                                                                export=True)
         parameterset2.add_parameter(parameter3)
         parameterset2.add_parameter(parameter4)
         self.assertFalse(parameterset.is_compatible(parameterset2))
+
+        # Test export
+        self.assertEqual(parameterset2.export_parameter_dict, {"test2":
+                                                               parameter4})
+
+        # Test __getitem__ failing
+        self.assertEqual(parameterset["nonexistent"], None)
 
         # Test clear
         self.assertEqual(len(parameterset2), 2)
         parameterset2.clear()
         self.assertEqual(len(parameterset2), 0)
+
+        # Test __repr__
+        parameterset2.add_parameter(parameter3)
+        self.assertTrue(repr(parameterset2).startswith("Parameterset"))
+        parameterset2.clear()
+
+        # Delete a parameter
+        self.assertFalse(parameter3 in parameterset)
+        parameterset.add_parameter(parameter3)
+        self.assertTrue(parameter3 in parameterset)
+        parameterset.delete_parameter(parameter3)
+        # Deleting should not raise an error
+        parameterset.delete_parameter("test3")
+        self.assertFalse(parameter3 in parameterset)
 
         # Test compatible parameterset
         parameterset2.add_parameter(parameter3)
@@ -113,6 +141,8 @@ class TestParameterSet(unittest.TestCase):
         self.assertTrue(parameterset.is_compatible(parameterset2))
 
         # Test update_parameterset
+        self.assertEqual(sorted(list(parameterset.parameter_dict)),
+                         ["test", "test2"])
         parameterset.update_parameterset(parameterset2)
         self.assertEqual(parameterset.template_parameter_dict, dict())
         self.assertEqual(len(parameterset), 2)
@@ -128,6 +158,7 @@ class TestParameterSet(unittest.TestCase):
         for idx, new_parameterset in \
             enumerate(parameterset.expand_templates()):
             self.assertEqual(new_parameterset.template_parameter_dict, dict())
+            self.assertFalse(new_parameterset.has_templates)
             self.assertEqual(new_parameterset["test2"].value, param_list[idx])
 
         # Substitution and evaluation check
@@ -145,7 +176,7 @@ class TestParameterSet(unittest.TestCase):
             enumerate(parameterset.expand_templates()):
             self.assertTrue(
                 parameter_sub.can_substitute_and_evaluate(new_parameterset))
-            new_parameterset.parameter_substitution()
+            new_parameterset.parameter_substitution(final_sub=True)
             self.assertEqual(new_parameterset["test4"].value, param_list[idx])
             self.assertEqual(new_parameterset["test5"].value,
                               str(int(param_list[idx]) * 2))
