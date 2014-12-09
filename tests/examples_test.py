@@ -76,7 +76,7 @@ class ExampleChecker(object):
         debug = "--debug" if self._debug else ""
         jube2.main.main("{0} run {1}".format(debug, self._xml_file). split())
         if self._check_function:
-            success = self.check_function()
+            success = self._check_function()
         if not self._debug:
             jube2.main.main("remove -f {0}".format(self._bench_run_path).
                             split())
