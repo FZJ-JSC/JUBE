@@ -36,7 +36,7 @@ class TestExamples(unittest.TestCase):
         """Main function"""
         examples_tasks = [
             ExampleChecker("environment", "environment.xml"),
-            # ExampleChecker("jobsystem", "jobsystem.xml"),
+            ExampleChecker("jobsystem", "jobsystem.xml", debug=True),
             ExampleChecker("result_creation", "result_creation.xml"),
             ExampleChecker("files_and_sub", "files_and_sub.xml"),
             ExampleChecker("dependencies", "dependencies.xml"),
@@ -55,7 +55,7 @@ class TestExamples(unittest.TestCase):
 class ExampleChecker(object):
     """Class for checking examples"""
     def __init__(self, bench_path, xml_file, bench_run_path=None,
-                 check_function=None):
+                 check_function=None, debug=False):
         """Init instance.
 
         The check_function should return a bool value to indicate the
@@ -64,21 +64,22 @@ class ExampleChecker(object):
         """
         self._xml_file = os.path.join(EXAMPLES_PREFIX, bench_path, xml_file)
 
-        if bench_run_path is None:
-            self._bench_run_path = os.path.join(
-                EXAMPLES_PREFIX, bench_path, "bench_run")
-        else:
-            self._bench_run_path = bench_run_path
+        self._bench_run_path = bench_run_path or os.path.join(
+            EXAMPLES_PREFIX, bench_path, "bench_run")
 
         self._check_function = check_function
+        self._debug = debug
 
     def run(self):
         """Run example"""
         success = True
-        jube2.main.main("run {0}".format(self._xml_file).split())
+        debug = "--debug" if self._debug else ""
+        jube2.main.main("{0} run {1}".format(debug, self._xml_file). split())
         if self._check_function:
             success = self.check_function()
-        jube2.main.main("remove -f {0}".format(self._bench_run_path).split())
+        if not self._debug:
+            jube2.main.main("remove -f {0}".format(self._bench_run_path).
+                            split())
         return success
 
 
