@@ -21,6 +21,15 @@
 Release notes
 =============
 
+Version 2.0.2
+~~~~~~~~~~~~~
+Release: 2014-12-09
+
+* fix a bug when using ``init-with`` to initialize a ``<copy>``-tag
+* use ``cp -p`` behaviour to copy files
+* fix error message when using an empty ``<do>``
+* added error return code, if there was an error message
+
 Version 2.0.1
 ~~~~~~~~~~~~~
 Release: 2014-11-25
