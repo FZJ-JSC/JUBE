@@ -4,13 +4,13 @@
     <comment>A simple hello world</comment>
 
     <!-- Configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="hello_parameter">
       <parameter name="hello_str">Hello World</parameter>
     </parameterset>
     
     <!-- Operation -->
     <step name="say_hello">
-      <use>parameterset</use> <!-- use existing parameterset -->
+      <use>hello_parameter</use> <!-- use existing parameterset -->
       <do>echo $hello_str</do> <!-- shell command -->
     </step>    
   </benchmark>
