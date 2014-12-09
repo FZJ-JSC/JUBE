@@ -754,9 +754,11 @@ def main(command=None):
             except Exception as exeption:
                 # Catch all possible Exceptions
                 LOGGER.error("\n" + str(exeption))
+                jube2.log.reset_logging()
                 exit(1)
     else:
         parser.print_usage()
+    jube2.log.reset_logging()
 
 if __name__ == "__main__":
     main()

@@ -24,6 +24,7 @@ from __future__ import (print_function,
 
 import unittest
 from parameter_tests import TestParameter, TestParameterSet
+from examples_test import TestExamples
 
 
 if __name__ == "__main__":

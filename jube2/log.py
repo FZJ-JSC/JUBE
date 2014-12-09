@@ -158,3 +158,11 @@ def change_logfile_name(filename):
     if jube2.conf.DEBUG_MODE:
         return
     setup_logging(filename=filename)
+
+
+def reset_logging():
+    """Reset logging to default."""
+    global LOGGING_MODE, LOGFILE_NAME
+
+    LOGGING_MODE = jube2.conf.DEFAULT_LOGGING_MODE
+    LOGFILE_NAME = jube2.conf.DEFAULT_LOGFILE_NAME

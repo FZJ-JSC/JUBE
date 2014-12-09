@@ -16,11 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Test the examples
-
-This alters the 
-
-"""
+"""Test the examples"""
 
 from __future__ import (print_function,
                         unicode_literals,
@@ -31,42 +27,60 @@ import os.path
 import jube2.main
 
 
-def main():
-    """Main function"""
-    ExampleChecker.path_prefix = "../examples"
+EXAMPLES_PREFIX = os.path.join(os.path.dirname(__file__), "../examples")
 
-    examples_tasks = [
-        ExampleChecker("hello_world", "hello_world.xml"),
-        # ExampleChecker("environment", "environment.xml"),
-        # ExampleChecker("jobsystem", "jobsystem.xml"),
-    ]
 
-    for checker in examples_tasks:
-        checker.run()
+class TestExamples(unittest.TestCase):
+    """Class for testing the included examples"""
+    def test_examples(self):
+        """Main function"""
+        examples_tasks = [
+            ExampleChecker("environment", "environment.xml"),
+            # ExampleChecker("jobsystem", "jobsystem.xml"),
+            ExampleChecker("result_creation", "result_creation.xml"),
+            ExampleChecker("files_and_sub", "files_and_sub.xml"),
+            ExampleChecker("dependencies", "dependencies.xml"),
+            ExampleChecker("tagging", "tagging.xml"),
+            ExampleChecker("parameterspace", "parameterspace.xml"),
+            ExampleChecker("scripting_parameter", "scripting_parameter.xml"),
+            ExampleChecker("include", "main.xml"),
+            ExampleChecker("shared", "shared.xml"),
+            ExampleChecker("hello_world", "hello_world.xml"),
+        ]
+
+        for checker in examples_tasks:
+            self.assertTrue(checker.run())
 
 
 class ExampleChecker(object):
-    path_prefix = None
-
+    """Class for checking examples"""
     def __init__(self, bench_path, xml_file, bench_run_path=None,
                  check_function=None):
-        self._xml_file = os.path.join(self.path_prefix, bench_path, xml_file)
+        """Init instance.
+
+        The check_function should return a bool value to indicate the
+        success of failure of the test.
+
+        """
+        self._xml_file = os.path.join(EXAMPLES_PREFIX, bench_path, xml_file)
 
         if bench_run_path is None:
             self._bench_run_path = os.path.join(
-                self.path_prefix, bench_path, "bench_run")
+                EXAMPLES_PREFIX, bench_path, "bench_run")
         else:
             self._bench_run_path = bench_run_path
 
         self._check_function = check_function
-        print(vars(self))
 
     def run(self):
+        """Run example"""
+        success = True
         jube2.main.main("run {0}".format(self._xml_file).split())
         if self._check_function:
-            self.check_function()
+            success = self.check_function()
         jube2.main.main("remove -f {0}".format(self._bench_run_path).split())
+        return success
 
 
 if __name__ == "__main__":
-    main()
+    unittest.main()
