@@ -47,6 +47,7 @@ Coding standards
   * must be downward compatible
   * must be added to schema files
   * must be documented and there must be a small example
+  * must be covered by tests
 
 Pylint
 ------
@@ -69,6 +70,28 @@ In the top directory
 
 Another possibility is to copy or link the file to the default search
 path ``~/.config/flake8`` to use it globally.
+
+
+Coverage
+--------
+
+To produce a coverage report the ``coverage`` packet must be
+installed. Run
+
+  .. code-block:: sh
+
+     python -m coverage run ./run_tests.py
+     python -m coverage html
+
+in the ``test`` directory. The first command creates a coverage report
+``.coverage`` in the current directory and the second one creates a
+folder ``htmlcov`` with html files visualizing the code coverage by
+adding colors for covered and uncovered regions of the code. The
+summary can be viewed in ``index.html``.
+
+You might want to replace ``python`` with ``python2`` or ``python3``
+respectively to explicitly test different python versions and make
+sure both versions are still working.
 
 
 Documentation creation
