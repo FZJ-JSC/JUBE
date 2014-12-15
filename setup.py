@@ -63,7 +63,7 @@ config = {'description': 'JUBE Benchmarking Environment',
           'packages': ['jube2'],
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
-                           ['docs/_build/latex/JUBE.pdf']),
+                           ['docs/JUBE.pdf']),
                           (SHARE_PATH, ['LICENSE'])] +
                          rel_path("examples", SHARE_PATH) +
                          rel_path("schema", SHARE_PATH) +

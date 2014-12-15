@@ -137,7 +137,7 @@ Glossary
       * ``<only>`` and ``<not>`` can contain a name list divided by ``,``
 
    patternset_tag
-      A patternset is a container to store a bundle of pattern.
+      A patternset is a container to store a bundle of patterns.
 
       .. code-block:: xml
 
@@ -191,7 +191,7 @@ Glossary
         * reduced variables can be used by name_<reduce_option>
 
    parameterset_tag
-      A parameterset is a container to store a bundle of parameter.
+      A parameterset is a container to store a bundle of parameters.
 
       .. code-block:: xml
 
@@ -259,7 +259,7 @@ Glossary
         * inside the parameter definition, a parameter can be reused: ``... $nameofparameter ...``
         * the parameter will be replaced multiply times (to handle complex parameter structures; max: 5 times)
         * the substitution will be run before the execution step starts with the current parameter space. Only parameters reachable
-          in this step will be useable for substitution!
+          in this step will be usable for substitution!
 
       * Scripting modes allowed:
 
@@ -338,7 +338,7 @@ Glossary
      * in the execution step the given files or directories will be copied
 
    prepare_tag
-     The prepare can contain any *Shell* command you want. It will be executed like a normal :term:`<do> <step_tag>` inside the
+     The prepare can contain any *Shell* command you want. It will be executed like a normal :term:`<do> <do_tag>` inside the
      step where the coresspoding fileset is used. The only difference towards the normal do is, that it will be executed
      **before** the substitution will be executed.
 
@@ -351,7 +351,7 @@ Glossary
        the original work directory)
 
    substituteset_tag
-     A substituteset is a container to store a bundle of subs.
+     A substituteset is a container to store a bundle of sub commands.
 
      .. code-block:: xml
 
@@ -398,14 +398,11 @@ Glossary
         <step name="..." work_dir="..." shared="..." export="...">
           <use from="">...</use>
           ...
-          <do stdout="..." stderr="..." active="...">...</do>
-          <do done_file="...">...</do>
-          <do shared="true">...</do>
-          <do work_dir="...">...</do>
+          <do></do>
           ...
         </step>
 
-     * parametersets, filesets and substitutionsets are useable
+     * parametersets, filesets and substitutionsets are usable
      * using filesets and substitutesets ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
      * using parametersets ``<use>set1</use><use>set2</use>`` means: use both; ``<use>set1,set2</use>`` means: use in one case the first set and in second case the other set
      * the ``from`` attribute is optional and can be used to specify an external set source
@@ -419,6 +416,21 @@ Glossary
 
        * a link, named by the attribute content, is used to access the shared folder
        * the shared folder link will not be automatically created in an alternative working directory!
+
+     * ``export="true"``
+
+       * the environment of the current step will be exported to an dependent step
+
+   do_tag
+     A do contain a executable *Shell* operation.
+
+     .. code-block:: xml
+
+        <do stdout="..." stderr="..." active="...">...</do>
+        <do done_file="...">...</do>
+        <do shared="true">...</do>
+        <do work_dir="...">...</do>
+
 
      * ``do`` can contain any *Shell*-syntax-snippet (parameter will be replaced ... $nameofparameter ...)
      * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
@@ -439,10 +451,6 @@ Glossary
        * cmd will be **executed inside the shared folder**
        * cmd will run once (synchronize all workpackages)
        * ``$jube_wp_...`` - parameter can't be used inside the shared command
-       
-     * ``export="true"``
-     
-       * the environment of the current step will be exported to an dependent step 
 
    analyzer_tag
      The analyzer describe the steps and files which should be scanned using a set of pattern.
@@ -459,7 +467,7 @@ Glossary
         </analyzer>
 
      * you can use different patternsets to analyse a set of files
-     * only patternsets are useable
+     * only patternsets are usable
      * using patternsets ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
      * the from-attribute is optional and can be used to specify an external set source
      * any name must be unique, it is not allowed to reuse a set
@@ -480,7 +488,7 @@ Glossary
 
      * ``result_dir`` is optional. Here you can specify an different output directory. Inside of this directory a subfolder
        named by the current benchmark id will be created. Default: benchmark_dir/result
-     * only analyzer are useable
+     * only analyzer are usable
      * using analyzer ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
 
    table_tag

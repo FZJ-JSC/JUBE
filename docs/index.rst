@@ -24,6 +24,7 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
+   introduction
    tutorial
    advanced
    commandline

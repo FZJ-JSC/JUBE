@@ -26,7 +26,7 @@ analyzer_tag
 
    * you can use different patternsets to analyse a set of files
 
-   * only patternsets are useable
+   * only patternsets are usable
 
    * using patternsets "<use>set1,set2</use>" is the same as
      "<use>set1</use><use>set2</use>"
@@ -158,6 +158,48 @@ directory_structure
            +- 000000_compile (step: just an example, can be arbitrary chosen)
            +- 000001_execute
            +- 000002_postprocessing
+
+do_tag
+   A do contain a executable *Shell* operation.
+
+      <do stdout="..." stderr="..." active="...">...</do>
+      <do done_file="...">...</do>
+      <do shared="true">...</do>
+      <do work_dir="...">...</do>
+
+   * "do" can contain any *Shell*-syntax-snippet (parameter will be
+     replaced ... $nameofparameter ...)
+
+   * "stdout"- and "stderr"-filename are optional (default: "stdout"
+     and "stderr")
+
+   * "work_dir" is optional, it can be used to change the work
+     directory of this single command (relativly seen towards the
+     original work directory)
+
+   * "active" is optional
+
+     * can be set to "true" or "false" to enable or disable the
+       single command
+
+     * parameter are allowed inside this attribute
+
+   * "done_file"-filename is optional
+
+     * by using done_file the user can mark async-steps. The
+       operation will stop until the script will create the named file
+       inside the work directory.
+
+   * "shared="true""
+
+     * can be used inside a step using a shared folder
+
+     * cmd will be **executed inside the shared folder**
+
+     * cmd will run once (synchronize all workpackages)
+
+     * "$jube_wp_..." - parameter can't be used inside the shared
+       command
 
 fileset_tag
    A fileset is a container to store a bundle of links and copy
@@ -395,7 +437,7 @@ parameter_tag
 
      * the substitution will be run before the execution step starts
        with the current parameter space. Only parameters reachable in
-       this step will be useable for substitution!
+       this step will be usable for substitution!
 
    * Scripting modes allowed:
 
@@ -408,7 +450,7 @@ parameter_tag
      "",".join([str(2**i) for i in range(3)])"
 
 parameterset_tag
-   A parameterset is a container to store a bundle of parameter.
+   A parameterset is a container to store a bundle of parameters.
 
       <parameterset name="..." init_with="...">
          <parameter>...</parameter>
@@ -507,7 +549,7 @@ pattern_tag
      * reduced variables can be used by name_<reduce_option>
 
 patternset_tag
-   A patternset is a container to store a bundle of pattern.
+   A patternset is a container to store a bundle of patterns.
 
       <patternset name="..." init_with="...">
          <pattern>...</pattern>
@@ -583,7 +625,7 @@ result_tag
      the current benchmark id will be created. Default:
      benchmark_dir/result
 
-   * only analyzer are useable
+   * only analyzer are usable
 
    * using analyzer "<use>set1,set2</use>" is the same as
      "<use>set1</use><use>set2</use>"
@@ -623,14 +665,11 @@ step_tag
       <step name="..." work_dir="..." shared="..." export="...">
         <use from="">...</use>
         ...
-        <do stdout="..." stderr="..." active="...">...</do>
-        <do done_file="...">...</do>
-        <do shared="true">...</do>
-        <do work_dir="...">...</do>
+        <do></do>
         ...
       </step>
 
-   * parametersets, filesets and substitutionsets are useable
+   * parametersets, filesets and substitutionsets are usable
 
    * using filesets and substitutesets "<use>set1,set2</use>" is the
      same as "<use>set1</use><use>set2</use>"
@@ -661,40 +700,6 @@ step_tag
      * the shared folder link will not be automatically created in
        an alternative working directory!
 
-   * "do" can contain any *Shell*-syntax-snippet (parameter will be
-     replaced ... $nameofparameter ...)
-
-   * "stdout"- and "stderr"-filename are optional (default: "stdout"
-     and "stderr")
-
-   * "work_dir" is optional, it can be used to change the work
-     directory of this single command (relativly seen towards the
-     original work directory)
-
-   * "active" is optional
-
-     * can be set to "true" or "false" to enable or disable the
-       single command
-
-     * parameter are allowed inside this attribute
-
-   * "done_file"-filename is optional
-
-     * by using done_file the user can mark async-steps. The
-       operation will stop until the script will create the named file
-       inside the work directory.
-
-   * "shared="true""
-
-     * can be used inside a step using a shared folder
-
-     * cmd will be **executed inside the shared folder**
-
-     * cmd will run once (synchronize all workpackages)
-
-     * "$jube_wp_..." - parameter can't be used inside the shared
-       command
-
    * "export="true""
 
      * the environment of the current step will be exported to an
@@ -710,7 +715,7 @@ sub_tag
    * both can contain parameter: "... $nameofparameter ..."
 
 substituteset_tag
-   A substituteset is a container to store a bundle of subs.
+   A substituteset is a container to store a bundle of sub commands.
 
       <substituteset name="..." init_with="...">
         <iofile/>
