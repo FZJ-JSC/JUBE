@@ -37,7 +37,8 @@ import shutil
 try:
     import argparse
 except ImportError:
-    print("argparse module not available; either install it, or "
+    print("argparse module not available; either install it "
+          "(https://pypi.python.org/pypi/argparse), or "
           "switch to a Python version that includes it.")
     sys.exit(1)
 

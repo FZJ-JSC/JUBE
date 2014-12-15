@@ -1,5 +1,5 @@
 include LICENSE
-include docs/_build/latex/JUBE.pdf
+include docs/JUBE.pdf
 recursive-include examples *
 recursive-include schema *
 recursive-include platform *

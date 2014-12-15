@@ -27,46 +27,60 @@ import jube2.parameter
 
 
 class TestParameter(unittest.TestCase):
+
     """Parameter test class"""
+
+    def setUp(self):
+        self.para_cons = \
+            jube2.parameter.Parameter.create_parameter("test", "3")
+        self.temp_values = ["2", "3", "4"]
+        self.para_temp = \
+            jube2.parameter.Parameter.create_parameter(
+                "test", ",".join(self.temp_values))
+        self.para_select = \
+            jube2.parameter.Parameter.create_parameter("test", "2,3,4",
+                                                       selected_value="3")
+        self.para_export = \
+            jube2.parameter.Parameter.create_parameter("test2", "4",
+                                                       export=True)
+
     def test_constant(self):
         """Test Constants"""
-        parameter = jube2.parameter.Parameter.create_parameter("test", "2")
-        self.assertEqual(parameter.value, "2")
-        self.assertFalse(parameter.is_template)
-        self.assertEqual(parameter.parameter_type, "string")
-        self.assertTrue(repr(parameter).startswith("Parameter({"))
-        self.assertTrue(repr(parameter).endswith("})"))
+        self.assertEqual(self.para_cons.value, "3")
+        self.assertFalse(self.para_cons.is_template)
+        self.assertEqual(self.para_cons.parameter_type, "string")
+        self.assertTrue(repr(self.para_cons).startswith("Parameter({"))
+        self.assertTrue(repr(self.para_cons).endswith("})"))
 
     def test_template(self):
         """Test Template"""
-        values = ["2", "3", "4"]
-        parameter = jube2.parameter.Parameter.create_parameter("test", "2,3,4",
-                                                               export=True)
-        self.assertTrue(parameter.is_template)
-        self.assertEqual(parameter.value, "2,3,4")
+        self.assertTrue(self.para_temp.is_template)
+        self.assertEqual(self.para_temp.value, "2,3,4")
 
         # Template become constant check
         outer_static_par = None
-        for idx, static_par in enumerate(parameter.expand()):
-            self.assertEqual(static_par.value, values[idx])
+        for idx, static_par in enumerate(self.para_temp.expand()):
+            self.assertEqual(static_par.value, self.temp_values[idx])
             self.assertFalse(static_par.is_template)
-            self.assertTrue(static_par.is_equivalent(parameter))
+            self.assertTrue(static_par.is_equivalent(self.para_temp))
             outer_static_par = static_par
 
         # Copy check
-        parameter2 = parameter.copy()
-        self.assertFalse(parameter2 is parameter)
-        self.assertTrue(parameter2.is_equivalent(parameter))
+        parameter_copy = self.para_temp.copy()
+        self.assertFalse(parameter_copy is self.para_temp)
+        self.assertTrue(parameter_copy.is_equivalent(self.para_temp))
+        self.assertEqual(parameter_copy.value, self.para_temp.value)
 
         # Equivalent check
-        parameter2 = jube2.parameter.Parameter.create_parameter("test", "3")
-        self.assertFalse(parameter2.is_equivalent(parameter))
-        parameter2 = jube2.parameter.Parameter.create_parameter("test",
-                                                                "2,3,4")
-        self.assertTrue(parameter2.is_equivalent(parameter))
+        self.assertFalse(self.para_cons.is_equivalent(self.para_temp))
+        self.assertTrue(self.para_select.is_equivalent(self.para_temp))
+
+        # Parameter based on template check
+        self.assertEqual(self.para_select.value, "3")
+        self.assertFalse(self.para_select.is_template)
 
         # Etree repr check
-        etree = parameter.etree_repr()
+        etree = self.para_temp.etree_repr()
         self.assertEqual(etree.tag, "parameter")
         self.assertEqual(etree.get("separator"), ",")
         self.assertEqual(etree.get("type"), "string")
@@ -76,118 +90,175 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(etree.text, "2,3,4")
         self.assertEqual(etree.get("selection"), "4")
 
+        # Export check
+        self.assertTrue(self.para_export.export)
+        self.assertFalse(self.para_cons.export)
+        etree = self.para_export.etree_repr()
+        self.assertEqual(etree.get("export"), "true")
+
 
 class TestParameterSet(unittest.TestCase):
+
     """ParameterSet test class"""
+
+    def setUp(self):
+        self.temp_values = ["2", "3", "4"]
+        self.para_cons = \
+            jube2.parameter.Parameter.create_parameter("test", "3")
+        self.para_export = \
+            jube2.parameter.Parameter.create_parameter("test2", "4",
+                                                       export=True)
+        self.para_temp = \
+            jube2.parameter.Parameter.create_parameter(
+                "test2", ",".join(self.temp_values))
+        self.para_select = \
+            jube2.parameter.Parameter.create_parameter("test2", "2,3,4",
+                                                       selected_value="3")
+        self.para_sub = \
+            jube2.parameter.Parameter.create_parameter("test4", "$test2")
+        self.para_eval = \
+            jube2.parameter.Parameter.create_parameter("test5",
+                                                       "${test4} * 2",
+                                                       parameter_mode="python")
+        self.para_eval2 = \
+            jube2.parameter.Parameter.create_parameter("test6",
+                                                       "$$test4")
+        parameter3 = jube2.parameter.Parameter.create_parameter("test3", "5")
+
+        self.parameterset = jube2.parameter.Parameterset("test")
+        self.parameterset.add_parameter(self.para_cons)
+        self.parameterset.add_parameter(self.para_temp)
+
+        self.parameterset2 = jube2.parameter.Parameterset("test2")
+        self.parameterset2.add_parameter(parameter3)
+        self.parameterset2.add_parameter(self.para_export)
+
+        self.parameterset3 = jube2.parameter.Parameterset("test3")
+        self.parameterset3.add_parameter(parameter3)
+        self.parameterset3.add_parameter(self.para_select)
+
     def test_set(self):
         """Test ParameterSet functionality"""
         # Test add parameter to set
-        parameterset = jube2.parameter.Parameterset("test")
-        parameter = jube2.parameter.Parameter.create_parameter("test", "2")
-        parameter2 = jube2.parameter.Parameter.create_parameter("test2",
-                                                                "2,3,4")
-        parameterset.add_parameter(parameter)
-        parameterset.add_parameter(parameter2)
-        self.assertEqual(parameterset.name, "test")
-        self.assertTrue(parameterset.has_templates)
-        self.assertTrue(parameter in parameterset)
+        self.assertEqual(self.parameterset.name, "test")
+        self.assertTrue(self.parameterset.has_templates)
+        self.assertTrue(self.para_cons in self.parameterset)
         self.assertTrue((["test", "test2"] ==
-                         sorted(parameterset.all_parameter_names)))
-        constant_dict = parameterset.constant_parameter_dict
+                         sorted(self.parameterset.all_parameter_names)))
+        constant_dict = self.parameterset.constant_parameter_dict
         self.assertTrue("test" in constant_dict)
         self.assertFalse("test2" in constant_dict)
-        template_dict = parameterset.template_parameter_dict
+        template_dict = self.parameterset.template_parameter_dict
         self.assertFalse("test" in template_dict)
         self.assertTrue("test2" in template_dict)
 
         # Test not compatible parameterset
-        parameterset2 = jube2.parameter.Parameterset("test2")
-        parameter3 = jube2.parameter.Parameter.create_parameter("test3", "5")
-        parameter4 = jube2.parameter.Parameter.create_parameter("test2", "4",
-                                                                export=True)
-        parameterset2.add_parameter(parameter3)
-        parameterset2.add_parameter(parameter4)
-        self.assertFalse(parameterset.is_compatible(parameterset2))
+        self.assertFalse(self.parameterset.is_compatible(self.parameterset2))
+        self.assertTrue(
+            "test2" in self.parameterset.get_incompatible_parameter(
+                self.parameterset2))
+        self.assertFalse(
+            "test" in self.parameterset.get_incompatible_parameter(
+                self.parameterset2))
 
         # Test export
-        self.assertEqual(parameterset2.export_parameter_dict, {"test2":
-                                                               parameter4})
+        self.assertEqual(
+            self.parameterset2.export_parameter_dict,
+            {"test2": self.para_export})
 
         # Test __getitem__ failing
-        self.assertEqual(parameterset["nonexistent"], None)
+        self.assertEqual(self.parameterset["nonexistent"], None)
 
-        # Test clear
-        self.assertEqual(len(parameterset2), 2)
-        parameterset2.clear()
-        self.assertEqual(len(parameterset2), 0)
+        # Test clear and copy
+        parameterset = self.parameterset2.copy()
+        self.assertFalse(parameterset is self.parameterset2)
+        self.assertTrue(parameterset.is_compatible(self.parameterset2))
+        self.assertEqual(len(parameterset), 2)
+        parameterset.clear()
+        self.assertEqual(len(parameterset), 0)
 
         # Test __repr__
-        parameterset2.add_parameter(parameter3)
-        self.assertTrue(repr(parameterset2).startswith("Parameterset"))
-        parameterset2.clear()
+        self.assertTrue(repr(self.parameterset).startswith("Parameterset"))
 
         # Delete a parameter
-        self.assertFalse(parameter3 in parameterset)
-        parameterset.add_parameter(parameter3)
-        self.assertTrue(parameter3 in parameterset)
-        parameterset.delete_parameter(parameter3)
+        parameterset = self.parameterset.copy()
+        self.assertFalse(self.para_export in parameterset)
+        parameterset.add_parameter(self.para_export)
+        self.assertTrue(self.para_export in parameterset)
+        parameterset.delete_parameter(self.para_export)
         # Deleting should not raise an error
-        parameterset.delete_parameter("test3")
-        self.assertFalse(parameter3 in parameterset)
+        parameterset.delete_parameter("a_parameter")
+        self.assertFalse(self.para_export in parameterset)
 
         # Test compatible parameterset
-        parameterset2.add_parameter(parameter3)
-        parameter4 = jube2.parameter.Parameter.create_parameter("test2",
-                                                                "2,3,4")
-        for static_par in parameter4.expand():
-            parameterset2.add_parameter(static_par)
-        self.assertTrue(parameterset.is_compatible(parameterset2))
+        parameterset = self.parameterset.copy()
+        for static_par in self.para_temp.expand():
+            parameterset.add_parameter(static_par)
+        self.assertEqual(parameterset["test2"].value, "4")
+        self.assertTrue(self.parameterset.is_compatible(parameterset))
 
         # Test update_parameterset
+        parameterset = self.parameterset.copy()
         self.assertEqual(sorted(list(parameterset.parameter_dict)),
                          ["test", "test2"])
-        parameterset.update_parameterset(parameterset2)
+        self.assertEqual(sorted(list(self.parameterset3.parameter_dict)),
+                         ["test2", "test3"])
+        parameterset.update_parameterset(self.parameterset3)
         self.assertEqual(parameterset.template_parameter_dict, dict())
         self.assertEqual(len(parameterset), 2)
 
         # Test add_parameterset
-        parameterset.add_parameterset(parameterset2)
+        parameterset.add_parameterset(self.parameterset3)
         self.assertEqual(len(parameterset), 3)
 
         # Check parameterset expand_templates
-        parameterset.add_parameter(parameter2)
+        parameterset = self.parameterset.copy()
         self.assertTrue("test2" in parameterset.template_parameter_dict)
-        param_list = ["2", "3", "4"]
+
         for idx, new_parameterset in (
                 enumerate(parameterset.expand_templates())):
             self.assertEqual(new_parameterset.template_parameter_dict, dict())
             self.assertFalse(new_parameterset.has_templates)
-            self.assertEqual(new_parameterset["test2"].value, param_list[idx])
+            self.assertEqual(new_parameterset["test2"].value,
+                             self.temp_values[idx])
 
         # Substitution and evaluation check
-        parameter_sub = \
-            jube2.parameter.Parameter.create_parameter("test4", "$test2")
-        parameter_eval = \
-            jube2.parameter.Parameter.create_parameter("test5",
-                                                       "${test4} * 2",
-                                                       parameter_mode="python")
-        parameterset.add_parameter(parameter_sub)
-        parameterset.add_parameter(parameter_eval)
+        parameterset = self.parameterset.copy()
+        parameterset.add_parameter(self.para_sub)
+        parameterset.add_parameter(self.para_eval)
+        parameterset.add_parameter(self.para_eval2)
         self.assertFalse(
-            parameter_sub.can_substitute_and_evaluate(parameterset))
+            self.para_sub.can_substitute_and_evaluate(parameterset))
         for idx, new_parameterset in (
                 enumerate(parameterset.expand_templates())):
             self.assertTrue(
-                parameter_sub.can_substitute_and_evaluate(new_parameterset))
+                self.para_sub.can_substitute_and_evaluate(new_parameterset))
             new_parameterset.parameter_substitution(final_sub=True)
-            self.assertEqual(new_parameterset["test4"].value, param_list[idx])
+            self.assertEqual(new_parameterset["test4"].value,
+                             self.temp_values[idx])
+            self.assertEqual(
+                new_parameterset["test5"].based_on.value,
+                self.para_eval.value)
+            self.assertEqual(
+                new_parameterset["test6"].value, "$test4")
             self.assertEqual(new_parameterset["test5"].value,
-                             str(int(param_list[idx]) * 2))
+                             str(int(self.temp_values[idx]) * 2))
+
+        parameterset = jube2.parameter.Parameterset("test")
+        parameterset2 = self.parameterset2.copy()
+        parameterset.add_parameter(self.para_sub)
+        parameterset2.add_parameter(self.para_sub)
+        parameterset.parameter_substitution(
+            additional_parametersets=[parameterset2])
+        self.assertEqual(parameterset[self.para_sub.name].value,
+                         self.para_export.value)
+        self.assertEqual(parameterset2[self.para_sub.name].value,
+                         self.para_sub.value)
 
         # Etree repr check
-        etree = parameterset.etree_repr()
+        etree = self.parameterset.etree_repr()
         self.assertEqual(etree.tag, "parameterset")
-        self.assertEqual(len(etree.findall("parameter")), 5)
+        self.assertEqual(len(etree.findall("parameter")), 2)
 
 
 if __name__ == "__main__":

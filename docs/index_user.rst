@@ -21,7 +21,8 @@ Welcome to JUBE's documentation!
 
 .. toctree::
    :maxdepth: 4
-
+   
+   introduction
    tutorial
    advanced
    commandline
