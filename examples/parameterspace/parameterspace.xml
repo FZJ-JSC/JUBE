@@ -4,7 +4,7 @@
     <comment>A parameterspace creation example</comment>
     
     <!-- Configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="param_set">
       <!-- Create a parameterspace out of two template parameter -->
       <parameter name="number" type="int">1,2,4</parameter>
       <parameter name="text" separator=";">Hello;World</parameter>
@@ -12,7 +12,7 @@
     
     <!-- Operation -->
     <step name="say_hello">
-      <use>parameterset</use> <!-- use existing parameterset -->
+      <use>param_set</use> <!-- use existing parameterset -->
       <do>echo "$text $number"</do> <!-- shell command -->
     </step>    
   </benchmark>

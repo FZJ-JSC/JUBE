@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
-  <parameterset name="parameterset">
+  <parameterset name="param_set">
     <parameter name="number" type="int">1,2,4</parameter>
   </parameterset>
     
-  <parameterset name="parameterset2">
+  <parameterset name="param_set2">
     <parameter name="text">Hello</parameter>
   </parameterset>
     

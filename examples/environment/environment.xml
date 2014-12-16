@@ -4,7 +4,7 @@
     <comment>An environment handling example</comment>
     
     <!-- Configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="param_set">
       <parameter name="EXPORT_ME" export="true">VALUE</parameter>
     </parameterset>
     
@@ -16,7 +16,7 @@
     
     <!-- Create a dependency between both steps -->
     <step name="second_step" depend="first_step">
-      <use>parameterset</use>
+      <use>param_set</use>
       <do>echo $$EXPORT_ME</do>
       <do>echo "$$SHELL_VAR again"</do> <!-- use exported Shell var out of privious step -->
     </step>    
