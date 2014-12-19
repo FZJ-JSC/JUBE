@@ -247,25 +247,30 @@ def print_step_info(benchmark, step_name, parametrization_only=False):
             print(wrap)
         print("")
 
-    # Create parameterization table
-    table_data = list()
-    table_data.append(list())
-    table_data[0].append("id")
-    if len(parameter_list) > 0:
-        for name in parameter_list[0]:
-            if name != "id":
-                table_data[0].append(name)
-        for parameter_dict in parameter_list:
-            table_data.append(list())
-            for name in table_data[0]:
-                table_data[-1].append(parameter_dict[name])
-
     if not parametrization_only:
         print("Parameterization:")
-    print(jube2.util.text_table(entries=table_data, use_header_line=True,
-                                indent=1, align_right=True,
-                                auto_linebreak=False,
-                                pretty=(not parametrization_only)))
+        for parameter_dict in parameter_list:
+            print(" ID: {0}".format(parameter_dict["id"]))
+            for name, value in parameter_dict.items():
+                if name != "id":
+                    print("  {0}: {1}".format(name, value))
+            print()
+    else:
+        # Create parameterization table
+        table_data = list()
+        table_data.append(list())
+        table_data[0].append("id")
+        if len(parameter_list) > 0:
+            for name in parameter_list[0]:
+                if name != "id":
+                    table_data[0].append(name)
+            for parameter_dict in parameter_list:
+                table_data.append(list())
+                for name in table_data[0]:
+                    table_data[-1].append(parameter_dict[name])
+        print(jube2.util.text_table(entries=table_data, use_header_line=True,
+                                    indent=1, align_right=True,
+                                    auto_linebreak=False, pretty=False))
 
     if not parametrization_only:
         if len(error_dict) > 0:
