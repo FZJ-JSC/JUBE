@@ -122,7 +122,9 @@ def info(args):
                 jube2.info.print_benchmark_info(benchmark)
             else:
                 for step_name in args.step:
-                    jube2.info.print_step_info(benchmark, step_name)
+                    jube2.info.print_step_info(
+                        benchmark, step_name,
+                        parametrization_only=args.parametrization)
             # Restore current working dir
             os.chdir(cwd)
 
@@ -614,7 +616,10 @@ def _get_args_parser():
                 {"type": int, "help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-s", "--step"):
-                {"help": "show information for given step", "nargs": "+"}
+                {"help": "show information for given step", "nargs": "+"},
+            ("-p", "--parametrization"):
+                {"help": "display only parametrization of given step using csv format",
+                 "action": "store_true"}
         }
     }
 
