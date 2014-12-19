@@ -192,7 +192,8 @@ def print_step_info(benchmark, step_name, parametrization_only=False):
             step.get_jube_parameterset())
         workpackage.parameterset.add_parameterset(
             workpackage.get_jube_parameterset())
-        workpackage.parameterset.parameter_substitution(final_sub=True)
+        if not workpackage.started:
+            workpackage.parameterset.parameter_substitution(final_sub=True)
         parameter = \
             dict([[par.name, par.value] for par in
                   workpackage.parameterset.constant_parameter_dict.values()])
