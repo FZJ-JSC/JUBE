@@ -148,7 +148,12 @@ def print_benchmark_info(benchmark):
         for file_obj in fileset:
             if (not type(file_obj) is jube2.fileset.Prepare) and \
                     (not file_obj.is_internal_ref):
-                print("  {0}".format(os.path.abspath(file_obj.path)))
+                path = file_obj.path
+                path = jube2.util.substitution(path, dict())
+                path = os.path.expandvars(os.path.expanduser(path))
+                path = os.path.join(file_obj.file_path_ref, path)
+                path = os.path.join(benchmark.file_path_ref, path)
+                print("  {0}".format(os.path.abspath(path)))
 
     print(jube2.util.text_line())
 

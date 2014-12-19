@@ -395,7 +395,7 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." work_dir="..." shared="..." export="...">
+        <step name="..." depend="..." work_dir="..." shared="..." export="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -407,6 +407,7 @@ Glossary
      * using parametersets ``<use>set1</use><use>set2</use>`` means: use both; ``<use>set1,set2</use>`` means: use in one case the first set and in second case the other set
      * the ``from`` attribute is optional and can be used to specify an external set source
      * any name must be unique, it is **not allowed to reuse** a set
+     * ``depend`` is optional and can contain a list of other step names which must be executed before the current step
      * ``work_dir`` is optional and can be used to switch to an alternative work directory
 
        * the user had to handle **uniqueness of this directory** by his own

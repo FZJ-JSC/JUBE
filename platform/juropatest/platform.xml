@@ -63,7 +63,7 @@
   </substituteset>
   
   <parameterset name="systemParameter">
-    <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode // $threadspertask</parameter>
+    <parameter name="tasks" mode="python" type="int">$nodes * $taskspernode</parameter>
     <parameter name="queue">batch</parameter>  
     <parameter name="nodes" type="int">1</parameter>
     <parameter name="taskspernode" type="int">1</parameter>

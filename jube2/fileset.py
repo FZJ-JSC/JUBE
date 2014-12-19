@@ -181,8 +181,8 @@ class Copy(File):
         if alt_work_dir is not None:
             work_dir = alt_work_dir
         pathes = glob.glob(pathname)
-        if len(pathes) == 0:
-            LOGGER.debug("no files found using \"{0}\"".format(pathname))
+        if (len(pathes) == 0) and (not jube2.conf.DEBUG_MODE):
+            raise RuntimeError("no files found using \"{0}\"".format(pathname))
         for path in pathes:
             if len(pathes) > 1:
                 file_path = os.path.join(work_dir, os.path.basename(path))
