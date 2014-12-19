@@ -337,11 +337,12 @@ class Analyzer(object):
                             (result_dict[pattern.name]["sum"] /
                              result_dict[pattern.name]["cnt"])
 
-            info_str = "      file \"{0}\" scanned {1}pattern found:\n".format(
-                os.path.basename(file_path),
-                "" if len(result_dict) > 0 else "no ")
+            info_str = "      file \"{0}\" scanned pattern found:\n".format(
+                os.path.basename(file_path))
             info_str += jube2.util.text_table(
-                [(_name, str(value)) for _name, value in result_dict.items()],
+                [(_name, ", ".join(["{0}:{1}".format(key, con)
+                                    for key, con in value.items()]))
+                 for _name, value in result_dict.items()],
                 indent=9, align_right=True, auto_linebreak=True)
             LOGGER.debug(info_str)
             file_handle.close()

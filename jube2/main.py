@@ -618,8 +618,8 @@ def _get_args_parser():
             ("-s", "--step"):
                 {"help": "show information for given step", "nargs": "+"},
             ("-p", "--parametrization"):
-                {"help": "display only parametrization of given step using csv format",
-                 "action": "store_true"}
+                {"help": "display only parametrization of given step " +
+                 "using csv format", "action": "store_true"}
         }
     }
 
