@@ -4,8 +4,8 @@
     <comment>A result creation example</comment>
     
     <!-- Configuration -->
-    <parameterset name="parameterset">
-      <!-- Create a parameterspace out of two template parameter -->
+    <parameterset name="param_set">
+      <!-- Create a parameterspace with one template parameter -->
       <parameter name="number" type="int">1,2,4</parameter>
     </parameterset>
     
@@ -16,7 +16,7 @@
     
     <!-- Operation -->
     <step name="write_number">
-      <use>parameterset</use> <!-- use existing parameterset -->
+      <use>param_set</use> <!-- use existing parameterset -->
       <do>echo "Number: $number"</do> <!-- shell command -->
     </step>
     

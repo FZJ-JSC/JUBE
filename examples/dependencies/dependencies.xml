@@ -4,13 +4,13 @@
     <comment>A Dependency example</comment>
     
     <!-- Configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="param_set">
       <parameter name="number" type="int">1,2,4</parameter>
     </parameterset>
     
     <!-- Operations -->
     <step name="first_step">
-      <use>parameterset</use> <!-- use existing parameterset -->
+      <use>param_set</use> <!-- use existing parameterset -->
       <do>echo $number</do> <!-- shell command -->
     </step>
     

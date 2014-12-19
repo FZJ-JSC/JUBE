@@ -4,7 +4,7 @@
     <comment>A simple tagging example</comment>
 
     <!-- Configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="param_set">
       <parameter name="hello_str" tag="eng">Hello</parameter>
       <parameter name="hello_str" tag="deu">Hallo</parameter>
       <parameter name="world_str" tag="!deu">World</parameter>
@@ -12,7 +12,7 @@
     
     <!-- Operation -->
     <step name="say_hello">
-      <use>parameterset</use> <!-- use existing parameterset -->
+      <use>param_set</use> <!-- use existing parameterset -->
       <do>echo '$hello_str $world_str'</do> <!-- shell command -->
     </step>    
   </benchmark>

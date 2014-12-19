@@ -4,7 +4,7 @@
     <comment>A scripting parameter example</comment>
     
     <!-- Configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="param_set">
       <!-- Normal template -->
       <parameter name="number" type="int">1,2,4</parameter>
       <!-- A template created by a scripting parameter-->
@@ -17,7 +17,7 @@
     
     <!-- Operation -->
     <step name="operation">
-      <use>parameterset</use> <!-- use existing parameterset -->
+      <use>param_set</use> <!-- use existing parameterset -->
       <!-- shell commands -->
       <do>echo "number: $number, additional_number: $additional_number"</do>
       <do>echo "number_mult: $number_mult, text: $text"</do>

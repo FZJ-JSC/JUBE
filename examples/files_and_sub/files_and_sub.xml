@@ -4,7 +4,7 @@
     <comment>A file copy and substitution example</comment>
     
     <!-- Configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="param_set">
       <parameter name="number" type="int">1,2,4</parameter>
     </parameterset>
     
@@ -23,7 +23,7 @@
             
     <!-- Operation -->
     <step name="sub_step">
-      <use>parameterset</use> <!-- use existing parameterset -->
+      <use>param_set</use> <!-- use existing parameterset -->
       <use>files</use>        <!-- use existing fileset -->
       <use>substitute</use>   <!-- use existing substituteset -->
       <do>cat file.out</do>   <!-- shell command -->

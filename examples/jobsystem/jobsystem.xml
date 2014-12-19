@@ -4,7 +4,7 @@
     <comment>A jobsystem example</comment>
     
     <!-- benchmark configuration -->
-    <parameterset name="parameterset">
+    <parameterset name="param_set">
       <parameter name="number" type="int">1,2,4</parameter>
     </parameterset>
     
@@ -44,7 +44,7 @@
          
     <!-- Operation -->
     <step name="submit" work_dir="$$WORK/jobsystem_bench_${jube_benchmark_id}_${jube_wp_id}" >
-      <use>parameterset</use>
+      <use>param_set</use>
       <use>executeset</use>
       <use>files,sub_job</use>
       <do done_file="$ready_file">$submit_cmd $job_file</do> <!-- shell command -->
