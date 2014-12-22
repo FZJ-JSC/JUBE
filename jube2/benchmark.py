@@ -27,10 +27,6 @@ import os
 import pprint
 import shutil
 import itertools
-try:
-    import queue
-except ImportError:
-    import Queue as queue
 import jube2.parameter
 import jube2.workpackage
 import jube2.util
@@ -62,7 +58,7 @@ class Benchmark(object):
         for result in self._results.values():
             result.benchmark = self
         self._workpackages = dict()
-        self._work_list = queue.Queue()
+        self._work_stat = jube2.util.Work_stat()
         self._comment = comment
         self._id = -1
         self._org_cwd = "."
@@ -159,9 +155,9 @@ class Benchmark(object):
         return self._workpackages
 
     @property
-    def work_list(self):
+    def work_stat(self):
         """Return work queue"""
-        return self._work_list
+        return self._work_stat
 
     @property
     def filesets(self):
@@ -284,7 +280,7 @@ class Benchmark(object):
         """Create all workpackages of current benchmark and create graph
         structure."""
         self._workpackages = dict()
-        self._work_list = queue.Queue()
+        self._work_stat = jube2.util.Work_stat()
 
         # Create a possible order of execution
         depend_dict = dict()
@@ -494,6 +490,23 @@ class Benchmark(object):
                             history=parameterset.copy(),
                             iteration=iteration)
 
+                        # --- Final parameter substitution ---
+                        workpackage.parameterset.parameter_substitution(
+                            additional_parametersets=[
+                                jube_parameterset,
+                                workpackage.get_jube_parameterset()],
+                            final_sub=True)
+
+                        # --- Check parameter type ---
+                        for parameter in workpackage.parameterset:
+                            if not parameter.is_template:
+                                jube2.util.convert_type(
+                                    parameter.parameter_type, parameter.value)
+
+                        # Update history parameterset
+                        workpackage.history.update_parameterset(
+                            workpackage.parameterset)
+
                         # Create links
                         for parent in parent_workpackages:
                             workpackage.add_parent(parent)
@@ -501,7 +514,7 @@ class Benchmark(object):
                         self._workpackages[step.name].append(workpackage)
                         if len(workpackage.parents) == 0:
                             workpackage.queued = True
-                            self._work_list.put(workpackage)
+                            self._work_stat.put(workpackage)
             else:
                 LOGGER.debug("Incompatible parameterset combination found " +
                              "between current and parent steps.")
@@ -546,8 +559,8 @@ class Benchmark(object):
                                          status["wait"])
 
         # Handle all workpackages in given order
-        while not self._work_list.empty():
-            workpackage = self._work_list.get_nowait()
+        while not self._work_stat.empty():
+            workpackage = self._work_stat.get()
             if not workpackage.done:
                 workpackage.run()
                 if workpackage.done:
@@ -555,18 +568,24 @@ class Benchmark(object):
                     self.write_workpackage_information(
                         os.path.join(self.bench_dir,
                                      jube2.conf.WORKPACKAGES_FILENAME))
+            # Update queues (move waiting workpackages to work queue
+            # if possible)
+            self._work_stat.update_queues(workpackage)
             if not jube2.conf.HIDE_ANIMATIONS:
                 status = self.benchmark_status
                 jube2.util.print_loading_bar(status["done"], status["all"],
                                              status["wait"])
             workpackage.queued = False
-            for child in workpackage.children:
-                all_done = True
-                for parent in child.parents:
-                    all_done = all_done and parent.done
-                if all_done:
-                    child.queued = True
-                    self._work_list.put(child)
+            for mode in ("only_started", "all"):
+                for child in workpackage.children:
+                    all_done = True
+                    for parent in child.parents:
+                        all_done = all_done and parent.done
+                    if all_done:
+                        if (mode == "only_started" and child.started) or \
+                           (mode == "all" and (not child.queued)):
+                            child.queued = True
+                            self._work_stat.put(child)
         print("\n")
 
         status_data = [("stepname", "all", "open", "wait", "done")]
@@ -658,10 +677,10 @@ class Benchmark(object):
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
         fout.close()
 
-    def set_workpackage_information(self, workpackages, work_list):
+    def set_workpackage_information(self, workpackages, work_stat):
         """Set new workpackage information"""
         self._workpackages = workpackages
-        self._work_list = work_list
+        self._work_stat = work_stat
 
     @property
     def bench_dir(self):

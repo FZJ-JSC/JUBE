@@ -192,8 +192,6 @@ def print_step_info(benchmark, step_name, parametrization_only=False):
             step.get_jube_parameterset())
         workpackage.parameterset.add_parameterset(
             workpackage.get_jube_parameterset())
-        if not workpackage.started:
-            workpackage.parameterset.parameter_substitution(final_sub=True)
         parameter = \
             dict([[par.name, par.value] for par in
                   workpackage.parameterset.constant_parameter_dict.values()])
@@ -205,14 +203,9 @@ def print_step_info(benchmark, step_name, parametrization_only=False):
 
         # collect parameterization
         parameter_list.append(dict())
-        history = workpackage.history.copy()
-        history.add_parameterset(workpackage.parameterset)
         parameter_list[-1]["id"] = str(workpackage.id)
-        for parameter in history:
-            if (parameter not in benchmark.get_jube_parameterset()) and \
-               (parameter not in step.get_jube_parameterset()) and \
-               (parameter not in workpackage.get_jube_parameterset()):
-                parameter_list[-1][parameter.name] = parameter.value
+        for parameter in workpackage.history:
+            parameter_list[-1][parameter.name] = parameter.value
 
         id_str = str(workpackage.id)
         started_str = str(workpackage.started).lower()

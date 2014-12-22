@@ -187,12 +187,18 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
         jube2.conf.CONFIGURATION_FILENAME)[0]
     # Only one single benchmark exist inside benchmarks
     benchmark = list(benchmarks.values())[0]
+
+    # Restore old benchmark id and set cwd
+    benchmark.id = int(os.path.basename(benchmark_folder))
+    benchmark.org_cwd = cwd
+    benchmark.cwd = os.path.join(cwd, benchmark_folder)
+
     if restore_workpackages:
         # Read existing workpackage information
-        workpackages, work_list = \
+        workpackages, work_stat = \
             jube2.jubeio.workpackages_from_xml(
                 jube2.conf.WORKPACKAGES_FILENAME, benchmark)
-        benchmark.set_workpackage_information(workpackages, work_list)
+        benchmark.set_workpackage_information(workpackages, work_stat)
 
     if load_analyse and os.path.isfile(jube2.conf.ANALYSE_FILENAME):
         # Read existing analyse data
@@ -202,10 +208,6 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
             if analyzer.name in analyse_result:
                 analyzer.analyse_result = analyse_result[analyzer.name]
 
-    # Restore old benchmark id and set cwd
-    benchmark.id = int(os.path.basename(benchmark_folder))
-    benchmark.org_cwd = cwd
-    benchmark.cwd = os.path.join(cwd, benchmark_folder)
     # Restore current working dir
     os.chdir(cwd)
     return benchmark

@@ -40,7 +40,7 @@ class Step(object):
     """
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
-                 shared_name=None, export=False):
+                 shared_name=None, export=False, max_wps=0):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -49,6 +49,7 @@ class Step(object):
         self._alt_work_dir = alt_work_dir
         self._shared_name = shared_name
         self._export = export
+        self._max_wps = max_wps
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -63,6 +64,8 @@ class Step(object):
             step_etree.attrib["shared"] = self._shared_name
         if self._export:
             step_etree.attrib["export"] = "true"
+        if self._max_wps > 0:
+            step_etree.attrib["max_parallel"] = str(self._max_wps)
         if self._iterations > 1:
             step_etree.attrib["iterations"] = str(self._iterations)
         for use in self._use:
@@ -106,6 +109,11 @@ class Step(object):
     def shared_link_name(self):
         """Return shared link name"""
         return self._shared_name
+
+    @property
+    def max_wps(self):
+        """Return maximum number of simultaneous workpackages"""
+        return self._max_wps
 
     def get_used_sets(self, available_sets):
         """Get set of all used sets, which can be found in available_sets"""

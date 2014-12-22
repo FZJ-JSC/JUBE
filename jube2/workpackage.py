@@ -342,21 +342,6 @@ class Workpackage(object):
         parameterset.add_parameterset(self._benchmark.get_jube_parameterset())
         parameterset.add_parameterset(self._step.get_jube_parameterset())
         parameterset.add_parameterset(self.get_jube_parameterset())
-        # --- Parameter substitution ---
-        if not started_before:
-            parameterset.parameter_substitution(final_sub=True)
-
-            # Update parametersets
-            self._parameterset.update_parameterset(parameterset)
-            self._history.update_parameterset(parameterset)
-            for child in self._children:
-                child.history.update_parameterset(parameterset)
-
-        # --- Check parameter type ---
-        for parameter in parameterset:
-            if not parameter.is_template:
-                jube2.util.convert_type(parameter.parameter_type,
-                                        parameter.value)
 
         # --- Collect parameter for substitution ---
         parameter = \
@@ -476,8 +461,7 @@ class Workpackage(object):
                             workpackage.operation_done(operation_number, True)
                             # requeue other workpackages
                             if not workpackage.queued and continue_op:
-                                workpackage.queued = True
-                                self._benchmark.work_list.put(workpackage)
+                                self._benchmark.work_stat.put(workpackage)
                         if continue_op:
                             LOGGER.debug(stepstr)
                 else:
