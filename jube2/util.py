@@ -40,6 +40,7 @@ LOGGER = jube2.log.get_logger(__name__)
 
 
 class Work_stat(object):
+
     """Workpackage queuing handler"""
 
     def __init__(self):
@@ -49,10 +50,19 @@ class Work_stat(object):
 
     def put(self, workpackage):
         """Add some workpackage to queue"""
-        if (workpackage.step.max_wps == 0) or \
+
+        # Substitute max_wps if needed
+        parameterset = \
+            workpackage.add_jube_parameter(workpackage.parameterset.copy())
+        parameter = \
+            dict([[par.name, par.value] for par in
+                  parameterset.constant_parameter_dict.values()])
+        max_wps = int(substitution(workpackage.step.max_wps, parameter))
+
+        if (max_wps == 0) or \
            (workpackage.started) or \
            (workpackage.step.name not in self._cnt_work) or \
-           (self._cnt_work[workpackage.step.name] < workpackage.step.max_wps):
+           (self._cnt_work[workpackage.step.name] < max_wps):
             self._work_list.put(workpackage)
             if workpackage.step.name not in self._cnt_work:
                 self._cnt_work[workpackage.step.name] = 1

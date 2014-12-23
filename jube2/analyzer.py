@@ -161,15 +161,8 @@ class Analyzer(object):
                 local_patternset = patternset.copy()
 
                 # Get parameterset of current workpackage
-                parameterset = workpackage.history.copy()
-
-                # Add internal parameter
-                parameterset.add_parameterset(
-                    self._benchmark.get_jube_parameterset())
-                parameterset.add_parameterset(
-                    step.get_jube_parameterset())
-                parameterset.add_parameterset(
-                    workpackage.get_jube_parameterset())
+                parameterset = \
+                    workpackage.add_jube_parameter(workpackage.history.copy())
 
                 parameter = \
                     dict([[par.name, par.value] for par in

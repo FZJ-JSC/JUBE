@@ -40,7 +40,7 @@ class Step(object):
     """
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
-                 shared_name=None, export=False, max_wps=0):
+                 shared_name=None, export=False, max_wps="0"):
         self._name = name
         self._use = list()
         self._operations = list()

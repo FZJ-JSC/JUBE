@@ -212,6 +212,13 @@ class Workpackage(object):
         """Return Step data"""
         return self._step
 
+    def add_jube_parameter(self, parameterset):
+        """Add jube internal parameter to given parameterset"""
+        parameterset.add_parameterset(self._benchmark.get_jube_parameterset())
+        parameterset.add_parameterset(self._step.get_jube_parameterset())
+        parameterset.add_parameterset(self.get_jube_parameterset())
+        return parameterset
+
     def get_jube_parameterset(self):
         """Return parameterset which contains workpackage related
         information"""
@@ -338,10 +345,7 @@ class Workpackage(object):
                     self._env.update(parent.env)
 
         # --- Add internal jube parameter ---
-        parameterset = self._parameterset.copy()
-        parameterset.add_parameterset(self._benchmark.get_jube_parameterset())
-        parameterset.add_parameterset(self._step.get_jube_parameterset())
-        parameterset.add_parameterset(self.get_jube_parameterset())
+        parameterset = self.add_jube_parameter(self._parameterset.copy())
 
         # --- Collect parameter for substitution ---
         parameter = \
