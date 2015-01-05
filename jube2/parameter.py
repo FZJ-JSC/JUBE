@@ -210,7 +210,7 @@ class Parameterset(object):
         added to the set. final_sub marks the last substitution process."""
         set_changed = True
         max_count = 5
-        while set_changed and (max_count > 0):
+        while set_changed and (not self.has_templates) and (max_count > 0):
             set_changed = False
             max_count -= 1
 
@@ -239,6 +239,7 @@ class Parameterset(object):
                     set_changed = set_changed or param_changed
                     if param_changed:
                         self.add_parameter(new_par)
+
         if final_sub:
             parameter = [par for par in self]
             for par in parameter:
@@ -454,7 +455,12 @@ class StaticParameter(Parameter):
         # Parameter is a script
         if (not re.search(Parameter.parameter_regex.format("(.+?)"), value)) \
                 and (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
-            value = jube2.util.script_evaluation(value, self._mode)
+            try:
+                value = jube2.util.script_evaluation(value, self._mode)
+            except Exception as exception:
+                raise RuntimeError(("Can not evaluate \"{0}\" for " +
+                                    "parameter \"{1}\": {2}").format(
+                    value, self.name, str(exception)))
         changed = value != self._value
         if changed:
             param = Parameter.create_parameter(name=self._name,

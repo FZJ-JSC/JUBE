@@ -220,15 +220,12 @@ class Analyzer(object):
                                              value=str(result_dict[name])))
 
                     # calculate derived pattern
-                    derived_pattern = \
-                        local_patternset.derived_pattern_storage.copy()
-                    derived_pattern.parameter_substitution(
+                    local_patternset.derived_pattern_substitution(
                         [parameterset, resultset,
-                            jube_pattern.pattern_storage],
-                        final_sub=True)
+                         jube_pattern.pattern_storage])
 
                     # Convert content type
-                    for par in derived_pattern:
+                    for par in local_patternset.derived_pattern_storage:
                         result_dict[par.name] = \
                             jube2.util.convert_type(par.content_type,
                                                     par.value, stop=False)
