@@ -264,13 +264,16 @@ class Operation(object):
                     stderr_filename = "stderr"
                 stderr = open(os.path.join(work_dir, stderr_filename), "a")
 
+            abs_info_file_path = \
+                os.path.abspath(os.path.join(work_dir,
+                                             jube2.conf.ENVIRONMENT_INFO))
+
             # Execute "do"
             LOGGER.debug(">>> {0}".format(do))
             if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 try:
                     sub = subprocess.Popen(
-                        "{0} && env > {1}".format(do,
-                                                  jube2.conf.ENVIRONMENT_INFO),
+                        "{0} && env > {1}".format(do, abs_info_file_path),
                         cwd=work_dir, stdout=stdout,
                         stderr=stderr, shell=True,
                         env=env)
