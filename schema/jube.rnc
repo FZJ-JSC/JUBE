@@ -123,7 +123,7 @@ step = element step { attlist.step, (use | do | \include)* }
 attlist.step &=
   attribute name { text },
   attribute iterations { text }?,
-  attribute max_parallel { text }?,
+  attribute max_async { text }?,
   attribute depend { text }?,
   attribute work_dir { text }?,
   attribute export { "true" | "false" | "True" | "False" }?,

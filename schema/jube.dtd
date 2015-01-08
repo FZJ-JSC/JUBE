@@ -80,7 +80,7 @@
 <!ELEMENT step ((use|do|include)*)>
 <!ATTLIST step          name CDATA #REQUIRED
                         iterations CDATA #IMPLIED
-                        max_parallel CDATA #IMPLIED
+                        max_async CDATA #IMPLIED
                         depend CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
                         work_dir CDATA #IMPLIED

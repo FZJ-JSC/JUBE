@@ -603,9 +603,9 @@ def _extract_step(etree_step):
     if alt_work_dir is not None:
         alt_work_dir = alt_work_dir.strip()
     export = etree_step.get("export", "false").strip().lower() == "true"
-    max_wps = etree_step.get("max_parallel", "0").strip()
+    max_wps = etree_step.get("max_async", "0").strip()
     if max_wps < 0:
-        raise ValueError(("\"max_parallel\" attribute must be greater or " +
+        raise ValueError(("\"max_async\" attribute must be greater or " +
                           "equals to zero in " +
                           "<step name=\"{0}\">").format(name))
     shared_name = etree_step.get("shared")

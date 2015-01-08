@@ -162,7 +162,7 @@
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="iterations" type="xs:integer" use="optional" />
-    <xs:attribute name="max_parallel" type="xs:string" use="optional" />
+    <xs:attribute name="max_async" type="xs:string" use="optional" />
     <xs:attribute name="depend" type="xs:string" use="optional" />
     <xs:attribute name="work_dir" type="xs:string" use="optional" />
     <xs:attribute name="export" type="booleanType" use="optional" />
