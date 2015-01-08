@@ -1,5 +1,5 @@
 JUBE Benchmarking Environment
-Copyright (C) 2008-2014
+Copyright (C) 2008-2015
 Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 http://www.fz-juelich.de/jsc/jube
 
@@ -25,8 +25,8 @@ JUBE version 2 is written in the Python programming language.
 You need Python 2.7 or Python 3.2 (or a higher version) to run the program.
 
 You also can use Python 2.6 to run JUBE. In this case you had to add the 
-argparse-module to your Python module library on your own 
-(this option is under construction).
+argparse-module (https://pypi.python.org/pypi/argparse) to your Python module 
+library on your own.
 
 ------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ You can install the files to your $HOME/.local directory by using:
 $HOME/.local/bin must be inside your $PATH environment variable to use 
 JUBE in an easy way.
 
-To check you installation you can run:
+To check the installation you can run:
 
 >>> jube -v
 
