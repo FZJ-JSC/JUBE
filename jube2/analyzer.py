@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2014
+# Copyright (C) 2008-2015
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -161,15 +161,8 @@ class Analyzer(object):
                 local_patternset = patternset.copy()
 
                 # Get parameterset of current workpackage
-                parameterset = workpackage.history.copy()
-
-                # Add internal parameter
-                parameterset.add_parameterset(
-                    self._benchmark.get_jube_parameterset())
-                parameterset.add_parameterset(
-                    step.get_jube_parameterset())
-                parameterset.add_parameterset(
-                    workpackage.get_jube_parameterset())
+                parameterset = \
+                    workpackage.add_jube_parameter(workpackage.history.copy())
 
                 parameter = \
                     dict([[par.name, par.value] for par in
@@ -227,15 +220,12 @@ class Analyzer(object):
                                              value=str(result_dict[name])))
 
                     # calculate derived pattern
-                    derived_pattern = \
-                        local_patternset.derived_pattern_storage.copy()
-                    derived_pattern.parameter_substitution(
+                    local_patternset.derived_pattern_substitution(
                         [parameterset, resultset,
-                            jube_pattern.pattern_storage],
-                        final_sub=True)
+                         jube_pattern.pattern_storage])
 
                     # Convert content type
-                    for par in derived_pattern:
+                    for par in local_patternset.derived_pattern_storage:
                         result_dict[par.name] = \
                             jube2.util.convert_type(par.content_type,
                                                     par.value, stop=False)
@@ -337,11 +327,12 @@ class Analyzer(object):
                             (result_dict[pattern.name]["sum"] /
                              result_dict[pattern.name]["cnt"])
 
-            info_str = "      file \"{0}\" scanned {1}pattern found:\n".format(
-                os.path.basename(file_path),
-                "" if len(result_dict) > 0 else "no ")
+            info_str = "      file \"{0}\" scanned pattern found:\n".format(
+                os.path.basename(file_path))
             info_str += jube2.util.text_table(
-                [(_name, str(value)) for _name, value in result_dict.items()],
+                [(_name, ", ".join(["{0}:{1}".format(key, con)
+                                    for key, con in value.items()]))
+                 for _name, value in result_dict.items()],
                 indent=9, align_right=True, auto_linebreak=True)
             LOGGER.debug(info_str)
             file_handle.close()

@@ -65,7 +65,7 @@
 <!ATTLIST prepare       stdout CDATA #IMPLIED
                         stderr CDATA #IMPLIED
                         work_dir CDATA #IMPLIED
-                        tag CDATA #IMPLIED>                 
+                        tag CDATA #IMPLIED>
 <!ELEMENT patternset ((pattern|include)*)>
 <!ATTLIST patternset    name CDATA #REQUIRED
                         init_with CDATA #IMPLIED
@@ -80,6 +80,7 @@
 <!ELEMENT step ((use|do|include)*)>
 <!ATTLIST step          name CDATA #REQUIRED
                         iterations CDATA #IMPLIED
+                        max_async CDATA #IMPLIED
                         depend CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
                         work_dir CDATA #IMPLIED

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2014
+# Copyright (C) 2008-2015
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -21,6 +21,10 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+try:
+    import queue
+except ImportError:
+    import Queue as queue
 import xml.etree.ElementTree as ET
 import re
 import string
@@ -33,6 +37,63 @@ import jube2.conf
 
 
 LOGGER = jube2.log.get_logger(__name__)
+
+
+class Work_stat(object):
+
+    """Workpackage queuing handler"""
+
+    def __init__(self):
+        self._work_list = queue.Queue()
+        self._cnt_work = dict()
+        self._wait_lists = dict()
+
+    def put(self, workpackage):
+        """Add some workpackage to queue"""
+
+        # Substitute max_wps if needed
+        parameterset = \
+            workpackage.add_jube_parameter(workpackage.parameterset.copy())
+        parameter = \
+            dict([[par.name, par.value] for par in
+                  parameterset.constant_parameter_dict.values()])
+        max_wps = int(substitution(workpackage.step.max_wps, parameter))
+
+        if (max_wps == 0) or \
+           (workpackage.started) or \
+           (workpackage.step.name not in self._cnt_work) or \
+           (self._cnt_work[workpackage.step.name] < max_wps):
+            self._work_list.put(workpackage)
+            if workpackage.step.name not in self._cnt_work:
+                self._cnt_work[workpackage.step.name] = 1
+            else:
+                self._cnt_work[workpackage.step.name] += 1
+        else:
+            if workpackage.step.name not in self._wait_lists:
+                self._wait_lists[workpackage.step.name] = queue.Queue()
+            self._wait_lists[workpackage.step.name].put(workpackage)
+
+    def update_queues(self, last_workpackage):
+        """Check if a workpackage can move from waiting to work queue"""
+        if last_workpackage.done:
+            self._cnt_work[last_workpackage.step.name] -= 1
+            if (last_workpackage.step.name in self._wait_lists) and \
+               (not self._wait_lists[last_workpackage.step.name].empty()):
+                workpackage = \
+                    self._wait_lists[last_workpackage.step.name].get_nowait()
+                # Check if workpackage was started from another position
+                if not workpackage.started:
+                    self.put(workpackage)
+                else:
+                    self.update_queues(self, last_workpackage)
+
+    def get(self):
+        """Get some workpackage from work queue"""
+        return self._work_list.get_nowait()
+
+    def empty(self):
+        """Check if work queue is empty"""
+        return self._work_list.empty()
 
 
 def get_current_id(base_dir):

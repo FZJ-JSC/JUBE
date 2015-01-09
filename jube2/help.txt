@@ -662,7 +662,7 @@ step_tag
    A step give a list of *Shell* operations and a corresponding
    parameter environment.
 
-      <step name="..." work_dir="..." shared="..." export="...">
+      <step name="..." depend="..." work_dir="..." shared="..." export="...">
         <use from="">...</use>
         ...
         <do></do>
@@ -682,6 +682,9 @@ step_tag
      external set source
 
    * any name must be unique, it is **not allowed to reuse** a set
+
+   * "depend" is optional and can contain a list of other step names
+     which must be executed before the current step
 
    * "work_dir" is optional and can be used to switch to an
      alternative work directory

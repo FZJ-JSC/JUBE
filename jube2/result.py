@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2014
+# Copyright (C) 2008-2015
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -99,14 +99,9 @@ class Result(object):
                             break
 
                     # Read workpackage history parameterset
-                    parameterset = workpackage.history
-                    parameterset.add_parameterset(
-                        self._benchmark.get_jube_parameterset())
-                    parameterset.add_parameterset(
-                        self._benchmark.steps[stepname]
-                        .get_jube_parameterset())
-                    parameterset.add_parameterset(
-                        workpackage.get_jube_parameterset())
+                    parameterset = workpackage.add_jube_parameter(
+                        workpackage.history.copy())
+
                     parameter_dict = dict()
                     for par in parameterset:
                         parameter_dict[par.name] = \

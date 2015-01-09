@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2014
+# Copyright (C) 2008-2015
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -390,16 +390,21 @@ def workpackages_from_xml(filename, benchmark):
         workpackage.history.add_parameterset(workpackage.parameterset)
 
     # Store workpackage data
-    work_list = queue.Queue()
+    work_stat = jube2.util.Work_stat()
     for step_name in benchmark.steps:
         workpackages[step_name] = list()
-    for workpackage in tmp.values():
-        if len(workpackage.parents) == 0:
-            workpackage.queued = True
-            work_list.put(workpackage)
-        workpackages[workpackage.step.name].append(workpackage)
+    # First put started wps inside the queue
+    for mode in ("only_started", "all"):
+        for workpackage in tmp.values():
+            if len(workpackage.parents) == 0:
+                if (mode == "only_started" and workpackage.started) or \
+                   (mode == "all" and (not workpackage.queued)):
+                    workpackage.queued = True
+                    work_stat.put(workpackage)
+            if mode == "all":
+                workpackages[workpackage.step.name].append(workpackage)
 
-    return workpackages, work_list
+    return workpackages, work_stat
 
 
 def _extract_workpackage_data(workpackage_etree):
@@ -598,6 +603,11 @@ def _extract_step(etree_step):
     if alt_work_dir is not None:
         alt_work_dir = alt_work_dir.strip()
     export = etree_step.get("export", "false").strip().lower() == "true"
+    max_wps = etree_step.get("max_async", "0").strip()
+    if max_wps < 0:
+        raise ValueError(("\"max_async\" attribute must be greater or " +
+                          "equals to zero in " +
+                          "<step name=\"{0}\">").format(name))
     shared_name = etree_step.get("shared")
     if shared_name is not None:
         shared_name = shared_name.strip()
@@ -608,7 +618,7 @@ def _extract_step(etree_step):
                  tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
     step = jube2.step.Step(name, depend, iterations, alt_work_dir, shared_name,
-                           export)
+                           export, max_wps)
     for element in etree_step:
         _check_tag(element, valid_tags)
         if element.tag == "do":

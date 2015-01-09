@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2014
+# Copyright (C) 2008-2015
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -148,19 +148,26 @@ def print_benchmark_info(benchmark):
         for file_obj in fileset:
             if (not type(file_obj) is jube2.fileset.Prepare) and \
                     (not file_obj.is_internal_ref):
-                print("  {0}".format(os.path.abspath(file_obj.path)))
+                path = file_obj.path
+                path = jube2.util.substitution(path, dict())
+                path = os.path.expandvars(os.path.expanduser(path))
+                path = os.path.join(file_obj.file_path_ref, path)
+                path = os.path.join(benchmark.file_path_ref, path)
+                print("  {0}".format(os.path.abspath(path)))
 
     print(jube2.util.text_line())
 
 
-def print_step_info(benchmark, step_name):
+def print_step_info(benchmark, step_name, parametrization_only=False):
     """Print information concerning a single step in a specific benchmark"""
     if step_name not in benchmark.workpackages:
         print("Step \"{0}\" not found in benchmark \"{1}\"."
               .format(step_name, benchmark.name))
         return
-    print(jube2.util.text_boxed("{0} Step: {1}".format(benchmark.name,
-                                                       step_name)))
+
+    if not parametrization_only:
+        print(jube2.util.text_boxed("{0} Step: {1}".format(benchmark.name,
+                                                           step_name)))
 
     step = benchmark.steps[step_name]
 
@@ -174,26 +181,26 @@ def print_step_info(benchmark, step_name):
 
     wp_info = [("id", "started?", "done?", "work_dir")]
     error_dict = dict()
+    parameter_list = list()
     useable_parameter = None
     for workpackage in benchmark.workpackages[step_name]:
 
-        if useable_parameter is None or step.alt_work_dir is not None:
-            # Parameter substitution to use alt_work_dir
-            workpackage.parameterset.add_parameterset(
-                benchmark.get_jube_parameterset())
-            workpackage.parameterset.add_parameterset(
-                step.get_jube_parameterset())
-            workpackage.parameterset.add_parameterset(
-                workpackage.get_jube_parameterset())
-            workpackage.parameterset.parameter_substitution(final_sub=True)
-            parameter = \
-                dict([[par.name, par.value] for par in
-                      workpackage.parameterset
-                      .constant_parameter_dict.values()])
-            # Save available parameter names
-            if useable_parameter is None:
-                useable_parameter = [name for name in parameter.keys()]
-                useable_parameter.sort()
+        # Parameter substitution to use alt_work_dir
+        workpackage.add_jube_parameter(workpackage.parameterset)
+        parameter = \
+            dict([[par.name, par.value] for par in
+                  workpackage.parameterset.constant_parameter_dict.values()])
+
+        # Save available parameter names
+        if useable_parameter is None:
+            useable_parameter = [name for name in parameter.keys()]
+            useable_parameter.sort()
+
+        # collect parameterization
+        parameter_list.append(dict())
+        parameter_list[-1]["id"] = str(workpackage.id)
+        for parameter in workpackage.history:
+            parameter_list[-1][parameter.name] = parameter.value
 
         id_str = str(workpackage.id)
         started_str = str(workpackage.started).lower()
@@ -216,22 +223,49 @@ def print_step_info(benchmark, step_name):
         wp_info.append(
             (id_str, started_str, done_str, os.path.abspath(work_dir)))
 
-    print("Workpackages:")
-    print(jube2.util.text_table(wp_info, use_header_line=True, indent=1,
-                                auto_linebreak=False))
+    if not parametrization_only:
+        print("Workpackages:")
+        print(jube2.util.text_table(wp_info, use_header_line=True, indent=1,
+                                    auto_linebreak=False))
 
-    if useable_parameter is not None:
+    if (useable_parameter is not None) and (not parametrization_only):
         print("Available parameter:")
         wraps = textwrap.wrap(", ".join(useable_parameter), 80)
         for wrap in wraps:
             print(wrap)
         print("")
 
-    if len(error_dict) > 0:
-        print("!!! Errors found !!!:")
-    for error_file in error_dict:
-        print(">>> {0}:".format(error_file))
-        print("{0}\n".format(error_dict[error_file]))
+    if not parametrization_only:
+        print("Parameterization:")
+        for parameter_dict in parameter_list:
+            print(" ID: {0}".format(parameter_dict["id"]))
+            for name, value in parameter_dict.items():
+                if name != "id":
+                    print("  {0}: {1}".format(name, value))
+            print()
+    else:
+        # Create parameterization table
+        table_data = list()
+        table_data.append(list())
+        table_data[0].append("id")
+        if len(parameter_list) > 0:
+            for name in parameter_list[0]:
+                if name != "id":
+                    table_data[0].append(name)
+            for parameter_dict in parameter_list:
+                table_data.append(list())
+                for name in table_data[0]:
+                    table_data[-1].append(parameter_dict[name])
+        print(jube2.util.text_table(entries=table_data, use_header_line=True,
+                                    indent=1, align_right=True,
+                                    auto_linebreak=False, pretty=False))
+
+    if not parametrization_only:
+        if len(error_dict) > 0:
+            print("!!! Errors found !!!:")
+        for error_file in error_dict:
+            print(">>> {0}:".format(error_file))
+            print("{0}\n".format(error_dict[error_file]))
 
 
 def print_benchmark_status(benchmark):

@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2014
+   # Copyright (C) 2008-2015
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -252,7 +252,7 @@ Get benchmark specific information
 
 .. code-block:: none
 
-   jube info [-h] [-i ID [ID ...]] [-s STEP [STEP ...]] [DIRECTORY]
+   jube info [-h] [-i ID [ID ...]] [-s STEP [STEP ...]] [-p] [DIRECTORY]
 
 ``-h``, ``--help``
    show command help information
@@ -262,6 +262,9 @@ Get benchmark specific information
 
 ``-s STEP [STEP ...]``, ``--step STEP [STEP ...]``
    show step specific information
+
+``-p``, ``--parametrization``
+   display only parametrization of given step using *csv* format
 
 ``DIRECTORY``
    show directory specific information

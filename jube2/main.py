@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2014
+# Copyright (C) 2008-2015
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -122,7 +122,9 @@ def info(args):
                 jube2.info.print_benchmark_info(benchmark)
             else:
                 for step_name in args.step:
-                    jube2.info.print_step_info(benchmark, step_name)
+                    jube2.info.print_step_info(
+                        benchmark, step_name,
+                        parametrization_only=args.parametrization)
             # Restore current working dir
             os.chdir(cwd)
 
@@ -185,12 +187,18 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
         jube2.conf.CONFIGURATION_FILENAME)[0]
     # Only one single benchmark exist inside benchmarks
     benchmark = list(benchmarks.values())[0]
+
+    # Restore old benchmark id and set cwd
+    benchmark.id = int(os.path.basename(benchmark_folder))
+    benchmark.org_cwd = cwd
+    benchmark.cwd = os.path.join(cwd, benchmark_folder)
+
     if restore_workpackages:
         # Read existing workpackage information
-        workpackages, work_list = \
+        workpackages, work_stat = \
             jube2.jubeio.workpackages_from_xml(
                 jube2.conf.WORKPACKAGES_FILENAME, benchmark)
-        benchmark.set_workpackage_information(workpackages, work_list)
+        benchmark.set_workpackage_information(workpackages, work_stat)
 
     if load_analyse and os.path.isfile(jube2.conf.ANALYSE_FILENAME):
         # Read existing analyse data
@@ -200,10 +208,6 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
             if analyzer.name in analyse_result:
                 analyzer.analyse_result = analyse_result[analyzer.name]
 
-    # Restore old benchmark id and set cwd
-    benchmark.id = int(os.path.basename(benchmark_folder))
-    benchmark.org_cwd = cwd
-    benchmark.cwd = os.path.join(cwd, benchmark_folder)
     # Restore current working dir
     os.chdir(cwd)
     return benchmark
@@ -614,7 +618,10 @@ def _get_args_parser():
                 {"type": int, "help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-s", "--step"):
-                {"help": "show information for given step", "nargs": "+"}
+                {"help": "show information for given step", "nargs": "+"},
+            ("-p", "--parametrization"):
+                {"help": "display only parametrization of given step " +
+                 "using csv format", "action": "store_true"}
         }
     }
 
