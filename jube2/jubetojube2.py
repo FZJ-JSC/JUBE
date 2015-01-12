@@ -581,10 +581,10 @@ class JubeXMLConverter(object):
 #       Analyse
         analyse_cname = self._check_and_sub_platform_var(
             analyse_dict.attrib["cname"])
-        analyzer = _JubeAnalyzer(
+        analyser = _JubeAnalyser(
             "analyse", analyse_cname, self._main_dir, self._analyse_xml_file)
-#         analyzer._extract_includepattern(self._analyse_xml_file)
-        benchmark_obj.analyzer = analyzer
+#         analyser._extract_includepattern(self._analyse_xml_file)
+        benchmark_obj.analyser = analyser
 
 #        Finally, build benchmark node
         benchmark_obj.build_benchmark_element()
@@ -704,7 +704,7 @@ class JubeXMLConverter(object):
             return cname
 
 
-class _JubeAnalyzer(object):
+class _JubeAnalyser(object):
 
     """Handle analyse issues"""
 
@@ -725,8 +725,8 @@ class _JubeAnalyzer(object):
         self._patternset_node_list = []
         self._create_patternset_node_list()
 
-        self._analyzer_node = None
-        self._create_analyzer_node()
+        self._analyser_node = None
+        self._create_analyser_node()
 
         self._create_result_node()
 
@@ -736,25 +736,25 @@ class _JubeAnalyzer(object):
         return self._patternset_node_list
 
     @property
-    def analyzer_node(self):
-        """Get analyzer node"""
-        return self._analyzer_node
+    def analyser_node(self):
+        """Get analyser node"""
+        return self._analyser_node
 
     @property
     def result_node(self):
         """Get result node"""
         return self._result_node
 
-    def _create_analyzer_node(self):
-        """Create analyzer node for benchmark"""
-        self._analyzer_node = ET.Element("analyzer")
-        self._analyzer_node.set('name', 'analyze')
+    def _create_analyser_node(self):
+        """Create analyser node for benchmark"""
+        self._analyser_node = ET.Element("analyser")
+        self._analyser_node.set('name', 'analyze')
         for use in self._use_list:
-            use_tag = ET.SubElement(self._analyzer_node, "use")
+            use_tag = ET.SubElement(self._analyser_node, "use")
             use_tag.text = use
 
         analyse_tag = ET.SubElement(
-            self._analyzer_node, "analyse", {"step": "execution"})
+            self._analyser_node, "analyse", {"step": "execution"})
         file_tag = ET.SubElement(analyse_tag, "file")
         file_tag.text = "stdout"
 
@@ -1036,7 +1036,7 @@ class _JubeBenchmark(object):
         self._compile_step = None
         self._execution_step = None
         self._prepare_step = None
-        self._analyzer = None
+        self._analyser = None
         self._verify_step = None
         self._benchmark_element = None
         self._fileset_node = set()
@@ -1092,14 +1092,14 @@ class _JubeBenchmark(object):
         self._verify_step = value
 
     @property
-    def analyzer(self):
-        """Get analyzer"""
-        return self._analyzer
+    def analyser(self):
+        """Get analyser"""
+        return self._analyser
 
-    @analyzer.setter
-    def analyzer(self, value):
-        """Set jube analyzer"""
-        self._analyzer = value
+    @analyser.setter
+    def analyser(self, value):
+        """Set jube analyser"""
+        self._analyser = value
 
     def build_benchmark_element(self):
         """Build node for corresponding benchmark"""
@@ -1114,12 +1114,12 @@ class _JubeBenchmark(object):
         for fileset in self._fileset_node:
             benchmark.append(fileset)
 #       Integrate pattern stuff in main XML
-        for patternnode in self._analyzer.patternset_node_list:
+        for patternnode in self._analyser.patternset_node_list:
             benchmark.append(patternnode)
-        benchmark.append(self._analyzer.analyzer_node)
+        benchmark.append(self._analyser.analyser_node)
 
 #       integrate result stuff
-        benchmark.append(self._analyzer.result_node)
+        benchmark.append(self._analyser.result_node)
 
         self._benchmark_element = benchmark
 

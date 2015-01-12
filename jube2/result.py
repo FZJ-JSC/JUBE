@@ -80,15 +80,15 @@ class Result(object):
         raise NotImplementedError("")
 
     def _analyse_data(self):
-        """Load analyse data out of given analyzers"""
-        for analyzer_name in self._use:
-            analyzer = self._benchmark.analyzer[analyzer_name]
-            analyse = analyzer.analyse_result
+        """Load analyse data out of given analysers"""
+        for analyser_name in self._use:
+            analyser = self._benchmark.analyser[analyser_name]
+            analyse = analyser.analyse_result
             # Ignore empty analyse results
             if analyse is None:
-                LOGGER.warning(("No data found for analyzer \"{0}\". "
+                LOGGER.warning(("No data found for analyser \"{0}\". "
                                 "Run analyse step first please.")
-                               .format(analyzer_name))
+                               .format(analyser_name))
                 continue
             for stepname in analyse:
                 for wp_id in analyse[stepname]:
@@ -114,7 +114,7 @@ class Result(object):
 
                     # Add jube additional information
                     analyse_dict.update({
-                        "jube_res_analyzer": analyzer_name,
+                        "jube_res_analyser": analyser_name,
                     })
                     yield analyse_dict
 
@@ -129,8 +129,11 @@ class Result(object):
                 if matcher:
                     alt_pattern_names[i] = matcher.group(1)
 
-        for analyzer_name in self._use:
-            for patternset_name in self._benchmark.analyzer[analyzer_name].use:
+        for analyser_name in self._use:
+            if analyser_name not in self._benchmark.analyser:
+                raise RuntimeError(
+                    "<analyser name=\"{0}\"> not found".format(analyser_name))
+            for patternset_name in self._benchmark.analyser[analyser_name].use:
                 patternset = self._benchmark.patternsets[patternset_name]
                 for i, pattern_name in enumerate(pattern_names):
                     alt_pattern_name = alt_pattern_names[i]

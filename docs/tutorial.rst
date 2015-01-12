@@ -99,7 +99,7 @@ The ``<step>`` contains the operation tasks. The ``name`` must be unique.
 It can use different types of existing sets.
 Only sets, which are explicitly used, are available inside the step! The ``<do>`` contains a single **shell command**.
 This command will run inside of a sandbox directory environment (inside the ``outpath`` directory tree).
-The step and its corresponding parameterspace is named :term:`workpackage`.
+The step and its corresponding :term:`parameter space <parameter_space>` is named :term:`workpackage`.
 
 **Available** parameters can be used inside the shell commands. To use a parameter you had to write ::
 
@@ -213,12 +213,12 @@ There is also a debugging mode inside of *JUBE*::
 
 This mode avoid any *shell* execution but will generate a single log file (``jube-debug.log``) in your current working directory.
 
-.. index:: parameterspace creation
+.. index:: parameter space creation
 
-Parameterspace creation
-~~~~~~~~~~~~~~~~~~~~~~~
+Parameter space creation
+~~~~~~~~~~~~~~~~~~~~~~~~
 
-In this example we will show you an important feature of *JUBE*: The automatic parameterspace generation.
+In this example we will show you an important feature of *JUBE*: The automatic :term:`parameter space <parameter_space>` generation.
 
 The files used for this example can be found inside ``examples/parameterspace``.
 
@@ -251,7 +251,7 @@ Step dependencies
 
 If you start writing a complex benchmark structure, you want to have dependencies between different :term:`steps <step_tag>`. For
 example between a compile and the execution step. *JUBE* can handle these dependencies and will also preserve the given
-parameterspace.
+:term:`parameter space <parameter_space>`.
 
 The files used for this example can be found inside ``examples/dependencies``.
 
@@ -287,7 +287,7 @@ Loading files and substitution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Every step runs inside a unique sandbox directory. In normal cases you need external files inside this directory (e.g. the source files)
-and in some cases you want to change a parameter inside the file based on your current parameterspace. There are two additional set-types
+and in some cases you want to change a parameter inside the file based on your current :term:`parameter space <parameter_space>`. There are two additional set-types
 which handle this behaviour inside of *JUBE*.
 
 The files used for this example can be found inside ``examples/files_and_sub``.
@@ -319,7 +319,7 @@ There is no ``<use>`` inside any set. The combination of all sets will be done i
 
 In the ``sub_step`` we use all available sets. The use order isn't relevant. The normal execution process will be:
 
-#. Parameterspace expansion
+#. Parameter space expansion
 #. Copy/link files
 #. Prepare operations
 #. File substitution
@@ -375,11 +375,11 @@ is a *JUBE* given :term:`default pattern <jube_pattern>` matching integer values
 
 If there are multiple matches inside a single file you can add a :term:`reduce option <pattern_tag>`. Normally only the first match will be available.
 
-To use your ``<patternset>`` you had to specify the files which should be parsed. This can be done using the ``<analyzer>``.
+To use your ``<patternset>`` you had to specify the files which should be parsed. This can be done using the ``<analyser>``.
 It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
-The analyzer automatically knows all parameter which where used in the given step and in depending steps. There is no ``<use>`` option to add additonal completely new
+The analyser automatically knows all parameter which where used in the given step and in depending steps. There is no ``<use>`` option to add additonal completely new
 parametersets.
 
 To run the anlayse you had to write::
@@ -388,7 +388,7 @@ To run the anlayse you had to write::
 
 The analyse data will be stored inside the benchmark directory.
 
-The last part is the result table creation. Here you had to used an existing analyzer. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
+The last part is the result table creation. Here you had to used an existing analyser. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
 the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv`` or ``pretty`` to get different ASCII representations.
 
 To create the result table you had to write::

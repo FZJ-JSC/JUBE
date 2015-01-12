@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""The Analyzer class handles the analyze process"""
+"""The Analyser class handles the analyze process"""
 
 from __future__ import (print_function,
                         unicode_literals,
@@ -31,9 +31,9 @@ import jube2.util
 LOGGER = jube2.log.get_logger(__name__)
 
 
-class Analyzer(object):
+class Analyser(object):
 
-    """The Analyzer handles the anlyse process and store all importtant data
+    """The Analyser handles the anlyse process and store all importtant data
     to run a new analyse."""
 
     def __init__(self, name):
@@ -85,29 +85,29 @@ class Analyzer(object):
 
     @property
     def name(self):
-        """Get analyzer name"""
+        """Get analyser name"""
         return self._name
 
     def etree_repr(self):
         """Return etree object representation"""
-        analyzer_etree = ET.Element("analyzer")
-        analyzer_etree.attrib["name"] = self._name
+        analyser_etree = ET.Element("analyser")
+        analyser_etree.attrib["name"] = self._name
         for use in self._use:
-            use_etree = ET.SubElement(analyzer_etree, "use")
+            use_etree = ET.SubElement(analyser_etree, "use")
             use_etree.text = use
         for analyse in self._analyse:
-            analyse_etree = ET.SubElement(analyzer_etree, "analyse")
+            analyse_etree = ET.SubElement(analyser_etree, "analyse")
             analyse_etree.attrib["step"] = analyse
             for filename in self._analyse[analyse]:
                 file_etree = ET.SubElement(analyse_etree, "file")
                 file_etree.text = filename
-        return analyzer_etree
+        return analyser_etree
 
     def analyse(self):
-        """Run the analyzer"""
+        """Run the analyser"""
         LOGGER.debug("Run analyser \"{0}\"".format(self._name))
         if self._benchmark is None:
-            raise RuntimeError("No benchmark found using analyzer {0}"
+            raise RuntimeError("No benchmark found using analyser {0}"
                                .format(self._name))
 
         result = dict()
@@ -149,7 +149,7 @@ class Analyzer(object):
             LOGGER.debug("  analyse step \"{0}\"".format(stepname))
             if stepname not in self._benchmark.steps:
                 raise RuntimeError(("Does not found <step name=\"{0}\"> "
-                                    "when using analyzer \"{1}\"").format(
+                                    "when using analyser \"{1}\"").format(
                                         stepname, self._name))
             step = self._benchmark.steps[stepname]
             for workpackage in self._benchmark.workpackages[stepname]:
@@ -182,7 +182,7 @@ class Analyzer(object):
                             local_patternset.derived_pattern_storage))
                     raise RuntimeError(("A pattern and a parameter (\"{0}\") "
                                         "using the same name in "
-                                        "analyzer \"{1}\"").format(
+                                        "analyser \"{1}\"").format(
                                             ",".join(incompatible_names),
                                             self._name))
 
@@ -209,7 +209,7 @@ class Analyzer(object):
                 # scan files
                 LOGGER.debug("    scan workpackage (id={0})".format(
                     workpackage.id))
-                result_dict = Analyzer._analyse_files(files, pattern)
+                result_dict = Analyser._analyse_files(files, pattern)
 
                 if len(result_dict) > 0:
                     resultset = jube2.parameter.Parameterset()

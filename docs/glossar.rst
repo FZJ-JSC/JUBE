@@ -69,7 +69,7 @@ Glossary
       directory will be used.
 
    analyse
-      Analyse an existing benchmark. The analyzer will scan through all files given
+      Analyse an existing benchmark. The analyser will scan through all files given
       inside the configuration by using the given patternsets.
 
       If no benchmark id is given, last benchmark found in directory will be used. If benchmark directory is missing, current
@@ -154,8 +154,8 @@ Glossary
         * local pattern will overwrite imported pattern
         * the name of the external set can differ to the local one by using ``init-with="filename.xml:external_name"``
 
-      * patternsets can be used inside the analyzer-command
-      * different sets, which are used inside the same analyzer, must be compatible
+      * patternsets can be used inside the analyser tag
+      * different sets, which are used inside the same analyser, must be compatible
 
    pattern_tag
       A pattern is used to parse your output files and create your result data.
@@ -191,7 +191,7 @@ Glossary
         * reduced variables can be used by name_<reduce_option>
 
    parameterset_tag
-      A parameterset is a container to store a bundle of parameters.
+      A parameterset is a container to store a bundle of :term:`parameters <parameter_tag>`.
 
       .. code-block:: xml
 
@@ -240,7 +240,8 @@ Glossary
              </parameterset>
 
    parameter_tag
-      A parameter is a usable configuration option.
+      A parameter can be used to store benchmark configuration data. A set of different parameters will create
+      a specific parameter environment (also called :term:`parameter space <parameter_space>`) for the different steps of the benchmark.
 
       .. code-block:: xml
 
@@ -258,7 +259,7 @@ Glossary
 
         * inside the parameter definition, a parameter can be reused: ``... $nameofparameter ...``
         * the parameter will be replaced multiply times (to handle complex parameter structures; max: 5 times)
-        * the substitution will be run before the execution step starts with the current parameter space. Only parameters reachable
+        * the substitution will be run before the execution step starts with the current :term:`parameter space <parameter_space>`. Only parameters reachable
           in this step will be usable for substitution!
 
       * Scripting modes allowed:
@@ -351,7 +352,7 @@ Glossary
        the original work directory)
 
    substituteset_tag
-     A substituteset is a container to store a bundle of sub commands.
+     A substituteset is a container to store a bundle of :term:`sub <sub_tag>` commands.
 
      .. code-block:: xml
 
@@ -395,7 +396,7 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." depend="..." work_dir="..." shared="..." export="...">
+        <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -408,6 +409,10 @@ Glossary
      * the ``from`` attribute is optional and can be used to specify an external set source
      * any name must be unique, it is **not allowed to reuse** a set
      * ``depend`` is optional and can contain a list of other step names which must be executed before the current step
+     * ``max_async`` is optional and can contain a number (or a parameter) which describe how many :term:`workpackages <workpackage>` can be executed asynchronously (default: 0 means no limitation).
+       This option is only important if a :term:`do <do_tag>` inside the step contains a ``done_file`` attribute and should be executed in the background (or managed by a jobsystem).
+       In this case *JUBE* will manage that there will not be to many instances at the same time. To update the benchmark and start further instances, if the first ones were finished,
+       the :term:`continue` command must be used.
      * ``work_dir`` is optional and can be used to switch to an alternative work directory
 
        * the user had to handle **uniqueness of this directory** by his own
@@ -433,14 +438,14 @@ Glossary
         <do work_dir="...">...</do>
 
 
-     * ``do`` can contain any *Shell*-syntax-snippet (parameter will be replaced ... $nameofparameter ...)
+     * ``do`` can contain any *Shell*-syntax-snippet (:term:`parameter <parameter_tag>` will be replaced ... $nameofparameter ...)
      * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
      * ``work_dir`` is optional, it can be used to change the work directory of this single command (relativly seen towards
        the original work directory)
      * ``active`` is optional
 
        * can be set to ``true`` or ``false`` to enable or disable the single command
-       * parameter are allowed inside this attribute
+       * :term:`parameter <parameter_tag>` are allowed inside this attribute
 
      * ``done_file``-filename is optional
 
@@ -453,19 +458,19 @@ Glossary
        * cmd will run once (synchronize all workpackages)
        * ``$jube_wp_...`` - parameter can't be used inside the shared command
 
-   analyzer_tag
-     The analyzer describe the steps and files which should be scanned using a set of pattern.
+   analyser_tag
+     The analyser describe the steps and files which should be scanned using a set of pattern.
 
      .. code-block:: xml
 
-        <analyzer name="...">
+        <analyser name="...">
           <use from="">...</use>
           ...
           <analyse step="...">
             <file>...</file>
           </analyse>
           ...
-        </analyzer>
+        </analyser>
 
      * you can use different patternsets to analyse a set of files
      * only patternsets are usable
@@ -476,7 +481,7 @@ Glossary
      * each file using each workpackage will be scanned seperatly
 
    result_tag
-     Container for different output types.
+     The result tag is used to handle different visualisation types of your analysed data.
 
      .. code-block:: xml
 
@@ -489,8 +494,8 @@ Glossary
 
      * ``result_dir`` is optional. Here you can specify an different output directory. Inside of this directory a subfolder
        named by the current benchmark id will be created. Default: benchmark_dir/result
-     * only analyzer are usable
-     * using analyzer ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
+     * only analyser are usable
+     * using analyser ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
 
    table_tag
      A simple ASCII based table ouput.
@@ -511,6 +516,15 @@ Glossary
      * ``title`` is optional: column title
      * ``format`` can contain a C like format string: e.g. format=".2f"
 
+   parameter_space
+     The parameter space for a specific benchmark run is the bundle of all possible parameter combinations.
+     E.g. there are to different parameter: a = 1,2 and b= "p","q" then you will get four different parameter
+     combinations: a=1, b="p"; a=1, b="q"; a=2, b="p"; a=2, b="q".
+
+     The parameter space of a specific step will be one of these parameter combinations. To fulfill all combinations
+     the step will be executed multible times (each time using a new combination). The specific combination of a step and
+     an expanded parameter space is named :term:`workpackage`.
+
    include_tag
      Include *XML*-data from an external file.
 
@@ -523,12 +537,12 @@ Glossary
      * path is optional and can be used to give an alternative xml-path inside the include-file (default: root-node)
 
    workpackage
-      A workpackage is the combination of a :term:`step <step_tag>` (which contains all operations) and one parameter setting out of the expanded parameterspace.
+      A workpackage is the combination of a :term:`step <step_tag>` (which contains all operations) and one parameter setting out of the expanded :term:`parameter space <parameter_space>`.
 
       Every workpackage will run inside its own sandbox directory!
 
    tagging
-      Tagging is a simple way to include or exclude parts of your input file.
+      Tagging is a simple way to mark parts of your input file to be includable or excludable.
 
       * Every available ``<tag>`` (not the root ``<jube>``-tag) can contain a tag-attribute
       * The tag-attribute can contain a list of names: ``tag="a,b,c"`` or "not" names: ``tag="a,!b,c"``
@@ -582,6 +596,7 @@ Glossary
       .. code-block:: xml
 
          <?xml version="1.0" encoding="UTF-8"?>
+         <!-- Basic top level JUBE structure -->
          <jube>
            <!-- optional additional include pathes -->
            <include-path>
@@ -619,7 +634,7 @@ Glossary
              <step>...</step>
              ...
              <!-- analyse -->
-             <analyzer>...</analyzer>
+             <analyser>...</analyser>
              ...
              <!-- result -->
              <result>...</result>

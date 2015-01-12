@@ -13,7 +13,7 @@
 <!ATTLIST include-path  tag CDATA #IMPLIED>
 <!ELEMENT path (#PCDATA)>
 <!ATTLIST path          tag CDATA #IMPLIED>
-<!ELEMENT benchmark (comment?,(parameterset|substituteset|fileset|step|patternset|analyzer|result|include)*)>
+<!ELEMENT benchmark (comment?,(parameterset|substituteset|fileset|step|patternset|analyser|analyzer|result|include)*)>
 <!ATTLIST benchmark     name CDATA #REQUIRED
                         outpath CDATA #REQUIRED
                         file_path_ref CDATA #IMPLIED
@@ -88,6 +88,9 @@
                         tag CDATA #IMPLIED>
 <!ELEMENT analyzer ((use|analyse|include)*)>
 <!ATTLIST analyzer      name CDATA #REQUIRED
+                        tag CDATA #IMPLIED>
+<!ELEMENT analyser ((use|analyse|include)*)>
+<!ATTLIST analyser      name CDATA #REQUIRED
                         tag CDATA #IMPLIED>
 <!ELEMENT use (#PCDATA)>
 <!ATTLIST use           from CDATA #IMPLIED

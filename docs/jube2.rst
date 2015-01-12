@@ -19,10 +19,10 @@
 jube2 package
 =============
 
-jube2.analyzer module
+jube2.analyser module
 ---------------------
 
-.. automodule:: jube2.analyzer
+.. automodule:: jube2.analyser
     :members:
     :undoc-members:
     :show-inheritance:
