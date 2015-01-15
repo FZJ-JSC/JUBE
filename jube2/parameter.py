@@ -274,7 +274,7 @@ class Parameter(object):
     @staticmethod
     def create_parameter(name, value, separator=None, parameter_type="string",
                          selected_value=None, parameter_mode="text",
-                         export=False):
+                         export=False, no_templates=False):
         """Parameter constructor.
         Return a Static- or TemplateParameter based on the given data."""
         if separator is None:
@@ -282,11 +282,16 @@ class Parameter(object):
         else:
             sep = separator
 
-        values = [val.strip() for val in value.split(sep)]
+        # Check weather a new template should be created or not
+        if no_templates:
+            values = [value]
+        else:
+            values = [val.strip() for val in value.split(sep)]
+
         if len(values) == 1 or \
            (parameter_mode in jube2.conf.ALLOWED_SCRIPTTYPES):
-            result = StaticParameter(
-                name, value, separator, parameter_type, parameter_mode, export)
+            result = StaticParameter(name, value, separator, parameter_type,
+                                     parameter_mode, export)
         else:
             result = TemplateParameter(name, values, separator, parameter_type,
                                        parameter_mode, export)
@@ -425,7 +430,7 @@ class StaticParameter(Parameter):
                       self._value))
 
     def substitute_and_evaluate(self, parametersets=None,
-                                final_sub=False):
+                                final_sub=False, no_templates=False):
         """Substitute all variables inside the parameter value by using the
         parameters inside the given parameterset and additional_parameterset.
         final_sub marks the last substitution.
@@ -462,13 +467,15 @@ class StaticParameter(Parameter):
                                     "parameter \"{1}\": {2}").format(
                     value, self.name, str(exception)))
         changed = value != self._value
+
         if changed:
             param = Parameter.create_parameter(name=self._name,
                                                value=value,
                                                separator=self._separator,
                                                parameter_type=self._type,
                                                parameter_mode="text",
-                                               export=self._export)
+                                               export=self._export,
+                                               no_templates=no_templates)
             param.based_on = self
         else:
             param = self

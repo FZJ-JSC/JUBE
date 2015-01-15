@@ -203,7 +203,7 @@ class Pattern(jube2.parameter.StaticParameter):
         """
         param, changed = \
             jube2.parameter.StaticParameter.substitute_and_evaluate(
-                self, parametersets, final_sub)
+                self, parametersets, final_sub, no_templates=True)
 
         if changed:
             # Convert parameter to pattern
