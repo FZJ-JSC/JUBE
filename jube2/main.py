@@ -204,9 +204,9 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
         # Read existing analyse data
         analyse_result = \
             jube2.jubeio.analyse_result_from_xml(jube2.conf.ANALYSE_FILENAME)
-        for analyzer in benchmark.analyzer.values():
-            if analyzer.name in analyse_result:
-                analyzer.analyse_result = analyse_result[analyzer.name]
+        for analyser in benchmark.analyser.values():
+            if analyser.name in analyse_result:
+                analyser.analyse_result = analyse_result[analyser.name]
 
     # Restore current working dir
     os.chdir(cwd)
@@ -455,7 +455,7 @@ def _update_analyse_and_result(args, benchmark, benchmark_folder):
                 # Change current working dir to benchmark_folder
                 os.chdir(benchmark_folder)
                 benchmark.update_analyse_and_result(bench.patternsets,
-                                                    bench.analyzer,
+                                                    bench.analyser,
                                                     bench.results,
                                                     bench.results_order,
                                                     os.path.join(cwd, dirname))

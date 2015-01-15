@@ -21,16 +21,16 @@
     </step>
     
     <!-- Analyse -->
-    <analyzer name="analyse">
+    <analyser name="analyse">
       <use>pattern</use> <!-- use existing patternset -->
       <analyse step="write_number">
         <file>stdout</file> <!-- file which should be scanned -->
       </analyse>
-    </analyzer>
+    </analyser>
     
     <!-- Create result table -->
     <result>
-      <use>analyse</use> <!-- use existing analyzer -->
+      <use>analyse</use> <!-- use existing analyser -->
       <table name="result" style="pretty" sort="number">
         <column>number</column>
         <column>number_pat</column>

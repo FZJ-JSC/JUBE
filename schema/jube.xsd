@@ -15,7 +15,8 @@
         <xs:element name="substituteset" type="substitutesetType" />
         <xs:element name="fileset" type="filesetType" />
         <xs:element name="step" type="stepType" />
-        <xs:element name="analyzer" type="analyzerType" />
+        <xs:element name="analyzer" type="analyserType" />
+        <xs:element name="analyser" type="analyserType" />
         <xs:element name="result" type="resultType" />
         <xs:element name="include" type="includeType" />
       </xs:choice>
@@ -170,7 +171,7 @@
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
-  <xs:complexType name="analyzerType">
+  <xs:complexType name="analyserType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="use" type="useType" />
       <xs:element name="analyse" type="analyseType" />

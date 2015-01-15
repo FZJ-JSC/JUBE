@@ -123,15 +123,15 @@
        <pattern name="zero" mode="python" type="int">${nodes_pattern}-${nodes}</pattern>
     </patternset>
     
-    <analyzer name="analyze">
+    <analyser name="analyse">
        <use>pattern</use>
        <analyse step="execute">
          <file>stdout</file>
        </analyse>
-    </analyzer>
+    </analyser>
     
     <result>
-       <use>analyze</use>
+       <use>analyse</use>
        <table name="result" style="pretty" sort="nodes,cppflagslist">
          <column>cppflagslist</column>
          <column>nodes</column>

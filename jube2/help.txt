@@ -3,7 +3,7 @@ Glossary
 ********
 
 analyse
-   Analyse an existing benchmark. The analyzer will scan through all
+   Analyse an existing benchmark. The analyser will scan through all
    files given inside the configuration by using the given
    patternsets.
 
@@ -11,18 +11,18 @@ analyse
    be used. If benchmark directory is missing, current directory will
    be used.
 
-analyzer_tag
-   The analyzer describe the steps and files which should be scanned
+analyser_tag
+   The analyser describe the steps and files which should be scanned
    using a set of pattern.
 
-      <analyzer name="...">
+      <analyser name="...">
         <use from="">...</use>
         ...
         <analyse step="...">
           <file>...</file>
         </analyse>
         ...
-      </analyzer>
+      </analyser>
 
    * you can use different patternsets to analyse a set of files
 
@@ -167,8 +167,8 @@ do_tag
       <do shared="true">...</do>
       <do work_dir="...">...</do>
 
-   * "do" can contain any *Shell*-syntax-snippet (parameter will be
-     replaced ... $nameofparameter ...)
+   * "do" can contain any *Shell*-syntax-snippet (*parameter* will
+     be replaced ... $nameofparameter ...)
 
    * "stdout"- and "stderr"-filename are optional (default: "stdout"
      and "stderr")
@@ -182,7 +182,7 @@ do_tag
      * can be set to "true" or "false" to enable or disable the
        single command
 
-     * parameter are allowed inside this attribute
+     * *parameter* are allowed inside this attribute
 
    * "done_file"-filename is optional
 
@@ -227,6 +227,7 @@ fileset_tag
 
 general_structure
       <?xml version="1.0" encoding="UTF-8"?>
+      <!-- Basic top level JUBE structure -->
       <jube>
         <!-- optional additional include pathes -->
         <include-path>
@@ -264,7 +265,7 @@ general_structure
           <step>...</step>
           ...
           <!-- analyse -->
-          <analyzer>...</analyzer>
+          <analyser>...</analyser>
           ...
           <!-- result -->
           <result>...</result>
@@ -404,8 +405,24 @@ log
    be used. If benchmark directory is missing, current directory will
    be used.
 
+parameter_space
+   The parameter space for a specific benchmark run is the bundle of
+   all possible parameter combinations. E.g. there are to different
+   parameter: a = 1,2 and b= "p","q" then you will get four different
+   parameter combinations: a=1, b="p"; a=1, b="q"; a=2, b="p"; a=2,
+   b="q".
+
+   The parameter space of a specific step will be one of these
+   parameter combinations. To fulfill all combinations the step will
+   be executed multible times (each time using a new combination). The
+   specific combination of a step and an expanded parameter space is
+   named *workpackage*.
+
 parameter_tag
-   A parameter is a usable configuration option.
+   A parameter can be used to store benchmark configuration data. A
+   set of different parameters will create a specific parameter
+   environment (also called *parameter space*) for the different steps
+   of the benchmark.
 
       <parameter name="..." mode="..." type="..." separator="..." export="...">...</parameter>
 
@@ -436,8 +453,8 @@ parameter_tag
        complex parameter structures; max: 5 times)
 
      * the substitution will be run before the execution step starts
-       with the current parameter space. Only parameters reachable in
-       this step will be usable for substitution!
+       with the current *parameter space*. Only parameters reachable
+       in this step will be usable for substitution!
 
    * Scripting modes allowed:
 
@@ -450,7 +467,7 @@ parameter_tag
      "",".join([str(2**i) for i in range(3)])"
 
 parameterset_tag
-   A parameterset is a container to store a bundle of parameters.
+   A parameterset is a container to store a bundle of *parameters*.
 
       <parameterset name="..." init_with="...">
          <parameter>...</parameter>
@@ -569,9 +586,9 @@ patternset_tag
      * the name of the external set can differ to the local one by
        using "init-with="filename.xml:external_name""
 
-   * patternsets can be used inside the analyzer-command
+   * patternsets can be used inside the analyser tag
 
-   * different sets, which are used inside the same analyzer, must
+   * different sets, which are used inside the same analyser, must
      be compatible
 
 prepare_tag
@@ -611,7 +628,8 @@ result
    be used.
 
 result_tag
-   Container for different output types.
+   The result tag is used to handle different visualisation types of
+   your analysed data.
 
       <result result_dir="...">
         <use>...</use>
@@ -625,9 +643,9 @@ result_tag
      the current benchmark id will be created. Default:
      benchmark_dir/result
 
-   * only analyzer are usable
+   * only analyser are usable
 
-   * using analyzer "<use>set1,set2</use>" is the same as
+   * using analyser "<use>set1,set2</use>" is the same as
      "<use>set1</use><use>set2</use>"
 
 run
@@ -662,7 +680,7 @@ step_tag
    A step give a list of *Shell* operations and a corresponding
    parameter environment.
 
-      <step name="..." depend="..." work_dir="..." shared="..." export="...">
+      <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="...">
         <use from="">...</use>
         ...
         <do></do>
@@ -685,6 +703,16 @@ step_tag
 
    * "depend" is optional and can contain a list of other step names
      which must be executed before the current step
+
+   * "max_async" is optional and can contain a number (or a
+     parameter) which describe how many *workpackages* can be executed
+     asynchronously (default: 0 means no limitation). This option is
+     only important if a *do* inside the step contains a "done_file"
+     attribute and should be executed in the background (or managed by
+     a jobsystem). In this case *JUBE* will manage that there will not
+     be to many instances at the same time. To update the benchmark
+     and start further instances, if the first ones were finished, the
+     *continue* command must be used.
 
    * "work_dir" is optional and can be used to switch to an
      alternative work directory
@@ -718,7 +746,7 @@ sub_tag
    * both can contain parameter: "... $nameofparameter ..."
 
 substituteset_tag
-   A substituteset is a container to store a bundle of sub commands.
+   A substituteset is a container to store a bundle of *sub* commands.
 
       <substituteset name="..." init_with="...">
         <iofile/>
@@ -768,8 +796,8 @@ table_tag
    * "format" can contain a C like format string: e.g. format=".2f"
 
 tagging
-   Tagging is a simple way to include or exclude parts of your input
-   file.
+   Tagging is a simple way to mark parts of your input file to be
+   includable or excludable.
 
    * Every available "<tag>" (not the root "<jube>"-tag) can contain
      a tag-attribute
@@ -795,6 +823,6 @@ tagging
 workpackage
    A workpackage is the combination of a *step* (which contains all
    operations) and one parameter setting out of the expanded
-   parameterspace.
+   *parameter space*.
 
    Every workpackage will run inside its own sandbox directory!

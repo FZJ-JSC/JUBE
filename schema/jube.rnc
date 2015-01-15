@@ -36,6 +36,7 @@ benchmark =
      | step
      | patternset
      | analyzer
+     | analyser
      | result
      | \include)*
   }
@@ -132,6 +133,11 @@ attlist.step &=
 analyzer =
   element analyzer { attlist.analyzer, (use | analyse | \include)* }
 attlist.analyzer &=
+  attribute name { text },
+  attribute tag { text }?
+analyser =
+  element analyser { attlist.analyser, (use | analyse | \include)* }
+attlist.analyser &=
   attribute name { text },
   attribute tag { text }?
 use = element use { attlist.use, text }

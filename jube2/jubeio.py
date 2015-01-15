@@ -33,7 +33,7 @@ import jube2.parameter
 import jube2.fileset
 import jube2.pattern
 import jube2.workpackage
-import jube2.analyzer
+import jube2.analyser
 import jube2.step
 import jube2.util
 import jube2.conf
@@ -308,18 +308,19 @@ def analyse_result_from_xml(filename):
     LOGGER.debug("Parsing {0}".format(filename))
     tree = ET.parse(filename).getroot()
     analyse_result = dict()
-    analyzer = jube2.util.get_tree_elements(tree, "analyzer")
-    for analyzer_etree in analyzer:
-        analyzer_name = _attribute_from_element(analyzer_etree, "name")
-        analyse_result[analyzer_name] = dict()
-        for step_etree in analyzer_etree:
+    analyser = jube2.util.get_tree_elements(tree, "analyzer")
+    analyser += jube2.util.get_tree_elements(tree, "analyser")
+    for analyser_etree in analyser:
+        analyser_name = _attribute_from_element(analyser_etree, "name")
+        analyse_result[analyser_name] = dict()
+        for step_etree in analyser_etree:
             _check_tag(step_etree, ["step"])
             step_name = _attribute_from_element(step_etree, "name")
-            analyse_result[analyzer_name][step_name] = dict()
+            analyse_result[analyser_name][step_name] = dict()
             for workpackage_etree in step_etree:
                 _check_tag(workpackage_etree, ["workpackage"])
                 wp_id = int(_attribute_from_element(workpackage_etree, "id"))
-                analyse_result[analyzer_name][step_name][wp_id] = dict()
+                analyse_result[analyser_name][step_name][wp_id] = dict()
                 for pattern_etree in workpackage_etree:
                     _check_tag(pattern_etree, ["pattern"])
                     pattern_name = \
@@ -328,7 +329,7 @@ def analyse_result_from_xml(filename):
                         _attribute_from_element(pattern_etree, "type")
                     value = pattern_etree.text
                     value = jube2.util.convert_type(pattern_type, value)
-                    analyse_result[analyzer_name][step_name][
+                    analyse_result[analyser_name][step_name][
                         wp_id][pattern_name] = value
     return analyse_result
 
@@ -501,7 +502,7 @@ def _create_benchmark(benchmark_etree, global_parametersets,
     name = _attribute_from_element(benchmark_etree, "name").strip()
 
     valid_tags = ["parameterset", "substituteset", "fileset", "step",
-                  "comment", "patternset", "analyzer", "result"]
+                  "comment", "patternset", "analyzer", "analyser", "result"]
     for element in benchmark_etree:
         _check_tag(element, valid_tags)
 
@@ -541,8 +542,8 @@ def _create_benchmark(benchmark_etree, global_parametersets,
     # dict of local steps
     steps = _extract_steps(benchmark_etree)
 
-    # dict of local analyzers
-    analyzer = _extract_analyzers(benchmark_etree)
+    # dict of local analysers
+    analyser = _extract_analysers(benchmark_etree)
 
     # dict of local results
     results, results_order = _extract_results(benchmark_etree)
@@ -550,7 +551,7 @@ def _create_benchmark(benchmark_etree, global_parametersets,
     benchmark = jube2.benchmark.Benchmark(name, outpath,
                                           parametersets, substitutesets,
                                           filesets, patternsets, steps,
-                                          analyzer, results, results_order,
+                                          analyser, results, results_order,
                                           comment, tags)
 
     # Change file path reference for relative file location
@@ -663,24 +664,26 @@ def _extract_step(etree_step):
     return step
 
 
-def _extract_analyzers(etree):
-    """Extract all analyzer from etree"""
-    analyzers = dict()
-    for element in etree.findall("analyzer"):
-        analyzer = _extract_analyzer(element)
-        if analyzer.name in analyzers:
-            raise ValueError("\"{0}\" not unique".format(analyzer.name))
-        analyzers[analyzer.name] = analyzer
-    return analyzers
+def _extract_analysers(etree):
+    """Extract all analyser from etree"""
+    analysers = dict()
+    analyser_tags = etree.findall("analyzer")
+    analyser_tags += etree.findall("analyser")
+    for element in analyser_tags:
+        analyser = _extract_analyser(element)
+        if analyser.name in analysers:
+            raise ValueError("\"{0}\" not unique".format(analyser.name))
+        analysers[analyser.name] = analyser
+    return analysers
 
 
-def _extract_analyzer(etree_analyzer):
-    """Extract an analyzer from etree"""
+def _extract_analyser(etree_analyser):
+    """Extract an analyser from etree"""
     valid_tags = ["use", "analyse"]
-    name = _attribute_from_element(etree_analyzer, "name").strip()
-    analyzer = jube2.analyzer.Analyzer(name)
-    LOGGER.debug("  Parsing <analyzer name=\"{0}\">".format(name))
-    for element in etree_analyzer:
+    name = _attribute_from_element(etree_analyser, "name").strip()
+    analyser = jube2.analyser.Analyser(name)
+    LOGGER.debug("  Parsing <analyser name=\"{0}\">".format(name))
+    for element in etree_analyser:
         _check_tag(element, valid_tags)
         if element.tag == "analyse":
             step_name = _attribute_from_element(element, "step").strip()
@@ -688,10 +691,10 @@ def _extract_analyzer(etree_analyzer):
                 if (filename.text is None) or (filename.text.strip() == ""):
                     raise ValueError("Empty <file> found")
                 else:
-                    analyzer.add_analyse(step_name, filename.text.strip())
+                    analyser.add_analyse(step_name, filename.text.strip())
         elif element.tag == "use":
-            analyzer.add_uses(_extract_use(element))
-    return analyzer
+            analyser.add_uses(_extract_use(element))
+    return analyser
 
 
 def _extract_results(etree):

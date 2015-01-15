@@ -41,7 +41,7 @@ class Benchmark(object):
     """The Benchmark class contains all data to run a benchmark"""
 
     def __init__(self, name, outpath, parametersets, substitutesets,
-                 filesets, patternsets, steps, analyzer, results,
+                 filesets, patternsets, steps, analyser, results,
                  results_order, comment="", tags=None):
         self._name = name
         self._outpath = outpath
@@ -50,9 +50,9 @@ class Benchmark(object):
         self._filesets = filesets
         self._patternsets = patternsets
         self._steps = steps
-        self._analyzer = analyzer
-        for analyzer in self._analyzer.values():
-            analyzer.benchmark = self
+        self._analyser = analyser
+        for analyser in self._analyser.values():
+            analyser.benchmark = self
         self._results = results
         self._results_order = results_order
         for result in self._results.values():
@@ -100,9 +100,9 @@ class Benchmark(object):
         return self._patternsets
 
     @property
-    def analyzer(self):
-        """Return analyzer"""
-        return self._analyzer
+    def analyser(self):
+        """Return analyser"""
+        return self._analyser
 
     @property
     def results(self):
@@ -266,8 +266,8 @@ class Benchmark(object):
             benchmark_etree.append(patternset.etree_repr())
         for step in self._steps.values():
             benchmark_etree.append(step.etree_repr())
-        for analyzer in self._analyzer.values():
-            benchmark_etree.append(analyzer.etree_repr())
+        for analyser in self._analyser.values():
+            benchmark_etree.append(analyser.etree_repr())
         for result_name in self._results_order:
             result = self._results[result_name]
             benchmark_etree.append(result.etree_repr(new_cwd))
@@ -316,7 +316,7 @@ class Benchmark(object):
         if show_info:
             LOGGER.info(">>> Start analyse")
 
-        for analyser in self._analyzer.values():
+        for analyser in self._analyser.values():
             analyser.analyse()
         if not jube2.conf.DEBUG_MODE:
             self.write_analyse_data(os.path.join(self.bench_dir,
@@ -349,21 +349,21 @@ class Benchmark(object):
                     file_handle.write(result_str)
                     file_handle.close()
 
-    def update_analyse_and_result(self, new_patternsets, new_analyzer,
+    def update_analyse_and_result(self, new_patternsets, new_analyser,
                                   new_results, new_results_order, new_cwd):
-        """Update analyzer and result data"""
+        """Update analyser and result data"""
         if os.path.exists(self.bench_dir):
             LOGGER.debug("Update analyse and result data")
             self._patternsets = new_patternsets
-            old_analyzer = self._analyzer
-            self._analyzer = new_analyzer
+            old_analyser = self._analyser
+            self._analyser = new_analyser
             self._results = new_results
             self._results_order = new_results_order
-            for analyzer in self._analyzer.values():
-                if analyzer.name in old_analyzer:
-                    analyzer.analyse_result = \
-                        old_analyzer[analyzer.name].analyse_result
-                analyzer.benchmark = self
+            for analyser in self._analyser.values():
+                if analyser.name in old_analyser:
+                    analyser.analyse_result = \
+                        old_analyser[analyser.name].analyse_result
+                analyser.benchmark = self
             for result in self._results.values():
                 result.benchmark = self
                 # change result dir position relative to cwd
@@ -381,13 +381,13 @@ class Benchmark(object):
     def write_analyse_data(self, filename):
         """All analyse data will be written to given file
         using xml representation"""
-        # Create root-tag and append analyzer
+        # Create root-tag and append analyser
         analyse_etree = ET.Element("analyse")
-        for analyzer_name in self._analyzer:
-            analyzer_etree = ET.SubElement(analyse_etree, "analyzer")
-            analyzer_etree.attrib["name"] = analyzer_name
-            for etree in self._analyzer[analyzer_name].analyse_etree_repr():
-                analyzer_etree.append(etree)
+        for analyser_name in self._analyser:
+            analyser_etree = ET.SubElement(analyse_etree, "analyser")
+            analyser_etree.attrib["name"] = analyser_name
+            for etree in self._analyser[analyser_name].analyse_etree_repr():
+                analyser_etree.append(etree)
         xml = jube2.util.element_tree_tostring(analyse_etree, encoding="UTF-8")
         # Using dom for pretty-print
         dom = DOM.parseString(xml.encode("UTF-8"))

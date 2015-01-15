@@ -144,7 +144,7 @@ Run the analyse procedure.
    select benchmark id, default: last found inside the benchmarks directory
 
 ``-u UPDATE_FILE``, ``--update UPDATE_FILE``
-   use given input *XML* file to update ``patternsets``, ``analyzer`` and ``result`` before running the analyse
+   use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
 
 ``--include-path INCLUDE_PATH [INCLUDE_PATH ...]``
    add additional include pathes where to search for include files (when using ``--update``)
@@ -180,7 +180,7 @@ Run the result creation.
    run analyse before running result command
 
 ``-u UPDATE_FILE``, ``--update UPDATE_FILE``
-   use given input *XML* file to update ``patternsets``, ``analyzer`` and ``result`` before running the analyse
+   use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
 
 ``--include-path INCLUDE_PATH [INCLUDE_PATH ...]``
    add additional include pathes where to search for include files (when using ``--update``)

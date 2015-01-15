@@ -71,12 +71,12 @@
       <pattern name="iotime" unit="s" type="float" mode="python">${iotime_ms_max}/1000</pattern>
     </patternset>
 
-    <analyzer name="analyse">
+    <analyser name="analyse">
       <use>pattern</use>
       <analyse step="execute">
         <file>stdout</file>
       </analyse>
-    </analyzer>
+    </analyser>
 
     <result>
       <use>analyse</use>
