@@ -219,7 +219,7 @@ class Workpackage(object):
         parameterset.add_parameterset(self.get_jube_parameterset())
         return parameterset
 
-    def get_jube_parameterset(self):
+    def get_jube_parameterset(self, substitute=True):
         """Return parameterset which contains workpackage related
         information"""
         parameterset = jube2.parameter.Parameterset()
@@ -251,14 +251,18 @@ class Workpackage(object):
                                  .format(parent.step.name),
                                  str(parent.id), parameter_type="int"))
 
+        # environment export string
         env_str = ""
         for parameter in self._parameterset.export_parameter_dict.values():
             env_str += "export {0}=${1}\n".format(parameter.name,
                                                   parameter.name)
-        # environment export string
-        parameterset.add_parameter(
-            jube2.parameter.Parameter.
-            create_parameter("jube_wp_envstr", env_str))
+        env_par = jube2.parameter.Parameter.create_parameter("jube_wp_envstr",
+                                                             env_str)
+        if substitute:
+            env_par = env_par.substitute_and_evaluate(
+                [self._parameterset], final_sub=True)[0]
+
+        parameterset.add_parameter(env_par)
 
         return parameterset
 

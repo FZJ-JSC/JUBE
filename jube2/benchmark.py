@@ -494,7 +494,8 @@ class Benchmark(object):
                         workpackage.parameterset.parameter_substitution(
                             additional_parametersets=[
                                 jube_parameterset,
-                                workpackage.get_jube_parameterset()],
+                                workpackage.get_jube_parameterset(
+                                    substitute=False)],
                             final_sub=True)
 
                         # --- Check parameter type ---
