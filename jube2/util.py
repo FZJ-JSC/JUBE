@@ -285,8 +285,13 @@ def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
         done_cnt = 0
         medium_cnt = 0
 
+    # shrink medium_cnt if there was some rounding issue
     if (medium_cnt > 0) and (width < medium_cnt + done_cnt):
         medium_cnt = width - done_cnt
+
+    # fill up medium_cnt if there was some rounding issue
+    if (current_cnt+second_cnt == all_cnt) and (medium_cnt + done_cnt < width):
+        medium_cnt += width - (medium_cnt + done_cnt)
 
     todo_cnt = width - done_cnt - medium_cnt
 

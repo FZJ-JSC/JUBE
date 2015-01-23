@@ -27,14 +27,38 @@
     <parameterset name="executeset">
         <!-- Jobscript handling -->
         <parameter name="submit">sbatch</parameter>
+        <parameter name="submit_script">submit.job</parameter>
         <parameter name="starter">srun</parameter>
         <parameter name="args_starter"></parameter>
+        <parameter name="done_file">ready</parameter>
+        <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
-        <parameter name="submit_script">submit.job</parameter>
         <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
         <parameter name="chainjob_script">./juropa3-chainJobs.sh</parameter>
         <parameter name="chainjob_needs_submit">false</parameter>
-        <parameter name="done_file">ready</parameter>
+    </parameterset>
+
+    <parameterset name="systemParameter">
+        <!-- Default jobscript parameter  -->
+        <parameter name="nodes" type="int">1</parameter>
+        <parameter name="taskspernode" type="int">1</parameter>
+        <parameter name="threadspertask" type="int">1</parameter>
+        <parameter name="tasks" mode="python" type="int">
+            $nodes * $taskspernode
+        </parameter>
+        <parameter name="OMP_NUM_THREADS" type="int" export="true">
+            $threadspertask
+        </parameter>
+        <parameter name="queue">batch</parameter>
+        <parameter name="executable"></parameter>
+        <parameter name="args_exec"></parameter>
+        <parameter name="mail"></parameter>
+        <parameter name="env">$jube_wp_envstr</parameter>
+        <parameter name="notification">ALL</parameter>
+        <parameter name="outlogfile">stdout</parameter>
+        <parameter name="errlogfile">stderr</parameter>
+        <parameter name="timelimit">00:30:00</parameter>
+        <parameter name="modules"></parameter>
     </parameterset>
 
     <substituteset name="executesub">
@@ -62,29 +86,6 @@
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#DONE_FILE#" dest="$done_file" />
     </substituteset>
-
-    <parameterset name="systemParameter">
-        <!-- Default jobscript parameter  -->
-        <parameter name="nodes" type="int">1</parameter>
-        <parameter name="taskspernode" type="int">1</parameter>
-        <parameter name="threadspertask" type="int">1</parameter>
-        <parameter name="tasks" mode="python" type="int">
-            $nodes * $taskspernode
-        </parameter>
-        <parameter name="OMP_NUM_THREADS" type="int" export="true">
-            $threadspertask
-        </parameter>
-        <parameter name="queue">batch</parameter>
-        <parameter name="executable"></parameter>
-        <parameter name="args_exec"></parameter>
-        <parameter name="mail"></parameter>
-        <parameter name="env">$jube_wp_envstr</parameter>
-        <parameter name="notification">ALL</parameter>
-        <parameter name="outlogfile">stdout</parameter>
-        <parameter name="errlogfile">stderr</parameter>
-        <parameter name="timelimit">00:30:00</parameter>
-        <parameter name="modules"></parameter>
-    </parameterset>
 
     <substituteset name="chainsub">
         <!-- Default chainjob substitution -->

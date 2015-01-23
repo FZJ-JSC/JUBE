@@ -261,8 +261,15 @@ class Workpackage(object):
         if substitute:
             env_par = env_par.substitute_and_evaluate(
                 [self._parameterset], final_sub=True)[0]
-
         parameterset.add_parameter(env_par)
+
+        # environment export list
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.create_parameter(
+                "jube_wp_envlist",
+                ",".join(
+                    [parameter.name for parameter
+                     in self._parameterset.export_parameter_dict.values()])))
 
         return parameterset
 

@@ -9,10 +9,6 @@
 #MSUB -o #STDOUTLOGFILE#
 #MSUB -e #STDERRLOGFILE#
 
-export OMP_NUM_THREADS=#NTHREADS#
-
-cd $PBS_O_WORKDIR
-
 #ENV#
 
 #PREPROCESS#
@@ -27,4 +23,3 @@ if [ $JUBE_ERR_CODE -ne 0 ]; then
 fi
 
 touch #DONE_FILE#
-
