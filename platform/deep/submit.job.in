@@ -23,7 +23,9 @@ cd ${PBS_O_WORKDIR}
 cd ${PBS_O_WORKDIR}
 #POSTPROCESS#
 
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    exit $JUBE_ERR_CODE
+fi
+
 #FLAG#
-
-
-
