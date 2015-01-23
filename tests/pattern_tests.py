@@ -38,6 +38,10 @@ class TestPattern(unittest.TestCase):
             "derived", "$reduce", pattern_mode="text")
         self.calculate_pattern = jube2.pattern.Pattern(
             "derived", "100*2", pattern_mode="python", content_type="int")
+        self.calculate_pattern_non_derived = jube2.pattern.Pattern(
+            "non_derived", "100*$derived",
+            pattern_mode="pattern", content_type="int")
+        self.jube_pattern = jube2.pattern.get_jube_pattern()
 
     def test_std_pattern(self):
         """Test standard pattern"""
@@ -48,6 +52,8 @@ class TestPattern(unittest.TestCase):
         result_pattern, changed = self.std_pattern.substitute_and_evaluate([])
         self.assertFalse(changed)
         self.assertEqual(id(result_pattern), id(self.std_pattern))
+        self.assertTrue(repr(self.std_pattern).startswith("Pattern({"))
+        self.assertTrue(repr(self.std_pattern).endswith("})"))
 
     def test_reduce_pattern(self):
         """Test reduce option"""
@@ -72,6 +78,13 @@ class TestPattern(unittest.TestCase):
             self.calculate_pattern.substitute_and_evaluate([])
         self.assertTrue(changed)
         self.assertEqual(result_pattern.value, "200")
+        patternset = jube2.pattern.Patternset("test_set")
+        patternset.add_pattern(result_pattern)
+        result_pattern, changed = \
+            self.calculate_pattern_non_derived.substitute_and_evaluate(
+                [patternset.derived_pattern_storage])
+        self.assertTrue(changed)
+        self.assertEqual(result_pattern.value, "100*200")
 
     def test_etree_repr(self):
         """check etree repr"""
@@ -81,6 +94,21 @@ class TestPattern(unittest.TestCase):
         self.assertEqual(etree.get("mode"), "pattern")
         self.assertEqual(etree.get("reduce"), "first")
         self.assertEqual(etree.text, ".*")
+        etree = self.calculate_pattern.etree_repr()
+        self.assertEqual(etree.get("mode"), "python")
+
+    def test_jube_Pattern(self):
+        """Test JUBE internal pattern"""
+        self.assertEqual(self.jube_pattern["jube_pat_int"].value, "([+-]?\d+)")
+        self.assertEqual(self.jube_pattern["jube_pat_nint"].value,
+                         "(?:[+-]?\d+)")
+        self.assertEqual(self.jube_pattern["jube_pat_fp"].value,
+                         "([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)")
+        self.assertEqual(self.jube_pattern["jube_pat_nfp"].value,
+                         "(?:[+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)")
+        self.assertEqual(self.jube_pattern["jube_pat_wrd"].value, "(\S+)")
+        self.assertEqual(self.jube_pattern["jube_pat_nwrd"].value, "(?:\S+)")
+        self.assertEqual(self.jube_pattern["jube_pat_bl"].value, "(?:\s+)")
 
 if __name__ == "__main__":
     unittest.main()

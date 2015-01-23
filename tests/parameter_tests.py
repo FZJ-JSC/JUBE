@@ -43,6 +43,15 @@ class TestParameter(unittest.TestCase):
         self.para_export = \
             jube2.parameter.Parameter.create_parameter("test2", "4",
                                                        export=True)
+        self.para_no_template = \
+            jube2.parameter.Parameter.create_parameter("no_templates", "2,3,4",
+                                                       no_templates=True)
+        self.para_eval = \
+            jube2.parameter.Parameter.create_parameter("eval", "2+2",
+                                                       parameter_mode="python")
+        self.para_error = \
+            jube2.parameter.Parameter.create_parameter("error", "2+'test'",
+                                                       parameter_mode="python")
 
     def test_constant(self):
         """Test Constants"""
@@ -76,6 +85,18 @@ class TestParameter(unittest.TestCase):
         # Parameter based on template check
         self.assertEqual(self.para_select.value, "3")
         self.assertFalse(self.para_select.is_template)
+
+    def test_no_template(self):
+        self.assertFalse(self.para_no_template.is_template)
+        self.assertEqual(self.para_no_template.value, "2,3,4")
+
+    def test_eval(self):
+        """Test parameter evaluation"""
+        eval_para, changed = self.para_eval.substitute_and_evaluate([])
+        self.assertTrue(changed)
+        self.assertEqual(eval_para.value, "4")
+        self.assertRaises(RuntimeError,
+                          self.para_error.substitute_and_evaluate, [])
 
     def test_etree_repr(self):
         """Test Etree repr"""
