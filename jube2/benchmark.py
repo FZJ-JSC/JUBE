@@ -627,7 +627,7 @@ class Benchmark(object):
         # Check if outpath exists
         if not (os.path.exists(self._outpath) and
                 os.path.isdir(self._outpath)):
-            os.mkdir(self._outpath)
+            os.makedirs(self._outpath)
         # Generate unique ID in outpath
         self._id = jube2.util.get_current_id(self._outpath) + 1
         os.makedirs(self.bench_dir)

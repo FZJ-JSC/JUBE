@@ -243,7 +243,7 @@ class Operation(object):
 
             # Remove leading and trailing ; because otherwise ;; will cause
             # trouble when adding ; env
-            do.strip(";")
+            do = do.strip(";")
 
             if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 # Change stdout
