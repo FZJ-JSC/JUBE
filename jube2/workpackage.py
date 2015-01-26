@@ -269,7 +269,8 @@ class Workpackage(object):
                 "jube_wp_envlist",
                 ",".join(
                     [parameter.name for parameter
-                     in self._parameterset.export_parameter_dict.values()])))
+                     in self._parameterset.export_parameter_dict.values()]),
+                no_templates=True))
 
         return parameterset
 
