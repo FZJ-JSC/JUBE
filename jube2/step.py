@@ -278,6 +278,8 @@ class Operation(object):
                         stderr=stderr, shell=True,
                         env=env)
                 except OSError:
+                    stdout.close()
+                    stderr.close()
                     raise RuntimeError(("Error (returncode <> 0) while " +
                                         "running \"{0}\" in " +
                                         "directory \"{1}\"")
@@ -296,10 +298,16 @@ class Operation(object):
                     environment.update(env)
 
                 if returncode != 0:
-                    raise RuntimeError(("Error (returncode <> 0) while " +
-                                        "running \"{0}\" in " +
-                                        "directory \"{1}\"")
-                                       .format(do, os.path.abspath(work_dir)))
+                    stderr = open(os.path.join(work_dir, stderr_filename), "r")
+                    stderr_msg = stderr.readlines()
+                    stderr.close()
+
+                    raise RuntimeError(
+                        ("Error (returncode <> 0) while running \"{0}\" in " +
+                         "directory \"{1}\"\nMessage in \"{2}\":{3}\n{4}")
+                        .format(do, os.path.abspath(work_dir), stderr_filename,
+                                "\n..." if len(stderr_msg) > 5 else "",
+                                "\n".join(stderr_msg[-5:])))
 
         if self._async_filename is not None:
             async_filename = jube2.util.substitution(
