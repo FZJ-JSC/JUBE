@@ -52,5 +52,10 @@ To check the installation you can run:
 Without the --user argument, JUBE will be installed in the standard 
 system path for Python packages.
 
+------------------------------------------------------------------------------
+
 For further information please see the Documentation:
 http://www.fz-juelich.de/jsc/jube
+
+Contact:
+jube.jsc@fz-juelich.de

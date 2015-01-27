@@ -305,7 +305,9 @@ class Operation(object):
                     raise RuntimeError(
                         ("Error (returncode <> 0) while running \"{0}\" in " +
                          "directory \"{1}\"\nMessage in \"{2}\":{3}\n{4}")
-                        .format(do, os.path.abspath(work_dir), stderr_filename,
+                        .format(do, os.path.abspath(work_dir),
+                                os.path.abspath(
+                                    os.path.join(work_dir, stderr_filename)),
                                 "\n..." if len(stderr_msg) > 5 else "",
                                 "\n".join(stderr_msg[-5:])))
 
