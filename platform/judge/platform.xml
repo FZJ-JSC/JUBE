@@ -80,7 +80,7 @@
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
         <sub source="#EXECUTABLE#" dest="$executable" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
-        <sub source="#DONE_FILE#" dest="$done_file" />
+        <sub source="#FLAG#" dest="touch $done_file" />
     </substituteset>
 
     <substituteset name="chainsub">

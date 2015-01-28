@@ -10,8 +10,6 @@
 # @ bg_connectivity  = #BGCONNECTIVITY# 
 # @ queue
 
-export OMP_NUM_THREADS=#NTHREADS#
-
 #ENV#
 
 #PREPROCESS#
@@ -25,4 +23,4 @@ if [ $JUBE_ERR_CODE -ne 0 ]; then
     exit $JUBE_ERR_CODE
 fi
 
-touch #DONE_FILE#
+#FLAG#

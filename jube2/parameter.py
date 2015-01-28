@@ -324,6 +324,11 @@ class Parameter(object):
         return self._export
 
     @property
+    def mode(self):
+        """Return parameter mode"""
+        return self._mode
+
+    @property
     def value(self):
         """Return parameter value"""
         return self._value
@@ -414,13 +419,15 @@ class StaticParameter(Parameter):
 
     def can_substitute_and_evaluate(self, parameterset):
         """A parameter can be substituted and evaluated if there are no
-        depending templates inside."""
+        depending templates or unevaluated parameter inside"""
         param_names = \
             [found[1] for found in
              re.findall(Parameter.parameter_regex.format("(.+?)"),
                         self._value)]
         return all([(param_name not in parameterset) or
-                    (not parameterset[param_name].is_template)
+                    ((not parameterset[param_name].is_template) and
+                     (not parameterset[param_name].mode in
+                      jube2.conf.ALLOWED_SCRIPTTYPES))
                     for param_name in param_names])
 
     def depends_on(self, parameter):
