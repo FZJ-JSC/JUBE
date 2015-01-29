@@ -22,7 +22,7 @@ from __future__ import (print_function,
                         division)
 
 # general
-JUBE_VERSION = "2.0.2"
+JUBE_VERSION = "2.0.3"
 ALLOWED_SCRIPTTYPES = ["python", "perl"]
 DEBUG_MODE = False
 
@@ -53,3 +53,6 @@ LOGFILE_DEBUG_MODE = "w"
 LOG_CONSOLE_FORMAT = "%(message)s"
 LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
 DEFAULT_LOGGING_MODE = "default"
+
+# other
+ERROR_MSG_LINES = 5

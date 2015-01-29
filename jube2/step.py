@@ -308,8 +308,10 @@ class Operation(object):
                         .format(do, os.path.abspath(work_dir),
                                 os.path.abspath(
                                     os.path.join(work_dir, stderr_filename)),
-                                "\n..." if len(stderr_msg) > 5 else "",
-                                "\n".join(stderr_msg[-5:])))
+                                "\n..." if len(stderr_msg) >
+                                jube2.conf.ERROR_MSG_LINES else "",
+                                "\n".join(stderr_msg[
+                                    -jube2.conf.ERROR_MSG_LINES:])))
 
         if self._async_filename is not None:
             async_filename = jube2.util.substitution(

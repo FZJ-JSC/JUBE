@@ -31,7 +31,7 @@
             "$jube_wp_envlist".replace(","," ")
         </parameter>
         <parameter name="args_starter">
-            --ranks-per-node $taskspernode --np $tasks --exp-env=$export_list
+            --ranks-per-node $taskspernode --np $tasks --exp-env $export_list
         </parameter>
         <parameter name="submit">llsubmit</parameter>
         <parameter name="submit_script">submit.job</parameter>

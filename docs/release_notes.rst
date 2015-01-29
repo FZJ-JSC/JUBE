@@ -21,6 +21,28 @@
 Release notes
 =============
 
+Version 2.0.3
+~~~~~~~~~~~~~
+Release: 2015-01-29
+
+* missing files given in a fileset will now raise an error message
+* ``jube info <benchmark-dir> --id <id> --step <step_name>`` now also shows
+  the current parametrization
+* ``jube info <benchmark-dir> --id <id> --step <step_name> -p`` only shows the
+  current parametrization using a csv table format
+* add new (optional) attribute ``max_async="..."`` to ``<step>``: Maximum number of parallel workpackages
+  of the correspondig step will run at the same time (default: 0, means no limitation)
+* switch ``<analyzer>`` to ``<analyser>`` (also ``<analyzer>`` will be available) to avoid mixing of "s" and "z" versions
+* fix bug when using ``,`` inside of a ``<pattern>``
+* *JUBE* now return a none zero error code if it sends an error message
+* update platform files to allow easier environment handling: ``<parameter ... export="true">`` will 
+  be automatically used inside of the corresponding jobscript
+* update platform jobscript templates to keep error code of running program
+* fix bug when adding ``;`` at the end of a ``<do>``
+* last five lines of stderr message will now be copied to user error message (if shell return code <> 0)
+* fix *Python2.6* compatibility bug in converter module
+* fix bug when using an evaluable parameter inside of another parameter
+
 Version 2.0.2
 ~~~~~~~~~~~~~
 Release: 2014-12-09
