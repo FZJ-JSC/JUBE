@@ -64,7 +64,7 @@ class Step(object):
             step_etree.attrib["shared"] = self._shared_name
         if self._export:
             step_etree.attrib["export"] = "true"
-        if self._max_wps > 0:
+        if self._max_wps != "0":
             step_etree.attrib["max_async"] = str(self._max_wps)
         if self._iterations > 1:
             step_etree.attrib["iterations"] = str(self._iterations)
