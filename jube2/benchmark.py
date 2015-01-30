@@ -633,6 +633,9 @@ class Benchmark(object):
         os.makedirs(self.bench_dir)
         self.write_benchmark_configuration(
             os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME))
+        jube2.util.update_timestamps(os.path.join(self.bench_dir,
+                                                  jube2.conf.TIMESTAMPS_INFO),
+                                     "start", "change")
 
     def write_benchmark_configuration(self, filename):
         """The current benchmark configuration will be written to given file

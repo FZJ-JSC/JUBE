@@ -32,6 +32,7 @@ import os.path
 import subprocess
 import jube2.log
 import sys
+import time
 import textwrap
 import jube2.conf
 
@@ -347,6 +348,36 @@ def get_tree_elements(node, tag_path=None, attribute_dict=None):
         result += get_tree_elements(subtree, tag_path, attribute_dict)
 
     return result
+
+
+def now_str():
+    """Return current time string"""
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+
+def update_timestamps(path, *args):
+    """Set all timestamps for given arg_names to now"""
+    timestamps = dict()
+    timestamps.update(read_timestamps(path))
+    file_ptr = open(path, "w")
+    for arg in args:
+        timestamps[arg] = now_str()
+    for timestamp in timestamps:
+        file_ptr.write("{0}: {1}\n".format(timestamp, timestamps[timestamp]))
+    file_ptr.close()
+
+
+def read_timestamps(path):
+    """Return timestamps dictionary"""
+    timestamps = dict()
+    if os.path.isfile(path):
+        file_ptr = open(path, "r")
+        for line in file_ptr:
+            matcher = re.match("(.*?): (.*)", line.strip())
+            if matcher:
+                timestamps[matcher.group(1)] = matcher.group(2)
+        file_ptr.close()
+    return timestamps
 
 
 def resolve_depend(depend_dict):

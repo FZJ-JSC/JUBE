@@ -122,20 +122,16 @@ class Workpackage(object):
         """Set/reset Workpackage done"""
         done_file = os.path.join(self.workpackage_dir,
                                  jube2.conf.WORKPACKAGE_DONE_FILENAME)
+        if jube2.conf.DEBUG_MODE:
+            done_file = done_file + "_DEBUG"
         if set_done:
-            if jube2.conf.DEBUG_MODE:
-                fout = open(done_file + "_DEBUG", "w")
-            else:
-                fout = open(done_file, "w")
+            fout = open(done_file, "w")
+            fout.write(jube2.util.now_str())
             fout.close()
             self._remove_operation_info_files()
         else:
-            if jube2.conf.DEBUG_MODE:
-                if os.path.exists(done_file + "_DEBUG"):
-                    os.remove(done_file + "_DEBUG")
-            else:
-                if os.path.exists(done_file):
-                    os.remove(done_file)
+            if os.path.exists(done_file):
+                os.remove(done_file)
 
     @property
     def queued(self):
@@ -159,8 +155,19 @@ class Workpackage(object):
                                      jube2.conf.WORKPACKAGE_DONE_FILENAME,
                                      operation_number))
         if set_done is None:
-            return os.path.exists(done_file)
+            exist = os.path.exists(done_file)
+            if jube2.conf.DEBUG_MODE:
+                exist = exist or os.path.exists(done_file + "_DEBUG")
+            return exist
         else:
+            if jube2.conf.DEBUG_MODE:
+                done_file = done_file + "_DEBUG"
+            elif ((set_done and not os.path.exists(done_file)) or
+                  (not set_done and os.path.exists(done_file))):
+                jube2.util.update_timestamps(
+                    os.path.join(self._benchmark.bench_dir,
+                                 jube2.conf.TIMESTAMPS_INFO),
+                    "change")
             if set_done:
                 fout = open(done_file, "w")
                 fout.close()
