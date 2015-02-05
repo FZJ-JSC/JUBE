@@ -45,7 +45,7 @@ Run a new benchmark.
    jube run [-h] [--only-bench ONLY_BENCH [ONLY_BENCH ...]]
             [--not-bench NOT_BENCH [NOT_BENCH ...]] [-t TAG [TAG ...]]
             [--hide-animation] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
-            [-a] [-r] [-m COMMENT] FILE [FILE ...]
+            [-a] [-r] [-m COMMENT] [--id ID [ID ...]] FILE [FILE ...]
 
 ``-h``, ``--help``
    show command help information
@@ -73,6 +73,9 @@ Run a new benchmark.
 
 ``-m COMMENT``, ``--comment COMMENT``
    overwrite benchmark specific comment
+
+``-i ID [ID ...]``, ``--id ID [ID ...]``
+   use specific benchmark id
 
 ``FILE [FILE ...]``
    input *XML* file

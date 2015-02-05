@@ -271,6 +271,8 @@ def run_new_benchmark(args):
 
     jube2.conf.HIDE_ANIMATIONS = args.hide_animation
 
+    id_cnt = 0
+
     for path in args.files:
         # Store current working dir
         cwd = os.getenv("PWD")
@@ -313,6 +315,10 @@ def run_new_benchmark(args):
             bench = benchmarks[bench_name]
             bench.cwd = os.path.join(cwd, dirname)
             bench.org_cwd = cwd
+            # Set user defined id
+            if (args.id is not None) and (len(args.id) > id_cnt):
+                bench.id = args.id[id_cnt]
+                id_cnt += 1
             bench.new_run()
             # Run analyse
             if args.analyse or args.result:
@@ -525,6 +531,9 @@ def _get_args_parser():
                 {"nargs": "+", "help": "do not run benchmark"},
             ("-t", "--tag"):
                 {"nargs": "+", "help": "select tags"},
+            ("-i", "--id"):
+                {"type": int, "help": "use specific benchmark id",
+                 "nargs": "+"},
             ("--hide-animation",):
                 {"action": "store_true", "help": "hide animations"},
             ("--include-path",):

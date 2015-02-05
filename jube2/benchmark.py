@@ -629,7 +629,13 @@ class Benchmark(object):
                 os.path.isdir(self._outpath)):
             os.makedirs(self._outpath)
         # Generate unique ID in outpath
-        self._id = jube2.util.get_current_id(self._outpath) + 1
+        if self._id < 0:
+            self._id = jube2.util.get_current_id(self._outpath) + 1
+        if os.path.exists(self.bench_dir):
+            raise RuntimeError("Benchmark directory \"{0}\" already exist"
+                               .format(os.path.relpath(
+                                   os.path.join(self._cwd, self.bench_dir),
+                                   self._org_cwd)))
         os.makedirs(self.bench_dir)
         self.write_benchmark_configuration(
             os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME))
