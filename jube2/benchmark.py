@@ -331,7 +331,7 @@ class Benchmark(object):
         for result_name in self._results_order:
             result = self._results[result_name]
             if result.name in only:
-                result_str = result.create_result()
+                result_data = result.create_result_data()
                 if result.result_dir is None:
                     result_dir = os.path.join(self.bench_dir,
                                               jube2.conf.RESULT_DIRNAME)
@@ -340,14 +340,12 @@ class Benchmark(object):
                 if (not os.path.exists(result_dir)) and \
                    (not jube2.conf.DEBUG_MODE):
                     os.makedirs(result_dir)
-                LOGGER.info(result_str)
-                LOGGER.info("\n")
                 if not jube2.conf.DEBUG_MODE:
-                    file_handle = \
-                        open(os.path.join(result_dir,
-                                          "{0}.dat".format(result.name)), "w")
-                    file_handle.write(result_str)
-                    file_handle.close()
+                    filename = os.path.join(result_dir,
+                                            "{0}.dat".format(result.name))
+                else:
+                    filename = None
+                result_data.create_result(filename)
 
     def update_analyse_and_result(self, new_patternsets, new_analyser,
                                   new_results, new_results_order, new_cwd):
