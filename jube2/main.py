@@ -76,7 +76,7 @@ def benchmarks_results(args):
     found_benchmarks.reverse()
     cnt = 0
     for benchmark_folder in found_benchmarks:
-        if (args.limit is None) or (cnt < args.limit):
+        if (args.num is None) or (cnt < args.num):
             result_list = _benchmark_result(benchmark_folder=benchmark_folder,
                                             args=args,
                                             result_list=result_list)
@@ -652,7 +652,7 @@ def _get_args_parser():
             ("-r", "--reverse"):
                 {"help": "reverse benchmark output order",
                  "action": "store_true"},
-            ("-l", "--limit"):
+            ("-n", "--num"):
                 {"type": int, "help": "show only last N benchmarks"}
         }
     }

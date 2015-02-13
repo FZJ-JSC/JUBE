@@ -167,7 +167,7 @@ Run the result creation.
 
 .. code-block:: none
 
-   jube result [-h] [-i ID [ID ...]] [-a] [-r] [-u UPDATE_FILE]
+   jube result [-h] [-i ID [ID ...]] [-a] [-r] [-u UPDATE_FILE] [-n NUM]
                [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
                [-t TAG [TAG ...]] [-o RESULT_NAME [RESULT_NAME ...]] [DIRECTORY]
 
@@ -184,6 +184,9 @@ Run the result creation.
    
 ``-r``, ``--reverse``
    reverse benchmark output order when multiple benchmarks are given
+   
+``-n``, ``--num``
+   show only last N benchmarks
 
 ``-u UPDATE_FILE``, ``--update UPDATE_FILE``
    use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
