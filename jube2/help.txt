@@ -343,6 +343,8 @@ jube_variables
 
      * "$jube_benchmark_home": original input file location
 
+     * "$jube_benchmark_start": benchmark starting time
+
    * Step:
 
      * "$jube_step_name": current step name
@@ -367,6 +369,8 @@ jube_variables
 
           export par=$par
           export par2=$par2
+
+     * "$jube_wp_envlist": list of all exported parameter names
 
 link_tag
    A link can be used to create a symbolic link from your sandbox work
@@ -623,9 +627,9 @@ remove
 result
    Create a result table.
 
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
+   If no benchmark id is given, a combined result view of all
+   available benchmarks in given directory will be created. If
+   benchmark directory is missing, current directory will be used.
 
 result_tag
    The result tag is used to handle different visualisation types of
@@ -774,7 +778,7 @@ table_tag
    A simple ASCII based table ouput.
 
       <table name="..." style="..." sort="..." separator="...">
-        <column colw="..." format="..." title="...">...</column>
+        <column colw="..." format="..." title="..." null_value="...">...</column>
         ...
       </table>
 
@@ -794,6 +798,9 @@ table_tag
    * "title" is optional: column title
 
    * "format" can contain a C like format string: e.g. format=".2f"
+
+   * "null_value" is optional: NULL value representation (default:
+     empty string)
 
 tagging
    Tagging is a simple way to mark parts of your input file to be

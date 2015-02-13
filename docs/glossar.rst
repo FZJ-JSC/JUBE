@@ -81,8 +81,8 @@ Glossary
    result
       Create a result table.
 
-      If no benchmark id is given, last benchmark found in directory will be used. If benchmark directory is missing, current
-      directory will be used.
+      If no benchmark id is given, a combined result view of all available benchmarks in given directory will be created. 
+      If benchmark directory is missing, current directory will be used.
 
    benchmark_tag
       The main benchmark definition
@@ -503,7 +503,7 @@ Glossary
      .. code-block:: xml
 
         <table name="..." style="..." sort="..." separator="...">
-          <column colw="..." format="..." title="...">...</column>
+          <column colw="..." format="..." title="..." null_value="...">...</column>
           ...
         </table>
 
@@ -515,6 +515,7 @@ Glossary
      * ``colw`` is optional: column width
      * ``title`` is optional: column title
      * ``format`` can contain a C like format string: e.g. format=".2f"
+     * ``null_value`` is optional: NULL value representation (default: empty string)
 
    parameter_space
      The parameter space for a specific benchmark run is the bundle of all possible parameter combinations.
@@ -662,6 +663,7 @@ Glossary
         * ``$jube_benchmark_name``: current benchmark name
         * ``$jube_benchmark_id``: current benchmark id
         * ``$jube_benchmark_home``: original input file location
+        * ``$jube_benchmark_start``: benchmark starting time
 
       * Step:
 
@@ -678,3 +680,5 @@ Glossary
 
             export par=$par
             export par2=$par2
+
+        * ``$jube_wp_envlist``: list of all exported parameter names

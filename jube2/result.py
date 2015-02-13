@@ -52,6 +52,13 @@ class Result(object):
             """Create result output"""
             raise NotImplementedError("")
 
+        def add_result_data(self, result_data):
+            """Add additional result data"""
+            raise NotImplementedError("")
+
+        def __eq__(self, other):
+            return self.name == other.name
+
     def __init__(self, name):
         self._use = set()
         self._name = name
@@ -91,7 +98,7 @@ class Result(object):
                                  .format(use_name))
             self._use.add(use_name)
 
-    def create_result_data(self, data=None):
+    def create_result_data(self):
         """Create result representation"""
         raise NotImplementedError("")
 
@@ -102,9 +109,10 @@ class Result(object):
             analyse = analyser.analyse_result
             # Ignore empty analyse results
             if analyse is None:
-                LOGGER.warning(("No data found for analyser \"{0}\". "
+                LOGGER.warning(("No data found for analyser \"{0}\" "
+                                "in benchmark run {1}. "
                                 "Run analyse step first please.")
-                               .format(analyser_name))
+                               .format(analyser_name, self._benchmark.id))
                 continue
             for stepname in analyse:
                 for wp_id in analyse[stepname]:
@@ -191,8 +199,37 @@ class Table(Result):
             self._separator = separator
             self._data = list()
             self._columns = list()
+            self._benchmark_ids = list()
 
-        def add_rows(self, columns, data):
+        @property
+        def columns(self):
+            return self._columns
+
+        @property
+        def data(self):
+            return self._data
+
+        @property
+        def benchmark_ids(self):
+            return self._benchmark_ids
+
+        def add_id_information(self, reverse=False):
+            id_column = Table.Column("id")
+            self._columns.insert(0, id_column)
+            for i, data in enumerate(self._data):
+                data.insert(0, self._benchmark_ids[i])
+            self._data.sort(key=operator.itemgetter(0), reverse=reverse)
+            for i, data in enumerate(self._data):
+                self._data[i][0] = str(data[0])
+
+        def add_result_data(self, result_data):
+            """Add additional result data"""
+            if self.name != result_data.name:
+                raise RuntimeError("Cannot combine to different result sets.")
+            self._add_rows(result_data.columns, result_data.data,
+                           result_data.benchmark_ids)
+
+        def _add_rows(self, columns, data, benchmark_ids):
             """Add a list of additional rows to current table result data."""
             order = list()
             last_index = len(self._columns)
@@ -214,13 +251,18 @@ class Table(Result):
             # Fill up existing rows
             if last_index != len(self._columns):
                 for row in self._data:
-                    row += ["" for i in range(len(self._columns) - last_index)]
+                    row += [column.null_value
+                            for column in self._columns[last_index:]]
             # Add new rows
             for row in data:
-                new_row = ["" for i in range(len(self._columns))]
+                new_row = [column.null_value for column in self._columns]
                 for i, index in enumerate(order):
                     new_row[index] = row[i]
                 self._data.append(new_row)
+                if type(benchmark_ids) is int:
+                    self._benchmark_ids.append(benchmark_ids)
+            if type(benchmark_ids) is list:
+                self._benchmark_ids += benchmark_ids
 
         def __str__(self):
             colw = list()
@@ -237,14 +279,19 @@ class Table(Result):
                 indent=0, pretty=(self._style == "pretty"),
                 separator=self._separator)
 
-        def create_result(self, filename=None):
+        def create_result(self, show=True, filename=None):
             """Create result output"""
             result_str = str(self)
 
             # Print result to screen
-            LOGGER.info(result_str)
-            LOGGER.info("\n")
+            if show:
+                LOGGER.info(result_str)
+                LOGGER.info("\n")
+            else:
+                LOGGER.debug(result_str)
+                LOGGER.debug("\n")
 
+            # Print result to file
             if filename is not None:
                 file_handle = open(filename, "w")
                 file_handle.write(result_str)
@@ -254,11 +301,13 @@ class Table(Result):
 
         """Class represents one table column"""
 
-        def __init__(self, name, title=None, colw=None, format_string=None):
+        def __init__(self, name, title=None, colw=None, format_string=None,
+                     null_value=""):
             self._name = name
             self._title = title
             self._colw = colw
             self._format_string = format_string
+            self._null_value = null_value
             self._unit = None
 
         @property
@@ -275,6 +324,11 @@ class Table(Result):
         def colw(self):
             """Column width"""
             return self._colw
+
+        @property
+        def null_value(self):
+            """Column width"""
+            return self._null_value
 
         @property
         def format(self):
@@ -312,6 +366,8 @@ class Table(Result):
                 column_etree.attrib["format"] = self._format_string
             if self._title is not None:
                 column_etree.attrib["title"] = self._title
+            if self._null_value != "":
+                column_etree.attrib["null_value"] = self._null_value
             return column_etree
 
         def __eq__(self, other):
@@ -332,15 +388,17 @@ class Table(Result):
         else:
             self._sort_names = sort_names
 
-    def add_column(self, name, colw=None, format_string=None, title=None):
+    def add_column(self, name, colw=None, format_string=None, title=None,
+                   null_value=""):
         """Add an additional column to the table"""
-        self._columns.append(Table.Column(name, title, colw, format_string))
+        self._columns.append(Table.Column(name, title, colw, format_string,
+                                          null_value))
 
-    def create_result_data(self, data=None):
+    def create_result_data(self):
         """Create result representation"""
 
-        if (data is None) or (data.name != self._name):
-            data = Table.Table_data(self._name, self._style, self._separator)
+        result_data = Table.Table_data(self._name, self._style,
+                                       self._separator)
 
         # Read pattern/parameter units if available
         units = self._load_units([column.name for column in self._columns])
@@ -353,7 +411,7 @@ class Table(Result):
             # Add additional data if needed
             for sort_name in self._sort_names:
                 if sort_name not in dataset:
-                    dataset[sort_name] = ""
+                    dataset[sort_name] = None
             sort_data.append(dataset)
 
         # Sort the resultset
@@ -377,16 +435,19 @@ class Table(Result):
                         value = jube2.util.format_value(column.format,
                                                         dataset[column.name])
                     else:
-                        value = str(dataset[column.name])
+                        if dataset[column.name] is None:
+                            value = column.null_value
+                        else:
+                            value = str(dataset[column.name])
                     row.append(value)
                 else:
-                    row.append("")
+                    row.append(column.null_value)
 
             if cnt > 0:
                 table_data.append(row)
-        data.add_rows(self._columns, table_data)
+        result_data._add_rows(self._columns, table_data, self._benchmark.id)
 
-        return data
+        return result_data
 
     def etree_repr(self, new_cwd=None):
         """Return etree object representation"""

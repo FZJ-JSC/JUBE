@@ -748,10 +748,11 @@ def _extract_table(etree_table):
         if colw is not None:
             colw = int(colw)
         title = element.get("title")
+        null_value = element.get("null_value", "").strip()
         format_string = element.get("format")
         if format_string is not None:
             format_string = format_string.strip()
-        table.add_column(column_name, colw, format_string, title)
+        table.add_column(column_name, colw, format_string, title, null_value)
     return table
 
 
