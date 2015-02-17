@@ -72,7 +72,7 @@ def benchmarks_results(args):
     """Show benchmark results"""
     found_benchmarks = search_for_benchmarks(args, load_all=True)
     result_list = list()
-    # Start with the newest one
+    # Start with the newest benchmark to set the newest result configuration
     found_benchmarks.reverse()
     cnt = 0
     for benchmark_folder in found_benchmarks:
@@ -85,6 +85,7 @@ def benchmarks_results(args):
     jube2.log.setup_logging("console")
 
     for result_data in result_list:
+        # If there are multiple benchmarks, add benchmark id information
         if len(found_benchmarks) > 1:
             result_data.add_id_information(reverse=args.reverse)
         result_data.create_result()
