@@ -33,7 +33,7 @@ LOGGER = jube2.log.get_logger(__name__)
 
 class Analyser(object):
 
-    """The Analyser handles the anlyse process and store all importtant data
+    """The Analyser handles the analyse process and store all important data
     to run a new analyse."""
 
     def __init__(self, name):

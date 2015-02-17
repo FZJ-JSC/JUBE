@@ -238,6 +238,15 @@ class Benchmark(object):
             jube2.parameter.Parameter.
             create_parameter("jube_benchmark_home",
                              os.path.abspath(self._file_path_ref)))
+
+        timestamps = jube2.util.read_timestamps(
+            os.path.join(self.bench_dir, jube2.conf.TIMESTAMPS_INFO))
+
+        # benchmark start
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.create_parameter(
+                "jube_benchmark_start", timestamps.get("start", "")))
+
         return parameterset
 
     def etree_repr(self, new_cwd=None):
@@ -324,30 +333,38 @@ class Benchmark(object):
         if show_info:
             LOGGER.info(">>> Analyse finished")
 
-    def create_result(self, only=None):
+    def create_result(self, only=None, show=False, data_list=None):
         """Show benchmark result"""
         if only is None:
             only = [result_name for result_name in self._results]
+        if data_list is None:
+            data_list = list()
         for result_name in self._results_order:
             result = self._results[result_name]
             if result.name in only:
-                result_str = result.create_result()
+                result_data = result.create_result_data()
                 if result.result_dir is None:
                     result_dir = os.path.join(self.bench_dir,
                                               jube2.conf.RESULT_DIRNAME)
                 else:
-                    result_dir = jube2.util.id_dir(result.result_dir, self.id)
+                    result_dir = jube2.util.id_dir(result.result_dir,
+                                                   self.id)
                 if (not os.path.exists(result_dir)) and \
                    (not jube2.conf.DEBUG_MODE):
                     os.makedirs(result_dir)
-                LOGGER.info(result_str)
-                LOGGER.info("\n")
                 if not jube2.conf.DEBUG_MODE:
-                    file_handle = \
-                        open(os.path.join(result_dir,
-                                          "{0}.dat".format(result.name)), "w")
-                    file_handle.write(result_str)
-                    file_handle.close()
+                    filename = os.path.join(result_dir,
+                                            "{0}.dat".format(result.name))
+                else:
+                    filename = None
+                result_data.create_result(show=show, filename=filename)
+
+                if result_data in data_list:
+                    data_list[data_list.index(result_data)].add_result_data(
+                        result_data)
+                else:
+                    data_list.append(result_data)
+        return data_list
 
     def update_analyse_and_result(self, new_patternsets, new_analyser,
                                   new_results, new_results_order, new_cwd):
