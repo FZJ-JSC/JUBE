@@ -77,6 +77,9 @@ Glossary
 
    run
       Start a new benchmark run by parsing the given *JUBE* input file.
+ 
+   update
+      Check if a newer JUBE version is available.
 
    result
       Create a result table.

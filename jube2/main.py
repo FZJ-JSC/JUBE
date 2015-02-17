@@ -35,6 +35,11 @@ import re
 import shutil
 
 try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib import urlopen
+
+try:
     import argparse
 except ImportError:
     print("argparse module not available; either install it "
@@ -143,6 +148,37 @@ def info(args):
                         parametrization_only=args.parametrization)
             # Restore current working dir
             os.chdir(cwd)
+
+
+def update_check(args):
+    """Check if a newer JUBE version is available."""
+    try:
+        website = urlopen(jube2.conf.UPDATE_VERSION_URL)
+        version_str = website.read().decode().strip()
+        version_loc = jube2.conf.JUBE_VERSION.split(".")
+        version_ext = version_str.split(".")
+        if len(version_loc) == len(version_ext):
+            for i in range(len(version_loc)):
+                if int(version_ext[i]) > int(version_loc[i]):
+                    LOGGER.info(("Newer JUBE version {0} is available. "
+                                 "Currently installed version is {1}. "
+                                 "New version can be "
+                                 "downloaded here: {2}").format(
+                        version_str, jube2.conf.JUBE_VERSION,
+                        jube2.conf.UPDATE_URL))
+                    break
+            else:
+                LOGGER.info("Newest JUBE version {0} is already "
+                            "installed.".format(jube2.conf.JUBE_VERSION))
+        else:
+            raise IOError("Unknown version format at {0}".format(
+                jube2.conf.UPDATE_VERSION_URL))
+    except IOError as ioe:
+        raise IOError("Can not connect to {0}: {1}".format(
+            jube2.conf.UPDATE_VERSION_URL, str(ioe)))
+    except ValueError as ve:
+        raise ValueError("Can not read version string from {0}: {1}".format(
+            jube2.conf.UPDATE_VERSION_URL, str(ve)))
 
 
 def show_log(args):
@@ -462,7 +498,8 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
     # Restore current working dir
     os.chdir(cwd)
 
-    jube2.log.reset_logging()
+    # Reset logging
+    jube2.log.change_logfile_name(jube2.conf.DEFAULT_LOGFILE_NAME)
 
     return result_list
 
@@ -740,6 +777,12 @@ def _get_args_parser():
         }
     }
 
+    # update subparser
+    subparser_configuration["update"] = {
+        "help": "Check if a newer JUBE version is available",
+        "func": update_check
+    }
+
     # log subparser
     subparser_configuration["log"] = {
         "help": "show benchmark logs",
@@ -764,11 +807,10 @@ def _get_args_parser():
                 name, help=subparser_config.get("help", ""),
                 description=jube2.help.HELP.get(name, ""),
                 formatter_class=argparse.RawDescriptionHelpFormatter)
-        if "arguments" not in subparser_config:
-            continue
-        for names, arg in subparser_config["arguments"].items():
-            subparser[name].add_argument(*names, **arg)
         subparser[name].set_defaults(func=subparser_config["func"])
+        if "arguments" in subparser_config:
+            for names, arg in subparser_config["arguments"].items():
+                subparser[name].add_argument(*names, **arg)
 
     # help subparser
     subparser["help"] = \

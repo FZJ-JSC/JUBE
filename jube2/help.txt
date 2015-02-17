@@ -827,6 +827,9 @@ tagging
      and running with "a b" will hide the "<tag>" because the "!b" is
      more important than the "a"
 
+update
+   Check if a newer JUBE version is available.
+
 workpackage
    A workpackage is the combination of a *step* (which contains all
    operations) and one parameter setting out of the expanded

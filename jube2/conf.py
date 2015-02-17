@@ -25,6 +25,9 @@ from __future__ import (print_function,
 JUBE_VERSION = "2.0.3"
 ALLOWED_SCRIPTTYPES = ["python", "perl"]
 DEBUG_MODE = False
+UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"
+UPDATE_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/download.php"
+
 
 # input/output
 DEFAULT_SEPARATOR = ","
