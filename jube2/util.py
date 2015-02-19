@@ -40,7 +40,7 @@ import jube2.conf
 LOGGER = jube2.log.get_logger(__name__)
 
 
-class Work_stat(object):
+class WorkStat(object):
 
     """Workpackage queuing handler"""
 
@@ -86,7 +86,7 @@ class Work_stat(object):
                 if not workpackage.started:
                     self.put(workpackage)
                 else:
-                    self.update_queues(self, last_workpackage)
+                    self.update_queues(last_workpackage)
 
     def get(self):
         """Get some workpackage from work queue"""
@@ -307,13 +307,22 @@ def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
 
 def element_tree_tostring(element, encoding=None):
     """A more encoding friendly ElementTree.tostring method"""
-    class dummy:
-        pass
-    data = []
-    file_dummy = dummy()
-    file_dummy.write = data.append
+    class Dummy(object):
+        """Dummy class to offer write method for etree."""
+        def __init__(self):
+            self._data = list()
+
+        @property
+        def data(self):
+            """Return data"""
+            return self._data
+
+        def write(self, *args):
+            """Simulate write"""
+            self._data.append(*args)
+    file_dummy = Dummy()
     ET.ElementTree(element).write(file_dummy, encoding)
-    return "".join(dat.decode(encoding) for dat in data)
+    return "".join(dat.decode(encoding) for dat in file_dummy.data)
 
 
 def get_tree_element(node, tag_path=None, attribute_dict=None):

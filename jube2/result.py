@@ -36,7 +36,7 @@ class Result(object):
 
     """A generic result type"""
 
-    class Result_data(object):
+    class ResultData(object):
 
         """A gerneric result data type"""
 
@@ -48,7 +48,7 @@ class Result(object):
             """Return the result name"""
             return self._name
 
-        def create_result(self, filename=None):
+        def create_result(self, show=True, filename=None):
             """Create result output"""
             raise NotImplementedError("")
 
@@ -117,9 +117,9 @@ class Result(object):
             for stepname in analyse:
                 for wp_id in analyse[stepname]:
                     workpackage = None
-                    for wp in self._benchmark.workpackages[stepname]:
-                        if wp.id == wp_id:
-                            workpackage = wp
+                    for wp_tmp in self._benchmark.workpackages[stepname]:
+                        if wp_tmp.id == wp_id:
+                            workpackage = wp_tmp
                             break
 
                     # Read workpackage history parameterset
@@ -189,12 +189,12 @@ class Table(Result):
 
     """A ascii based result table"""
 
-    class Table_data(Result.Result_data):
+    class TableData(Result.ResultData):
 
         """Table data"""
 
         def __init__(self, name, style, separator):
-            Result.Result_data.__init__(self, name)
+            Result.ResultData.__init__(self, name)
             self._style = style
             self._separator = separator
             self._data = list()
@@ -203,17 +203,21 @@ class Table(Result):
 
         @property
         def columns(self):
+            """Return columns"""
             return self._columns
 
         @property
         def data(self):
+            """Return table data"""
             return self._data
 
         @property
         def benchmark_ids(self):
+            """Return benchmark ids"""
             return self._benchmark_ids
 
         def add_id_information(self, reverse=False):
+            """Add additional id column to table data."""
             id_column = Table.Column("id")
             self._columns.insert(0, id_column)
             for i, data in enumerate(self._data):
@@ -226,10 +230,10 @@ class Table(Result):
             """Add additional result data"""
             if self.name != result_data.name:
                 raise RuntimeError("Cannot combine to different result sets.")
-            self._add_rows(result_data.columns, result_data.data,
+            self.add_rows(result_data.columns, result_data.data,
                            result_data.benchmark_ids)
 
-        def _add_rows(self, columns, data, benchmark_ids):
+        def add_rows(self, columns, data, benchmark_ids):
             """Add a list of additional rows to current table result data."""
             order = list()
             last_index = len(self._columns)
@@ -397,8 +401,8 @@ class Table(Result):
     def create_result_data(self):
         """Create result representation"""
 
-        result_data = Table.Table_data(self._name, self._style,
-                                       self._separator)
+        result_data = Table.TableData(self._name, self._style,
+                                      self._separator)
 
         # Read pattern/parameter units if available
         units = self._load_units([column.name for column in self._columns])
@@ -445,7 +449,7 @@ class Table(Result):
 
             if cnt > 0:
                 table_data.append(row)
-        result_data._add_rows(self._columns, table_data, self._benchmark.id)
+        result_data.add_rows(self._columns, table_data, self._benchmark.id)
 
         return result_data
 

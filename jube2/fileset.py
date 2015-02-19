@@ -221,11 +221,12 @@ class Prepare(jube2.step.Operation):
                                       stderr_filename=stderr_filename,
                                       work_dir=work_dir)
 
-    def execute(self, parameter_dict, work_dir, environment=None):
+    def execute(self, parameter_dict, work_dir, only_check_pending=False,
+                environment=None):
         """Execute the prepare command"""
         jube2.step.Operation.execute(
             self, parameter_dict=parameter_dict, work_dir=work_dir,
-            environment=environment)
+            only_check_pending=only_check_pending, environment=environment)
 
     def etree_repr(self):
         """Return etree object representation"""

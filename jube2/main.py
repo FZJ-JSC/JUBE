@@ -176,9 +176,9 @@ def update_check(args):
     except IOError as ioe:
         raise IOError("Can not connect to {0}: {1}".format(
             jube2.conf.UPDATE_VERSION_URL, str(ioe)))
-    except ValueError as ve:
+    except ValueError as verr:
         raise ValueError("Can not read version string from {0}: {1}".format(
-            jube2.conf.UPDATE_VERSION_URL, str(ve)))
+            jube2.conf.UPDATE_VERSION_URL, str(verr)))
 
 
 def show_log(args):

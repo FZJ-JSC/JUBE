@@ -364,7 +364,7 @@ class Operation(object):
             env_file = open(env_file_path, "r")
             for line in env_file:
                 line = line.rstrip()
-                matcher = re.match("^(\S.*?)=(.*?)$", line)
+                matcher = re.match(r"^(\S.*?)=(.*?)$", line)
                 if matcher:
                     env[matcher.group(1)] = matcher.group(2)
                     last = matcher.group(1)

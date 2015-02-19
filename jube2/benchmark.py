@@ -58,7 +58,7 @@ class Benchmark(object):
         for result in self._results.values():
             result.benchmark = self
         self._workpackages = dict()
-        self._work_stat = jube2.util.Work_stat()
+        self._work_stat = jube2.util.WorkStat()
         self._comment = comment
         self._id = -1
         self._org_cwd = "."
@@ -289,7 +289,7 @@ class Benchmark(object):
         """Create all workpackages of current benchmark and create graph
         structure."""
         self._workpackages = dict()
-        self._work_stat = jube2.util.Work_stat()
+        self._work_stat = jube2.util.WorkStat()
 
         # Create a possible order of execution
         depend_dict = dict()

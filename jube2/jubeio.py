@@ -391,7 +391,7 @@ def workpackages_from_xml(filename, benchmark):
         workpackage.history.add_parameterset(workpackage.parameterset)
 
     # Store workpackage data
-    work_stat = jube2.util.Work_stat()
+    work_stat = jube2.util.WorkStat()
     for step_name in benchmark.steps:
         workpackages[step_name] = list()
     # First put started wps inside the queue

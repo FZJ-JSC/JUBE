@@ -193,7 +193,7 @@ class Pattern(jube2.parameter.StaticParameter):
         return self._unit
 
     def substitute_and_evaluate(self, parametersets=None,
-                                final_sub=False):
+                                final_sub=False, no_templates=True):
         """Substitute all variables inside the pattern value by using the
         parameter inside the given parameterset and additional_parameterset.
         final_sub marks the last substitution.
@@ -203,7 +203,7 @@ class Pattern(jube2.parameter.StaticParameter):
         """
         param, changed = \
             jube2.parameter.StaticParameter.substitute_and_evaluate(
-                self, parametersets, final_sub, no_templates=True)
+                self, parametersets, final_sub, no_templates)
 
         if changed:
             # Convert parameter to pattern
