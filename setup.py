@@ -23,9 +23,14 @@
 # to install it into your .local folder. .local/bin must be inside your $PATH.
 # You can also change the folder by using --prefix instead of --user
 
+add_opt = dict()
 try:
     from setuptools import setup
+    import sys
     SHARE_PATH = ""
+    add_opt["install_requires"] = list()
+    if sys.hexversion < 0x02070000:
+        add_opt["install_requires"].append("argparse")
 except ImportError:
     from distutils.core import setup
     SHARE_PATH = "share/jube"
@@ -74,5 +79,6 @@ config = {'description': 'JUBE Benchmarking Environment',
           'platforms': 'Linux',
           'keywords': 'JUBE Benchmarking Environment',
           'name': 'JUBE'}
+config.update(add_opt)
 
 setup(**config)
