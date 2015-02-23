@@ -231,7 +231,7 @@ class Table(Result):
             if self.name != result_data.name:
                 raise RuntimeError("Cannot combine to different result sets.")
             self.add_rows(result_data.columns, result_data.data,
-                           result_data.benchmark_ids)
+                          result_data.benchmark_ids)
 
         def add_rows(self, columns, data, benchmark_ids):
             """Add a list of additional rows to current table result data."""

@@ -157,19 +157,24 @@ def update_check(args):
         version_str = website.read().decode().strip()
         version_loc = jube2.conf.JUBE_VERSION.split(".")
         version_ext = version_str.split(".")
+        newest_version = True
         if len(version_loc) == len(version_ext):
             for i in range(len(version_loc)):
                 if int(version_ext[i]) > int(version_loc[i]):
-                    LOGGER.info(("Newer JUBE version {0} is available. "
-                                 "Currently installed version is {1}. "
-                                 "New version can be "
-                                 "downloaded here: {2}").format(
-                        version_str, jube2.conf.JUBE_VERSION,
-                        jube2.conf.UPDATE_URL))
+                    newest_version = newest_version and \
+                        (int(version_loc[i]) >= int(version_ext[i]))
+                if int(version_loc[i]) > int(version_ext[i]):
                     break
-            else:
+            if newest_version:
                 LOGGER.info("Newest JUBE version {0} is already "
                             "installed.".format(jube2.conf.JUBE_VERSION))
+            else:
+                LOGGER.info(("Newer JUBE version {0} is available. "
+                             "Currently installed version is {1}.\n"
+                             "New version can be "
+                             "downloaded here: {2}").format(
+                    version_str, jube2.conf.JUBE_VERSION,
+                    jube2.conf.UPDATE_URL))
         else:
             raise IOError("Unknown version format at {0}".format(
                 jube2.conf.UPDATE_VERSION_URL))

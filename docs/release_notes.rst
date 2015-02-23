@@ -21,6 +21,24 @@
 Release notes
 =============
 
+Version 2.0.4
+~~~~~~~~~~~~~
+Release: 2015-02-23
+
+* fix bug when using *JUBE* in a *Python3.x* environment
+* time information (start, last modified) will now be stored in a seperate file and are not extracted out of
+  file and directory metadata
+* ``jube run`` now allows the ``--id/-i`` command line option to set a specific benchmark id
+* ``jube result`` now automatically combines multiple benchmark runs within the same benchmark directory. *JUBE* automatically
+  add the benchmark id to the result output (except only a specific benchmark was requested)
+
+  * new command line option: ``--num/-n`` allow to set a maximum number of visible benchmarks in result
+  * new command line option: ``--revert/-r`` revert benchmark id order
+
+* new attribute for ``<column>``: ``null_value="..."`` to set a NULL representation for the output table (default: ``""``)
+* new command: ``jube update`` checks weather the newest *JUBE* version is installed
+* new ``id`` options: ``--id last`` to get the last benchmark and ``--id all`` to get all benchmarks
+
 Version 2.0.3
 ~~~~~~~~~~~~~
 Release: 2015-01-29

@@ -393,9 +393,10 @@ the optional sorting order (separated by ``,``). The ``style`` attribute can be 
 
 To create the result table you had to write::
 
-   >>> jube result bench_run
+   >>> jube result bench_run -i last
 
-The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``.
+The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` can also be replaced by a specific benchmark id.
+If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
 
 Output of the given example:
 
