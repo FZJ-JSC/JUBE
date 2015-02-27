@@ -62,6 +62,7 @@
             $threadspertask
         </parameter>
         <parameter name="network">Mesh</parameter>
+        <parameter name="job_class"></parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
@@ -81,6 +82,7 @@
         <sub source="#NOTIFY_MODE#" dest="$notification" />
         <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
+        <sub source="#JOB_CLASS#" dest="$job_class" />
         <sub source="#BGSIZE#" dest="$nodes" />
         <sub source="#NTHREADS#" dest="$threadspertask" />
         <sub source="#BGCONNECTIVITY#" dest="$network" />

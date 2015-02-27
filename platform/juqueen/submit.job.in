@@ -6,6 +6,7 @@
 # @ notify_user      = #NOTIFY_EMAIL#
 # @ wall_clock_limit = #TIME_LIMIT#
 # @ job_type         = bluegene
+# @ class            = #JOB_CLASS#
 # @ bg_size          = #BGSIZE#
 # @ bg_connectivity  = #BGCONNECTIVITY# 
 # @ queue
