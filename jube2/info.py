@@ -228,18 +228,18 @@ def print_step_info(benchmark, step_name, parametrization_only=False):
             useable_parameter = [name for name in parameter.keys()]
             useable_parameter.sort()
 
-        # collect parameterization
-        parameter_list.append(dict())
-        parameter_list[-1]["id"] = str(workpackage.id)
-        for parameter in workpackage.history:
-            parameter_list[-1][parameter.name] = parameter.value
-
         id_str = str(workpackage.id)
         started_str = str(workpackage.started).lower()
         done_str = str(workpackage.done).lower()
         work_dir = workpackage.work_dir
         if step.alt_work_dir is not None:
             work_dir = jube2.util.substitution(step.alt_work_dir, parameter)
+
+        # collect parameterization
+        parameter_list.append(dict())
+        parameter_list[-1]["id"] = str(workpackage.id)
+        for parameter in workpackage.history:
+            parameter_list[-1][parameter.name] = parameter.value
 
         # Read error-files
         for error_file_name in error_file_names:
