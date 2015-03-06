@@ -130,7 +130,7 @@ def benchmarks_from_xml(filename, tags=None):
     # At this stage we iterate over benchmarks
     benchmark_list = tree.findall("benchmark")
     for benchmark_tree in benchmark_list:
-        _benchmark_preprocessor(benchmark_tree)
+        _benchmark_preprocessor(benchmark_tree, tags)
         benchmark = _create_benchmark(benchmark_tree,
                                       global_parametersets,
                                       global_substitutesets,
@@ -204,7 +204,7 @@ def _preprocessor(etree):
         _preprocessor(child)
 
 
-def _benchmark_preprocessor(benchmark_etree):
+def _benchmark_preprocessor(benchmark_etree, tags=None):
     """Preprocess the xml-tree of given benchmark."""
     LOGGER.debug("  Preprocess benchmark xml tree")
     sets = dict()
@@ -236,7 +236,7 @@ def _benchmark_preprocessor(benchmark_etree):
     # Create new xml elments
     for name, filenames in sets.items():
         for i, filename in enumerate(filenames):
-            set_type = _find_set_type(filename, name)
+            set_type = _find_set_type(filename, name, tags)
             set_etree = ET.SubElement(benchmark_etree, set_type)
             set_etree.attrib["name"] = "jube_{0}_{1}".format(name, i)
             set_etree.attrib["init_with"] = "{0}:{1}".format(filename, name)
@@ -254,16 +254,17 @@ def _find_include_file(filename):
     return file_path
 
 
-def _find_set_type(filename, name):
+def _find_set_type(filename, name, tags=None):
     """Search for the set-type inside given file"""
     LOGGER.debug(
         "    Searching for type of \"{0}\" in {1}".format(name, filename))
     file_path = _find_include_file(filename)
     etree = ET.parse(file_path).getroot()
+    _remove_invalid_tags(etree, tags)
     found_set = jube2.util.get_tree_elements(etree,
                                              attribute_dict={"name": name})
     if len(found_set) > 1:
-        raise ValueError(("name=\"{0}\" can be found multible times inside " +
+        raise ValueError(("name=\"{0}\" can be found multiple times inside " +
                           "\"{1}\"").format(name, file_path))
     elif len(found_set) == 0:
         raise ValueError(("name=\"{0}\" not found inside " +
@@ -816,7 +817,8 @@ def _extract_extern_set(filename, set_type, name, search_name=None, tags=None):
                                                            file_path))
             result_set = _extract_extern_set(new_filename,
                                              set_type, name,
-                                             new_search_name)
+                                             new_search_name,
+                                             tags)
 
         if set_type == "parameterset":
             if result_set is None:
