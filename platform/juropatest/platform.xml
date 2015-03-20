@@ -55,8 +55,8 @@
         <parameter name="mail"></parameter>
         <parameter name="env">$jube_wp_envstr</parameter>
         <parameter name="notification">ALL</parameter>
-        <parameter name="outlogfile">stdout</parameter>
-        <parameter name="errlogfile">stderr</parameter>
+        <parameter name="outlogfile">job.out</parameter>
+        <parameter name="errlogfile">job.err</parameter>
         <parameter name="timelimit">00:30:00</parameter>
         <parameter name="modules"></parameter>
     </parameterset>
