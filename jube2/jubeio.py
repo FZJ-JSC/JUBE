@@ -348,6 +348,7 @@ def workpackages_from_xml(filename, benchmark):
         raise IOError("Workpackage configuration file not found: \"{0}\""
                       .format(filename))
     tree = ET.parse(filename)
+    max_id = -1
     for element in tree.getroot():
         _check_tag(element, ["workpackage"])
         # Read XML-data
@@ -359,6 +360,7 @@ def workpackages_from_xml(filename, benchmark):
             jube2.workpackage.Workpackage(benchmark, step, parameterset,
                                           jube2.parameter.Parameterset(),
                                           workpackage_id, iteration)
+        max_id = max(max_id, workpackage_id)
         parents_tmp[workpackage_id] = parents
         tmp[workpackage_id].env.update(set_env)
         for env_name in unset_env:
@@ -366,6 +368,9 @@ def workpackages_from_xml(filename, benchmark):
                 del tmp[workpackage_id].env[env_name]
         if len(parents) == 0:
             work_list.put(tmp[workpackage_id])
+
+    # Set workpackage counter to current id number
+    jube2.workpackage.Workpackage.id_counter = max_id + 1
 
     # Rebuild graph structure
     for workpackage_id in parents_tmp:

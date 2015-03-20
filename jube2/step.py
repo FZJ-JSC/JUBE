@@ -175,6 +175,17 @@ class Step(object):
         """Return dependencies"""
         return self._depend
 
+    def get_depend_history(self, benchmark):
+        """Creates a set of all dependent steps in history for given
+        benchmark"""
+        depend_history = set()
+        for step_name in self._depend:
+            if step_name not in depend_history:
+                depend_history.add(step_name)
+                depend_history.update(
+                    benchmark.steps[step_name].get_depend_history(benchmark))
+        return depend_history
+
 
 class Operation(object):
 

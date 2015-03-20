@@ -453,6 +453,13 @@ class Workpackage(object):
                             workpackage.operation_done(
                                 operation_number + 1) or workpackage.done
 
+                    # All older workpackages in tree must be done
+                    for step_name in self._step.get_depend_history(
+                            self._benchmark):
+                        for workpackage in self._benchmark.workpackages[
+                                step_name]:
+                            continue_op = continue_op and workpackage.done
+
                     if continue_op and not shared_done:
                         # remove workpackage specific parameter
                         shared_parameter = dict(parameter)

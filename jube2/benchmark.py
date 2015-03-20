@@ -285,39 +285,26 @@ class Benchmark(object):
     def __repr__(self):
         return pprint.pformat(self.__dict__)
 
-    def _create_all_workpackages(self):
-        """Create all workpackages of current benchmark and create graph
+    def _create_initial_workpackages(self):
+        """Create initial workpackages of current benchmark and create graph
         structure."""
         self._workpackages = dict()
         self._work_stat = jube2.util.WorkStat()
 
-        # Create a possible order of execution
-        depend_dict = dict()
-        for step in self._steps.values():
-            depend_dict[step.name] = step.depend
-        work_list = jube2.util.resolve_depend(depend_dict)
-
-        # Create workpackages
-        for step_name in work_list:
+        # Create workpackage storage
+        for step_name in self._steps:
             self._workpackages[step_name] = list()
 
-        for step_name in work_list:
-            step = self._steps[step_name]
-            parametersets_names = list()
+        # Create initial workpackages
+        for step in self._steps.values():
+            if len(step.depend) == 0:
+                new_workpackages = \
+                    self._create_new_workpackages_for_parents(step)
+                self._workpackages[step.name] += new_workpackages
 
-            # Filter for parametersets in uses
-            for use in step.use:
-                parametersets_names.append([name for name in use
-                                            if name in self._parametersets])
-            parametersets_names = [names for names in parametersets_names
-                                   if bool(names)]
-
-            # Expand uses if needed (to allow <use>setA,setB</use>)
-            parametersets_names = [iterator for iterator in
-                                   itertools.product(*parametersets_names)]
-
-            for names in parametersets_names:
-                self._create_workpackages_for_step(step, names)
+            for workpackage in new_workpackages:
+                workpackage.queued = True
+                self._work_stat.put(workpackage)
 
     def analyse(self, show_info=True):
         """Run analyser"""
@@ -412,12 +399,83 @@ class Benchmark(object):
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
         fout.close()
 
-    def _create_workpackages_for_step(self, step, parameterset_names):
-        """Create all workpackages for given step and create graph
-        structure."""
+    def _create_new_workpackages_for_workpackage(self, workpackage):
+        """Create and return new workpackages if given workpackage
+        was finished."""
+        all_new_workpackages = list()
+        if not workpackage.done or len(workpackage.children) > 0:
+            return all_new_workpackages
+        LOGGER.debug(("Create new workpackages for workpackage"
+                      " {0}({1})").format(
+            workpackage.step.name, workpackage.id))
+        # Search for dependent steps
+        dependent_steps = [step for step in self._steps.values() if
+                           workpackage.step.name in step.depend]
+
+        # Search for possible workpackage parents
+        for dependent_step in dependent_steps:
+            parent_workpackages = [[
+                parent_workpackage for parent_workpackage in
+                self._workpackages[step_name] if parent_workpackage.done]
+                for step_name in dependent_step.depend
+                if (step_name in self._workpackages) and
+                   (step_name != workpackage.step.name)]
+            parent_workpackages.append([workpackage])
+            # Create all possible parent combinations
+            workpackage_combinations = \
+                [iterator for iterator in
+                 itertools.product(*parent_workpackages)]
+            for workpackage_combination in workpackage_combinations:
+                new_workpackages = self._create_new_workpackages_for_parents(
+                    dependent_step, workpackage_combination)
+                # Create links
+                for new_workpackage in new_workpackages:
+                    for parent in workpackage_combination:
+                        new_workpackage.add_parent(parent)
+                        parent.add_children(new_workpackage)
+                self._workpackages[dependent_step.name] += new_workpackages
+                all_new_workpackages += new_workpackages
+
+        # Store workpackage information
+        if len(all_new_workpackages) > 0:
+            self.write_workpackage_information(
+                os.path.join(self.bench_dir,
+                             jube2.conf.WORKPACKAGES_FILENAME))
+        LOGGER.debug("  {0} new workpackages created".format(
+            len(all_new_workpackages)))
+        return all_new_workpackages
+
+    def _create_new_workpackages_for_parents(self, step,
+                                             parent_workpackages=None):
+        """Create workpackages for given parent combination"""
+        new_workpackages = list()
+        if parent_workpackages is None:
+            parent_workpackages = list()
+        # Combine and check parent parametersets
+        history_parameterset = jube2.parameter.Parameterset()
+        compatible = True
+        for parent_workpackage in parent_workpackages:
+            # Check weather parameter combination is possible
+            compatible = history_parameterset.is_compatible(
+                parent_workpackage.history)
+            if compatible:
+                history_parameterset.add_parameterset(
+                    parent_workpackage.history)
+            else:
+                break
+
+        # Only compatible parameter combination allowed
+        if not compatible:
+            return new_workpackages
+
         # Create local parameterset
-        LOGGER.debug("Create workpackages for step {0}".format(step.name))
         local_parameterset = jube2.parameter.Parameterset()
+
+        # Filter for parametersets in uses
+        parameterset_names = list()
+        for use in step.use:
+            parameterset_names += [name for name in use
+                                   if name in self._parametersets]
         for parameterset_name in parameterset_names:
             # The parametersets in a single step must be compatible
             if not local_parameterset.is_compatible(
@@ -434,108 +492,71 @@ class Benchmark(object):
             local_parameterset.add_parameterset(
                 self._parametersets[parameterset_name])
 
-        parent_names = [name for name in step.depend]
+        # Combine local and history parameterset
+        if local_parameterset.is_compatible(history_parameterset):
+            history_parameterset = local_parameterset.copy().add_parameterset(
+                history_parameterset)
+        else:
+            LOGGER.debug("Incompatible parameterset combination found " +
+                         "between current and parent steps.")
+            return new_workpackages
 
-        # Parent workpackages must be exist
-        for parent_name in parent_names:
-            if (parent_name not in self._workpackages) or \
-               (len(self._workpackages[parent_name]) == 0):
-                raise ValueError(("Depend '{0}' for step '{1}' not " +
-                                  "found.").format(parent_name, step.name))
+        # Get jube internal parametersets
+        jube_parameterset = self.get_jube_parameterset()
+        jube_parameterset.add_parameterset(step.get_jube_parameterset())
 
-        parent_workpackages = [self._workpackages[parent_name]
-                               for parent_name in parent_names]
-        # Create all parent combinations
-        parent_workpackages_comb = \
-            [iterator for iterator in itertools.product(*parent_workpackages)]
+        # Expand templates
+        parametersets = [history_parameterset]
+        change = True
+        while change:
+            change = False
+            new_parametersets = list()
+            for parameterset in parametersets:
+                parameterset.parameter_substitution(
+                    additional_parametersets=[jube_parameterset])
+                # Maybe new templates were created
+                if parameterset.has_templates:
+                    new_parametersets += \
+                        [new_parameterset for new_parameterset in
+                         parameterset.expand_templates()]
+                    change = True
+                else:
+                    new_parametersets += [parameterset]
+            parametersets = new_parametersets
 
-        # Every possible parent combination results in a new
-        # parameterset
-        for parent_workpackages in parent_workpackages_comb:
-            history_parameterset = local_parameterset.copy()
+        for parameterset in parametersets:
+            workpackage_parameterset = local_parameterset.copy()
+            workpackage_parameterset.update_parameterset(parameterset)
 
-            # Check compatibility of parametersets
-            compatible = True
-            i = 0
-            while (i < len(parent_workpackages)) and compatible:
-                compatible = history_parameterset.is_compatible(
-                    parent_workpackages[i].history)
-                if compatible:
-                    history_parameterset.add_parameterset(
-                        parent_workpackages[i].history)
-                i = i + 1
+            # Create new workpackage
+            for iteration in range(step.iterations):
+                workpackage = jube2.workpackage.Workpackage(
+                    benchmark=self,
+                    step=step,
+                    parameterset=workpackage_parameterset,
+                    history=parameterset.copy(),
+                    iteration=iteration)
 
-            if compatible:
-                # Expand templates
-                parametersets = [parameterset for parameterset in
-                                 history_parameterset.expand_templates()]
+            # --- Final parameter substitution ---
+            workpackage.parameterset.parameter_substitution(
+                additional_parametersets=[
+                    jube_parameterset, workpackage.get_jube_parameterset(
+                        substitute=False)],
+                final_sub=True)
 
-                # Parameter substitution and expand generated templates
-                change = True
+            # --- Check parameter type ---
+            for parameter in workpackage.parameterset:
+                if not parameter.is_template:
+                    jube2.util.convert_type(
+                        parameter.parameter_type, parameter.value)
 
-                # Get jube internal parametersets
-                jube_parameterset = self.get_jube_parameterset()
-                jube_parameterset.add_parameterset(
-                    step.get_jube_parameterset())
+            # Update history parameterset
+            workpackage.history.update_parameterset(
+                workpackage.parameterset)
 
-                while change:
-                    change = False
-                    new_parametersets = list()
-                    for parameterset in parametersets:
-                        parameterset.parameter_substitution(
-                            additional_parametersets=[jube_parameterset])
-                        # Maybe new templates were created
-                        if parameterset.has_templates:
-                            new_parametersets += \
-                                [new_parameterset for new_parameterset in
-                                 parameterset.expand_templates()]
-                            change = True
-                        else:
-                            new_parametersets += [parameterset]
-                    parametersets = new_parametersets
+            new_workpackages.append(workpackage)
 
-                for parameterset in parametersets:
-                    workpackage_parameterset = local_parameterset.copy()
-                    workpackage_parameterset.update_parameterset(parameterset)
-
-                    # Create new workpackage
-                    for iteration in range(step.iterations):
-                        workpackage = jube2.workpackage.Workpackage(
-                            benchmark=self,
-                            step=step,
-                            parameterset=workpackage_parameterset.copy(),
-                            history=parameterset.copy(),
-                            iteration=iteration)
-
-                        # --- Final parameter substitution ---
-                        workpackage.parameterset.parameter_substitution(
-                            additional_parametersets=[
-                                jube_parameterset,
-                                workpackage.get_jube_parameterset(
-                                    substitute=False)],
-                            final_sub=True)
-
-                        # --- Check parameter type ---
-                        for parameter in workpackage.parameterset:
-                            if not parameter.is_template:
-                                jube2.util.convert_type(
-                                    parameter.parameter_type, parameter.value)
-
-                        # Update history parameterset
-                        workpackage.history.update_parameterset(
-                            workpackage.parameterset)
-
-                        # Create links
-                        for parent in parent_workpackages:
-                            workpackage.add_parent(parent)
-                            parent.add_children(workpackage)
-                        self._workpackages[step.name].append(workpackage)
-                        if len(workpackage.parents) == 0:
-                            workpackage.queued = True
-                            self._work_stat.put(workpackage)
-            else:
-                LOGGER.debug("Incompatible parameterset combination found " +
-                             "between current and parent steps.")
+        return new_workpackages
 
     def new_run(self):
         """Create workpackage structure and run benchmark"""
@@ -552,8 +573,8 @@ class Benchmark(object):
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
 
-        # Create all workpackages
-        self._create_all_workpackages()
+        # Create initial workpackages
+        self._create_initial_workpackages()
 
         # Store workpackage information
         self.write_workpackage_information(
@@ -586,14 +607,18 @@ class Benchmark(object):
                     self.write_workpackage_information(
                         os.path.join(self.bench_dir,
                                      jube2.conf.WORKPACKAGES_FILENAME))
+            self._create_new_workpackages_for_workpackage(workpackage)
+
             # Update queues (move waiting workpackages to work queue
             # if possible)
             self._work_stat.update_queues(workpackage)
+
             if not jube2.conf.HIDE_ANIMATIONS:
                 status = self.benchmark_status
                 jube2.util.print_loading_bar(status["done"], status["all"],
                                              status["wait"])
             workpackage.queued = False
+
             for mode in ("only_started", "all"):
                 for child in workpackage.children:
                     all_done = True

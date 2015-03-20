@@ -82,6 +82,7 @@ class Parameterset(object):
         be overwritten"""
         for parameter in parameterset:
             self.add_parameter(parameter.copy())
+        return self
 
     def update_parameterset(self, parameterset):
         """Overwrite existing parameters. Don't add new parameters"""
