@@ -9,10 +9,6 @@
 #MSUB -o #STDOUTLOGFILE#
 #MSUB -e #STDERRLOGFILE#
 
-export OMP_NUM_THREADS=#NTHREADS#
-
-cd $PBS_O_WORKDIR
-
 #ENV#
 
 #PREPROCESS#
@@ -21,5 +17,9 @@ cd $PBS_O_WORKDIR
 
 #POSTPROCESS#
 
-touch #DONE_FILE#
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    exit $JUBE_ERR_CODE
+fi
 
+#FLAG#

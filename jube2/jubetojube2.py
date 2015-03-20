@@ -209,7 +209,8 @@ class JubeXMLConverter(object):
         platform_tree = ET.parse(self._platform_xml_file)
         platform_root = platform_tree.getroot()
 
-        for platform in platform_root.iter('platform'):
+        for platform in jube2.util.get_tree_elements(platform_root,
+                                                     'platform'):
             parameterset_name = platform.get('name')
             parameter_dict = platform.find('params')
             self._convert_and_add_parameter(parameterset_name, parameter_dict)
@@ -268,7 +269,7 @@ class JubeXMLConverter(object):
         if tag != "compile":
             return
 
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             prefix_name = item.get('cname')
             if prefix_name != jube_step.cname:
                 continue
@@ -338,7 +339,7 @@ class JubeXMLConverter(object):
         if jube_step.name == "execution":
             tag = "execute"
 
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             prefix_name = item.get('cname')
             if prefix_name != jube_step.cname:
                 continue
@@ -381,7 +382,7 @@ class JubeXMLConverter(object):
 # in only those expressions which are relevant for the underlying step
 #         self._calc_parameterset_name = ""
         self._calc_parameterset_node = None
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             self._global_counter = 0
             for substitute in item.findall('substitute'):
 
@@ -459,7 +460,7 @@ class JubeXMLConverter(object):
         self._main_comment()
         self._main_element.append(self._global_parameterset)
 
-        for benchmark in main_root.iter('benchmark'):
+        for benchmark in jube2.util.get_tree_elements(main_root, 'benchmark'):
             benchmark_name = benchmark.get('name')
 
 #           Gather attributes of all tags in main file
@@ -599,7 +600,7 @@ class JubeXMLConverter(object):
         if jube_step.name == "execution":
             tag = "execute"
 
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             for command in item.findall('command'):
                 prefix_name = item.get('cname')
                 if prefix_name == jube_step.cname:
@@ -608,7 +609,7 @@ class JubeXMLConverter(object):
                 else:
                     continue
 
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             for lastcommand in item.findall('lastcommand'):
                 prefix_name = item.get('cname')
                 if prefix_name == jube_step.cname:
@@ -637,7 +638,7 @@ class JubeXMLConverter(object):
         if jube_step.name == "execution":
             tag = "execute"
 
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             self._global_counter = 0
             for environment in item.findall('environment'):
 
@@ -765,7 +766,7 @@ class _JubeAnalyser(object):
 
         tag = "analyzer"
 
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             for analyse in item.findall('analyse'):
                 prefix_name = analyse.get('cname')
                 if prefix_name == self._cname:
@@ -912,7 +913,7 @@ class _JubeAnalyser(object):
 
 #       search also in analyse.xml for patterns
         self._pattern_file_list.append("analyse.xml")
-        for item in xml_root.iter(tag):
+        for item in jube2.util.get_tree_elements(xml_root, tag):
             for pattern in item.findall('includepattern'):
                 prefix_name = item.get('cname')
                 if prefix_name == self._cname:

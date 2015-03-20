@@ -119,6 +119,7 @@
 <!ATTLIST column        colw CDATA #IMPLIED
                         format CDATA #IMPLIED
                         title CDATA #IMPLIED
+                        null_value CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT file (#PCDATA)>
 <!ATTLIST file          tag CDATA #IMPLIED>

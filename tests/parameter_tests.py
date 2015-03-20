@@ -43,6 +43,15 @@ class TestParameter(unittest.TestCase):
         self.para_export = \
             jube2.parameter.Parameter.create_parameter("test2", "4",
                                                        export=True)
+        self.para_no_template = \
+            jube2.parameter.Parameter.create_parameter("no_templates", "2,3,4",
+                                                       no_templates=True)
+        self.para_eval = \
+            jube2.parameter.Parameter.create_parameter("eval", "2+2",
+                                                       parameter_mode="python")
+        self.para_error = \
+            jube2.parameter.Parameter.create_parameter("error", "2+'test'",
+                                                       parameter_mode="python")
 
     def test_constant(self):
         """Test Constants"""
@@ -58,12 +67,10 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(self.para_temp.value, "2,3,4")
 
         # Template become constant check
-        outer_static_par = None
         for idx, static_par in enumerate(self.para_temp.expand()):
             self.assertEqual(static_par.value, self.temp_values[idx])
             self.assertFalse(static_par.is_template)
             self.assertTrue(static_par.is_equivalent(self.para_temp))
-            outer_static_par = static_par
 
         # Copy check
         parameter_copy = self.para_temp.copy()
@@ -79,14 +86,28 @@ class TestParameter(unittest.TestCase):
         self.assertEqual(self.para_select.value, "3")
         self.assertFalse(self.para_select.is_template)
 
-        # Etree repr check
+    def test_no_template(self):
+        self.assertFalse(self.para_no_template.is_template)
+        self.assertEqual(self.para_no_template.value, "2,3,4")
+
+    def test_eval(self):
+        """Test parameter evaluation"""
+        eval_para, changed = self.para_eval.substitute_and_evaluate([])
+        self.assertTrue(changed)
+        self.assertEqual(eval_para.value, "4")
+        self.assertRaises(RuntimeError,
+                          self.para_error.substitute_and_evaluate, [])
+
+    def test_etree_repr(self):
+        """Test Etree repr"""
         etree = self.para_temp.etree_repr()
         self.assertEqual(etree.tag, "parameter")
         self.assertEqual(etree.get("separator"), ",")
         self.assertEqual(etree.get("type"), "string")
         self.assertEqual(etree.text, "2,3,4")
 
-        etree = outer_static_par.etree_repr(use_current_selection=True)
+        static_par = list(self.para_temp.expand())[2]
+        etree = static_par.etree_repr(use_current_selection=True)
         self.assertEqual(etree.text, "2,3,4")
         self.assertEqual(etree.get("selection"), "4")
 
@@ -180,7 +201,8 @@ class TestParameterSet(unittest.TestCase):
         # Test __repr__
         self.assertTrue(repr(self.parameterset).startswith("Parameterset"))
 
-        # Delete a parameter
+    def test_delete(self):
+        """Test parameter deletion"""
         parameterset = self.parameterset.copy()
         self.assertFalse(self.para_export in parameterset)
         parameterset.add_parameter(self.para_export)
@@ -190,14 +212,16 @@ class TestParameterSet(unittest.TestCase):
         parameterset.delete_parameter("a_parameter")
         self.assertFalse(self.para_export in parameterset)
 
-        # Test compatible parameterset
+    def test_compatible(self):
+        """Test compatible parameterset"""
         parameterset = self.parameterset.copy()
         for static_par in self.para_temp.expand():
             parameterset.add_parameter(static_par)
         self.assertEqual(parameterset["test2"].value, "4")
         self.assertTrue(self.parameterset.is_compatible(parameterset))
 
-        # Test update_parameterset
+    def test_update(self):
+        """Test update_parameterset"""
         parameterset = self.parameterset.copy()
         self.assertEqual(sorted(list(parameterset.parameter_dict)),
                          ["test", "test2"])
@@ -211,7 +235,8 @@ class TestParameterSet(unittest.TestCase):
         parameterset.add_parameterset(self.parameterset3)
         self.assertEqual(len(parameterset), 3)
 
-        # Check parameterset expand_templates
+    def test_expand(self):
+        """Check parameterset expand_templates"""
         parameterset = self.parameterset.copy()
         self.assertTrue("test2" in parameterset.template_parameter_dict)
 
@@ -255,7 +280,8 @@ class TestParameterSet(unittest.TestCase):
         self.assertEqual(parameterset2[self.para_sub.name].value,
                          self.para_sub.value)
 
-        # Etree repr check
+    def test_etree_repr(self):
+        """Etree repr check"""
         etree = self.parameterset.etree_repr()
         self.assertEqual(etree.tag, "parameterset")
         self.assertEqual(len(etree.findall("parameter")), 2)

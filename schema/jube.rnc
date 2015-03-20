@@ -173,6 +173,7 @@ attlist.column &=
   attribute colw { text }?,
   attribute format { text }?,
   attribute title { text }?,
+  attribute null_value { text }?,
   attribute tag { text }?
 file = element file { attlist.file, text }
 attlist.file &= attribute tag { text }?

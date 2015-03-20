@@ -48,15 +48,26 @@ def print_benchmarks_info(path):
                 name_str, comment_str, tags = \
                     jube2.jubeio.benchmark_info_from_xml(configuration_file)
                 tags_str = jube2.conf.DEFAULT_SEPARATOR.join(tags)
-                time_cstr = time.strftime(
-                    "%Y-%m-%d %H:%M:%S",
-                    time.localtime(os.path.getctime(configuration_file)))
-                time_mstr = time.strftime(
-                    "%Y-%m-%d %H:%M:%S",
-                    time.localtime(os.path.getmtime(dir_path)))
 
-                benchmark_info.append([id_number, name_str, time_cstr,
-                                       time_mstr, comment_str, tags_str])
+                # Read timestamps from timestamps file
+                timestamps = \
+                    jube2.util.read_timestamps(
+                        os.path.join(dir_path, jube2.conf.TIMESTAMPS_INFO))
+                if "start" in timestamps:
+                    time_start = timestamps["start"]
+                else:
+                    time_start = time.strftime(
+                        "%Y-%m-%d %H:%M:%S",
+                        time.localtime(os.path.getctime(configuration_file)))
+                if "change" in timestamps:
+                    time_change = timestamps["change"]
+                else:
+                    time_change = time.strftime(
+                        "%Y-%m-%d %H:%M:%S",
+                        time.localtime(os.path.getmtime(dir_path)))
+
+                benchmark_info.append([id_number, name_str, time_start,
+                                       time_change, comment_str, tags_str])
             except ValueError:
                 pass
     # sort using id
@@ -91,14 +102,27 @@ def print_benchmark_info(benchmark):
     print("  Directory: {0}"
           .format(os.path.abspath(benchmark.bench_dir)))
 
-    # Starttime is workpackage.xml creation time
-    start_time = \
-        time.strftime("%Y-%m-%d %H:%M:%S",
-                      time.localtime(os.path.getctime(
-                          os.path.join(benchmark.bench_dir,
-                                       jube2.conf.CONFIGURATION_FILENAME))))
-    print("\n    Started: {0}".format(start_time))
-    last_change = time.localtime(os.path.getmtime(benchmark.bench_dir))
+    # Read timestamps from timestamps file
+    timestamps = jube2.util.read_timestamps(
+        os.path.join(benchmark.bench_dir, jube2.conf.TIMESTAMPS_INFO))
+
+    if "start" in timestamps:
+        time_start = timestamps["start"]
+    else:
+        # Starttime is workpackage.xml creation time
+        time_start = time.strftime(
+            "%Y-%m-%d %H:%M:%S",
+            time.localtime(os.path.getctime(os.path.join(
+                benchmark.bench_dir, jube2.conf.CONFIGURATION_FILENAME))))
+    if "change" in timestamps:
+        time_change = timestamps["change"]
+    else:
+        time_change = time.strftime(
+            "%Y-%m-%d %H:%M:%S",
+            time.localtime(os.path.getmtime(benchmark.bench_dir)))
+
+    print("\n    Started: {0}".format(time_start))
+    print("Last change: {0}".format(time_change))
 
     # Create step overview
     step_info = [("step name", "depends", "#work", "#done", "last finished")]
@@ -110,11 +134,20 @@ def print_benchmark_info(benchmark):
         for workpackage in workpackages:
             if workpackage.done:
                 cnt_done += 1
-                last_finish = max(last_finish, time.localtime(
-                    os.path.getmtime(os.path.join(
-                        workpackage.workpackage_dir,
-                        jube2.conf.WORKPACKAGE_DONE_FILENAME))))
-                last_change = max(last_change, last_finish)
+
+                # Read timestamp from done_file if it is available otherwise
+                # use mtime
+                done_file = os.path.join(workpackage.workpackage_dir,
+                                         jube2.conf.WORKPACKAGE_DONE_FILENAME)
+                done_file_f = open(done_file, "r")
+                done_str = done_file_f.read().strip()
+                done_file_f.close()
+                try:
+                    done_time = time.strptime(done_str, "%Y-%m-%d %H:%M:%S")
+                except ValueError:
+                    done_time = time.localtime(os.path.getmtime(done_file))
+                last_finish = max(last_finish, done_time)
+
         if last_finish > time.localtime(0):
             last_finish_str = time.strftime("%Y-%m-%d %H:%M:%S", last_finish)
         else:
@@ -131,8 +164,7 @@ def print_benchmark_info(benchmark):
 
         step_info.append((step_name, depends, cnt,
                           str(cnt_done), last_finish_str))
-    print("Last change: {0}"
-          .format(time.strftime("%Y-%m-%d %H:%M:%S", last_change)))
+
     print(
         "\n" + jube2.util.text_table(step_info, use_header_line=True,
                                      indent=1))
@@ -196,18 +228,18 @@ def print_step_info(benchmark, step_name, parametrization_only=False):
             useable_parameter = [name for name in parameter.keys()]
             useable_parameter.sort()
 
-        # collect parameterization
-        parameter_list.append(dict())
-        parameter_list[-1]["id"] = str(workpackage.id)
-        for parameter in workpackage.history:
-            parameter_list[-1][parameter.name] = parameter.value
-
         id_str = str(workpackage.id)
         started_str = str(workpackage.started).lower()
         done_str = str(workpackage.done).lower()
         work_dir = workpackage.work_dir
         if step.alt_work_dir is not None:
             work_dir = jube2.util.substitution(step.alt_work_dir, parameter)
+
+        # collect parameterization
+        parameter_list.append(dict())
+        parameter_list[-1]["id"] = str(workpackage.id)
+        for parameter in workpackage.history:
+            parameter_list[-1][parameter.name] = parameter.value
 
         # Read error-files
         for error_file_name in error_file_names:

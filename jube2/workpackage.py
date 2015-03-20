@@ -122,20 +122,16 @@ class Workpackage(object):
         """Set/reset Workpackage done"""
         done_file = os.path.join(self.workpackage_dir,
                                  jube2.conf.WORKPACKAGE_DONE_FILENAME)
+        if jube2.conf.DEBUG_MODE:
+            done_file = done_file + "_DEBUG"
         if set_done:
-            if jube2.conf.DEBUG_MODE:
-                fout = open(done_file + "_DEBUG", "w")
-            else:
-                fout = open(done_file, "w")
+            fout = open(done_file, "w")
+            fout.write(jube2.util.now_str())
             fout.close()
             self._remove_operation_info_files()
         else:
-            if jube2.conf.DEBUG_MODE:
-                if os.path.exists(done_file + "_DEBUG"):
-                    os.remove(done_file + "_DEBUG")
-            else:
-                if os.path.exists(done_file):
-                    os.remove(done_file)
+            if os.path.exists(done_file):
+                os.remove(done_file)
 
     @property
     def queued(self):
@@ -159,8 +155,19 @@ class Workpackage(object):
                                      jube2.conf.WORKPACKAGE_DONE_FILENAME,
                                      operation_number))
         if set_done is None:
-            return os.path.exists(done_file)
+            exist = os.path.exists(done_file)
+            if jube2.conf.DEBUG_MODE:
+                exist = exist or os.path.exists(done_file + "_DEBUG")
+            return exist
         else:
+            if jube2.conf.DEBUG_MODE:
+                done_file = done_file + "_DEBUG"
+            elif ((set_done and not os.path.exists(done_file)) or
+                  (not set_done and os.path.exists(done_file))):
+                jube2.util.update_timestamps(
+                    os.path.join(self._benchmark.bench_dir,
+                                 jube2.conf.TIMESTAMPS_INFO),
+                    "change")
             if set_done:
                 fout = open(done_file, "w")
                 fout.close()
@@ -219,7 +226,7 @@ class Workpackage(object):
         parameterset.add_parameterset(self.get_jube_parameterset())
         return parameterset
 
-    def get_jube_parameterset(self):
+    def get_jube_parameterset(self, substitute=True):
         """Return parameterset which contains workpackage related
         information"""
         parameterset = jube2.parameter.Parameterset()
@@ -251,14 +258,26 @@ class Workpackage(object):
                                  .format(parent.step.name),
                                  str(parent.id), parameter_type="int"))
 
+        # environment export string
         env_str = ""
         for parameter in self._parameterset.export_parameter_dict.values():
             env_str += "export {0}=${1}\n".format(parameter.name,
                                                   parameter.name)
-        # environment export string
+        env_par = jube2.parameter.Parameter.create_parameter("jube_wp_envstr",
+                                                             env_str)
+        if substitute:
+            env_par = env_par.substitute_and_evaluate(
+                [self._parameterset], final_sub=True)[0]
+        parameterset.add_parameter(env_par)
+
+        # environment export list
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
-            create_parameter("jube_wp_envstr", env_str))
+            jube2.parameter.Parameter.create_parameter(
+                "jube_wp_envlist",
+                ",".join(
+                    [parameter.name for parameter
+                     in self._parameterset.export_parameter_dict.values()]),
+                no_templates=True))
 
         return parameterset
 

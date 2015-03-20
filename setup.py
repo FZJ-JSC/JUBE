@@ -23,9 +23,14 @@
 # to install it into your .local folder. .local/bin must be inside your $PATH.
 # You can also change the folder by using --prefix instead of --user
 
+add_opt = dict()
 try:
     from setuptools import setup
+    import sys
     SHARE_PATH = ""
+    add_opt["install_requires"] = list()
+    if sys.hexversion < 0x02070000:
+        add_opt["install_requires"].append("argparse")
 except ImportError:
     from distutils.core import setup
     SHARE_PATH = "share/jube"
@@ -54,12 +59,13 @@ def rel_path(directory, new_root=""):
         os.chdir(cwd)
     return result
 
-config = {'description': 'JUBE Benchmarking Environment',
+config = {'name': 'JUBE',
+          'description': 'JUBE Benchmarking Environment',
           'author': 'Forschungszentrum Juelich GmbH',
           'url': 'www.fz-juelich.de/jube',
           'download_url': 'www.fz-juelich.de/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
-          'version': '2.0.2',
+          'version': '2.0.4',
           'packages': ['jube2'],
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
@@ -69,10 +75,42 @@ config = {'description': 'JUBE Benchmarking Environment',
                          rel_path("schema", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),
           'scripts': ['bin/jube', 'bin/jube-autorun'],
-          'long_description': 'JUBE',
+          'long_description': (
+              "Automating benchmarks is important for reproducibility and "
+              "hence comparability which is the major intent when "
+              "performing benchmarks. Furthermore managing different "
+              "combinations of parameters is error-prone and often "
+              "results in significant amounts work especially if the "
+              "parameter space gets large.\n"
+              "In order to alleviate these problems JUBE helps performing "
+              "and analyzing benchmarks in a systematic way. It allows "
+              "custom work flows to be able to adapt to new architectures.\n"
+              "For each benchmark application the benchmark data is written "
+              "out in a certain format that enables JUBE to deduct the "
+              "desired information. This data can be parsed by automatic "
+              "pre- and post-processing scripts that draw information, "
+              "and store it more densely for manual interpretation.\n"
+              "The JUBE benchmarking environment provides a script based "
+              "framework to easily create benchmark sets, run those sets "
+              "on different computer systems and evaluate the results. It "
+              "is actively developed by the Juelich Supercomputing Centre "
+              "of Forschungszentrum Juelich, Germany."),
           'license': 'GPLv3',
           'platforms': 'Linux',
-          'keywords': 'JUBE Benchmarking Environment',
-          'name': 'JUBE'}
+          'classifiers': [
+              "Development Status :: 5 - Production/Stable",
+              "Environment :: Console",
+              "Intended Audience :: End Users/Desktop",
+              "Intended Audience :: Developers",
+              "Intended Audience :: System Administrators",
+              "License :: OSI Approved :: GNU General Public License v3 " +
+              "(GPLv3)",
+              "Operating System :: POSIX :: Linux",
+              "Programming Language :: Python :: 2.6",
+              "Topic :: System :: Monitoring",
+              "Topic :: System :: Benchmark",
+              "Topic :: Software Development :: Testing"],
+          'keywords': 'JUBE Benchmarking Environment'}
+config.update(add_opt)
 
 setup(**config)

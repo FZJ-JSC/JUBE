@@ -6,11 +6,10 @@
 # @ notify_user      = #NOTIFY_EMAIL#
 # @ wall_clock_limit = #TIME_LIMIT#
 # @ job_type         = bluegene
+# @ class            = #JOB_CLASS#
 # @ bg_size          = #BGSIZE#
 # @ bg_connectivity  = #BGCONNECTIVITY# 
 # @ queue
-
-export OMP_NUM_THREADS=#NTHREADS#
 
 #ENV#
 
@@ -20,4 +19,9 @@ export OMP_NUM_THREADS=#NTHREADS#
 
 #POSTPROCESS#
 
-touch #DONE_FILE#
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    exit $JUBE_ERR_CODE
+fi
+
+#FLAG#

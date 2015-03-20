@@ -36,6 +36,29 @@ class Result(object):
 
     """A generic result type"""
 
+    class ResultData(object):
+
+        """A gerneric result data type"""
+
+        def __init__(self, name):
+            self._name = name
+
+        @property
+        def name(self):
+            """Return the result name"""
+            return self._name
+
+        def create_result(self, show=True, filename=None):
+            """Create result output"""
+            raise NotImplementedError("")
+
+        def add_result_data(self, result_data):
+            """Add additional result data"""
+            raise NotImplementedError("")
+
+        def __eq__(self, other):
+            return self.name == other.name
+
     def __init__(self, name):
         self._use = set()
         self._name = name
@@ -75,7 +98,7 @@ class Result(object):
                                  .format(use_name))
             self._use.add(use_name)
 
-    def create_result(self):
+    def create_result_data(self):
         """Create result representation"""
         raise NotImplementedError("")
 
@@ -86,16 +109,17 @@ class Result(object):
             analyse = analyser.analyse_result
             # Ignore empty analyse results
             if analyse is None:
-                LOGGER.warning(("No data found for analyser \"{0}\". "
+                LOGGER.warning(("No data found for analyser \"{0}\" "
+                                "in benchmark run {1}. "
                                 "Run analyse step first please.")
-                               .format(analyser_name))
+                               .format(analyser_name, self._benchmark.id))
                 continue
             for stepname in analyse:
                 for wp_id in analyse[stepname]:
                     workpackage = None
-                    for wp in self._benchmark.workpackages[stepname]:
-                        if wp.id == wp_id:
-                            workpackage = wp
+                    for wp_tmp in self._benchmark.workpackages[stepname]:
+                        if wp_tmp.id == wp_id:
+                            workpackage = wp_tmp
                             break
 
                     # Read workpackage history parameterset
@@ -165,6 +189,197 @@ class Table(Result):
 
     """A ascii based result table"""
 
+    class TableData(Result.ResultData):
+
+        """Table data"""
+
+        def __init__(self, name, style, separator):
+            Result.ResultData.__init__(self, name)
+            self._style = style
+            self._separator = separator
+            self._data = list()
+            self._columns = list()
+            self._benchmark_ids = list()
+
+        @property
+        def columns(self):
+            """Return columns"""
+            return self._columns
+
+        @property
+        def data(self):
+            """Return table data"""
+            return self._data
+
+        @property
+        def benchmark_ids(self):
+            """Return benchmark ids"""
+            return self._benchmark_ids
+
+        def add_id_information(self, reverse=False):
+            """Add additional id column to table data."""
+            id_column = Table.Column("id")
+            self._columns.insert(0, id_column)
+            for i, data in enumerate(self._data):
+                data.insert(0, self._benchmark_ids[i])
+            self._data.sort(key=operator.itemgetter(0), reverse=reverse)
+            for i, data in enumerate(self._data):
+                self._data[i][0] = str(data[0])
+
+        def add_result_data(self, result_data):
+            """Add additional result data"""
+            if self.name != result_data.name:
+                raise RuntimeError("Cannot combine to different result sets.")
+            self.add_rows(result_data.columns, result_data.data,
+                          result_data.benchmark_ids)
+
+        def add_rows(self, columns, data, benchmark_ids):
+            """Add a list of additional rows to current table result data."""
+            order = list()
+            last_index = len(self._columns)
+            # Find matching rows
+            for column in columns:
+                if column in self._columns:
+                    index = self._columns.index(column)
+                    # Check weather column occurs multiple times
+                    while index in order:
+                        try:
+                            index = self._columns.index(column, index + 1)
+                        except ValueError:
+                            index = len(self._columns)
+                            self._columns.append(column)
+                else:
+                    index = len(self._columns)
+                    self._columns.append(column)
+                order.append(index)
+            # Fill up existing rows
+            if last_index != len(self._columns):
+                for row in self._data:
+                    row += [column.null_value
+                            for column in self._columns[last_index:]]
+            # Add new rows
+            for row in data:
+                new_row = [column.null_value for column in self._columns]
+                for i, index in enumerate(order):
+                    new_row[index] = row[i]
+                self._data.append(new_row)
+                if type(benchmark_ids) is int:
+                    self._benchmark_ids.append(benchmark_ids)
+            if type(benchmark_ids) is list:
+                self._benchmark_ids += benchmark_ids
+
+        def __str__(self):
+            colw = list()
+            for column in self._columns:
+                if column.colw is None:
+                    colw.append(0)
+                else:
+                    colw.append(column.colw)
+            data = list()
+            data.append([column.resulting_name for column in self._columns])
+            data += self._data
+            return jube2.util.text_table(
+                data, use_header_line=True, auto_linebreak=False, colw=colw,
+                indent=0, pretty=(self._style == "pretty"),
+                separator=self._separator)
+
+        def create_result(self, show=True, filename=None):
+            """Create result output"""
+            result_str = str(self)
+
+            # Print result to screen
+            if show:
+                LOGGER.info(result_str)
+                LOGGER.info("\n")
+            else:
+                LOGGER.debug(result_str)
+                LOGGER.debug("\n")
+
+            # Print result to file
+            if filename is not None:
+                file_handle = open(filename, "w")
+                file_handle.write(result_str)
+                file_handle.close()
+
+    class Column(object):
+
+        """Class represents one table column"""
+
+        def __init__(self, name, title=None, colw=None, format_string=None,
+                     null_value=""):
+            self._name = name
+            self._title = title
+            self._colw = colw
+            self._format_string = format_string
+            self._null_value = null_value
+            self._unit = None
+
+        @property
+        def title(self):
+            """Column title"""
+            return self._title
+
+        @property
+        def name(self):
+            """Column name"""
+            return self._name
+
+        @property
+        def colw(self):
+            """Column width"""
+            return self._colw
+
+        @property
+        def null_value(self):
+            """Column width"""
+            return self._null_value
+
+        @property
+        def format(self):
+            """Column format"""
+            return self._format_string
+
+        @property
+        def unit(self):
+            """Column unit"""
+            return self._unit
+
+        @unit.setter
+        def unit(self, unit):
+            """Set column title"""
+            self._unit = unit
+
+        @property
+        def resulting_name(self):
+            """Column name based on name, title and unit"""
+            if self._title is not None:
+                name = self._title
+            else:
+                name = self._name
+                if self._unit is not None:
+                    name += "[{0}]".format(self._unit)
+            return name
+
+        def etree_repr(self):
+            """Return etree object representation"""
+            column_etree = ET.Element("column")
+            column_etree.text = self._name
+            if self._colw is not None:
+                column_etree.attrib["colw"] = str(self._colw)
+            if self._format_string is not None:
+                column_etree.attrib["format"] = self._format_string
+            if self._title is not None:
+                column_etree.attrib["title"] = self._title
+            if self._null_value != "":
+                column_etree.attrib["null_value"] = self._null_value
+            return column_etree
+
+        def __eq__(self, other):
+            return self.resulting_name == other.resulting_name
+
+        def __hash__(self):
+            return hash(self.resulting_name)
+
     def __init__(self, name, style="csv",
                  separator=jube2.conf.DEFAULT_SEPARATOR,
                  sort_names=None):
@@ -177,39 +392,30 @@ class Table(Result):
         else:
             self._sort_names = sort_names
 
-    def add_column(self, name, colw=None, format_string=None, title=None):
+    def add_column(self, name, colw=None, format_string=None, title=None,
+                   null_value=""):
         """Add an additional column to the table"""
-        self._columns.append({"name": name,
-                              "title": title,
-                              "colw": colw,
-                              "format": format_string})
+        self._columns.append(Table.Column(name, title, colw, format_string,
+                                          null_value))
 
-    def create_result(self):
+    def create_result_data(self):
         """Create result representation"""
-        table_data = list()
-        row = list()
-        colw = list()
-        units = self._load_units([column["name"] for column in self._columns])
+
+        result_data = Table.TableData(self._name, self._style,
+                                      self._separator)
+
+        # Read pattern/parameter units if available
+        units = self._load_units([column.name for column in self._columns])
         for column in self._columns:
-            if column["title"] is None:
-                value = column["name"]
-            else:
-                value = column["title"]
-            if column["name"] in units:
-                value += "[{0}]".format(units[column["name"]])
-            row.append(value)
-            if column["colw"] is None:
-                colw.append(0)
-            else:
-                colw.append(column["colw"])
-        table_data.append(row)
+            if column.name in units:
+                column.unit = units[column.name]
 
         sort_data = list()
         for dataset in self._analyse_data():
             # Add additional data if needed
             for sort_name in self._sort_names:
                 if sort_name not in dataset:
-                    dataset[sort_name] = ""
+                    dataset[sort_name] = None
             sort_data.append(dataset)
 
         # Sort the resultset
@@ -220,30 +426,32 @@ class Table(Result):
             sort_data = sorted(sort_data,
                                key=operator.itemgetter(*self._sort_names))
 
+        # Create table data
+        table_data = list()
         for dataset in sort_data:
             row = list()
             cnt = 0
             for column in self._columns:
-                if column["name"] in dataset:
+                if column.name in dataset:
                     cnt += 1
-                    if column["format"] is not None:
-                        value = \
-                            jube2.util.format_value(column["format"],
-                                                    dataset[column["name"]])
+                    # Format data values to create string representation
+                    if column.format is not None:
+                        value = jube2.util.format_value(column.format,
+                                                        dataset[column.name])
                     else:
-                        value = str(dataset[column["name"]])
+                        if dataset[column.name] is None:
+                            value = column.null_value
+                        else:
+                            value = str(dataset[column.name])
                     row.append(value)
                 else:
-                    row.append("")
+                    row.append(column.null_value)
+
             if cnt > 0:
                 table_data.append(row)
+        result_data.add_rows(self._columns, table_data, self._benchmark.id)
 
-        result_str = jube2.util.text_table(table_data, use_header_line=True,
-                                           auto_linebreak=False, colw=colw,
-                                           indent=0,
-                                           pretty=(self._style == "pretty"),
-                                           separator=self._separator)
-        return result_str
+        return result_data
 
     def etree_repr(self, new_cwd=None):
         """Return etree object representation"""
@@ -256,15 +464,5 @@ class Table(Result):
             table_etree.attrib["sort"] = \
                 jube2.conf.DEFAULT_SEPARATOR.join(self._sort_names)
         for column in self._columns:
-            column_etree = ET.SubElement(table_etree, "column")
-            column_etree.text = column["name"]
-            if column["colw"] is not None:
-                column_etree.attrib["colw"] = \
-                    str(column["colw"])
-            if column["format"] is not None:
-                column_etree.attrib["format"] = \
-                    column["format"]
-            if column["title"] is not None:
-                column_etree.attrib["title"] = \
-                    column["title"]
+            table_etree.append(column.etree_repr())
         return result_etree

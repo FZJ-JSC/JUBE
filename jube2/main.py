@@ -35,6 +35,11 @@ import re
 import shutil
 
 try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib import urlopen
+
+try:
     import argparse
 except ImportError:
     print("argparse module not available; either install it "
@@ -70,9 +75,25 @@ def status(args):
 
 def benchmarks_results(args):
     """Show benchmark results"""
-    found_benchmarks = search_for_benchmarks(args)
+    found_benchmarks = search_for_benchmarks(args, load_all=True)
+    result_list = list()
+    # Start with the newest benchmark to set the newest result configuration
+    found_benchmarks.reverse()
+    cnt = 0
     for benchmark_folder in found_benchmarks:
-        _benchmark_result(benchmark_folder, args)
+        if (args.num is None) or (cnt < args.num):
+            result_list = _benchmark_result(benchmark_folder=benchmark_folder,
+                                            args=args,
+                                            result_list=result_list)
+            cnt += 1
+
+    jube2.log.setup_logging("console")
+
+    for result_data in result_list:
+        # If there are multiple benchmarks, add benchmark id information
+        if len(found_benchmarks) > 1:
+            result_data.add_id_information(reverse=args.reverse)
+        result_data.create_result()
 
 
 def analyse_benchmarks(args):
@@ -127,6 +148,42 @@ def info(args):
                         parametrization_only=args.parametrization)
             # Restore current working dir
             os.chdir(cwd)
+
+
+def update_check(args):
+    """Check if a newer JUBE version is available."""
+    try:
+        website = urlopen(jube2.conf.UPDATE_VERSION_URL)
+        version_str = website.read().decode().strip()
+        version_loc = jube2.conf.JUBE_VERSION.split(".")
+        version_ext = version_str.split(".")
+        newest_version = True
+        if len(version_loc) == len(version_ext):
+            for i in range(len(version_loc)):
+                if int(version_ext[i]) > int(version_loc[i]):
+                    newest_version = newest_version and \
+                        (int(version_loc[i]) >= int(version_ext[i]))
+                if int(version_loc[i]) > int(version_ext[i]):
+                    break
+            if newest_version:
+                LOGGER.info("Newest JUBE version {0} is already "
+                            "installed.".format(jube2.conf.JUBE_VERSION))
+            else:
+                LOGGER.info(("Newer JUBE version {0} is available. "
+                             "Currently installed version is {1}.\n"
+                             "New version can be "
+                             "downloaded here: {2}").format(
+                    version_str, jube2.conf.JUBE_VERSION,
+                    jube2.conf.UPDATE_URL))
+        else:
+            raise IOError("Unknown version format at {0}".format(
+                jube2.conf.UPDATE_VERSION_URL))
+    except IOError as ioe:
+        raise IOError("Can not connect to {0}: {1}".format(
+            jube2.conf.UPDATE_VERSION_URL, str(ioe)))
+    except ValueError as verr:
+        raise ValueError("Can not read version string from {0}: {1}".format(
+            jube2.conf.UPDATE_VERSION_URL, str(verr)))
 
 
 def show_log(args):
@@ -220,29 +277,40 @@ def manipulate_comments(args):
         _manipulate_comment(benchmark_folder, args)
 
 
-def search_for_benchmarks(args):
+def search_for_benchmarks(args, load_all=False):
     """Search for existing benchmarks"""
     found_benchmarks = list()
     if not os.path.isdir(args.dir):
         raise OSError("Not a directory: \"{0}\"".format(args.dir))
-    if args.id is not None:
+    if (args.id is not None) and ("all" not in args.id):
         for benchmark_id in args.id:
-            # Restart existing benchmark
-            benchmark_folder = jube2.util.id_dir(args.dir, benchmark_id)
+            if benchmark_id == "last":
+                benchmark_id = jube2.util.get_current_id(args.dir)
+            # Search for existing benchmark
+            benchmark_folder = jube2.util.id_dir(args.dir, int(benchmark_id))
             if not os.path.isdir(benchmark_folder):
                 raise OSError("Benchmark directory not found: \"{0}\""
                               .format(benchmark_folder))
-            found_benchmarks.append(benchmark_folder)
+            if benchmark_folder not in found_benchmarks:
+                found_benchmarks.append(benchmark_folder)
     else:
-        # Get highest benchmark id
-        benchmark_id = jube2.util.get_current_id(args.dir)
-        # Restart existing benchmark
-        benchmark_folder = jube2.util.id_dir(args.dir, benchmark_id)
-        if os.path.isdir(benchmark_folder):
-            found_benchmarks.append(benchmark_folder)
+        if load_all or (args.id is not None) and ("all" in args.id):
+            # Add all available benchmark folder
+            found_benchmarks = [
+                os.path.join(args.dir, directory)
+                for directory in os.listdir(args.dir)
+                if os.path.isdir(os.path.join(args.dir, directory))]
         else:
-            raise OSError("No benchmark directory found in \"{0}\""
-                          .format(args.dir))
+            # Get highest benchmark id
+            benchmark_id = jube2.util.get_current_id(args.dir)
+            # Restart existing benchmark
+            benchmark_folder = jube2.util.id_dir(args.dir, benchmark_id)
+            if os.path.isdir(benchmark_folder):
+                found_benchmarks.append(benchmark_folder)
+            else:
+                raise OSError("No benchmark directory found in \"{0}\""
+                              .format(args.dir))
+    found_benchmarks.sort()
     return found_benchmarks
 
 
@@ -270,6 +338,8 @@ def run_new_benchmark(args):
     """Start a new benchmark run"""
 
     jube2.conf.HIDE_ANIMATIONS = args.hide_animation
+
+    id_cnt = 0
 
     for path in args.files:
         # Store current working dir
@@ -313,6 +383,10 @@ def run_new_benchmark(args):
             bench = benchmarks[bench_name]
             bench.cwd = os.path.join(cwd, dirname)
             bench.org_cwd = cwd
+            # Set user defined id
+            if (args.id is not None) and (len(args.id) > id_cnt):
+                bench.id = args.id[id_cnt]
+                id_cnt += 1
             bench.new_run()
             # Run analyse
             if args.analyse or args.result:
@@ -320,7 +394,7 @@ def run_new_benchmark(args):
 
             # Create result data
             if args.result:
-                bench.create_result()
+                bench.create_result(show=True)
 
             # Clean up when using debug mode
             if jube2.conf.DEBUG_MODE:
@@ -361,7 +435,7 @@ def _continue_benchmark(benchmark_folder, args):
 
     # Create result data
     if args.result:
-        benchmark.create_result()
+        benchmark.create_result(show=True)
 
     # Clean up when using debug mode
     if jube2.conf.DEBUG_MODE:
@@ -396,9 +470,15 @@ def _analyse_benchmark(benchmark_folder, args):
     os.chdir(cwd)
 
 
-def _benchmark_result(benchmark_folder, args):
+def _benchmark_result(benchmark_folder, args, result_list=None):
     """Show benchmark result"""
     benchmark = _load_existing_benchmark(benchmark_folder)
+
+    if result_list is None:
+        result_list = list()
+
+    if (args.tag is not None) and (len(benchmark.tags & set(args.tag)) == 0):
+        return result_list
 
     # Update benchmark data
     _update_analyse_and_result(args, benchmark, benchmark_folder)
@@ -412,15 +492,21 @@ def _benchmark_result(benchmark_folder, args):
     # Change logfile
     jube2.log.change_logfile_name(jube2.conf.LOGFILE_RESULT_NAME)
 
-    # Run becnhmark analyse
+    # Run benchmark analyse
     if args.analyse:
         benchmark.analyse(show_info=False)
 
     # Create benchmark results
-    benchmark.create_result(args.only)
+    result_list = benchmark.create_result(only=args.only,
+                                          data_list=result_list)
 
     # Restore current working dir
     os.chdir(cwd)
+
+    # Reset logging
+    jube2.log.change_logfile_name(jube2.conf.DEFAULT_LOGFILE_NAME)
+
+    return result_list
 
 
 def _update_analyse_and_result(args, benchmark, benchmark_folder):
@@ -525,6 +611,9 @@ def _get_args_parser():
                 {"nargs": "+", "help": "do not run benchmark"},
             ("-t", "--tag"):
                 {"nargs": "+", "help": "select tags"},
+            ("-i", "--id"):
+                {"type": int, "help": "use specific benchmark id",
+                 "nargs": "+"},
             ("--hide-animation",):
                 {"action": "store_true", "help": "hide animations"},
             ("--include-path",):
@@ -547,7 +636,7 @@ def _get_args_parser():
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"},
             ("--hide-animation",):
                 {"action": "store_true", "help": "hide animations"},
@@ -567,7 +656,7 @@ def _get_args_parser():
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-u", "--update"):
                 {"metavar": "UPDATE_FILE",
@@ -588,7 +677,7 @@ def _get_args_parser():
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-a", "--analyse"):
                 {"action": "store_true",
@@ -602,7 +691,12 @@ def _get_args_parser():
                 {"nargs": '+', "help": "select tags"},
             ("-o", "--only"):
                 {"nargs": "+", "metavar": "RESULT_NAME",
-                 "help": "only create results given by specific name"}
+                 "help": "only create results given by specific name"},
+            ("-r", "--reverse"):
+                {"help": "reverse benchmark output order",
+                 "action": "store_true"},
+            ("-n", "--num"):
+                {"type": int, "help": "show only last N benchmarks"}
         }
     }
 
@@ -615,7 +709,7 @@ def _get_args_parser():
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-s", "--step"):
                 {"help": "show information for given step", "nargs": "+"},
@@ -634,7 +728,7 @@ def _get_args_parser():
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"}
         }
     }
@@ -650,7 +744,7 @@ def _get_args_parser():
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-a", "--append"):
                 {"help": "append comment to existing one",
@@ -667,7 +761,7 @@ def _get_args_parser():
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-f", "--force"):
                 {"help": "force removing, never prompt",
@@ -688,6 +782,12 @@ def _get_args_parser():
         }
     }
 
+    # update subparser
+    subparser_configuration["update"] = {
+        "help": "Check if a newer JUBE version is available",
+        "func": update_check
+    }
+
     # log subparser
     subparser_configuration["log"] = {
         "help": "show benchmark logs",
@@ -699,7 +799,7 @@ def _get_args_parser():
             ('--command', "-c"):
                 {"nargs": "+", "help": "show log for this command"},
             ("-i", "--id"):
-                {"type": int, "help": "use benchmarks given by id",
+                {"help": "use benchmarks given by id",
                  "nargs": "+"}
         }
     }
@@ -712,11 +812,10 @@ def _get_args_parser():
                 name, help=subparser_config.get("help", ""),
                 description=jube2.help.HELP.get(name, ""),
                 formatter_class=argparse.RawDescriptionHelpFormatter)
-        if "arguments" not in subparser_config:
-            continue
-        for names, arg in subparser_config["arguments"].items():
-            subparser[name].add_argument(*names, **arg)
         subparser[name].set_defaults(func=subparser_config["func"])
+        if "arguments" in subparser_config:
+            for names, arg in subparser_config["arguments"].items():
+                subparser[name].add_argument(*names, **arg)
 
     # help subparser
     subparser["help"] = \

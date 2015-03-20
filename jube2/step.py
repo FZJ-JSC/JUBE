@@ -64,8 +64,8 @@ class Step(object):
             step_etree.attrib["shared"] = self._shared_name
         if self._export:
             step_etree.attrib["export"] = "true"
-        if self._max_wps > 0:
-            step_etree.attrib["max_async"] = str(self._max_wps)
+        if self._max_wps != "0":
+            step_etree.attrib["max_async"] = self._max_wps
         if self._iterations > 1:
             step_etree.attrib["iterations"] = str(self._iterations)
         for use in self._use:
@@ -243,7 +243,7 @@ class Operation(object):
 
             # Remove leading and trailing ; because otherwise ;; will cause
             # trouble when adding ; env
-            do.strip(";")
+            do = do.strip(";")
 
             if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 # Change stdout
@@ -278,6 +278,8 @@ class Operation(object):
                         stderr=stderr, shell=True,
                         env=env)
                 except OSError:
+                    stdout.close()
+                    stderr.close()
                     raise RuntimeError(("Error (returncode <> 0) while " +
                                         "running \"{0}\" in " +
                                         "directory \"{1}\"")
@@ -296,10 +298,20 @@ class Operation(object):
                     environment.update(env)
 
                 if returncode != 0:
-                    raise RuntimeError(("Error (returncode <> 0) while " +
-                                        "running \"{0}\" in " +
-                                        "directory \"{1}\"")
-                                       .format(do, os.path.abspath(work_dir)))
+                    stderr = open(os.path.join(work_dir, stderr_filename), "r")
+                    stderr_msg = stderr.readlines()
+                    stderr.close()
+
+                    raise RuntimeError(
+                        ("Error (returncode <> 0) while running \"{0}\" in " +
+                         "directory \"{1}\"\nMessage in \"{2}\":{3}\n{4}")
+                        .format(do, os.path.abspath(work_dir),
+                                os.path.abspath(
+                                    os.path.join(work_dir, stderr_filename)),
+                                "\n..." if len(stderr_msg) >
+                                jube2.conf.ERROR_MSG_LINES else "",
+                                "\n".join(stderr_msg[
+                                    -jube2.conf.ERROR_MSG_LINES:])))
 
         if self._async_filename is not None:
             async_filename = jube2.util.substitution(
@@ -352,7 +364,7 @@ class Operation(object):
             env_file = open(env_file_path, "r")
             for line in env_file:
                 line = line.rstrip()
-                matcher = re.match("^(\S.*?)=(.*?)$", line)
+                matcher = re.match(r"^(\S.*?)=(.*?)$", line)
                 if matcher:
                     env[matcher.group(1)] = matcher.group(2)
                     last = matcher.group(1)

@@ -32,6 +32,7 @@ import os.path
 import subprocess
 import jube2.log
 import sys
+import time
 import textwrap
 import jube2.conf
 
@@ -39,7 +40,7 @@ import jube2.conf
 LOGGER = jube2.log.get_logger(__name__)
 
 
-class Work_stat(object):
+class WorkStat(object):
 
     """Workpackage queuing handler"""
 
@@ -85,7 +86,7 @@ class Work_stat(object):
                 if not workpackage.started:
                     self.put(workpackage)
                 else:
-                    self.update_queues(self, last_workpackage)
+                    self.update_queues(last_workpackage)
 
     def get(self):
         """Get some workpackage from work queue"""
@@ -285,8 +286,14 @@ def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
         done_cnt = 0
         medium_cnt = 0
 
+    # shrink medium_cnt if there was some rounding issue
     if (medium_cnt > 0) and (width < medium_cnt + done_cnt):
         medium_cnt = width - done_cnt
+
+    # fill up medium_cnt if there was some rounding issue
+    if (current_cnt + second_cnt == all_cnt) and \
+            (medium_cnt + done_cnt < width):
+        medium_cnt += width - (medium_cnt + done_cnt)
 
     todo_cnt = width - done_cnt - medium_cnt
 
@@ -300,13 +307,22 @@ def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
 
 def element_tree_tostring(element, encoding=None):
     """A more encoding friendly ElementTree.tostring method"""
-    class dummy:
-        pass
-    data = []
-    file_dummy = dummy()
-    file_dummy.write = data.append
+    class Dummy(object):
+        """Dummy class to offer write method for etree."""
+        def __init__(self):
+            self._data = list()
+
+        @property
+        def data(self):
+            """Return data"""
+            return self._data
+
+        def write(self, *args):
+            """Simulate write"""
+            self._data.append(*args)
+    file_dummy = Dummy()
     ET.ElementTree(element).write(file_dummy, encoding)
-    return "".join(dat.decode(encoding) for dat in data)
+    return "".join(dat.decode(encoding) for dat in file_dummy.data)
 
 
 def get_tree_element(node, tag_path=None, attribute_dict=None):
@@ -341,6 +357,36 @@ def get_tree_elements(node, tag_path=None, attribute_dict=None):
         result += get_tree_elements(subtree, tag_path, attribute_dict)
 
     return result
+
+
+def now_str():
+    """Return current time string"""
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+
+def update_timestamps(path, *args):
+    """Set all timestamps for given arg_names to now"""
+    timestamps = dict()
+    timestamps.update(read_timestamps(path))
+    file_ptr = open(path, "w")
+    for arg in args:
+        timestamps[arg] = now_str()
+    for timestamp in timestamps:
+        file_ptr.write("{0}: {1}\n".format(timestamp, timestamps[timestamp]))
+    file_ptr.close()
+
+
+def read_timestamps(path):
+    """Return timestamps dictionary"""
+    timestamps = dict()
+    if os.path.isfile(path):
+        file_ptr = open(path, "r")
+        for line in file_ptr:
+            matcher = re.match("(.*?): (.*)", line.strip())
+            if matcher:
+                timestamps[matcher.group(1)] = matcher.group(2)
+        file_ptr.close()
+    return timestamps
 
 
 def resolve_depend(depend_dict):

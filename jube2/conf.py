@@ -22,9 +22,12 @@ from __future__ import (print_function,
                         division)
 
 # general
-JUBE_VERSION = "2.0.2"
+JUBE_VERSION = "2.0.4"
 ALLOWED_SCRIPTTYPES = ["python", "perl"]
 DEBUG_MODE = False
+UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"
+UPDATE_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/download.php"
+
 
 # input/output
 DEFAULT_SEPARATOR = ","
@@ -40,6 +43,7 @@ WORKPACKAGES_FILENAME = "workpackages.xml"
 ANALYSE_FILENAME = "analyse.xml"
 RESULT_DIRNAME = "result"
 ENVIRONMENT_INFO = "jube_environment_information.dat"
+TIMESTAMPS_INFO = "timestamps"
 
 # logging
 DEFAULT_LOGFILE_NAME = "jube-parse.log"
@@ -53,3 +57,6 @@ LOGFILE_DEBUG_MODE = "w"
 LOG_CONSOLE_FORMAT = "%(message)s"
 LOG_FILE_FORMAT = "[%(asctime)s]:%(levelname)s: %(message)s"
 DEFAULT_LOGGING_MODE = "default"
+
+# other
+ERROR_MSG_LINES = 5

@@ -21,6 +21,46 @@
 Release notes
 =============
 
+Version 2.0.4
+~~~~~~~~~~~~~
+Release: 2015-02-23
+
+* fix bug when using *JUBE* in a *Python3.x* environment
+* time information (start, last modified) will now be stored in a seperate file and are not extracted out of
+  file and directory metadata
+* ``jube run`` now allows the ``--id/-i`` command line option to set a specific benchmark id
+* ``jube result`` now automatically combines multiple benchmark runs within the same benchmark directory. *JUBE* automatically
+  add the benchmark id to the result output (except only a specific benchmark was requested)
+
+  * new command line option: ``--num/-n`` allow to set a maximum number of visible benchmarks in result
+  * new command line option: ``--revert/-r`` revert benchmark id order
+
+* new attribute for ``<column>``: ``null_value="..."`` to set a NULL representation for the output table (default: ``""``)
+* new command: ``jube update`` checks weather the newest *JUBE* version is installed
+* new ``id`` options: ``--id last`` to get the last benchmark and ``--id all`` to get all benchmarks
+
+Version 2.0.3
+~~~~~~~~~~~~~
+Release: 2015-01-29
+
+* missing files given in a fileset will now raise an error message
+* ``jube info <benchmark-dir> --id <id> --step <step_name>`` now also shows
+  the current parametrization
+* ``jube info <benchmark-dir> --id <id> --step <step_name> -p`` only shows the
+  current parametrization using a csv table format
+* add new (optional) attribute ``max_async="..."`` to ``<step>``: Maximum number of parallel workpackages
+  of the correspondig step will run at the same time (default: 0, means no limitation)
+* switch ``<analyzer>`` to ``<analyser>`` (also ``<analyzer>`` will be available) to avoid mixing of "s" and "z" versions
+* fix bug when using ``,`` inside of a ``<pattern>``
+* *JUBE* now return a none zero error code if it sends an error message
+* update platform files to allow easier environment handling: ``<parameter ... export="true">`` will 
+  be automatically used inside of the corresponding jobscript
+* update platform jobscript templates to keep error code of running program
+* fix bug when adding ``;`` at the end of a ``<do>``
+* last five lines of stderr message will now be copied to user error message (if shell return code <> 0)
+* fix *Python2.6* compatibility bug in converter module
+* fix bug when using an evaluable parameter inside of another parameter
+
 Version 2.0.2
 ~~~~~~~~~~~~~
 Release: 2014-12-09
