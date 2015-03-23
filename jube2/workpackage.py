@@ -407,7 +407,7 @@ class Workpackage(object):
         if not started_before:
             # Filter for filesets in uses
             fileset_names = \
-                self._step.get_used_sets(self._benchmark.filesets)
+                self._step.get_used_sets(self._benchmark.filesets, parameter)
             for name in fileset_names:
                 self._benchmark.filesets[name].create(
                     work_dir=self.work_dir,
@@ -424,7 +424,8 @@ class Workpackage(object):
         if not started_before:
             # Filter for substitutionsets in uses
             substituteset_names = \
-                self._step.get_used_sets(self._benchmark.substitutesets)
+                self._step.get_used_sets(self._benchmark.substitutesets,
+                                         parameter)
             for name in substituteset_names:
                 self._benchmark.substitutesets[name].substitute(
                     parameter_dict=parameter, work_dir=work_dir)

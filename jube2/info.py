@@ -170,22 +170,9 @@ def print_benchmark_info(benchmark):
                                      indent=1))
 
     if continue_possible:
-        print("\n--- Benchmark not finished! ---")
+        print("\n--- Benchmark not finished! ---\n")
     else:
-        print("\n--- Benchmark finished ---")
-
-    # Create list of used external files
-    print("\nUsed files and directories:")
-    for fileset in benchmark.filesets.values():
-        for file_obj in fileset:
-            if (not type(file_obj) is jube2.fileset.Prepare) and \
-                    (not file_obj.is_internal_ref):
-                path = file_obj.path
-                path = jube2.util.substitution(path, dict())
-                path = os.path.expandvars(os.path.expanduser(path))
-                path = os.path.join(file_obj.file_path_ref, path)
-                path = os.path.join(benchmark.file_path_ref, path)
-                print("  {0}".format(os.path.abspath(path)))
+        print("\n--- Benchmark finished ---\n")
 
     print(jube2.util.text_line())
 

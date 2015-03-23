@@ -96,7 +96,8 @@ will see that there are more types of sets, which can be distinguished by their 
 parameter must be unique (relative to the parameterset).
 
 The ``<step>`` contains the operation tasks. The ``name`` must be unique.
-It can use different types of existing sets.
+It can use different types of existing sets. All used sets must be given by name using the ``<use>``. There can be
+multiple ``<use>`` inside the same ``<step>`` and also multiple names within the same ``<use>`` are allowed (separated by ``,``).
 Only sets, which are explicitly used, are available inside the step! The ``<do>`` contains a single **shell command**.
 This command will run inside of a sandbox directory environment (inside the ``outpath`` directory tree).
 The step and its corresponding :term:`parameter space <parameter_space>` is named :term:`workpackage`.

@@ -211,7 +211,7 @@ def _benchmark_preprocessor(benchmark_etree, tags=None):
     # Search for <use from=""></use> and load external set
     uses = jube2.util.get_tree_elements(benchmark_etree, "use")
     for use in uses:
-        filename = use.get("from", "")
+        filename = use.get("from", "l")
         if (use.text is not None) and (use.text.strip() != "") and \
            (filename.strip() != ""):
             new_use_str = ""
@@ -233,7 +233,7 @@ def _benchmark_preprocessor(benchmark_etree, tags=None):
                 new_use_str += name
             use.text = new_use_str
 
-    # Create new xml elments
+    # Create new xml elements
     for name, filenames in sets.items():
         for i, filename in enumerate(filenames):
             set_type = _find_set_type(filename, name, tags)

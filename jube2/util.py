@@ -124,8 +124,16 @@ def id_dir(base_dir, id_number):
 
 def text_boxed(text):
     """Create an ASCII boxed version of text."""
-    box = "{line}\n# {text}\n{line}".format(
-        line="#" * jube2.conf.DEFAULT_WIDTH, text=text)
+    box = "#" * jube2.conf.DEFAULT_WIDTH
+    for line in text.split("\n"):
+        box += "\n"
+        lines = ["# {0}".format(element) for element in
+                 textwrap.wrap(line.strip(), jube2.conf.DEFAULT_WIDTH - 2)]
+        if len(lines) == 0:
+            box += "#"
+        else:
+            box += "\n".join(lines)
+    box += "\n" + "#" * jube2.conf.DEFAULT_WIDTH
     return box
 
 
@@ -308,7 +316,9 @@ def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
 def element_tree_tostring(element, encoding=None):
     """A more encoding friendly ElementTree.tostring method"""
     class Dummy(object):
+
         """Dummy class to offer write method for etree."""
+
         def __init__(self):
             self._data = list()
 
@@ -446,6 +456,14 @@ def consistency_check(benchmark):
             for use in uses:
                 if (use not in benchmark.parametersets) and \
                    (use not in benchmark.filesets) and \
-                   (use not in benchmark.substitutesets):
+                   (use not in benchmark.substitutesets) and \
+                   ("$" not in use):
                     raise ValueError(("<use>{0}</use> not found in "
                                       "available sets").format(use))
+    # Dependency check
+    depend_dict = \
+        dict([(step.name, step.depend) for step in benchmark.steps.values()])
+    order = jube2.util.resolve_depend(depend_dict)
+    for step_name in benchmark.steps:
+        if step_name not in order:
+            raise ValueError("Can't resolve dependencies.")

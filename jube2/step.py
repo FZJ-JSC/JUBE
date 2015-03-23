@@ -115,11 +115,14 @@ class Step(object):
         """Return maximum number of simultaneous workpackages"""
         return self._max_wps
 
-    def get_used_sets(self, available_sets):
+    def get_used_sets(self, available_sets, parameter_dict=None):
         """Get set of all used sets, which can be found in available_sets"""
         set_names = set()
+        if parameter_dict is None:
+            parameter_dict = dict()
         for use in self._use:
             for name in use:
+                name = jube2.util.substitution(name, parameter_dict)
                 if name in available_sets:
                     set_names.add(name)
         return set_names
@@ -154,6 +157,119 @@ class Step(object):
                              parameter_type="int"))
 
         return parameterset
+
+    def create_workpackages(self, benchmark, local_parameterset,
+                            history_parameterset, used_sets=None):
+        """Create workpackages for current step using given
+        benchmark context"""
+
+        if used_sets is None:
+            used_sets = set()
+
+        new_workpackages = list()
+
+        # Create parameter dictionary for substitution
+        parameter_dict = \
+            dict([[par.name, par.value] for par in
+                  local_parameterset.constant_parameter_dict.values()])
+
+        # Filter for parametersets in uses
+        parameterset_names = \
+            self.get_used_sets(benchmark.parametersets, parameter_dict)
+        new_sets_found = len(parameterset_names.difference(used_sets)) > 0
+
+        if new_sets_found:
+            parameterset_names = parameterset_names.difference(used_sets)
+            used_sets = used_sets.union(parameterset_names)
+
+            for parameterset_name in parameterset_names:
+                # The parametersets in a single step must be compatible
+                if not local_parameterset.is_compatible(
+                        benchmark.parametersets[parameterset_name]):
+                    incompatible_names = \
+                        local_parameterset.get_incompatible_parameter(
+                            benchmark.parametersets[parameterset_name])
+                    raise ValueError(("Can't use parameterset '{0}' in " +
+                                      "step '{1}'.\nParameter '{2}' is/are " +
+                                      "already defined by a different " +
+                                      "parameterset.")
+                                     .format(parameterset_name, self.name,
+                                             ",".join(incompatible_names)))
+                local_parameterset.add_parameterset(
+                    benchmark.parametersets[parameterset_name])
+
+            # Combine local and history parameterset
+            if local_parameterset.is_compatible(history_parameterset):
+                history_parameterset = \
+                    local_parameterset.copy().add_parameterset(
+                        history_parameterset)
+            else:
+                LOGGER.debug("Incompatible parameterset combination found " +
+                             "between current and parent steps.")
+                return new_workpackages
+
+        # Get jube internal parametersets
+        jube_parameterset = benchmark.get_jube_parameterset()
+        jube_parameterset.add_parameterset(self.get_jube_parameterset())
+
+        # Expand templates
+        parametersets = [history_parameterset]
+        change = True
+        while change:
+            change = False
+            new_parametersets = list()
+            for parameterset in parametersets:
+                parameterset.parameter_substitution(
+                    additional_parametersets=[jube_parameterset])
+                # Maybe new templates were created
+                if parameterset.has_templates:
+                    new_parametersets += \
+                        [new_parameterset for new_parameterset in
+                         parameterset.expand_templates()]
+                    change = True
+                else:
+                    new_parametersets += [parameterset]
+            parametersets = new_parametersets
+
+        # Create workpackages
+        for parameterset in parametersets:
+            workpackage_parameterset = local_parameterset.copy()
+            workpackage_parameterset.update_parameterset(parameterset)
+            if new_sets_found:
+                new_workpackages += \
+                    self.create_workpackages(benchmark,
+                                             workpackage_parameterset,
+                                             parameterset, used_sets)
+            else:
+                # Create new workpackage
+                for iteration in range(self.iterations):
+                    workpackage = jube2.workpackage.Workpackage(
+                        benchmark=benchmark,
+                        step=self,
+                        parameterset=workpackage_parameterset,
+                        history=parameterset.copy(),
+                        iteration=iteration)
+
+                # --- Final parameter substitution ---
+                workpackage.parameterset.parameter_substitution(
+                    additional_parametersets=[
+                        jube_parameterset, workpackage.get_jube_parameterset(
+                            substitute=False)],
+                    final_sub=True)
+
+                # --- Check parameter type ---
+                for parameter in workpackage.parameterset:
+                    if not parameter.is_template:
+                        jube2.util.convert_type(
+                            parameter.parameter_type, parameter.value)
+
+                # Update workpackage history parameterset
+                workpackage.history.update_parameterset(
+                    workpackage.parameterset)
+
+                new_workpackages.append(workpackage)
+
+        return new_workpackages
 
     @property
     def alt_work_dir(self):
