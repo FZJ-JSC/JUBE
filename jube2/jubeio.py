@@ -211,7 +211,7 @@ def _benchmark_preprocessor(benchmark_etree, tags=None):
     # Search for <use from=""></use> and load external set
     uses = jube2.util.get_tree_elements(benchmark_etree, "use")
     for use in uses:
-        filename = use.get("from", "l")
+        filename = use.get("from", "")
         if (use.text is not None) and (use.text.strip() != "") and \
            (filename.strip() != ""):
             new_use_str = ""
