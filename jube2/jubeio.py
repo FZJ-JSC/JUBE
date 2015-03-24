@@ -40,6 +40,7 @@ import jube2.conf
 import jube2.result
 import sys
 import re
+import hashlib
 import jube2.log
 
 INCLUDE_PATH = list()
@@ -130,7 +131,7 @@ def benchmarks_from_xml(filename, tags=None):
     # At this stage we iterate over benchmarks
     benchmark_list = tree.findall("benchmark")
     for benchmark_tree in benchmark_list:
-        _benchmark_preprocessor(benchmark_tree, tags)
+        _benchmark_preprocessor(benchmark_tree, filename, tags)
         benchmark = _create_benchmark(benchmark_tree,
                                       global_parametersets,
                                       global_substitutesets,
@@ -204,41 +205,49 @@ def _preprocessor(etree):
         _preprocessor(child)
 
 
-def _benchmark_preprocessor(benchmark_etree, tags=None):
+def _benchmark_preprocessor(benchmark_etree, root_filename, tags=None):
     """Preprocess the xml-tree of given benchmark."""
     LOGGER.debug("  Preprocess benchmark xml tree")
-    sets = dict()
+
     # Search for <use from=""></use> and load external set
     uses = jube2.util.get_tree_elements(benchmark_etree, "use")
+    files = dict()
     for use in uses:
-        filename = use.get("from", "")
+        from_str = use.get("from", "").strip()
         if (use.text is not None) and (use.text.strip() != "") and \
-           (filename.strip() != ""):
+           (from_str != ""):
+            hash_val = hashlib.md5(from_str).hexdigest()
+            if hash_val not in files:
+                files[hash_val] = set()
+
+            set_names = [element.strip() for element
+                         in use.text.split(jube2.conf.DEFAULT_SEPARATOR)]
+
+            for file_str in from_str.split(jube2.conf.DEFAULT_SEPARATOR):
+                parts = file_str.strip().split(":")
+                filename = parts[0].strip()
+                if filename == "":
+                    filename = root_filename
+                alt_set_names = set([element.strip() for element in parts[1:]])
+                if len(alt_set_names) == 0:
+                    alt_set_names = set(set_names)
+                for name in alt_set_names:
+                    files[hash_val].add((filename, name))
+
+            # Replace set-name with an internal one
             new_use_str = ""
-            for name in use.text.split(jube2.conf.DEFAULT_SEPARATOR):
-                name = name.strip()
-                if name not in sets:
-                    sets[name] = [filename]
-                    name = "jube_{0}_{1}".format(name, 0)
-                else:
-                    if filename in sets[name]:
-                        index = sets[name].index(filename)
-                    else:
-                        sets[name].append(filename)
-                        index = len(sets[name] - 1)
-                    name = "jube_{0}_{1}".format(name, index)
+            for name in set_names:
                 if len(new_use_str) > 0:
                     new_use_str += jube2.conf.DEFAULT_SEPARATOR
-                # Replace set-name with a internal one
-                new_use_str += name
+                new_use_str += "jube_{0}_{1}".format(name, hash_val)
             use.text = new_use_str
 
     # Create new xml elements
-    for name, filenames in sets.items():
-        for i, filename in enumerate(filenames):
+    for fileid in files:
+        for filename, name in files[fileid]:
             set_type = _find_set_type(filename, name, tags)
             set_etree = ET.SubElement(benchmark_etree, set_type)
-            set_etree.attrib["name"] = "jube_{0}_{1}".format(name, i)
+            set_etree.attrib["name"] = "jube_{0}_{1}".format(name, fileid)
             set_etree.attrib["init_with"] = "{0}:{1}".format(filename, name)
 
 
@@ -263,6 +272,11 @@ def _find_set_type(filename, name, tags=None):
     _remove_invalid_tags(etree, tags)
     found_set = jube2.util.get_tree_elements(etree,
                                              attribute_dict={"name": name})
+
+    found_set = [set_etree for set_etree in found_set
+                 if set_etree.tag in ("parameterset", "substituteset",
+                                      "fileset", "patternset")]
+
     if len(found_set) > 1:
         raise ValueError(("name=\"{0}\" can be found multiple times inside " +
                           "\"{1}\"").format(name, file_path))
@@ -270,13 +284,7 @@ def _find_set_type(filename, name, tags=None):
         raise ValueError(("name=\"{0}\" not found inside " +
                           "\"{1}\"").format(name, file_path))
     else:
-        if found_set[0].tag in ("parameterset", "substituteset", "fileset",
-                                "patternset"):
-            return found_set[0].tag
-        else:
-            raise ValueError(("name=\"{0}\" is not used for a parameterset, " +
-                              "substituteset or fileset inside " +
-                              "\"{1}\"").format(name, file_path))
+        return found_set[0].tag
 
 
 def benchmark_info_from_xml(filename):
