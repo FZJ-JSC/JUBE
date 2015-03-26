@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="parameter_dependencies" outpath="bench_run">
+    <comment>A parameter_dependencies example</comment>
+
+    <!-- Configuration -->
+    <parameterset name="param_set">
+      <parameter name="index" type="int">0,1</parameter>
+      <parameter name="text" mode="python">["hello","world"][$index]</parameter>
+    </parameterset>
+
+    <parameterset name="depend_param_set0">
+      <parameter name="number" type="int">3,5</parameter>
+    </parameterset>
+
+    <parameterset name="depend_param_set1">
+      <parameter name="number" type="int">1,2,4</parameter>
+    </parameterset>
+
+    <!-- Operation -->
+    <step name="operation">
+      <use>param_set</use> <!-- use basic parameterset -->
+      <use>depend_param_set$index</use> <!-- use dependent parameterset -->
+      <use from="include_file.xml:depend_param_set0:depend_param_set1">
+        depend_param_set$index
+      </use>
+      <do>echo "$text $number $number2"</do>
+    </step>
+  </benchmark>
+</jube>

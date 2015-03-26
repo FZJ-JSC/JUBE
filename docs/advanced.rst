@@ -226,7 +226,9 @@ The ``init_with`` can be used inside any set definition. Inside the given file t
 The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure, but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the setname must
 be unique inside the include-file.
 
-The last method is the most generic include. By using ``<include />`` you can copy any *XML*-nodes you want to your main-*XML* file. The ``path`` is optional and can be used to select a specific nodeset (otherwise the root-node will be included). The ``<include />`` is the only
+The last method is the most generic include. By using ``<include />`` you can copy any *XML*-nodes you want to your main-*XML* file. The included file can provide tags which are not *JUBE*-conform but it must be a valid *XML*-file (e.g. only one root node allowed). The
+resulting main configuration file must be completly *JUBE* valid.
+The ``path`` is optional and can be used to select a specific nodeset (otherwise the root-node itself will be included). The ``<include />`` is the only
 include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will update pathnames, which were relative to the include-file position.
 
 To run the benchmark you can use the normal command::
@@ -452,6 +454,34 @@ By using ``export="true"`` inside of a ``<parameter>`` you can export additonal 
 ``$$`` to explicitly use *Shell* substitution instead of *JUBE* substitution.
 
 You can also export the complete environment of a step to a dependent step by using ``export="true"`` inside of ``<step>``.
+
+.. index:: parameter dependencies
+
+Parameter dependencies
+~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes you need parameters which based on other parameters or only a specific parameter combination make sense and other combinations
+are useless or wrong. For this there are several techniques inside of *JUBE* to create such a more compley workflow.
+
+The files used for this example can be found inside ``examples/parameter_dependencies``.
+
+The input file ``parameter_dependencies.xml``:
+
+.. literalinclude:: ../examples/parameter_dependencies/parameter_dependencies.xml
+   :language: xml
+
+The include file ``include_file.xml``:
+
+.. literalinclude:: ../examples/parameter_dependencies/include_file.xml
+   :language: xml
+
+The easiest way to handle dependencies is to define an index-parameter which can be used in other scripting parameters
+to combine all dependent parameter combinations.
+
+Also complete sets can be marked as dependent towards a specific parameter by using this parameter in the ``<use>``-tag. When using parametersets
+out of an other file the correct set-name must be given within the ``from`` attribute, because these sets will be loaded in a preprocessing step before the
+corresponding parameter will be evaluated. Also sets out of different files can be combined within the same ``<use>`` by using the 
+``file1:set1,file2:set2`` syntax. Setnames must be unique.
 
 .. index:: convert
 

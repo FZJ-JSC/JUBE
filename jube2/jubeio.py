@@ -239,7 +239,7 @@ def _benchmark_preprocessor(benchmark_etree, root_filename, tags=None):
             for name in set_names:
                 if len(new_use_str) > 0:
                     new_use_str += jube2.conf.DEFAULT_SEPARATOR
-                new_use_str += "jube_{0}_{1}".format(name, hash_val)
+                new_use_str += "jube_{0}_{1}".format(hash_val, name)
             use.text = new_use_str
 
     # Create new xml elements
@@ -247,7 +247,7 @@ def _benchmark_preprocessor(benchmark_etree, root_filename, tags=None):
         for filename, name in files[fileid]:
             set_type = _find_set_type(filename, name, tags)
             set_etree = ET.SubElement(benchmark_etree, set_type)
-            set_etree.attrib["name"] = "jube_{0}_{1}".format(name, fileid)
+            set_etree.attrib["name"] = "jube_{0}_{1}".format(fileid, name)
             set_etree.attrib["init_with"] = "{0}:{1}".format(filename, name)
 
 
