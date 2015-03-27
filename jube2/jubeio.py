@@ -337,6 +337,8 @@ def analyse_result_from_xml(filename):
                     pattern_type = \
                         _attribute_from_element(pattern_etree, "type")
                     value = pattern_etree.text
+                    if value is not None:
+                        value = value.strip()
                     value = jube2.util.convert_type(pattern_type, value)
                     analyse_result[analyser_name][step_name][
                         wp_id][pattern_name] = value
