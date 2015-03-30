@@ -216,7 +216,7 @@ def _benchmark_preprocessor(benchmark_etree, root_filename, tags=None):
         from_str = use.get("from", "").strip()
         if (use.text is not None) and (use.text.strip() != "") and \
            (from_str != ""):
-            hash_val = hashlib.md5(from_str).hexdigest()
+            hash_val = hashlib.md5(from_str.encode()).hexdigest()
             if hash_val not in files:
                 files[hash_val] = set()
 
