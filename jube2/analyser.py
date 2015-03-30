@@ -36,6 +36,46 @@ class Analyser(object):
     """The Analyser handles the analyse process and store all important data
     to run a new analyse."""
 
+    class AnalyseFile(object):
+
+        def __init__(self, path):
+            self._path = path
+            self._use = set()
+
+        def add_uses(self, use_names):
+            """Add an addtional patternset name"""
+            for use_name in use_names:
+                if use_name in self._use:
+                    raise ValueError(("Can't use element \"{0}\" two times")
+                                     .format(use_name))
+                self._use.add(use_name)
+
+        def __eq__(self, other):
+            result = len(self._use.symmetric_difference(other.use)) == 0
+            return result and (self._path == other.path)
+
+        def __repr__(self):
+            return "AnalyseFile({0})".format(self._path)
+
+        @property
+        def use(self):
+            """Return uses"""
+            return self._use
+
+        @property
+        def path(self):
+            """Get file path"""
+            return self._path
+
+        def etree_repr(self):
+            """Return etree object representation"""
+            file_etree = ET.Element("file")
+            file_etree.text = self._path
+            if len(self._use) > 0:
+                file_etree.attrib["use"] = \
+                    jube2.conf.DEFAULT_SEPARATOR.join(self._use)
+            return file_etree
+
     def __init__(self, name):
         self._name = name
         self._use = set()
@@ -95,12 +135,11 @@ class Analyser(object):
         for use in self._use:
             use_etree = ET.SubElement(analyser_etree, "use")
             use_etree.text = use
-        for analyse in self._analyse:
+        for step_name in self._analyse:
             analyse_etree = ET.SubElement(analyser_etree, "analyse")
-            analyse_etree.attrib["step"] = analyse
-            for filename in self._analyse[analyse]:
-                file_etree = ET.SubElement(analyse_etree, "file")
-                file_etree.text = filename
+            analyse_etree.attrib["step"] = step_name
+            for fileobj in self._analyse[step_name]:
+                analyse_etree.append(fileobj.etree_repr())
         return analyser_etree
 
     def analyse(self):
@@ -192,7 +231,7 @@ class Analyser(object):
                 pattern = [p for p in local_patternset.pattern_storage]
 
                 files = list()
-                for filename in self._analyse[stepname]:
+                for file_obj in self._analyse[stepname]:
                     if step.alt_work_dir is not None:
                         file_path = step.alt_work_dir
                         file_path = jube2.util.substitution(file_path,
@@ -203,6 +242,12 @@ class Analyser(object):
                                                  file_path)
                     else:
                         file_path = workpackage.work_dir
+
+                    filename = \
+                        jube2.util.substitution(file_obj.path, parameter)
+                    filename = \
+                        os.path.expandvars(os.path.expanduser(filename))
+
                     file_path = os.path.join(file_path, filename)
                     files.append(file_path)
 

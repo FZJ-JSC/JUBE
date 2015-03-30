@@ -699,11 +699,25 @@ def _extract_analyser(etree_analyser):
         _check_tag(element, valid_tags)
         if element.tag == "analyse":
             step_name = _attribute_from_element(element, "step").strip()
-            for filename in element:
-                if (filename.text is None) or (filename.text.strip() == ""):
+
+            for file_etree in element:
+                if (file_etree.text is None) or \
+                        (file_etree.text.strip() == ""):
                     raise ValueError("Empty <file> found")
                 else:
-                    analyser.add_analyse(step_name, filename.text.strip())
+                    use_text = file_etree.get("use")
+                    if use_text is not None:
+                        use_names = \
+                            [use_name.strip() for use_name in
+                             use_text.split(jube2.conf.DEFAULT_SEPARATOR)]
+                    else:
+                        use_names = list()
+                    for filename in file_etree.text.split(
+                            jube2.conf.DEFAULT_SEPARATOR):
+                        file_obj = jube2.analyser.Analyser.AnalyseFile(
+                            filename.strip())
+                        file_obj.add_uses(use_names)
+                        analyser.add_analyse(step_name, file_obj)
         elif element.tag == "use":
             analyser.add_uses(_extract_use(element))
     return analyser
@@ -777,10 +791,6 @@ def _extract_use(etree_use):
     if etree_use.text is not None:
         use_names = [use_name.strip() for use_name in
                      etree_use.text.split(jube2.conf.DEFAULT_SEPARATOR)]
-        for use_name in use_names:
-            if use_names.count(use_name) > 1:
-                raise ValueError(("Can't use element \"{0}\" two times")
-                                 .format(use_name))
         return use_names
     else:
         raise ValueError("Empty <use> found")
