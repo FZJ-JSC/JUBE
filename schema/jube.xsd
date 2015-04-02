@@ -183,13 +183,21 @@
 
   <xs:complexType name="analyseType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
-      <xs:element name="file" type="stringTagType" />
+      <xs:element name="file" type="analyseFileType" />
       <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="step" type="xs:string" use="required" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
-  
+
+  <xs:complexType name="analyseFileType">
+    <xs:complexContent>
+      <xs:extension base="stringTagType">
+        <xs:attribute name="use" type="xs:string" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
   <xs:complexType name="resultType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="use" type="stringTagType" />
@@ -213,17 +221,16 @@
   </xs:complexType>
   
   <xs:complexType name="columnType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
+    <xs:complexContent>
+      <xs:extension base="stringTagType">
         <xs:attribute name="colw" type="xs:integer" use="optional" />
         <xs:attribute name="format" type="xs:string" use="optional" />
         <xs:attribute name="title" type="xs:string" use="optional" />
         <xs:attribute name="null_value" type="xs:string" use="optional" />
-        <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension> 
-    </xs:simpleContent>
+    </xs:complexContent>
   </xs:complexType>
-  
+
   <xs:simpleType name="styleType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="csv" />
@@ -241,8 +248,8 @@
   </xs:complexType>
 
   <xs:complexType name="doType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
+    <xs:complexContent>
+      <xs:extension base="stringTagType">
         <xs:attribute name="done_file" type="xs:string"
           use="optional" />
         <xs:attribute name="stdout" type="xs:string" use="optional" />
@@ -250,9 +257,8 @@
         <xs:attribute name="active" type="xs:string" use="optional" />
         <xs:attribute name="shared" type="booleanType" use="optional" />
         <xs:attribute name="work_dir" type="xs:string" use="optional" />
-        <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
-    </xs:simpleContent>
+    </xs:complexContent>
   </xs:complexType>
 
   <xs:simpleType name="booleanType">

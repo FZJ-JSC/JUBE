@@ -116,6 +116,21 @@ class Patternset(object):
             self.derived_pattern_storage.is_compatible(
                 patternset.pattern_storage)
 
+    def get_incompatible_pattern(self, patternset):
+        """Return a set of incompatible pattern names between the current
+        and the given parameterset"""
+        result = set()
+        result.update(self.pattern_storage.get_incompatible_parameter(
+            patternset.pattern_storage))
+        result.update(self.pattern_storage.get_incompatible_parameter(
+            patternset.derived_pattern_storage))
+        result.update(self.derived_pattern_storage.get_incompatible_parameter(
+            patternset.pattern_storage))
+        result.update(self.derived_pattern_storage.get_incompatible_parameter(
+            patternset.derived_pattern_storage))
+
+        return result
+
     def __repr__(self):
         return "Patternset: pattern:{0} derived pattern:{1}".format(
             dict([[pattern.name, pattern.value]

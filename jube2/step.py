@@ -357,13 +357,6 @@ class Operation(object):
         else:
             env = os.environ
 
-        # Use operation specific work directory
-        if self._work_dir is not None:
-            new_work_dir = jube2.util.substitution(self._work_dir,
-                                                   parameter_dict)
-            new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
-            work_dir = os.path.join(work_dir, new_work_dir)
-
         if not only_check_pending:
             # Inline substitution
             do = jube2.util.substitution(self._do, parameter_dict)
@@ -376,8 +369,9 @@ class Operation(object):
                 # Change stdout
                 if self._stdout_filename is not None:
                     stdout_filename = jube2.util.substitution(
-                        self._stdout_filename,
-                        parameter_dict)
+                        self._stdout_filename, parameter_dict)
+                    stdout_filename = \
+                        os.path.expandvars(os.path.expanduser(stdout_filename))
                 else:
                     stdout_filename = "stdout"
                 stdout = open(os.path.join(work_dir, stdout_filename), "a")
@@ -385,11 +379,21 @@ class Operation(object):
                 # Change stderr
                 if self._stderr_filename is not None:
                     stderr_filename = jube2.util.substitution(
-                        self._stderr_filename,
-                        parameter_dict)
+                        self._stderr_filename, parameter_dict)
+                    stderr_filename = \
+                        os.path.expandvars(os.path.expanduser(stderr_filename))
                 else:
                     stderr_filename = "stderr"
                 stderr = open(os.path.join(work_dir, stderr_filename), "a")
+
+        # Use operation specific work directory
+        if self._work_dir is not None:
+            new_work_dir = jube2.util.substitution(
+                self._work_dir, parameter_dict)
+            new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
+            work_dir = os.path.join(work_dir, new_work_dir)
+
+        if not only_check_pending:
 
             abs_info_file_path = \
                 os.path.abspath(os.path.join(work_dir,
@@ -442,8 +446,7 @@ class Operation(object):
 
         if self._async_filename is not None:
             async_filename = jube2.util.substitution(
-                self._async_filename,
-                parameter_dict)
+                self._async_filename, parameter_dict)
             async_filename = \
                 os.path.expandvars(os.path.expanduser(async_filename))
             if not os.path.exists(os.path.join(work_dir, async_filename)):

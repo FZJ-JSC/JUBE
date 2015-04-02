@@ -298,7 +298,7 @@ class Benchmark(object):
         for step in self._steps.values():
             if len(step.depend) == 0:
                 new_workpackages = \
-                    self._create_new_workpackages_for_parents(step)
+                    self._create_new_workpackages_with_parents(step)
                 self._workpackages[step.name] += new_workpackages
                 for workpackage in new_workpackages:
                     workpackage.queued = True
@@ -424,7 +424,7 @@ class Benchmark(object):
                 [iterator for iterator in
                  itertools.product(*parent_workpackages)]
             for workpackage_combination in workpackage_combinations:
-                new_workpackages = self._create_new_workpackages_for_parents(
+                new_workpackages = self._create_new_workpackages_with_parents(
                     dependent_step, workpackage_combination)
                 # Create links
                 for new_workpackage in new_workpackages:
@@ -443,9 +443,9 @@ class Benchmark(object):
             len(all_new_workpackages)))
         return all_new_workpackages
 
-    def _create_new_workpackages_for_parents(self, step,
-                                             parent_workpackages=None):
-        """Create workpackages for given parent combination"""
+    def _create_new_workpackages_with_parents(self, step,
+                                              parent_workpackages=None):
+        """Create workpackages with given parent combination"""
         if parent_workpackages is None:
             parent_workpackages = list()
         # Combine and check parent parametersets
