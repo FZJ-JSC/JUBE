@@ -42,6 +42,7 @@ class TestExamples(unittest.TestCase):
             ExampleChecker("dependencies", "dependencies.xml"),
             ExampleChecker("tagging", "tagging.xml"),
             ExampleChecker("parameterspace", "parameterspace.xml"),
+            ExampleChecker("parameter_dependencies", "parameter_dependencies.xml"),
             ExampleChecker("scripting_parameter", "scripting_parameter.xml"),
             ExampleChecker("include", "main.xml"),
             ExampleChecker("shared", "shared.xml"),

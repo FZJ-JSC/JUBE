@@ -457,11 +457,13 @@ You can also export the complete environment of a step to a dependent step by us
 
 .. index:: parameter dependencies
 
+.. _parameter-dependencies:
+
 Parameter dependencies
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Sometimes you need parameters which based on other parameters or only a specific parameter combination make sense and other combinations
-are useless or wrong. For this there are several techniques inside of *JUBE* to create such a more compley workflow.
+are useless or wrong. For this there are several techniques inside of *JUBE* to create such a more complex workflow.
 
 The files used for this example can be found inside ``examples/parameter_dependencies``.
 

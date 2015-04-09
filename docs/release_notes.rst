@@ -21,6 +21,25 @@
 Release notes
 =============
 
+Version 2.0.5
+~~~~~~~~~~~~~
+Release: 2015-04-09
+
+* ``argparse`` is now marked as a dependency in ``setup.py``. It will be automatically loaded when using *setuptools*.
+* tags will now also be used when including external sets by using ``<use from="...">``
+* change default platform output filenames: using *job.out* and *job.err* instead of *stdout* and *stderr* for default job output
+* new internal workflow generation alogrithm
+* parameter can now be used in step ``<use>``, e.g. ``<use>set_$number</use>``
+
+  * external sets had to be given by name to allow later substitution: ``<use from="file:set1:set2">set$nr</use>``
+  * also multiple files can be mixed: ``<use from="file:set1,file2:set2">set$nr</use>``
+  * new example :ref:`parameter-dependencies`
+
+* allow ``use``-attribute in file-tag to select file specific patternsets ``<file use="patternset">``
+* Shell and parameter substitution now allowed in analyse files selection ``<file>*.log</file>``
+* default ``stdout`` and ``stderr`` file will now stay in the default directory when changing the work_dir inside a ``<do>``
+* start of public available *JUBE* configuration files repository: `<https://github.com/FZJ-JSC/jube-configs>`_
+
 Version 2.0.4
 ~~~~~~~~~~~~~
 Release: 2015-02-23
