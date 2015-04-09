@@ -64,8 +64,9 @@
         <parameter name="errlogfile">job.err</parameter>
         <parameter name="queue">common</parameter>
         <parameter name="env"></parameter>
-        <parameter name="tasks" mode="python" type="int">$nodes *
-            $taskspernode</parameter>
+        <parameter name="tasks" mode="python" type="int">
+          $nodes * $taskspernode
+        </parameter>
         <parameter name="modules"></parameter>
     </parameterset>
 

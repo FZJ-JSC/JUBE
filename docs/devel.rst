@@ -80,7 +80,7 @@ installed. Run
 
   .. code-block:: sh
 
-     python -m coverage run ./run_tests.py
+     python -m coverage run ./run_all_tests.py
      python -m coverage html
 
 in the ``test`` directory. The first command creates a coverage report
