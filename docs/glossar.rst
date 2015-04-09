@@ -407,8 +407,8 @@ Glossary
         </step>
 
      * parametersets, filesets and substitutionsets are usable
-     * using filesets and substitutesets ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
-     * using parametersets ``<use>set1</use><use>set2</use>`` means: use both; ``<use>set1,set2</use>`` means: use in one case the first set and in second case the other set
+     * using sets ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
+     * parameter can be used inside the ``<use>``-tag
      * the ``from`` attribute is optional and can be used to specify an external set source
      * any name must be unique, it is **not allowed to reuse** a set
      * ``depend`` is optional and can contain a list of other step names which must be executed before the current step

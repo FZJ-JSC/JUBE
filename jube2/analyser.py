@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""The Analyser class handles the analyze process"""
+"""The Analyser class handles the analyse process"""
 
 from __future__ import (print_function,
                         unicode_literals,
@@ -25,6 +25,7 @@ import xml.etree.ElementTree as ET
 import jube2.log
 import os
 import re
+import glob
 import jube2.pattern
 import jube2.util
 
@@ -35,6 +36,48 @@ class Analyser(object):
 
     """The Analyser handles the analyse process and store all important data
     to run a new analyse."""
+
+    class AnalyseFile(object):
+
+        """A file which should be analysed"""
+
+        def __init__(self, path):
+            self._path = path
+            self._use = set()
+
+        def add_uses(self, use_names):
+            """Add an addtional patternset name"""
+            for use_name in use_names:
+                if use_name in self._use:
+                    raise ValueError(("Can't use element \"{0}\" two times")
+                                     .format(use_name))
+                self._use.add(use_name)
+
+        def __eq__(self, other):
+            result = len(self._use.symmetric_difference(other.use)) == 0
+            return result and (self._path == other.path)
+
+        def __repr__(self):
+            return "AnalyseFile({0})".format(self._path)
+
+        @property
+        def use(self):
+            """Return uses"""
+            return self._use
+
+        @property
+        def path(self):
+            """Get file path"""
+            return self._path
+
+        def etree_repr(self):
+            """Return etree object representation"""
+            file_etree = ET.Element("file")
+            file_etree.text = self._path
+            if len(self._use) > 0:
+                file_etree.attrib["use"] = \
+                    jube2.conf.DEFAULT_SEPARATOR.join(self._use)
+            return file_etree
 
     def __init__(self, name):
         self._name = name
@@ -95,13 +138,29 @@ class Analyser(object):
         for use in self._use:
             use_etree = ET.SubElement(analyser_etree, "use")
             use_etree.text = use
-        for analyse in self._analyse:
+        for step_name in self._analyse:
             analyse_etree = ET.SubElement(analyser_etree, "analyse")
-            analyse_etree.attrib["step"] = analyse
-            for filename in self._analyse[analyse]:
-                file_etree = ET.SubElement(analyse_etree, "file")
-                file_etree.text = filename
+            analyse_etree.attrib["step"] = step_name
+            for fileobj in self._analyse[step_name]:
+                analyse_etree.append(fileobj.etree_repr())
         return analyser_etree
+
+    def _combine_and_check_patternsets(self, patternset, uses):
+        """Combine patternsets given by uses and check compatibility"""
+        for use in uses:
+            if use not in self._benchmark.patternsets:
+                raise RuntimeError(("<patternset name=\"{0}\"> used but not " +
+                                    "found").format(use))
+            if not patternset.is_compatible(self._benchmark.patternsets[use]):
+                incompatible_names = patternset.get_incompatible_pattern(
+                    self._benchmark.patternsets[use])
+                raise RuntimeError(("Can't use patternset \"{0}\" " +
+                                    "in analyser \"{1}\", because there are " +
+                                    "incompatible pattern name combinations: "
+                                    "{2}")
+                                   .format(use, self._name,
+                                           ",".join(incompatible_names)))
+            patternset.add_patternset(self._benchmark.patternsets[use])
 
     def analyse(self):
         """Run the analyser"""
@@ -114,18 +173,7 @@ class Analyser(object):
 
         # Combine all patternsets
         patternset = jube2.pattern.Patternset()
-        for use in self._use:
-            if use not in self._benchmark.patternsets:
-                raise RuntimeError(("<patternset name=\"{0}\"> used but not " +
-                                    "found").format(use))
-            if not patternset.is_compatible(self._benchmark.patternsets[use]):
-                raise RuntimeError(("Can't use patternset \"{0}\" " +
-                                    "in analyser \"{1}\"")
-                                   .format(use, self._name))
-            patternset.add_patternset(self._benchmark.patternsets[use])
-
-        # Get jube patternset
-        jube_pattern = jube2.pattern.get_jube_pattern()
+        self._combine_and_check_patternsets(patternset, self._use)
 
         # Print debug info
         debugstr = "  available pattern:\n"
@@ -153,12 +201,12 @@ class Analyser(object):
                                         stepname, self._name))
             step = self._benchmark.steps[stepname]
             for workpackage in self._benchmark.workpackages[stepname]:
+                result_dict = dict()
+                match_dict = dict()
                 result[stepname][workpackage.id] = dict()
                 # Ignore workpackages not started yet
                 if not workpackage.started:
                     continue
-
-                local_patternset = patternset.copy()
 
                 # Get parameterset of current workpackage
                 parameterset = \
@@ -168,31 +216,8 @@ class Analyser(object):
                     dict([[par.name, par.value] for par in
                           parameterset.constant_parameter_dict.values()])
 
-                # Unique pattern/parameter check
-                if (not parameterset.is_compatible(
-                        local_patternset.pattern_storage)) or \
-                   (not parameterset.is_compatible(
-                        local_patternset.derived_pattern_storage)):
-
-                    incompatible_names = \
-                        parameterset.get_incompatible_parameter(
-                            local_patternset.pattern_storage)
-                    incompatible_names.update(
-                        parameterset.get_incompatible_parameter(
-                            local_patternset.derived_pattern_storage))
-                    raise RuntimeError(("A pattern and a parameter (\"{0}\") "
-                                        "using the same name in "
-                                        "analyser \"{1}\"").format(
-                                            ",".join(incompatible_names),
-                                            self._name))
-
-                # Do pattern substitution
-                local_patternset.pattern_substitution(
-                    [parameterset, jube_pattern.pattern_storage])
-                pattern = [p for p in local_patternset.pattern_storage]
-
                 files = list()
-                for filename in self._analyse[stepname]:
+                for file_obj in self._analyse[stepname]:
                     if step.alt_work_dir is not None:
                         file_path = step.alt_work_dir
                         file_path = jube2.util.substitution(file_path,
@@ -203,151 +228,191 @@ class Analyser(object):
                                                  file_path)
                     else:
                         file_path = workpackage.work_dir
+
+                    filename = \
+                        jube2.util.substitution(file_obj.path, parameter)
+                    filename = \
+                        os.path.expandvars(os.path.expanduser(filename))
+
                     file_path = os.path.join(file_path, filename)
-                    files.append(file_path)
+                    for path in glob.glob(file_path):
+                        files.append(path)
 
-                # scan files
-                LOGGER.debug("    scan workpackage (id={0})".format(
-                    workpackage.id))
-                result_dict = Analyser._analyse_files(files, pattern)
+                        # scan files
+                        LOGGER.debug(("    scan file {0}").format(path))
 
+                        new_result_dict, match_dict = \
+                            self._analyse_file(path, patternset, parameterset,
+                                               match_dict, file_obj.use)
+                        result_dict.update(new_result_dict)
+
+                # Store result data
                 if len(result_dict) > 0:
-                    resultset = jube2.parameter.Parameterset()
-                    for name in result_dict:
-                        resultset.add_parameter(
-                            jube2.parameter.Parameter.
-                            create_parameter(name,
-                                             value=str(result_dict[name])))
-
-                    # calculate derived pattern
-                    local_patternset.derived_pattern_substitution(
-                        [parameterset, resultset,
-                         jube_pattern.pattern_storage])
-
-                    # Convert content type
-                    for par in local_patternset.derived_pattern_storage:
-                        result_dict[par.name] = \
-                            jube2.util.convert_type(par.content_type,
-                                                    par.value, stop=False)
-
-                    # Store result data
                     result[stepname][workpackage.id] = result_dict
 
         self._analyse_result = result
 
-    @staticmethod
-    def _analyse_files(files, patternlist):
+    def _analyse_file(self, file_path, patternset, parameterset,
+                      match_dict=None, additional_uses=None):
         """Scan given files with given pattern and produce a result
         parameterset"""
-        result_dict = dict()
+        if additional_uses is None:
+            additional_uses = set()
+        if match_dict is None:
+            match_dict = dict()
 
-        for file_path in files:
-            if not os.path.isfile(file_path):
-                continue
+        if not os.path.isfile(file_path):
+            return dict(), match_dict
 
-            file_handle = open(file_path, "r")
-            # Read file content
-            data = file_handle.read()
-            for pattern in patternlist:
-                if pattern.name not in result_dict:
-                    result_dict[pattern.name] = dict()
+        local_patternset = patternset.copy()
+
+        # Add file specific uses
+        self._combine_and_check_patternsets(local_patternset, additional_uses)
+
+        # Unique pattern/parameter check
+        if (not parameterset.is_compatible(
+                local_patternset.pattern_storage)) or \
+           (not parameterset.is_compatible(
+                local_patternset.derived_pattern_storage)):
+
+            incompatible_names = parameterset.get_incompatible_parameter(
+                local_patternset.pattern_storage)
+            incompatible_names.update(parameterset.get_incompatible_parameter(
+                local_patternset.derived_pattern_storage))
+            raise RuntimeError(("A pattern and a parameter (\"{0}\") "
+                                "using the same name in "
+                                "analyser \"{1}\"").format(
+                                    ",".join(incompatible_names), self._name))
+
+        # Get jube patternset
+        jube_pattern = jube2.pattern.get_jube_pattern()
+
+        # Do pattern substitution
+        local_patternset.pattern_substitution(
+            [parameterset, jube_pattern.pattern_storage])
+
+        patternlist = [p for p in local_patternset.pattern_storage]
+
+        file_handle = open(file_path, "r")
+        # Read file content
+        data = file_handle.read()
+        for pattern in patternlist:
+            if pattern.name not in match_dict:
+                match_dict[pattern.name] = dict()
+            try:
+                regex = re.compile(pattern.value, re.MULTILINE)
+            except re.error as ree:
+                raise RuntimeError(("Error inside pattern \"{0}\" : " +
+                                    "\"{1}\" : {2}")
+                                   .format(pattern.name, pattern.value, ree))
+            # Run regular expression
+            matches = re.findall(regex, data)
+            # If there are differnt groups reduce result shape
+            if regex.groups > 1:
+                match_list = list()
+                for match in matches:
+                    match_list = match_list + list(match)
+            else:
+                match_list = matches
+            # Remove empty matches
+            match_list = [match for match in match_list if match != ""]
+
+            # Convert to pattern type
+            new_match_list = list()
+            for match in match_list:
                 try:
-                    regex = re.compile(pattern.value, re.MULTILINE)
-                except re.error as ree:
-                    raise RuntimeError(("Error inside pattern \"{0}\" : " +
-                                        "\"{1}\" : {2}")
-                                       .format(pattern.name,
-                                               pattern.value, ree))
-                # Run regular expression
-                matches = re.findall(regex, data)
-                # If there are differnt groups reduce result shape
-                if regex.groups > 1:
-                    match_list = list()
-                    for match in matches:
-                        match_list = match_list + list(match)
-                else:
-                    match_list = matches
-                # Remove empty matches
-                match_list = [match for match in match_list if match != ""]
+                    if pattern.content_type == "int":
+                        new_match_list.append(int(match))
+                    elif pattern.content_type == "float":
+                        new_match_list.append(float(match))
+                    else:
+                        new_match_list.append(match)
+                except ValueError:
+                    LOGGER.warning(("\"{0}\" can't be represented " +
+                                    "as a \"{1}\"")
+                                   .format(match, pattern.content_type))
+            match_list = new_match_list
 
-                # Convert to pattern type
-                new_match_list = list()
-                for match in match_list:
-                    try:
-                        if pattern.content_type == "int":
-                            new_match_list.append(int(match))
-                        elif pattern.content_type == "float":
-                            new_match_list.append(float(match))
-                        else:
-                            new_match_list.append(match)
-                    except ValueError:
-                        LOGGER.warning(("\"{0}\" can't be represented " +
-                                        "as a \"{1}\"")
-                                       .format(match, pattern.content_type))
-                match_list = new_match_list
+            if len(match_list) > 0:
+                # First match is default
+                if "first" not in match_dict[pattern.name]:
+                    match_dict[pattern.name]["first"] = match_list[0]
+                if pattern.content_type in ["int", "float"]:
+                    for match in match_list:
 
-                if len(match_list) > 0:
-                    # First match is default
-                    if "first" not in result_dict[pattern.name]:
-                        result_dict[pattern.name]["first"] = match_list[0]
-                    if pattern.content_type in ["int", "float"]:
-                        for match in match_list:
+                        if "min" in pattern.reduce_option:
+                            if "min" in match_dict[pattern.name]:
+                                match_dict[pattern.name]["min"] = \
+                                    min(match_dict[pattern.name]["min"],
+                                        match)
+                            else:
+                                match_dict[pattern.name]["min"] = match
+                        if "max" in pattern.reduce_option:
+                            if "max" in match_dict[pattern.name]:
+                                match_dict[pattern.name]["max"] = \
+                                    max(match_dict[pattern.name]["max"],
+                                        match)
+                            else:
+                                match_dict[pattern.name]["max"] = match
+                        if ("sum" in pattern.reduce_option) or \
+                                ("avg" in pattern.reduce_option):
+                            if "sum" in match_dict[pattern.name]:
+                                match_dict[pattern.name]["sum"] += match
+                            else:
+                                match_dict[pattern.name]["sum"] = match
+                        if ("cnt" in pattern.reduce_option) or \
+                                ("avg" in pattern.reduce_option):
+                            if "cnt" in match_dict[pattern.name]:
+                                match_dict[pattern.name]["cnt"] += 1
+                            else:
+                                match_dict[pattern.name]["cnt"] = 1
 
-                            if "min" in pattern.reduce_option:
-                                if "min" in result_dict[pattern.name]:
-                                    result_dict[pattern.name]["min"] = \
-                                        min(result_dict[pattern.name]["min"],
-                                            match)
-                                else:
-                                    result_dict[pattern.name]["min"] = match
-                            if "max" in pattern.reduce_option:
-                                if "max" in result_dict[pattern.name]:
-                                    result_dict[pattern.name]["max"] = \
-                                        max(result_dict[pattern.name]["max"],
-                                            match)
-                                else:
-                                    result_dict[pattern.name]["max"] = match
-                            if ("sum" in pattern.reduce_option) or \
-                                    ("avg" in pattern.reduce_option):
-                                if "sum" in result_dict[pattern.name]:
-                                    result_dict[pattern.name]["sum"] += match
-                                else:
-                                    result_dict[pattern.name]["sum"] = match
-                            if ("cnt" in pattern.reduce_option) or \
-                                    ("avg" in pattern.reduce_option):
-                                if "cnt" in result_dict[pattern.name]:
-                                    result_dict[pattern.name]["cnt"] += 1
-                                else:
-                                    result_dict[pattern.name]["cnt"] = 1
+                if "last" in pattern.reduce_option:
+                    match_dict[pattern.name]["last"] = match_list[-1]
+                if "avg" in pattern.reduce_option:
+                    match_dict[pattern.name]["avg"] = \
+                        (match_dict[pattern.name]["sum"] /
+                         match_dict[pattern.name]["cnt"])
 
-                    if "last" in pattern.reduce_option:
-                        result_dict[pattern.name]["last"] = match_list[-1]
-                    if "avg" in pattern.reduce_option:
-                        result_dict[pattern.name]["avg"] = \
-                            (result_dict[pattern.name]["sum"] /
-                             result_dict[pattern.name]["cnt"])
-
-            info_str = "      file \"{0}\" scanned pattern found:\n".format(
-                os.path.basename(file_path))
-            info_str += jube2.util.text_table(
-                [(_name, ", ".join(["{0}:{1}".format(key, con)
-                                    for key, con in value.items()]))
-                 for _name, value in result_dict.items()],
-                indent=9, align_right=True, auto_linebreak=True)
-            LOGGER.debug(info_str)
-            file_handle.close()
+        info_str = "      file \"{0}\" scanned pattern found:\n".format(
+            os.path.basename(file_path))
+        info_str += jube2.util.text_table(
+            [(_name, ", ".join(["{0}:{1}".format(key, con)
+                                for key, con in value.items()]))
+             for _name, value in match_dict.items()],
+            indent=9, align_right=True, auto_linebreak=True)
+        LOGGER.debug(info_str)
+        file_handle.close()
 
         # Create result dict
-        result = dict()
-        for pattern_name in result_dict:
-            for option in result_dict[pattern_name]:
+        result_dict = dict()
+        for pattern_name in match_dict:
+            for option in match_dict[pattern_name]:
                 if option == "first":
                     name = pattern_name
                 else:
                     name = "{0}_{1}".format(pattern_name, option)
-                result[name] = result_dict[pattern_name][option]
+                result_dict[name] = match_dict[pattern_name][option]
 
-        return result
+        # Evaluate derived pattern
+        if len(result_dict) > 0:
+            resultset = jube2.parameter.Parameterset()
+            for name in result_dict:
+                resultset.add_parameter(
+                    jube2.parameter.Parameter.create_parameter(
+                        name, value=str(result_dict[name])))
+
+            # calculate derived pattern
+            local_patternset.derived_pattern_substitution(
+                [parameterset, resultset, jube_pattern.pattern_storage])
+
+            # Convert content type
+            for par in local_patternset.derived_pattern_storage:
+                result_dict[par.name] = \
+                    jube2.util.convert_type(par.content_type,
+                                            par.value, stop=False)
+
+        return result_dict, match_dict
 
     def analyse_etree_repr(self):
         """Create an etree representation of a analyse dict:

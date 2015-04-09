@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <parameterset name="depend_param_set0">
+    <parameter name="number2" type="int">10</parameter>
+  </parameterset>
+
+  <parameterset name="depend_param_set1">
+    <parameter name="number2" type="int">20</parameter>
+  </parameterset>
+</jube>

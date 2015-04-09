@@ -122,7 +122,8 @@
                         null_value CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT file (#PCDATA)>
-<!ATTLIST file          tag CDATA #IMPLIED>
+<!ATTLIST file          tag CDATA #IMPLIED
+                        use CDATA #IMPLIED>
 <!ELEMENT include EMPTY>
 <!ATTLIST include       from CDATA #REQUIRED
                         path CDATA #IMPLIED

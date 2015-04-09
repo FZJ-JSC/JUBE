@@ -31,7 +31,7 @@ class Job:
         errorfile="stderr"
         walltime="00:01:00"  
         for line in fptr:
-            if re.findall(r"^#\s?@\s*(shell|job_name|notification|notify_user)",line):
+            if re.findall(r"^#\s?@\s*(shell|job_name|notification|class|notify_user)",line):
                 globalJobSpec.append(line)
             elif re.findall(r"^#\s?@\s*output\s*",line):
                 stdoutfile=re.findall(r"^#\s?@\s*output\s*=\s*(\S+)\s*$",line)[0]

@@ -176,7 +176,9 @@ attlist.column &=
   attribute null_value { text }?,
   attribute tag { text }?
 file = element file { attlist.file, text }
-attlist.file &= attribute tag { text }?
+attlist.file &=
+  attribute tag { text }?,
+  attribute use { text }?
 \include = element include { attlist.include, empty }
 attlist.include &=
   attribute from { text },
