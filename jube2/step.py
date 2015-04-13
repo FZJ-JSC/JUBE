@@ -399,14 +399,22 @@ class Operation(object):
                 os.path.abspath(os.path.join(work_dir,
                                              jube2.conf.ENVIRONMENT_INFO))
 
+            # Select unix shell
+            shell = jube2.conf.STANDARD_SHELL
+            if "JUBE_EXEC_SHELL" in os.environ:
+                alt_shell = os.environ["JUBE_EXEC_SHELL"].strip()
+                if len(alt_shell) > 0:
+                    shell = alt_shell
+
             # Execute "do"
             LOGGER.debug(">>> {0}".format(do))
             if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 try:
                     sub = subprocess.Popen(
-                        "{0} && env > {1}".format(do, abs_info_file_path),
+                        [shell, "-c",
+                         "{0} && env > {1}".format(do, abs_info_file_path)],
                         cwd=work_dir, stdout=stdout,
-                        stderr=stderr, shell=True,
+                        stderr=stderr, shell=False,
                         env=env)
                 except OSError:
                     stdout.close()
