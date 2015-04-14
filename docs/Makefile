@@ -117,6 +117,9 @@ text:
 update_help: text
 	cp $(BUILDDIR)/text/glossar.txt ../jube2/help.txt
 
+update_release: text
+	cp $(BUILDDIR)/text/release_notes.txt ../RELEASE_NOTES
+
 man:
 	$(SPHINXBUILD) -b man $(ALLSPHINXOPTS) $(BUILDDIR)/man
 	@echo
