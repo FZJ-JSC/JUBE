@@ -184,13 +184,13 @@ class Copy(File):
         if (len(pathes) == 0) and (not jube2.conf.DEBUG_MODE):
             raise RuntimeError("no files found using \"{0}\"".format(pathname))
         for path in pathes:
-            if len(pathes) > 1:
-                file_path = os.path.join(work_dir, os.path.basename(path))
-                LOGGER.debug("  copy \"{0}\" -> \"{1}\""
-                             .format(path, os.path.basename(path)))
-            else:
-                file_path = os.path.join(work_dir, name)
-                LOGGER.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
+            # When using shell extensions, alternative filenames are not 
+            # allowed for multiple matches.
+            if (len(pathes) > 1) or ((pathname != path) and 
+                                     (name == os.path.basename(pathname))):
+                name = os.path.basename(path)
+            file_path = os.path.join(work_dir, name)
+            LOGGER.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
             if not jube2.conf.DEBUG_MODE and not os.path.exists(file_path):
                 if os.path.isdir(path):
                     shutil.copytree(path, file_path, symlinks=True)
