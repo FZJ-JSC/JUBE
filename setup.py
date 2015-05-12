@@ -70,7 +70,7 @@ config = {'name': 'JUBE',
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
                            ['docs/JUBE.pdf']),
-                          (SHARE_PATH, ['LICENSE'])] +
+                          (SHARE_PATH, ['LICENSE','RELEASE_NOTES'])] +
                          rel_path("examples", SHARE_PATH) +
                          rel_path("schema", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),

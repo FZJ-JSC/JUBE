@@ -107,6 +107,9 @@ def benchmarks_from_xml(filename, tags=None):
     elif len(include_path) == 1:
         _extract_include_path(include_path[0])
 
+    # Add env var based include path
+    _read_envvar_include_path()
+
     # Preprocess xml-tree
     LOGGER.debug("  Preprocess xml tree")
     _preprocessor(tree.getroot())
@@ -253,7 +256,7 @@ def _benchmark_preprocessor(benchmark_etree, root_filename, tags=None):
 
 def _find_include_file(filename):
     """Search for filename in include-pathes and return resulting path"""
-    for path in ["."] + INCLUDE_PATH:
+    for path in INCLUDE_PATH + ["."]:
         file_path = os.path.join(path, filename)
         if os.path.exists(file_path):
             break
@@ -506,6 +509,15 @@ def _extract_include_path(include_path_etree):
             raise ValueError("Empty \"<path>\" found")
         path = os.path.expandvars(os.path.expanduser(path))
         jube2.jubeio.INCLUDE_PATH += [path]
+
+
+def _read_envvar_include_path():
+    """Add environment var include-path"""
+    LOGGER.debug("Read $JUBE_INCLUDE_PATH")
+    if "JUBE_INCLUDE_PATH" in os.environ:
+        jube2.jubeio.INCLUDE_PATH += \
+            [include_path for include_path in
+             os.environ["JUBE_INCLUDE_PATH"].split(":") if include_path != ""]
 
 
 def _create_benchmark(benchmark_etree, global_parametersets,

@@ -318,19 +318,11 @@ def _update_include_path(args, dirname):
     """Update the global include path information list"""
     jube2.jubeio.INCLUDE_PATH = list()
 
-    # Add environment var include-path
-    if "JUBE_INCLUDE_PATH" in os.environ:
-        jube2.jubeio.INCLUDE_PATH = \
-            [os.path.relpath(include_path, dirname)
-             for include_path in
-             os.environ["JUBE_INCLUDE_PATH"].split(":")] + \
-            jube2.jubeio.INCLUDE_PATH
-
     # Add commandline include-path
     if args.include_path is not None:
         jube2.jubeio.INCLUDE_PATH = \
             [os.path.relpath(include_path, dirname)
-             for include_path in args.include_path] + \
+             for include_path in args.include_path if include_path != ""] + \
             jube2.jubeio.INCLUDE_PATH
 
 
