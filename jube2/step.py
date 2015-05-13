@@ -440,17 +440,25 @@ class Operation(object):
                     stderr = open(os.path.join(work_dir, stderr_filename), "r")
                     stderr_msg = stderr.readlines()
                     stderr.close()
-
-                    raise RuntimeError(
-                        ("Error (returncode <> 0) while running \"{0}\" in " +
-                         "directory \"{1}\"\nMessage in \"{2}\":{3}\n{4}")
-                        .format(do, os.path.abspath(work_dir),
+                    try:
+                        raise RuntimeError(
+                            ("Error (returncode <> 0) while running \"{0}\" " +
+                             "in directory \"{1}\"\nMessage in \"{2}\":" +
+                             "{3}\n{4}").format(
+                                do,
+                                os.path.abspath(work_dir),
                                 os.path.abspath(
                                     os.path.join(work_dir, stderr_filename)),
                                 "\n..." if len(stderr_msg) >
                                 jube2.conf.ERROR_MSG_LINES else "",
                                 "\n".join(stderr_msg[
                                     -jube2.conf.ERROR_MSG_LINES:])))
+                    except UnicodeDecodeError:
+                        raise RuntimeError(
+                            ("Error (returncode <> 0) while running \"{0}\" " +
+                             "in directory \"{1}\"").format(
+                                do,
+                                os.path.abspath(work_dir)))
 
         if self._async_filename is not None:
             async_filename = jube2.util.substitution(

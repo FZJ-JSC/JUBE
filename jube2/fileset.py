@@ -184,9 +184,9 @@ class Copy(File):
         if (len(pathes) == 0) and (not jube2.conf.DEBUG_MODE):
             raise RuntimeError("no files found using \"{0}\"".format(pathname))
         for path in pathes:
-            # When using shell extensions, alternative filenames are not 
+            # When using shell extensions, alternative filenames are not
             # allowed for multiple matches.
-            if (len(pathes) > 1) or ((pathname != path) and 
+            if (len(pathes) > 1) or ((pathname != path) and
                                      (name == os.path.basename(pathname))):
                 name = os.path.basename(path)
             file_path = os.path.join(work_dir, name)
