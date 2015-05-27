@@ -301,7 +301,7 @@ Show logs for benchmark
 ``DIRECTORY``
    directory which contain benchmarks, default: .
 
-..index:: status
+.. index:: status
 
 status
 ~~~~~~

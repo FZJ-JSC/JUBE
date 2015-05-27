@@ -27,6 +27,7 @@ import jube2.conf
 import xml.etree.ElementTree as ET
 import jube2.log
 import shutil
+import codecs
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -97,7 +98,7 @@ class Substituteset(object):
                     raise RuntimeError(("File \"{0}\" not found while "
                                         "running substitution").format(infile))
                 # Read in-file
-                file_handle = open(infile, "r")
+                file_handle = codecs.open(infile, "r", "utf-8")
                 text = file_handle.read()
                 file_handle.close()
 
@@ -106,7 +107,7 @@ class Substituteset(object):
                     text = text.replace(source, dest)
 
                 # Write out-file
-                file_handle = open(outfile, "w")
+                file_handle = codecs.open(outfile, "w", "utf-8")
                 file_handle.write(text)
                 file_handle.close()
                 if infile != outfile:

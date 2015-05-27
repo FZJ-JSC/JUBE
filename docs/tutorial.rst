@@ -55,6 +55,22 @@ To use the *JUBE* command line tool like a normal command line command you can a
    >>> export PATH=$HOME/.local/bin:$PATH
 
 
+.. index:: configuration
+
+.. _configuration:
+
+Configuration
+~~~~~~~~~~~~~
+
+The main *JUBE* configuration bases on the given input configuration file. But in addition, some
+shell environment variables are available which can be used to set system specific options:
+
+* ``JUBE_INCLUDE_PATH``: Can contain a list of pathes (seperated by ``:``) pointing to directories, which contain
+  system relevant include configuration files. This technique can be used to store platform specific parameter
+  in a platform specific directory.
+* ``JUBE_EXEC_SHELL``: *JUBE* normaly uses ``/bin/sh`` to execute the given shell commands. This default shell can be changed
+  by using this environment variable.
+
 .. index:: hello world
 
 Hello World

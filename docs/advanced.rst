@@ -237,14 +237,10 @@ To run the benchmark you can use the normal command::
 
 It will search for include files inside four different positions (in the following order):
 
-* inside the same directory of your ``main.xml``
+
 * inside a directory given over the command line::
 
      >>> jube run --include-path some_path another_path -- main.xml
-
-* inside any path given with the ``JUBE_INCLUDE_PATH`` environment variable::
-
-     >>> export JUBE_INCLUDE_PATH=some_path:another_path
 
 * inside any path given by a ``<include-path>``-tag:
 
@@ -258,6 +254,12 @@ It will search for include files inside four different positions (in the followi
          <path>another_path</path>
        </include-path>
        ...
+
+* inside any path given with the ``JUBE_INCLUDE_PATH`` environment variable (see :ref:`configuration`)::
+
+     >>> export JUBE_INCLUDE_PATH=some_path:another_path
+
+* inside the same directory of your ``main.xml``
 
 .. index:: tagging
 

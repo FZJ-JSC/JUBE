@@ -283,6 +283,9 @@ class Parameter(object):
         else:
             sep = separator
 
+        # Unicode conversion
+        value = "" + value
+
         # Check weather a new template should be created or not
         if no_templates:
             values = [value]

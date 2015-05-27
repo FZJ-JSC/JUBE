@@ -175,6 +175,9 @@ class Pattern(jube2.parameter.StaticParameter):
         if not self._derived:
             pattern_mode = "text"
 
+        # Unicode conversion
+        value = "" + value
+
         jube2.parameter.StaticParameter.__init__(
             self, name, value, parameter_type=content_type,
             parameter_mode=pattern_mode)

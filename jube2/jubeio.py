@@ -1174,10 +1174,10 @@ def _extract_subs(etree_substituteset):
             out_file = os.path.expandvars(os.path.expanduser(out_file))
             files[out_file] = in_file
         elif sub.tag == "sub":
-            source = _attribute_from_element(sub, "source").strip()
+            source = "" + _attribute_from_element(sub, "source").strip()
             if source == "":
                 raise ValueError("Empty \"source\" attribute in <sub> found.")
-            dest = sub.get("dest")
+            dest = "" + sub.get("dest")
             if dest is None:
                 dest = sub.text
                 if dest is None:
