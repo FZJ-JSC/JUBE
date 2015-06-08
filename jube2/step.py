@@ -374,7 +374,8 @@ class Operation(object):
                         os.path.expandvars(os.path.expanduser(stdout_filename))
                 else:
                     stdout_filename = "stdout"
-                stdout = open(os.path.join(work_dir, stdout_filename), "a")
+                stdout_path = os.path.join(work_dir, stdout_filename)
+                stdout = open(stdout_path, "a")
 
                 # Change stderr
                 if self._stderr_filename is not None:
@@ -384,7 +385,8 @@ class Operation(object):
                         os.path.expandvars(os.path.expanduser(stderr_filename))
                 else:
                     stderr_filename = "stderr"
-                stderr = open(os.path.join(work_dir, stderr_filename), "a")
+                stderr_path = os.path.join(work_dir, stderr_filename)
+                stderr = open(stderr_path, "a")
 
         # Use operation specific work directory
         if self._work_dir is not None:
@@ -437,9 +439,12 @@ class Operation(object):
                     environment.update(env)
 
                 if returncode != 0:
-                    stderr = open(os.path.join(work_dir, stderr_filename), "r")
-                    stderr_msg = stderr.readlines()
-                    stderr.close()
+                    if os.path.isfile(stderr_path):
+                        stderr = open(stderr_path, "r")
+                        stderr_msg = stderr.readlines()
+                        stderr.close()
+                    else:
+                        stderr_msg = ""
                     try:
                         raise RuntimeError(
                             ("Error (returncode <> 0) while running \"{0}\" " +
@@ -447,8 +452,7 @@ class Operation(object):
                              "{3}\n{4}").format(
                                 do,
                                 os.path.abspath(work_dir),
-                                os.path.abspath(
-                                    os.path.join(work_dir, stderr_filename)),
+                                os.path.abspath(stderr_path),
                                 "\n..." if len(stderr_msg) >
                                 jube2.conf.ERROR_MSG_LINES else "",
                                 "\n".join(stderr_msg[
