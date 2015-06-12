@@ -102,6 +102,11 @@ class Analyser(object):
         return self._use
 
     @property
+    def analyser(self):
+        """Return analyse dict"""
+        return self._analyse
+
+    @property
     def analyse_result(self):
         """Return analyse result"""
         return self._analyse_result

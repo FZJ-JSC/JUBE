@@ -157,7 +157,14 @@ class Result(object):
             if analyser_name not in self._benchmark.analyser:
                 raise RuntimeError(
                     "<analyser name=\"{0}\"> not found".format(analyser_name))
-            for patternset_name in self._benchmark.analyser[analyser_name].use:
+            patternset_names = \
+                self._benchmark.analyser[analyser_name].use.copy()
+            for analyse_files in \
+                    self._benchmark.analyser[analyser_name].analyser.values():
+                for analyse_file in analyse_files:
+                    for use in analyse_file.use:
+                        patternset_names.add(use)
+            for patternset_name in patternset_names:
                 patternset = self._benchmark.patternsets[patternset_name]
                 for i, pattern_name in enumerate(pattern_names):
                     alt_pattern_name = alt_pattern_names[i]
