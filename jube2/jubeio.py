@@ -1177,12 +1177,12 @@ def _extract_subs(etree_substituteset):
             source = "" + _attribute_from_element(sub, "source").strip()
             if source == "":
                 raise ValueError("Empty \"source\" attribute in <sub> found.")
-            dest = "" + sub.get("dest")
+            dest = sub.get("dest")
             if dest is None:
                 dest = sub.text
                 if dest is None:
                     dest = ""
-            dest = dest.strip()
+            dest = dest.strip() + ""
             subs[source] = dest
     return (files, subs)
 
