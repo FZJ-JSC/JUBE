@@ -469,10 +469,13 @@ class StaticParameter(Parameter):
         value = temp.safe_substitute(parameter_dict)
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
+        mode = self._mode
         if (not re.search(Parameter.parameter_regex.format("(.+?)"), value)) \
                 and (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
             try:
                 value = jube2.util.script_evaluation(value, self._mode)
+                # Select new parameter mode
+                mode = "text"
             except Exception as exception:
                 raise RuntimeError(("Can not evaluate \"{0}\" for " +
                                     "parameter \"{1}\": {2}").format(
@@ -484,7 +487,7 @@ class StaticParameter(Parameter):
                                                value=value,
                                                separator=self._separator,
                                                parameter_type=self._type,
-                                               parameter_mode="text",
+                                               parameter_mode=mode,
                                                export=self._export,
                                                no_templates=no_templates)
             param.based_on = self
