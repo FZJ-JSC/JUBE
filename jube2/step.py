@@ -250,24 +250,24 @@ class Step(object):
                         history=parameterset.copy(),
                         iteration=iteration)
 
-                # --- Final parameter substitution ---
-                workpackage.parameterset.parameter_substitution(
-                    additional_parametersets=[
-                        jube_parameterset, workpackage.get_jube_parameterset(
-                            substitute=False)],
-                    final_sub=True)
+                    # --- Final parameter substitution ---
+                    workpackage.parameterset.parameter_substitution(
+                        additional_parametersets=[
+                            jube_parameterset, workpackage.get_jube_parameterset(
+                                substitute=False)],
+                        final_sub=True)
 
-                # --- Check parameter type ---
-                for parameter in workpackage.parameterset:
-                    if not parameter.is_template:
-                        jube2.util.convert_type(
-                            parameter.parameter_type, parameter.value)
+                    # --- Check parameter type ---
+                    for parameter in workpackage.parameterset:
+                        if not parameter.is_template:
+                            jube2.util.convert_type(
+                                parameter.parameter_type, parameter.value)
 
-                # Update workpackage history parameterset
-                workpackage.history.update_parameterset(
-                    workpackage.parameterset)
+                    # Update workpackage history parameterset
+                    workpackage.history.update_parameterset(
+                        workpackage.parameterset)
 
-                new_workpackages.append(workpackage)
+                    new_workpackages.append(workpackage)
 
         return new_workpackages
 
