@@ -21,6 +21,17 @@
 Release notes
 =============
 
+Version 2.0.6
+~~~~~~~~~~~~~
+Release: 2015-06-16
+
+* users can now change the *JUBE* standard Shell (``/bin/sh``) by using the new environment variable ``JUBE_EXEC_SHELL``, see :ref:`configuration`
+* fixes a bug if a Shell filename completion results to a single file name (inside the ``<copy>``-tag)
+* fixes stderr reading bug if ``work_dir`` was changed in a specific ``<do>``
+* changes include path order, new order: commandline (``--include-path ...``), config file (``<include-path>``), Shell var (``JUBE_INCLUDE_PATH``), ``.``
+* fixes some unicode issues
+* units in the result dataset will now be shown correctly if a file specific patternset is used
+
 Version 2.0.5
 ~~~~~~~~~~~~~
 Release: 2015-04-09
