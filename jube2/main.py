@@ -310,6 +310,10 @@ def search_for_benchmarks(args, load_all=False):
             else:
                 raise OSError("No benchmark directory found in \"{0}\""
                               .format(args.dir))
+    found_benchmarks = \
+        [benchmark_folder for benchmark_folder in found_benchmarks if
+         os.path.isfile(os.path.join(benchmark_folder,
+                                     jube2.conf.CONFIGURATION_FILENAME))]
     found_benchmarks.sort()
     return found_benchmarks
 
