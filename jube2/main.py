@@ -64,13 +64,7 @@ def status(args):
     for benchmark_folder in found_benchmarks:
         benchmark = _load_existing_benchmark(benchmark_folder,
                                              load_analyse=False)
-        # Store current working dir
-        cwd = os.getenv("PWD")
-        # Change current working dir to benchmark_folder
-        os.chdir(benchmark_folder)
         jube2.info.print_benchmark_status(benchmark)
-        # Restore current working dir
-        os.chdir(cwd)
 
 
 def benchmarks_results(args):
@@ -135,10 +129,6 @@ def info(args):
         for benchmark_folder in found_benchmarks:
             benchmark = \
                 _load_existing_benchmark(benchmark_folder, load_analyse=False)
-            # Store current working dir
-            cwd = os.getenv("PWD")
-            # Change current working dir to benchmark_folder
-            os.chdir(benchmark_folder)
             if args.step is None:
                 jube2.info.print_benchmark_info(benchmark)
             else:
@@ -146,8 +136,6 @@ def info(args):
                     jube2.info.print_step_info(
                         benchmark, step_name,
                         parametrization_only=args.parametrization)
-            # Restore current working dir
-            os.chdir(cwd)
 
 
 def update_check(args):
@@ -195,16 +183,8 @@ def show_log(args):
 
 def show_log_single(args, benchmark_folder):
     """Show logs for a single benchmark"""
-    benchmark = \
-        _load_existing_benchmark(benchmark_folder, restore_workpackages=False,
-                                 load_analyse=False)
-    # Store current working dir
-    cwd = os.getenv("PWD")
-    # Change current working dir to benchmark_folder
-    os.chdir(benchmark_folder)
-
     # Find available logs
-    available_logs = jube2.log.search_for_logs()
+    available_logs = jube2.log.search_for_logs(benchmark_folder)
 
     # Use all available logs if none is selected ...
     if not args.command:
@@ -218,8 +198,8 @@ def show_log_single(args, benchmark_folder):
 
     # Output the log file
     for log in matching:
-        jube2.log.log_print("BenchmarkID: {0} | Log: {1}".format(benchmark.id,
-                                                                 log))
+        jube2.log.log_print("BenchmarkID: {0} | Log: {1}".format(
+            int(os.path.basename(benchmark_folder)), log))
         jube2.log.safe_output_logfile(log)
 
     # Inform user if any selected log was not found
@@ -227,46 +207,37 @@ def show_log_single(args, benchmark_folder):
         jube2.log.log_print("Could not find logs: {0}".format(
             ",".join(not_matching)))
 
-    # Restore current working dir
-    os.chdir(cwd)
-
 
 def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
                              load_analyse=True):
     """Load an existing benchmark, given by directory benchmark_folder."""
-    # Store current working dir
-    cwd = os.getenv("PWD")
-
-    # Change current working dir to benchmark_folder
-    os.chdir(benchmark_folder)
     # Read existing benchmark configuration
-    benchmarks = jube2.jubeio.benchmarks_from_xml(
-        jube2.conf.CONFIGURATION_FILENAME)[0]
+    parser = jube2.jubeio.XMLParser(os.path.join(
+        benchmark_folder, jube2.conf.CONFIGURATION_FILENAME))
+    benchmarks = parser.benchmarks_from_xml()[0]
     # Only one single benchmark exist inside benchmarks
     benchmark = list(benchmarks.values())[0]
 
-    # Restore old benchmark id and set cwd
+    # Restore old benchmark id
     benchmark.id = int(os.path.basename(benchmark_folder))
-    benchmark.org_cwd = cwd
-    benchmark.cwd = os.path.join(cwd, benchmark_folder)
 
     if restore_workpackages:
         # Read existing workpackage information
-        workpackages, work_stat = \
-            jube2.jubeio.workpackages_from_xml(
-                jube2.conf.WORKPACKAGES_FILENAME, benchmark)
+        parser = jube2.jubeio.XMLParser(os.path.join(
+            benchmark_folder, jube2.conf.WORKPACKAGES_FILENAME))
+        workpackages, work_stat = parser.workpackages_from_xml(benchmark)
         benchmark.set_workpackage_information(workpackages, work_stat)
 
-    if load_analyse and os.path.isfile(jube2.conf.ANALYSE_FILENAME):
+    if load_analyse and os.path.isfile(os.path.join(
+            benchmark_folder, jube2.conf.ANALYSE_FILENAME)):
         # Read existing analyse data
-        analyse_result = \
-            jube2.jubeio.analyse_result_from_xml(jube2.conf.ANALYSE_FILENAME)
+        parser = jube2.jubeio.XMLParser(os.path.join(
+            benchmark_folder, jube2.conf.ANALYSE_FILENAME))
+        analyse_result = parser.analyse_result_from_xml()
         for analyser in benchmark.analyser.values():
             if analyser.name in analyse_result:
                 analyser.analyse_result = analyse_result[analyser.name]
 
-    # Restore current working dir
-    os.chdir(cwd)
     return benchmark
 
 
@@ -314,16 +285,15 @@ def search_for_benchmarks(args, load_all=False):
     return found_benchmarks
 
 
-def _update_include_path(args, dirname):
+def _update_include_path(args):
     """Update the global include path information list"""
     jube2.jubeio.INCLUDE_PATH = list()
 
     # Add commandline include-path
     if args.include_path is not None:
         jube2.jubeio.INCLUDE_PATH = \
-            [os.path.relpath(include_path, dirname)
-             for include_path in args.include_path if include_path != ""] + \
-            jube2.jubeio.INCLUDE_PATH
+            [include_path for include_path in args.include_path
+             if include_path != ""]
 
 
 def run_new_benchmark(args):
@@ -333,26 +303,18 @@ def run_new_benchmark(args):
 
     id_cnt = 0
 
+    # Update include path
+    _update_include_path(args)
+
+    # Extract tags
+    tags = args.tag
+    if tags is not None:
+        tags = set(tags)
+
     for path in args.files:
-        # Store current working dir
-        cwd = os.getenv("PWD")
-        dirname = os.path.dirname(path)
-
-        # Update include path
-        _update_include_path(args, dirname)
-
-        # Change current working dir to filename dir
-        if len(dirname) > 0:
-            os.chdir(dirname)
-
-        # Extract tags
-        tags = args.tag
-        if tags is not None:
-            tags = set(tags)
-
         # Read new benchmarks
-        benchmarks, only_bench, not_bench = \
-            jube2.jubeio.benchmarks_from_xml(os.path.basename(path), tags)
+        parser = jube2.jubeio.XMLParser(path, tags)
+        benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
         if args.comment is not None:
@@ -373,8 +335,6 @@ def run_new_benchmark(args):
             if bench_name in not_bench:
                 continue
             bench = benchmarks[bench_name]
-            bench.cwd = os.path.join(cwd, dirname)
-            bench.org_cwd = cwd
             # Set user defined id
             if (args.id is not None) and (len(args.id) > id_cnt):
                 bench.id = args.id[id_cnt]
@@ -392,9 +352,6 @@ def run_new_benchmark(args):
             if jube2.conf.DEBUG_MODE:
                 bench.delete_bench_dir()
 
-        # Restore current working dir
-        os.chdir(cwd)
-
 
 def jube2jube2(args):
     """Convert jube XMLs to jube2 XMLs"""
@@ -409,14 +366,10 @@ def jube2jube2(args):
 def _continue_benchmark(benchmark_folder, args):
     """Continue existing benchmark"""
     benchmark = _load_existing_benchmark(benchmark_folder)
-    # Store current working dir
-    cwd = os.getenv("PWD")
-
-    # Change current working dir to benchmark_folder
-    os.chdir(benchmark_folder)
 
     # Change logfile
-    jube2.log.change_logfile_name(jube2.conf.LOGFILE_CONTINUE_NAME)
+    jube2.log.change_logfile_name(os.path.join(
+        benchmark_folder, jube2.conf.LOGFILE_CONTINUE_NAME))
 
     # Run existing benchmark
     benchmark.run()
@@ -432,8 +385,6 @@ def _continue_benchmark(benchmark_folder, args):
     # Clean up when using debug mode
     if jube2.conf.DEBUG_MODE:
         benchmark.reset_all_workpackages()
-    # Restore current working dir
-    os.chdir(cwd)
 
 
 def _analyse_benchmark(benchmark_folder, args):
@@ -443,14 +394,9 @@ def _analyse_benchmark(benchmark_folder, args):
     # Update benchmark data
     _update_analyse_and_result(args, benchmark, benchmark_folder)
 
-    # Store current working dir
-    cwd = os.getenv("PWD")
-
-    # Change current working dir to benchmark_folder
-    os.chdir(benchmark_folder)
-
     # Change logfile
-    jube2.log.change_logfile_name(jube2.conf.LOGFILE_ANALYSE_NAME)
+    jube2.log.change_logfile_name(os.path.join(
+        benchmark_folder, jube2.conf.LOGFILE_ANALYSE_NAME))
 
     LOGGER.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
@@ -458,8 +404,6 @@ def _analyse_benchmark(benchmark_folder, args):
     LOGGER.info(">>> Analyse data storage: {0}".format(os.path.join(
         benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
     LOGGER.info(jube2.util.text_line())
-    # Restore current working dir
-    os.chdir(cwd)
 
 
 def _benchmark_result(benchmark_folder, args, result_list=None):
@@ -475,25 +419,19 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
     # Update benchmark data
     _update_analyse_and_result(args, benchmark, benchmark_folder)
 
-    # Store current working dir
-    cwd = os.getenv("PWD")
-
-    # Change current working dir to benchmark_folder
-    os.chdir(benchmark_folder)
-
-    # Change logfile
-    jube2.log.change_logfile_name(jube2.conf.LOGFILE_RESULT_NAME)
-
     # Run benchmark analyse
     if args.analyse:
+        jube2.log.change_logfile_name(os.path.join(
+            benchmark_folder, jube2.conf.LOGFILE_ANALYSE_NAME))
         benchmark.analyse(show_info=False)
+
+        # Change logfile
+    jube2.log.change_logfile_name(os.path.join(
+        benchmark_folder, jube2.conf.LOGFILE_RESULT_NAME))
 
     # Create benchmark results
     result_list = benchmark.create_result(only=args.only,
                                           data_list=result_list)
-
-    # Restore current working dir
-    os.chdir(cwd)
 
     # Reset logging
     jube2.log.change_logfile_name(jube2.conf.DEFAULT_LOGFILE_NAME)
@@ -505,16 +443,10 @@ def _update_analyse_and_result(args, benchmark, benchmark_folder):
     """Update analyse and result data in given benchmark by using the
     given update file"""
     if args.update is not None:
-        # Store current working dir
-        cwd = os.getenv("PWD")
         dirname = os.path.dirname(args.update)
 
         # Update include path
-        _update_include_path(args, dirname)
-
-        # Change current working dir to filename dir
-        if len(dirname) > 0:
-            os.chdir(dirname)
+        _update_include_path(args)
 
         # Extract tags
         tags = args.tag
@@ -522,23 +454,17 @@ def _update_analyse_and_result(args, benchmark, benchmark_folder):
             tags = set(tags)
 
         # Read new benchmarks
-        benchmarks = \
-            jube2.jubeio.benchmarks_from_xml(os.path.basename(args.update),
-                                             tags)[0]
+        parser = jube2.jubeio.XMLParser(args.update, tags)
+        benchmarks = parser.benchmarks_from_xml()[0]
 
         # Update benchmark
-        os.chdir(cwd)
         for bench in benchmarks.values():
             if bench.name == benchmark.name:
-                # Change current working dir to benchmark_folder
-                os.chdir(benchmark_folder)
                 benchmark.update_analyse_and_result(bench.patternsets,
                                                     bench.analyser,
                                                     bench.results,
                                                     bench.results_order,
-                                                    os.path.join(cwd, dirname))
-                # Restore current working dir
-                os.chdir(cwd)
+                                                    dirname)
                 break
 
 

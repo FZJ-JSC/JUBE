@@ -242,7 +242,7 @@ class Workpackage(object):
                              str(self._iteration), parameter_type="int"))
         # workpackage absolute folder path
         if self._step.alt_work_dir is None:
-            path = os.path.normpath(os.path.join(self._benchmark.cwd,
+            path = os.path.normpath(os.path.join(os.getenv("PWD"),
                                                  self.work_dir))
         else:
             path = self._step.alt_work_dir

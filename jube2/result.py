@@ -27,7 +27,6 @@ import xml.etree.ElementTree as ET
 import re
 import jube2.log
 import operator
-import os
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -177,15 +176,11 @@ class Result(object):
                             units[pattern_name] = pattern.unit
         return units
 
-    def etree_repr(self, new_cwd=None):
+    def etree_repr(self):
         """Return etree object representation"""
         result_etree = ET.Element("result")
         if self._result_dir is not None:
-            if (new_cwd is not None) and (not os.path.isabs(self._result_dir)):
-                result_etree.attrib["result_dir"] = \
-                    os.path.relpath(self._result_dir, new_cwd)
-            else:
-                result_etree.attrib["result_dir"] = self._result_dir
+            result_etree.attrib["result_dir"] = self._result_dir
         for use in self._use:
             use_etree = ET.SubElement(result_etree, "use")
             use_etree.text = use
@@ -460,9 +455,9 @@ class Table(Result):
 
         return result_data
 
-    def etree_repr(self, new_cwd=None):
+    def etree_repr(self):
         """Return etree object representation"""
-        result_etree = Result.etree_repr(self, new_cwd)
+        result_etree = Result.etree_repr(self)
         table_etree = ET.SubElement(result_etree, "table")
         table_etree.attrib["name"] = self._name
         table_etree.attrib["style"] = self._style

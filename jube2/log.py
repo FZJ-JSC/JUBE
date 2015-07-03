@@ -135,12 +135,12 @@ def matching_logs(commands, available_logs):
 
     """
     requested_logs = set("{0}.log".format(command) for command in commands)
-
-    available_base = set(os.path.basename(log) for log in available_logs)
-
-    matching = list(requested_logs.intersection(available_base))
-    not_matching = list(requested_logs.difference(available_base))
-
+    matching = list()
+    for log in available_logs:
+        if os.path.basename(log) in requested_logs:
+            matching.append(log)
+    not_matching = requested_logs.difference(set([os.path.basename(log)
+                                                  for log in matching]))
     return matching, not_matching
 
 
