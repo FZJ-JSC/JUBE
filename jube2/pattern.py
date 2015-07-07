@@ -228,7 +228,7 @@ class Pattern(jube2.parameter.StaticParameter):
             if not self.derived:
                 pattern_mode = "pattern"
             else:
-                pattern_mode = "text"
+                pattern_mode = param.mode
             pattern = Pattern(param.name, param.value, pattern_mode,
                               param.parameter_type, self._unit,
                               self._reduce_option)

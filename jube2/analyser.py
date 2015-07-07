@@ -206,7 +206,6 @@ class Analyser(object):
                                         stepname, self._name))
             step = self._benchmark.steps[stepname]
             for workpackage in self._benchmark.workpackages[stepname]:
-                result_dict = dict()
                 match_dict = dict()
                 result[stepname][workpackage.id] = dict()
                 # Ignore workpackages not started yet
@@ -221,7 +220,6 @@ class Analyser(object):
                     dict([[par.name, par.value] for par in
                           parameterset.constant_parameter_dict.values()])
 
-                files = list()
                 for file_obj in self._analyse[stepname]:
                     if step.alt_work_dir is not None:
                         file_path = step.alt_work_dir
@@ -241,21 +239,48 @@ class Analyser(object):
 
                     file_path = os.path.join(file_path, filename)
                     for path in glob.glob(file_path):
-                        files.append(path)
-
                         # scan files
                         LOGGER.debug(("    scan file {0}").format(path))
 
                         new_result_dict, match_dict = \
                             self._analyse_file(path, patternset, parameterset,
                                                match_dict, file_obj.use)
-                        result_dict.update(new_result_dict)
+                        result[stepname][workpackage.id].update(
+                            new_result_dict)
 
-                # Store result data
-                if len(result_dict) > 0:
-                    result[stepname][workpackage.id] = result_dict
+                # Evaluate derived pattern
+                if len(result[stepname][workpackage.id]) > 0:
+                    new_result_dict = self._eval_derived_pattern(
+                        patternset, parameterset,
+                        result[stepname][workpackage.id])
+                    result[stepname][workpackage.id].update(new_result_dict)
 
         self._analyse_result = result
+
+    def _eval_derived_pattern(self, patternset, parameterset, result_dict):
+        """Evaluate all derived pattern in patternset using parameterset
+        and result_dict"""
+        resultset = jube2.parameter.Parameterset()
+        for name in result_dict:
+            resultset.add_parameter(
+                jube2.parameter.Parameter.create_parameter(
+                    name, value=str(result_dict[name])))
+
+        # Get jube patternset
+        jube_pattern = jube2.pattern.get_jube_pattern()
+
+        # calculate derived pattern
+        patternset.derived_pattern_substitution(
+            [parameterset, resultset, jube_pattern.pattern_storage])
+
+        new_result_dict = dict()
+        # Convert content type
+        for par in patternset.derived_pattern_storage:
+            if par.mode not in jube2.conf.ALLOWED_SCRIPTTYPES:
+                new_result_dict[par.name] = \
+                    jube2.util.convert_type(par.content_type,
+                                            par.value, stop=False)
+        return new_result_dict
 
     def _analyse_file(self, file_path, patternset, parameterset,
                       match_dict=None, additional_uses=None):
@@ -273,6 +298,11 @@ class Analyser(object):
 
         # Add file specific uses
         self._combine_and_check_patternsets(local_patternset, additional_uses)
+
+        # Store all derived pattern in original patternset
+        for pattern in local_patternset.derived_pattern_storage:
+            if pattern not in patternset:
+                patternset.add_pattern(pattern)
 
         # Unique pattern/parameter check
         if (not parameterset.is_compatible(
@@ -398,24 +428,6 @@ class Analyser(object):
                 else:
                     name = "{0}_{1}".format(pattern_name, option)
                 result_dict[name] = match_dict[pattern_name][option]
-
-        # Evaluate derived pattern
-        if len(result_dict) > 0:
-            resultset = jube2.parameter.Parameterset()
-            for name in result_dict:
-                resultset.add_parameter(
-                    jube2.parameter.Parameter.create_parameter(
-                        name, value=str(result_dict[name])))
-
-            # calculate derived pattern
-            local_patternset.derived_pattern_substitution(
-                [parameterset, resultset, jube_pattern.pattern_storage])
-
-            # Convert content type
-            for par in local_patternset.derived_pattern_storage:
-                result_dict[par.name] = \
-                    jube2.util.convert_type(par.content_type,
-                                            par.value, stop=False)
 
         return result_dict, match_dict
 
