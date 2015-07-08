@@ -240,12 +240,21 @@ class Workpackage(object):
             jube2.parameter.Parameter.
             create_parameter("jube_wp_iteration",
                              str(self._iteration), parameter_type="int"))
+
+        # workpackage relative folder path
+        if self._step.alt_work_dir is None:
+            path = os.path.relpath(
+                self.work_dir, self._benchmark.file_path_ref)
+        else:
+            path = self._step.alt_work_dir
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_relpath", path))
+
         # workpackage absolute folder path
         if self._step.alt_work_dir is None:
             path = os.path.normpath(os.path.join(os.getenv("PWD"),
                                                  self.work_dir))
-        else:
-            path = self._step.alt_work_dir
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_wp_abspath", path))
@@ -388,6 +397,8 @@ class Workpackage(object):
             alt_work_dir = os.path.join(self._benchmark.file_path_ref,
                                         alt_work_dir)
             # update jube_wp_abspath
+            parameter["jube_wp_relpath"] = os.path.relpath(
+                alt_work_dir, self._benchmark.file_path_ref)
             parameter["jube_wp_abspath"] = os.path.abspath(alt_work_dir)
             LOGGER.debug("  switch to alternativ work dir: \"{0}\""
                          .format(alt_work_dir))

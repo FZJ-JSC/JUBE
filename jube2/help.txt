@@ -361,6 +361,9 @@ jube_variables
      * "$jube_wp_parent_<parent_name>_id": workpackage id of
        selected parent step
 
+     * "$jube_wp_relpath": relative path to workpackage work
+       directory (relative towards configuration file)
+
      * "$jube_wp_abspath": absolute path to workpackage work
        directory
 
