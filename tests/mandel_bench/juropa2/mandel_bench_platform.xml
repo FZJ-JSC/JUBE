@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jube>
-  <parameterset name="systemParameter" init_with="platform.xml">
-    <parameter name="nodes" type="int">1,2,4</parameter>
-    <parameter name="taskspernode" type="int">16</parameter>
-    <parameter name="timelimit">00:05:00</parameter>
-  </parameterset>
-</jube>

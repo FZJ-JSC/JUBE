@@ -223,13 +223,13 @@ In these file there are three different inlcude types.
 The ``init_with`` can be used inside any set definition. Inside the given file the searching mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
 ``main.xml``. Inside ``main.xml`` you can add additional values or can overwrite existing ones. If your include-set use a different name inside your include file you can use ``init_with="filename.xml:new_name"``.
 
-The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure, but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the setname must
+The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure, but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the set's name must
 be unique inside the include-file.
 
 The last method is the most generic include. By using ``<include />`` you can copy any *XML*-nodes you want to your main-*XML* file. The included file can provide tags which are not *JUBE*-conform but it must be a valid *XML*-file (e.g. only one root node allowed). The
-resulting main configuration file must be completly *JUBE* valid.
-The ``path`` is optional and can be used to select a specific nodeset (otherwise the root-node itself will be included). The ``<include />`` is the only
-include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will update pathnames, which were relative to the include-file position.
+resulting main configuration file must be completely *JUBE* valid.
+The ``path`` is optional and can be used to select a specific node set (otherwise the root-node itself will be included). The ``<include />`` is the only
+include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will update path names, which were relative to the include-file position.
 
 To run the benchmark you can use the normal command::
 
@@ -312,7 +312,7 @@ Platform independent benchmarking
 
 If you want to create platform independent benchmarks you can use the include features inside of *JUBE*.
 
-All platform related sets must be declared in a includeable file e.g. ``platform.xml``. There can be multiple ``platform.xml`` in different
+All platform related sets must be declared in a includable file e.g. ``platform.xml``. There can be multiple ``platform.xml`` in different
 directories to allow different platforms. By changing the ``include-path`` the benchmark changes its platform specific data.
 
 An example benchmark structure bases on three include files:
@@ -322,10 +322,10 @@ An example benchmark structure bases on three include files:
   central on the system, it can be easily accessed using the ``JUBE_INCLUDE_PATH`` environment variable.
 * A platform specific and benchmark specific include file which must be placed in a unique directory to allow inlcude-path usage
 
-Inside the ``platform`` directory you will find some example benchmark independet platform configuration files for the supercomputers at
+Inside the ``platform`` directory you will find some example benchmark independent platform configuration files for the supercomputers at
 Forschungszentrum Jülich.
 
-To avoid writting long include-pathes every time you run a platform independent benchmark, you can store the include-path inside your
+To avoid writing long include-pathes every time you run a platform independent benchmark, you can store the include-path inside your
 input file. This can be mixed using the tagging-feature:
 
 .. code-block:: xml
@@ -392,7 +392,7 @@ This information can also be stored inside the input file:
 Shared operations
 ~~~~~~~~~~~~~~~~~
 
-Sometimes you want to communicate between the different workpackages of a single step or you want a single operation only run one time
+Sometimes you want to communicate between the different workpackages of a single step or you want a single operation to run only once
 for all workpackages. Here you can use shared steps.
 
 The files used for this example can be found inside ``examples/shared``.
@@ -422,7 +422,7 @@ You will get the following directory structure:
       +- 000000_a_step     # the first workpackage
          |
          +- done           # workpackage finished marker
-         +- work           # user sanbox folder
+         +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands
             +- stdout      # standard output of used shell commands
@@ -452,7 +452,7 @@ The input file ``environment.xml``:
 In normal cases all ``<do>`` within one ``<step>`` shares the same environment. All **exported** variables of one ``<do>``
 will be available inside the next ``<do>`` within the same ``<step>``.
 
-By using ``export="true"`` inside of a ``<parameter>`` you can export additonal variables to your *Shell* environment. Be aware that this example uses
+By using ``export="true"`` inside of a ``<parameter>`` you can export additional variables to your *Shell* environment. Be aware that this example uses
 ``$$`` to explicitly use *Shell* substitution instead of *JUBE* substitution.
 
 You can also export the complete environment of a step to a dependent step by using ``export="true"`` inside of ``<step>``.
@@ -483,9 +483,9 @@ The easiest way to handle dependencies is to define an index-parameter which can
 to combine all dependent parameter combinations.
 
 Also complete sets can be marked as dependent towards a specific parameter by using this parameter in the ``<use>``-tag. When using parametersets
-out of an other file the correct set-name must be given within the ``from`` attribute, because these sets will be loaded in a preprocessing step before the
+out of an other file the correct set-name must be given within the ``from`` attribute, because these sets will be loaded in a pre-processing step before the
 corresponding parameter will be evaluated. Also sets out of different files can be combined within the same ``<use>`` by using the 
-``file1:set1,file2:set2`` syntax. Setnames must be unique.
+``file1:set1,file2:set2`` syntax. The sets' names must be unique.
 
 .. index:: convert
 
@@ -496,6 +496,6 @@ For the *JUBE* version 1 file conversion *JUBE* seeks in specific directories fo
 For instance, the default directory for ``platform.xml`` is relative to the *JUBE* version 1 benchmark directory, i.e. jube seeks in
 ``../../..platform/`` for this file. If it can't be found *JUBE* tries to find it in the current directory.
 
-Generally, if the convertion fails because files can't be found it is recommend to copy them to the current directory.
+Generally, if the conversion fails because files can't be found it is recommend to copy them to the current directory.
 jube creates two files, namely ``benchmarks_jube2.xml`` and ``platform_jube2.xml``. Have a look in ``benchmarks_jube2.xml``
 and take note of the given comments.

@@ -581,6 +581,7 @@ class Benchmark(object):
         using xml representation"""
         # Create root-tag and append single benchmark
         benchmarks_etree = ET.Element("jube")
+        benchmarks_etree.attrib["version"] = jube2.conf.JUBE_VERSION
 
         # Store tag information
         if len(self._tags) > 0:
