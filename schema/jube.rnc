@@ -13,7 +13,7 @@ jube =
      | patternset
      | \include)*
   }
-attlist.jube &= empty
+attlist.jube &= attribute version { text }?
 selection = element selection { attlist.selection, (only | not | tag)* }
 attlist.selection &= attribute tag { text }?
 only = element only { attlist.only, text }

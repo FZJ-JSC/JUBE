@@ -1,6 +1,7 @@
 <!ELEMENT jube ((selection|include-path)* ,(benchmark|parameterset|fileset|substituteset|patternset|include)*)>
 <!ATTLIST jube          xmlns:xsi CDATA #IMPLIED
-                        xsi:noNamespaceSchemaLocation CDATA #IMPLIED>
+                        xsi:noNamespaceSchemaLocation CDATA #IMPLIED
+                        version CDATA #IMPLIED>
 <!ELEMENT selection ((only|not|tag)*)>
 <!ATTLIST selection     tag CDATA #IMPLIED>
 <!ELEMENT only (#PCDATA)>

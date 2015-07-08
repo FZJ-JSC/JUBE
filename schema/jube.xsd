@@ -294,6 +294,7 @@
         <xs:element name="include" type="includeType" />
       </xs:choice>
     </xs:sequence>
+    <xs:attribute name="version" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="selectionType">
