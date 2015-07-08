@@ -316,6 +316,11 @@ def run_new_benchmark(args):
         tags = set(tags)
 
     for path in args.files:
+        # Setup Logging
+        jube2.log.setup_logging(
+            mode="default",
+            filename=os.path.join(os.path.dirname(path),
+                                  jube2.conf.DEFAULT_LOGFILE_NAME))
         # Read new benchmarks
         parser = jube2.jubeio.XMLParser(path, tags)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
@@ -346,10 +351,14 @@ def run_new_benchmark(args):
             bench.new_run()
             # Run analyse
             if args.analyse or args.result:
+                jube2.log.change_logfile_name(os.path.join(
+                    bench.bench_dir, jube2.conf.LOGFILE_ANALYSE_NAME))
                 bench.analyse()
 
             # Create result data
             if args.result:
+                jube2.log.change_logfile_name(os.path.join(
+                    bench.bench_dir, jube2.conf.LOGFILE_RESULT_NAME))
                 bench.create_result(show=True)
 
             # Clean up when using debug mode
@@ -380,10 +389,14 @@ def _continue_benchmark(benchmark_folder, args):
 
     # Run analyse
     if args.analyse or args.result:
+        jube2.log.change_logfile_name(os.path.join(
+            benchmark_folder, jube2.conf.LOGFILE_ANALYSE_NAME))
         benchmark.analyse()
 
     # Create result data
     if args.result:
+        jube2.log.change_logfile_name(os.path.join(
+            benchmark_folder, jube2.conf.LOGFILE_RESULT_NAME))
         benchmark.create_result(show=True)
 
     # Clean up when using debug mode
@@ -508,10 +521,13 @@ def _manipulate_comment(benchmark_folder, args):
 def _get_args_parser():
     """Create argument parser"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--version", help="show version",
+    parser.add_argument("-V", "--version", help="show version",
                         action="version",
                         version="JUBE, version {0}".format(
                             jube2.conf.JUBE_VERSION))
+    parser.add_argument("-v", "--verbose",
+                        help="enable verbose console output",
+                        action="store_true")
     parser.add_argument('--debug', action="store_true",
                         help='use debugging mode')
     parser.add_argument('--devel', action="store_true",
@@ -763,17 +779,11 @@ def main(command=None):
 
     jube2.conf.DEBUG_MODE = args.debug
 
+    if args.verbose:
+        args.hide_animation = True
+
     if args.subparser:
-        if args.func in [run_new_benchmark, continue_benchmarks,
-                         analyse_benchmarks, benchmarks_results]:
-            logger_config = "default"
-        else:
-            logger_config = "console"
-
-        jube2.log.setup_logging(logger_config)
-
-        LOGGER.debug("Using logger_config: '{0}'".format(logger_config))
-        LOGGER.debug("Command: '{0}'".format(" ".join(sys.argv)))
+        jube2.log.setup_logging(mode="console", verbose=args.verbose)
 
         if args.devel:
             args.func(args)
