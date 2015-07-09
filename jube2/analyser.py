@@ -207,6 +207,7 @@ class Analyser(object):
             step = self._benchmark.steps[stepname]
             for workpackage in self._benchmark.workpackages[stepname]:
                 match_dict = dict()
+                local_patternset = patternset.copy()
                 result[stepname][workpackage.id] = dict()
                 # Ignore workpackages not started yet
                 if not workpackage.started:
@@ -243,15 +244,16 @@ class Analyser(object):
                         LOGGER.debug(("    scan file {0}").format(path))
 
                         new_result_dict, match_dict = \
-                            self._analyse_file(path, patternset, parameterset,
-                                               match_dict, file_obj.use)
+                            self._analyse_file(path, local_patternset,
+                                               parameterset, match_dict,
+                                               file_obj.use)
                         result[stepname][workpackage.id].update(
                             new_result_dict)
 
                 # Evaluate derived pattern
                 if len(result[stepname][workpackage.id]) > 0:
                     new_result_dict = self._eval_derived_pattern(
-                        patternset, parameterset,
+                        local_patternset, parameterset,
                         result[stepname][workpackage.id])
                     result[stepname][workpackage.id].update(new_result_dict)
 
