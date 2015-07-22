@@ -42,6 +42,7 @@ import sys
 import re
 import hashlib
 import jube2.log
+from distutils.version import StrictVersion
 
 INCLUDE_PATH = list()
 LOGGER = jube2.log.get_logger(__name__)
@@ -77,6 +78,23 @@ def benchmarks_from_xml(filename, tags=None):
     except UnicodeEncodeError as uee:
         raise ValueError("Your terminal only allow '{0}' encoding. {1}"
                          .format(sys.getfilesystemencoding(), str(uee)))
+
+    # Check input file version
+    version = tree.getroot().get("version")
+    if version is not None:
+        version = version.strip()
+        if StrictVersion(version) > StrictVersion(jube2.conf.JUBE_VERSION):
+            info_str = ("Benchmark file \"{0}\" was created using a newer " +
+                        "version of JUBE ({1}).\nCurrent JUBE version ({2}) " +
+                        "might not be compatible.\nContinue? " +
+                        "(y/n):").format(filename, version,
+                                         jube2.conf.JUBE_VERSION)
+            try:
+                inp = raw_input(info_str)
+            except NameError:
+                inp = input(info_str)
+            if not inp.startswith("y"):
+                return None, list(), list()
 
     valid_tags = ["selection", "include-path", "parameterset", "benchmark",
                   "substituteset", "fileset", "include", "patternset"]
