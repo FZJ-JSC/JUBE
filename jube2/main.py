@@ -843,6 +843,13 @@ def main(command=None):
 
     jube2.conf.DEBUG_MODE = args.debug
 
+    # Set new umask if JUBE_GROUP_NAME is used
+    current_mask = os.umask(0)
+    if (jube2.util.check_and_get_group_id() is not None) and \
+            (current_mask > 2):
+        current_mask = 2
+    os.umask(current_mask)
+
     if args.subparser:
         if args.func in [run_new_benchmark, continue_benchmarks,
                          analyse_benchmarks, benchmarks_results]:

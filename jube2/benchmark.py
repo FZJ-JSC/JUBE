@@ -24,6 +24,7 @@ from __future__ import (print_function,
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as DOM
 import os
+import stat
 import pprint
 import shutil
 import itertools
@@ -579,6 +580,8 @@ class Benchmark(object):
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""
+        # Get group_id if available (given by JUBE_GROUP_NAME)
+        group_id = jube2.util.check_and_get_group_id()
         # Check if outpath exists
         if not (os.path.exists(self._outpath) and
                 os.path.isdir(self._outpath)):
@@ -592,6 +595,11 @@ class Benchmark(object):
                                    os.path.join(self._cwd, self.bench_dir),
                                    self._org_cwd)))
         os.makedirs(self.bench_dir)
+        # If JUBE_GROUP_NAME is given, set GID-Bit and change group
+        if group_id is not None:
+            os.chmod(self.bench_dir,
+                     os.stat(self.bench_dir).st_mode | stat.S_ISGID)
+            os.chown(self.bench_dir, os.getuid(), group_id)
         self.write_benchmark_configuration(
             os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME))
         jube2.util.update_timestamps(os.path.join(self.bench_dir,
