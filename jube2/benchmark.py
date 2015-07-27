@@ -586,6 +586,8 @@ class Benchmark(object):
         if not (os.path.exists(self._outpath) and
                 os.path.isdir(self._outpath)):
             os.makedirs(self._outpath)
+            if group_id is not None:
+                os.chown(self._outpath, os.getuid(), group_id)
         # Generate unique ID in outpath
         if self._id < 0:
             self._id = jube2.util.get_current_id(self._outpath) + 1
