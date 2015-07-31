@@ -104,12 +104,15 @@ def setup_logging(mode=None, filename=None):
     _logger.addHandler(console_handler)
 
     if mode == "default":
-        # create, configure and add file handler
-        file_formatter = logging.Formatter(jube2.conf.LOG_FILE_FORMAT)
-        file_handler = logging.FileHandler(filename, filemode)
-        file_handler.setLevel(logging.DEBUG)
-        file_handler.setFormatter(file_formatter)
-        _logger.addHandler(file_handler)
+        try:
+            # create, configure and add file handler
+            file_formatter = logging.Formatter(jube2.conf.LOG_FILE_FORMAT)
+            file_handler = logging.FileHandler(filename, filemode)
+            file_handler.setLevel(logging.DEBUG)
+            file_handler.setFormatter(file_formatter)
+            _logger.addHandler(file_handler)
+        except IOError:
+            pass
 
 
 def search_for_logs(path=None):

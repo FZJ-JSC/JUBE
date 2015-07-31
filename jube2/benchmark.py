@@ -313,7 +313,8 @@ class Benchmark(object):
 
         for analyser in self._analyser.values():
             analyser.analyse()
-        if not jube2.conf.DEBUG_MODE:
+        if ((not jube2.conf.DEBUG_MODE) and
+                (os.access(self.bench_dir, os.W_OK))):
             self.write_analyse_data(os.path.join(self.bench_dir,
                                                  jube2.conf.ANALYSE_FILENAME))
         if show_info:
@@ -337,8 +338,13 @@ class Benchmark(object):
                                                    self.id)
                 if (not os.path.exists(result_dir)) and \
                    (not jube2.conf.DEBUG_MODE):
-                    os.makedirs(result_dir)
-                if not jube2.conf.DEBUG_MODE:
+                    try:
+                        os.makedirs(result_dir)
+                    except OSError:
+                        pass
+                if ((not jube2.conf.DEBUG_MODE) and
+                        (os.path.exists(result_dir)) and
+                        (os.access(result_dir, os.W_OK))):
                     filename = os.path.join(result_dir,
                                             "{0}.dat".format(result.name))
                 else:
@@ -377,9 +383,11 @@ class Benchmark(object):
                         os.path.relpath(os.path.join(new_cwd,
                                                      result.result_dir),
                                         self._cwd)
-            self.write_benchmark_configuration(
-                os.path.join(self.bench_dir,
-                             jube2.conf.CONFIGURATION_FILENAME))
+            if ((not jube2.conf.DEBUG_MODE) and
+                    (os.access(self.bench_dir, os.W_OK))):
+                self.write_benchmark_configuration(
+                    os.path.join(self.bench_dir,
+                                 jube2.conf.CONFIGURATION_FILENAME))
 
     def write_analyse_data(self, filename):
         """All analyse data will be written to given file

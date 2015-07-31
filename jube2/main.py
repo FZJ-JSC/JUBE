@@ -289,10 +289,16 @@ def search_for_benchmarks(args, load_all=False):
             if not os.path.isdir(benchmark_folder):
                 raise OSError("Benchmark directory not found: \"{0}\""
                               .format(benchmark_folder))
+            if not os.path.isfile(os.path.join(
+                    benchmark_folder, jube2.conf.CONFIGURATION_FILENAME)):
+                LOGGER.warning(("Configuration file \"{0}\" not found in " +
+                                "\"{1}\" or directory not readable.")
+                               .format(jube2.conf.CONFIGURATION_FILENAME,
+                                       benchmark_folder))
             if benchmark_folder not in found_benchmarks:
                 found_benchmarks.append(benchmark_folder)
     else:
-        if load_all or (args.id is not None) and ("all" in args.id):
+        if load_all or ((args.id is not None) and ("all" in args.id)):
             # Add all available benchmark folder
             found_benchmarks = [
                 os.path.join(args.dir, directory)
@@ -308,10 +314,12 @@ def search_for_benchmarks(args, load_all=False):
             else:
                 raise OSError("No benchmark directory found in \"{0}\""
                               .format(args.dir))
+
     found_benchmarks = \
         [benchmark_folder for benchmark_folder in found_benchmarks if
          os.path.isfile(os.path.join(benchmark_folder,
                                      jube2.conf.CONFIGURATION_FILENAME))]
+
     found_benchmarks.sort()
     return found_benchmarks
 
