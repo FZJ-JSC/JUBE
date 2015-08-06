@@ -24,6 +24,7 @@ from __future__ import (print_function,
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as DOM
 import os
+import stat
 import pprint
 import shutil
 import itertools
@@ -292,7 +293,8 @@ class Benchmark(object):
 
         for analyser in self._analyser.values():
             analyser.analyse()
-        if not jube2.conf.DEBUG_MODE:
+        if ((not jube2.conf.DEBUG_MODE) and
+                (os.access(self.bench_dir, os.W_OK))):
             self.write_analyse_data(os.path.join(self.bench_dir,
                                                  jube2.conf.ANALYSE_FILENAME))
         if show_info:
@@ -319,8 +321,13 @@ class Benchmark(object):
                         os.path.join(self.file_path_ref, result_dir), self.id)
                 if (not os.path.exists(result_dir)) and \
                    (not jube2.conf.DEBUG_MODE):
-                    os.makedirs(result_dir)
-                if not jube2.conf.DEBUG_MODE:
+                    try:
+                        os.makedirs(result_dir)
+                    except OSError:
+                        pass
+                if ((not jube2.conf.DEBUG_MODE) and
+                        (os.path.exists(result_dir)) and
+                        (os.access(result_dir, os.W_OK))):
                     filename = os.path.join(result_dir,
                                             "{0}.dat".format(result.name))
                 else:
@@ -357,9 +364,11 @@ class Benchmark(object):
                    (not os.path.isabs(result.result_dir)):
                     result.result_dir = \
                         os.path.join(new_cwd, result.result_dir)
-            self.write_benchmark_configuration(
-                os.path.join(self.bench_dir,
-                             jube2.conf.CONFIGURATION_FILENAME))
+            if ((not jube2.conf.DEBUG_MODE) and
+                    (os.access(self.bench_dir, os.W_OK))):
+                self.write_benchmark_configuration(
+                    os.path.join(self.bench_dir,
+                                 jube2.conf.CONFIGURATION_FILENAME))
 
     def write_analyse_data(self, filename):
         """All analyse data will be written to given file
@@ -558,10 +567,14 @@ class Benchmark(object):
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""
+        # Get group_id if available (given by JUBE_GROUP_NAME)
+        group_id = jube2.util.check_and_get_group_id()
         # Check if outpath exists
         if not (os.path.exists(self._outpath) and
                 os.path.isdir(self._outpath)):
             os.makedirs(self._outpath)
+            if group_id is not None:
+                os.chown(self._outpath, os.getuid(), group_id)
         # Generate unique ID in outpath
         if self._id < 0:
             self._id = jube2.util.get_current_id(self._outpath) + 1
@@ -570,6 +583,11 @@ class Benchmark(object):
                                .format(self.bench_dir))
 
         os.makedirs(self.bench_dir)
+        # If JUBE_GROUP_NAME is given, set GID-Bit and change group
+        if group_id is not None:
+            os.chmod(self.bench_dir,
+                     os.stat(self.bench_dir).st_mode | stat.S_ISGID)
+            os.chown(self.bench_dir, os.getuid(), group_id)
         self.write_benchmark_configuration(
             os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME))
         jube2.util.update_timestamps(os.path.join(self.bench_dir,

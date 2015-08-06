@@ -33,6 +33,7 @@ import sys
 import os
 import re
 import shutil
+from distutils.version import StrictVersion
 
 try:
     from urllib.request import urlopen
@@ -64,6 +65,8 @@ def status(args):
     for benchmark_folder in found_benchmarks:
         benchmark = _load_existing_benchmark(benchmark_folder,
                                              load_analyse=False)
+        if benchmark is None:
+            return
         jube2.info.print_benchmark_status(benchmark)
 
 
@@ -129,6 +132,8 @@ def info(args):
         for benchmark_folder in found_benchmarks:
             benchmark = \
                 _load_existing_benchmark(benchmark_folder, load_analyse=False)
+            if benchmark is None:
+                continue
             if args.step is None:
                 jube2.info.print_benchmark_info(benchmark)
             else:
@@ -142,30 +147,17 @@ def update_check(args):
     """Check if a newer JUBE version is available."""
     try:
         website = urlopen(jube2.conf.UPDATE_VERSION_URL)
-        version_str = website.read().decode().strip()
-        version_loc = jube2.conf.JUBE_VERSION.split(".")
-        version_ext = version_str.split(".")
-        newest_version = True
-        if len(version_loc) == len(version_ext):
-            for i in range(len(version_loc)):
-                if int(version_ext[i]) > int(version_loc[i]):
-                    newest_version = newest_version and \
-                        (int(version_loc[i]) >= int(version_ext[i]))
-                if int(version_loc[i]) > int(version_ext[i]):
-                    break
-            if newest_version:
-                LOGGER.info("Newest JUBE version {0} is already "
-                            "installed.".format(jube2.conf.JUBE_VERSION))
-            else:
-                LOGGER.info(("Newer JUBE version {0} is available. "
-                             "Currently installed version is {1}.\n"
-                             "New version can be "
-                             "downloaded here: {2}").format(
-                    version_str, jube2.conf.JUBE_VERSION,
-                    jube2.conf.UPDATE_URL))
+        version = website.read().decode().strip()
+        if StrictVersion(jube2.conf.JUBE_VERSION) >= StrictVersion(version):
+            LOGGER.info("Newest JUBE version {0} is already "
+                        "installed.".format(jube2.conf.JUBE_VERSION))
         else:
-            raise IOError("Unknown version format at {0}".format(
-                jube2.conf.UPDATE_VERSION_URL))
+            LOGGER.info(("Newer JUBE version {0} is available. "
+                         "Currently installed version is {1}.\n"
+                         "New version can be "
+                         "downloaded here: {2}").format(
+                version, jube2.conf.JUBE_VERSION,
+                jube2.conf.UPDATE_URL))
     except IOError as ioe:
         raise IOError("Can not connect to {0}: {1}".format(
             jube2.conf.UPDATE_VERSION_URL, str(ioe)))
@@ -216,7 +208,10 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
         benchmark_folder, jube2.conf.CONFIGURATION_FILENAME))
     benchmarks = parser.benchmarks_from_xml()[0]
     # Only one single benchmark exist inside benchmarks
-    benchmark = list(benchmarks.values())[0]
+    if benchmarks is not None:
+        benchmark = list(benchmarks.values())[0]
+    else:
+        return None
 
     # Restore old benchmark id
     benchmark.id = int(os.path.basename(benchmark_folder))
@@ -262,10 +257,16 @@ def search_for_benchmarks(args, load_all=False):
             if not os.path.isdir(benchmark_folder):
                 raise OSError("Benchmark directory not found: \"{0}\""
                               .format(benchmark_folder))
+            if not os.path.isfile(os.path.join(
+                    benchmark_folder, jube2.conf.CONFIGURATION_FILENAME)):
+                LOGGER.warning(("Configuration file \"{0}\" not found in " +
+                                "\"{1}\" or directory not readable.")
+                               .format(jube2.conf.CONFIGURATION_FILENAME,
+                                       benchmark_folder))
             if benchmark_folder not in found_benchmarks:
                 found_benchmarks.append(benchmark_folder)
     else:
-        if load_all or (args.id is not None) and ("all" in args.id):
+        if load_all or ((args.id is not None) and ("all" in args.id)):
             # Add all available benchmark folder
             found_benchmarks = [
                 os.path.join(args.dir, directory)
@@ -281,10 +282,12 @@ def search_for_benchmarks(args, load_all=False):
             else:
                 raise OSError("No benchmark directory found in \"{0}\""
                               .format(args.dir))
+
     found_benchmarks = \
         [benchmark_folder for benchmark_folder in found_benchmarks if
          os.path.isfile(os.path.join(benchmark_folder,
                                      jube2.conf.CONFIGURATION_FILENAME))]
+
     found_benchmarks.sort()
     return found_benchmarks
 
@@ -380,6 +383,9 @@ def _continue_benchmark(benchmark_folder, args):
     """Continue existing benchmark"""
     benchmark = _load_existing_benchmark(benchmark_folder)
 
+    if benchmark is None:
+        return
+
     # Change logfile
     jube2.log.change_logfile_name(os.path.join(
         benchmark_folder, jube2.conf.LOGFILE_CONTINUE_NAME))
@@ -407,6 +413,8 @@ def _continue_benchmark(benchmark_folder, args):
 def _analyse_benchmark(benchmark_folder, args):
     """Analyse existing benchmark"""
     benchmark = _load_existing_benchmark(benchmark_folder, load_analyse=False)
+    if benchmark is None:
+        return
 
     # Update benchmark data
     _update_analyse_and_result(args, benchmark, benchmark_folder)
@@ -426,9 +434,11 @@ def _analyse_benchmark(benchmark_folder, args):
 def _benchmark_result(benchmark_folder, args, result_list=None):
     """Show benchmark result"""
     benchmark = _load_existing_benchmark(benchmark_folder)
-
     if result_list is None:
         result_list = list()
+
+    if benchmark is None:
+        return result_list
 
     if (args.tag is not None) and (len(benchmark.tags & set(args.tag)) == 0):
         return result_list
@@ -506,6 +516,8 @@ def _manipulate_comment(benchmark_folder, args):
     benchmark = _load_existing_benchmark(benchmark_folder=benchmark_folder,
                                          restore_workpackages=False,
                                          load_analyse=False)
+    if benchmark is None:
+        return
 
     # Change benchmark comment
     if args.append:
@@ -781,6 +793,13 @@ def main(command=None):
 
     if args.verbose:
         args.hide_animation = True
+
+    # Set new umask if JUBE_GROUP_NAME is used
+    current_mask = os.umask(0)
+    if (jube2.util.check_and_get_group_id() is not None) and \
+            (current_mask > 2):
+        current_mask = 2
+    os.umask(current_mask)
 
     if args.subparser:
         jube2.log.setup_logging(mode="console", verbose=args.verbose)

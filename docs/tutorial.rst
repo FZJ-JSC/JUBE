@@ -70,6 +70,10 @@ shell environment variables are available which can be used to set system specif
   in a platform specific directory.
 * ``JUBE_EXEC_SHELL``: *JUBE* normaly uses ``/bin/sh`` to execute the given shell commands. This default shell can be changed
   by using this environment variable.
+* ``JUBE_GROUP_NAME``: *JUBE* will use the given *UNIX* groupname to share benchmarks between different users.
+  The group must exist and the *JUBE* user must be part of this group.
+  The given group will be the owner of new benchmark runs. By default (without setting the environment variable)
+  all file and directory permissions are definied by the normal *UNIX* rules.
 
 .. index:: hello world
 
