@@ -25,10 +25,10 @@ from __future__ import (print_function,
 JUBE_VERSION = "2.0.6"
 ALLOWED_SCRIPTTYPES = ["python", "perl"]
 DEBUG_MODE = False
+VERBOSE_LEVEL = 0
 UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"
 UPDATE_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/download.php"
 STANDARD_SHELL = "/bin/sh"
-
 
 # input/output
 DEFAULT_SEPARATOR = ","
@@ -36,6 +36,8 @@ ZERO_FILL_DEFAULT = 6
 DEFAULT_WIDTH = 70
 MAX_TABLE_CELL_WIDTH = 40
 HIDE_ANIMATIONS = False
+VERBOSE_STDOUT_READ_CHUNK_SIZE = 5
+VERBOSE_STDOUT_POLL_SLEEP = 0.1
 
 # filenames
 WORKPACKAGE_DONE_FILENAME = "done"

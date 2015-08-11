@@ -538,8 +538,10 @@ def _get_args_parser():
                         version="JUBE, version {0}".format(
                             jube2.conf.JUBE_VERSION))
     parser.add_argument("-v", "--verbose",
-                        help="enable verbose console output",
-                        action="store_true")
+                        help="enable verbose console output (use -vv to " +
+                             "show stdout during execution and -vvv to " +
+                             "show log and stdout)",
+                        action="count", default=0)
     parser.add_argument('--debug', action="store_true",
                         help='use debugging mode')
     parser.add_argument('--devel', action="store_true",
@@ -790,8 +792,9 @@ def main(command=None):
         args = parser.parse_args(command)
 
     jube2.conf.DEBUG_MODE = args.debug
+    jube2.conf.VERBOSE_LEVEL = args.verbose
 
-    if args.verbose:
+    if jube2.conf.VERBOSE_LEVEL > 0:
         args.hide_animation = True
 
     # Set new umask if JUBE_GROUP_NAME is used
@@ -802,7 +805,9 @@ def main(command=None):
     os.umask(current_mask)
 
     if args.subparser:
-        jube2.log.setup_logging(mode="console", verbose=args.verbose)
+        jube2.log.setup_logging(mode="console",
+                                verbose=(jube2.conf.VERBOSE_LEVEL == 1) or
+                                        (jube2.conf.VERBOSE_LEVEL == 3))
 
         if args.devel:
             args.func(args)
