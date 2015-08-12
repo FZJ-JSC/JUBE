@@ -374,7 +374,7 @@ class Workpackage(object):
                     self._env.update(parent.env)
 
         # --- Add internal jube parameter ---
-        parameterset = self.add_jube_parameter(self._parameterset.copy())
+        parameterset = self.add_jube_parameter(self._history.copy())
 
         # --- Collect parameter for substitution ---
         parameter = \
