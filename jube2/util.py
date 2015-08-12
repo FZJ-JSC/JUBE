@@ -110,7 +110,7 @@ def get_current_id(base_dir):
     maxi = -1
     for item in filelist:
         try:
-            maxi = max(int(re.findall("([0-9]+)", item)[0]), maxi)
+            maxi = max(int(re.findall("^([0-9]+)$", item)[0]), maxi)
         except IndexError:
             pass
     return maxi
