@@ -27,6 +27,7 @@ import jube2.conf
 import jube2.log
 import jube2.parameter
 import os
+import stat
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -373,7 +374,7 @@ class Workpackage(object):
                     self._env.update(parent.env)
 
         # --- Add internal jube parameter ---
-        parameterset = self.add_jube_parameter(self._parameterset.copy())
+        parameterset = self.add_jube_parameter(self._history.copy())
 
         # --- Collect parameter for substitution ---
         parameter = \
@@ -404,6 +405,12 @@ class Workpackage(object):
                          .format(alt_work_dir))
             if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
                 os.makedirs(alt_work_dir)
+                # Get group_id if available (given by JUBE_GROUP_NAME)
+                group_id = jube2.util.check_and_get_group_id()
+                if group_id is not None:
+                    os.chmod(alt_work_dir,
+                             os.stat(alt_work_dir).st_mode | stat.S_ISGID)
+                    os.chown(alt_work_dir, os.getuid(), group_id)
 
         # Print debug info
         debugstr = "  available parameter:\n"

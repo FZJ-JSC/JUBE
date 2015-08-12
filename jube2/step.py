@@ -24,6 +24,7 @@ from __future__ import (print_function,
 import subprocess
 import os
 import re
+import time
 import xml.etree.ElementTree as ET
 import jube2.util
 import jube2.conf
@@ -413,10 +414,14 @@ class Operation(object):
             LOGGER.debug(">>> {0}".format(do))
             if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 try:
+                    if jube2.conf.VERBOSE_LEVEL > 1:
+                        stdout_handle = subprocess.PIPE
+                    else:
+                        stdout_handle = stdout
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > {1}".format(do, abs_info_file_path)],
-                        cwd=work_dir, stdout=stdout,
+                        cwd=work_dir, stdout=stdout_handle,
                         stderr=stderr, shell=False,
                         env=env)
                 except OSError:
@@ -426,6 +431,19 @@ class Operation(object):
                                         "running \"{0}\" in " +
                                         "directory \"{1}\"")
                                        .format(do, os.path.abspath(work_dir)))
+
+                # stdout verbose output
+                if jube2.conf.VERBOSE_LEVEL > 1:
+                    while True:
+                        read_out = sub.stdout.read(
+                            jube2.conf.VERBOSE_STDOUT_READ_CHUNK_SIZE)
+                        if (not read_out):
+                            break
+                        stdout.write(read_out)
+                        print(read_out, end="")
+                        time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
+                    sub.communicate()
+
                 returncode = sub.wait()
 
                 # Close filehandles

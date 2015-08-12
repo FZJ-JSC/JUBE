@@ -113,7 +113,6 @@
 
     <step name="execute" depend="compile" shared="shared">
       <use>executeset</use>
-      <use>compileset</use>
       <do>echo $$TEST_PATH</do>
       <do>compile/$execname $nodes</do>
     </step>

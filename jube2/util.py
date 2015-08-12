@@ -35,6 +35,8 @@ import sys
 import time
 import textwrap
 import jube2.conf
+import grp
+import pwd
 
 
 LOGGER = jube2.log.get_logger(__name__)
@@ -445,6 +447,29 @@ def resolve_depend(depend_dict):
         work, remain = find_next(remain, finished)
 
     return work_list
+
+
+def check_and_get_group_id():
+    """Read environment var JUBE_GROUP_NAME and return group id"""
+    group_name = ""
+    if "JUBE_GROUP_NAME" in os.environ:
+        group_name = os.environ["JUBE_GROUP_NAME"].strip()
+
+    if group_name != "":
+        try:
+            group_id = grp.getgrnam(group_name).gr_gid
+        except KeyError:
+            raise ValueError(("Failed to get group ID, group \"{0}\" " +
+                              "does not exist").format(group_name))
+        user = pwd.getpwuid(os.getuid()).pw_name
+        grp_members = grp.getgrgid(group_id).gr_mem
+        if user in grp_members:
+            return group_id
+        else:
+            raise ValueError(("User \"{0}\" is not in " +
+                              "group \"{1}\"").format(user, group_name))
+    else:
+        return None
 
 
 def consistency_check(benchmark):
