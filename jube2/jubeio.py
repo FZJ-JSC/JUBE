@@ -37,7 +37,7 @@ import jube2.analyser
 import jube2.step
 import jube2.util
 import jube2.conf
-import jube2.result
+import jube2.result_types.table
 import sys
 import re
 import hashlib
@@ -833,7 +833,8 @@ class XMLParser(object):
         sort_names = [sort_name.strip() for sort_name in sort_names]
         sort_names = [
             sort_name for sort_name in sort_names if len(sort_name) > 0]
-        table = jube2.result.Table(name, style, separator, sort_names)
+        table = jube2.result_types.table.Table(name, style, separator,
+                                               sort_names)
         for element in etree_table:
             XMLParser._check_tag(element, ["column"])
             column_name = element.text
