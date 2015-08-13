@@ -620,25 +620,28 @@ class XMLParser(object):
         # dict of local analysers
         analyser = self._extract_analysers(benchmark_etree)
 
-        # dict of local results
-        results, results_order = self._extract_results(benchmark_etree)
-
-        benchmark = jube2.benchmark.Benchmark(name, outpath,
-                                              parametersets, substitutesets,
-                                              filesets, patternsets, steps,
-                                              analyser, results, results_order,
-                                              comment, self._tags)
-
-        # Change file path reference for relative file location
+        # File path reference for relative file location
         if file_path_ref is not None:
             file_path_ref = file_path_ref.strip()
             file_path_ref = \
                 os.path.expandvars(os.path.expanduser(file_path_ref))
         else:
             file_path_ref = "."
+
         # Add position of user to file_path_ref
-        benchmark.file_path_ref = \
+        file_path_ref = \
             os.path.normpath(os.path.join(self.file_path_ref, file_path_ref))
+
+        # dict of local results
+        results, results_order = self._extract_results(benchmark_etree,
+                                                       file_path_ref)
+
+        benchmark = jube2.benchmark.Benchmark(name, outpath,
+                                              parametersets, substitutesets,
+                                              filesets, patternsets, steps,
+                                              analyser, results, results_order,
+                                              comment, self._tags,
+                                              file_path_ref)
 
         return benchmark
 
@@ -790,11 +793,11 @@ class XMLParser(object):
         return analyser
 
     @staticmethod
-    def _extract_results(etree):
+    def _extract_results(etree, file_path_ref=None):
         """Extract all results from etree"""
         results = dict()
         results_order = list()
-        valid_tags = ["use", "table"]
+        valid_tags = ["use", "table", "syslog"]
         for result_etree in etree.findall("result"):
             result_dir = result_etree.get("result_dir")
             if result_dir is not None:
@@ -809,6 +812,9 @@ class XMLParser(object):
                 elif element.tag == "table":
                     result = XMLParser._extract_table(element)
                     result.result_dir = result_dir
+                elif element.tag == "syslog":
+                    result = XMLParser._extract_syslog(element, file_path_ref)
+                if element.tag in ["table", "syslog"]:
                     sub_results[result.name] = result
                     if result.name not in results_order:
                         results_order.append(result.name)
@@ -854,6 +860,31 @@ class XMLParser(object):
             table.add_column(
                 column_name, colw, format_string, title, null_value)
         return table
+
+    @staticmethod
+    def _extract_syslog(etree_syslog, file_path_ref=None):
+        """Extract requires syslog information from etree."""
+        name = XMLParser._attribute_from_element(etree_syslog, "name").strip()
+        # see if the host, port combination or address is given
+        syslog_address = etree_syslog.get("address")
+        if syslog_address is not None:
+            syslog_address = \
+                os.path.expandvars(os.path.expanduser(syslog_address.strip()))
+        syslog_host = etree_syslog.get("host")
+        if syslog_host is not None:
+            syslog_host = syslog_host.strip()
+        syslog_port = etree_syslog.get("port")
+        if syslog_port is not None:
+            syslog_port = int(syslog_port.strip())
+        sort_names = etree_syslog.get("sort", "").split(
+            jube2.conf.DEFAULT_SEPARATOR)
+        sort_names = [sort_name.strip() for sort_name in sort_names]
+        sort_names = [
+            sort_name for sort_name in sort_names if len(sort_name) > 0]
+        syslog_result = jube2.result_types.syslog.SysloggedResult(
+            name, syslog_address, syslog_host, syslog_port, sort_names,
+            file_path_ref)
+        return syslog_result
 
     @staticmethod
     def _extract_use(etree_use):

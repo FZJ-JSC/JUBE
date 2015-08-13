@@ -126,16 +126,10 @@ class Table(KeyValuesResult):
 
         def etree_repr(self):
             """Return etree object representation"""
-            column_etree = ET.Element("column")
-            column_etree.text = self._name
+            column_etree = KeyValuesResult.DataKey.etree_repr(self)
+            column_etree.tag = "column"
             if self._colw is not None:
                 column_etree.attrib["colw"] = str(self._colw)
-            if self._format_string is not None:
-                column_etree.attrib["format"] = self._format_string
-            if self._title is not None:
-                column_etree.attrib["title"] = self._title
-            if self._null_value != "":
-                column_etree.attrib["null_value"] = self._null_value
             return column_etree
 
     def __init__(self, name, style="csv",

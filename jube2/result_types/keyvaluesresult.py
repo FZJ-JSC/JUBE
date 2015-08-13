@@ -23,6 +23,7 @@ from __future__ import (print_function,
 
 from jube2.result import Result
 import jube2.log
+import xml.etree.ElementTree as ET
 import operator
 
 LOGGER = jube2.log.get_logger(__name__)
@@ -180,6 +181,18 @@ class KeyValuesResult(Result):
                 if self._unit is not None:
                     name += "[{0}]".format(self._unit)
             return name
+
+        def etree_repr(self):
+            """Return etree object representation"""
+            key_etree = ET.Element("key")
+            key_etree.text = self._name
+            if self._format_string is not None:
+                key_etree.attrib["format"] = self._format_string
+            if self._title is not None:
+                key_etree.attrib["title"] = self._title
+            if self._null_value != "":
+                key_etree.attrib["null_value"] = self._null_value
+            return key_etree
 
         def __eq__(self, other):
             return self.resulting_name == other.resulting_name

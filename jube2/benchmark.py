@@ -42,7 +42,7 @@ class Benchmark(object):
 
     def __init__(self, name, outpath, parametersets, substitutesets,
                  filesets, patternsets, steps, analyser, results,
-                 results_order, comment="", tags=None):
+                 results_order, comment="", tags=None, file_path_ref="."):
         self._name = name
         self._outpath = outpath
         self._parametersets = parametersets
@@ -61,7 +61,7 @@ class Benchmark(object):
         self._work_stat = jube2.util.WorkStat()
         self._comment = comment
         self._id = -1
-        self._file_path_ref = "."
+        self._file_path_ref = file_path_ref
         if tags is None:
             self._tags = set()
         else:
