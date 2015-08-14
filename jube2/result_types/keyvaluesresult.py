@@ -126,7 +126,7 @@ class KeyValuesResult(Result):
             self.add_key_value_data(result_data.keys, result_data.data,
                                     result_data.benchmark_ids)
 
-        def create_result(self, show=True, filename=None):
+        def create_result(self, show=True, filename=None, **kwargs):
             """Create result representation"""
             raise NotImplementedError("")
 

@@ -91,8 +91,12 @@ class Table(KeyValuesResult):
                 indent=0, pretty=(self._style == "pretty"),
                 separator=self._separator)
 
-        def create_result(self, show=True, filename=None):
+        def create_result(self, show=True, filename=None, **kwargs):
             """Create result output"""
+            # If there are multiple benchmarks, add benchmark id information
+            if len(set(self._benchmark_ids)) > 1:
+                self.add_id_information(reverse=kwargs.get("reverse", False))
+
             result_str = str(self)
 
             # Print result to screen

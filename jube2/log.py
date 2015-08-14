@@ -170,7 +170,7 @@ def change_logfile_name(filename):
     """Change log file name if not in debug mode."""
     if jube2.conf.DEBUG_MODE:
         return
-    setup_logging(filename=filename)
+    setup_logging(filename=filename, mode="default")
 
 
 def reset_logging():

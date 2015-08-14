@@ -45,7 +45,7 @@ class Result(object):
             """Return the result name"""
             return self._name
 
-        def create_result(self, show=True, filename=None):
+        def create_result(self, show=True, filename=None, **kwargs):
             """Create result output"""
             raise NotImplementedError("")
 
