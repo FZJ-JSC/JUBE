@@ -24,7 +24,7 @@ Advanced tutorial
 .. highlight:: bash
    :linenothreshold: 5
 
-This tutorial will show you more detailed functions and tools of *JUBE*. If you want a basic overview you should
+This tutorial demonstrates more detailed functions and tools of *JUBE*. If you want a basic overview you should
 read the general :doc:`tutorial` first.
 
 .. index:: schema validation, validation, dtd
@@ -94,7 +94,8 @@ Example validation tools:
 
 Scripting parameter
 ~~~~~~~~~~~~~~~~~~~
-Sometimes you want to create a parameter which based on the value of another paramter. In this case you can use scripting parameter.
+In some cases it is needed to create a parameter which is based on the value of another paramter.
+In this case you can use a scripting parameter.
 
 The files used for this example can be found inside ``examples/scripting_parameter``.
 
@@ -103,14 +104,14 @@ The input file ``scripting_parameter.xml``:
 .. literalinclude:: ../examples/scripting_parameter/scripting_parameter.xml
    :language: xml
 
-In this example we see four different parameter.
+In this example we see four different parameters.
 
 * ``number`` is a normal template which will be expanded to three different :term:`workpackages <workpackage>`.
 * ``additional_number`` is a scripting parameter which creates a new template and bases on ``number``. The ``mode`` is set to the scripting language (``python`` and ``perl`` are allowed).
-  The additional ``type`` is optional and declare the result type after evaluating the expression. The type is only used by the sort algorithm in the result step. It is not possible to
-  create a template of different scripting parameter. Because of this second template we will get six different :term:`workpackages <workpackage>`.
-* ``number_mult`` is a small calculation. You can use any other existing parameter (which is used inside the same step).
-* ``text`` a normal parameter which uses the content of another parameter. For simple concatenation parameter you do not need scripting
+  The additional ``type`` is optional and declares the result type after evaluating the expression. The type is only used by the sort algorithm in the result step. It is not possible to
+  create a template of different scripting parameters. Because of this second template we will get six different :term:`workpackages <workpackage>`.
+* ``number_mult`` is a small calculation. You can use any other existing parameters (which are used inside the same step).
+* ``text`` is a normal parameter which uses the content of another parameter. For a simple concatenation parameter you do not need a scripting
   parameter.
 
 For this example we will find the following output inside the ``run.log``-file:
@@ -137,7 +138,7 @@ For this example we will find the following output inside the ``run.log``-file:
    >>> echo "number_mult: 32, text: Number: 4"
 
 Implicit Perl or Python scripting inside the ``<do>`` or any other position is not possible.
-If you want to use some scripting expressions you had to create a new parameter.
+If you want to use some scripting expressions you have to create a new parameter.
 
 .. index:: jobsystem
 
@@ -158,24 +159,24 @@ The *JUBE* input file ``jobsystem.xml``:
 .. literalinclude:: ../examples/jobsystem/jobsystem.xml
    :language: xml
 
-As you can see the jobfile is very general and several parameter will be used for replacement. By using a general jobfile and the substitution mechanism
+As you can see the jobfile is very general and several parameters will be used for replacement. By using a general jobfile and the substitution mechanism
 you can control your jobsystem directly out of your *JUBE* input file.
 
 The submit command is a normal *Shell* command so there are no special *JUBE* tags to submit a job.
 
 There are two new attributes:
 
-  * ``done_file`` inside the ``<do>`` allows you set a filename/path to a file which should be used by the jobfile to mark the end of execution. *JUBE* doesn't know when the job ends.
+  * ``done_file`` inside the ``<do>`` allows you to set a filename/path to a file which should be used by the jobfile to mark the end of execution. *JUBE* doesn't know when the job ends.
     Normally it will return when the *Shell* command was finished. When using a jobsystem we had to wait until the jobfile was executed. If *JUBE* found a
     ``<do>`` containing a ``done_file`` attribute *JUBE* will return directly and will not continue automatically until the ``done_file`` exists. If you want to check the current status
     of your running steps and continue the benchmark process if possible you can type::
 
-       >>> jube continue benchmark_run
+       >>> jube continue bench_run
 
     This will continue your benchmark execution (``benchmark_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relativly seen towards the work directory.
-  * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory get a unique name. When changing the directory the user must select a
-    unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id``, which are *JUBE* :term:`internal parameter <jube_variables>` and will expand to the current benchmark and workpackage id. Files and directories out of a given
-    ``<fileset>`` will be copied to the new work directory. Other automatic links, like the dependency links, will not be created!
+  * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory gets an unique name. When changing the directory the user must select a
+    unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id``, which are *JUBE* :term:`internal parameters <jube_variables>` and will be expanded to the current benchmark and workpackage ids. Files and directories out of a given
+    ``<fileset>`` will be copied into the new work directory. Other automatic links, like the dependency links, will not be created!
 
 You will see this Output after running the benchmark:
 
@@ -193,15 +194,15 @@ and this output after running the ``continue`` command (after the jobs where exe
    ---------+-----+------+------+-----
      submit |   3 |    0 |    0 |    3
 
-You had to run ``continue`` multiple times if not all ``done_file`` were written when running ``continue`` for the first time.
+You have to run ``continue`` multiple times if not all ``done_file`` were written when running ``continue`` for the first time.
 
 .. index:: include
 
 Include external data
 ~~~~~~~~~~~~~~~~~~~~~
 
-As you seen in the example before a benchmark can become very long. To structure your benchmark you can use multiple files and reuse existing
-sets. There are three different include features inside of *JUBE*.
+As you have seen in the example before a benchmark can become very long. To structure your benchmark you can use multiple files and reuse existing
+sets. There are three different include features available.
 
 The files used for this example can be found inside ``examples/include``.
 
@@ -210,7 +211,7 @@ The include file ``include_data.xml``:
 .. literalinclude:: ../examples/include/include_data.xml
    :language: xml
 
-All files which contains data that should be included must use the *XML*-format. The include files can have a user specific structure (there can be none valid
+All files which contain data to be included must use the *XML*-format. The include files can have a user specific structure (there can be none valid
 *JUBE* tags like ``<dos>``), but the structure must be allowed by the searching mechanism (see below). The resulting file must have a valid *JUBE* structure.
 
 The main file ``main.xml``:
@@ -218,10 +219,10 @@ The main file ``main.xml``:
 .. literalinclude:: ../examples/include/main.xml
    :language: xml
 
-In these file there are three different inlcude types.
+In these file there are three different include types:
 
-The ``init_with`` can be used inside any set definition. Inside the given file the searching mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
-``main.xml``. Inside ``main.xml`` you can add additional values or can overwrite existing ones. If your include-set use a different name inside your include file you can use ``init_with="filename.xml:new_name"``.
+The ``init_with`` can be used inside any set definition. Inside the given file the search mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
+``main.xml``. Inside ``main.xml`` you can add additional values or overwrite existing ones. If your include-set uses a different name inside your include file you can use ``init_with="filename.xml:new_name"``.
 
 The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure, but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the set's name must
 be unique inside the include-file.
@@ -238,7 +239,7 @@ To run the benchmark you can use the normal command::
 It will search for include files inside four different positions (in the following order):
 
 
-* inside a directory given over the command line::
+* inside a directory given over the command line interface::
 
      >>> jube run --include-path some_path another_path -- main.xml
 
