@@ -57,9 +57,9 @@ class SysloggedResult(KeyValuesResult):
         syslog_etree.attrib["name"] = self._name
         if self._syslog_address is not None:
             syslog_etree.attrib["address"] = self._syslog_address
-        if self._syslog_address is not None:
+        if self._syslog_host is not None:
             syslog_etree.attrib["host"] = self._syslog_host
-        if self._syslog_address is not None:
+        if self._syslog_port is not None:
             syslog_etree.attrib["port"] = self._syslog_port
         if len(self._sort_names) > 0:
             syslog_etree.attrib["sort"] = \

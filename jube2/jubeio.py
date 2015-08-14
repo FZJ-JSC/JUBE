@@ -38,6 +38,7 @@ import jube2.step
 import jube2.util
 import jube2.conf
 import jube2.result_types.table
+import jube2.result_types.syslog
 import sys
 import re
 import hashlib
@@ -815,12 +816,24 @@ class XMLParser(object):
                 elif element.tag == "syslog":
                     result = XMLParser._extract_syslog(element, file_path_ref)
                 if element.tag in ["table", "syslog"]:
+                    if result.name in sub_results:
+                        raise ValueError(
+                            ("Result name \"{0}\" is used " +
+                             "multiple times").format(result.name))
                     sub_results[result.name] = result
                     if result.name not in results_order:
                         results_order.append(result.name)
             for result in sub_results.values():
                 for use in uses:
                     result.add_uses(use)
+            if len(set(results.keys()).intersection(
+                    set(sub_results.keys()))) > 0:
+                raise ValueError(
+                    ("Result name(s) \"{0}\" is/are used " +
+                     "multiple times").format(
+                        ",".join(set(results.keys()).intersection(
+                            set(sub_results.keys())))))
+
             results.update(sub_results)
         return results, results_order
 
@@ -884,6 +897,21 @@ class XMLParser(object):
         syslog_result = jube2.result_types.syslog.SysloggedResult(
             name, syslog_address, syslog_host, syslog_port, sort_names,
             file_path_ref)
+
+        for element in etree_syslog:
+            XMLParser._check_tag(element, ["key"])
+            key_name = element.text
+            if key_name is None:
+                key_name = ""
+            key_name = key_name.strip()
+            if key_name == "":
+                raise ValueError("Empty <key> not allowed")
+            title = element.get("title")
+            null_value = element.get("null_value", "").strip()
+            format_string = element.get("format")
+            if format_string is not None:
+                format_string = format_string.strip()
+            syslog_result.add_key(key_name, format_string, title, null_value)
         return syslog_result
 
     @staticmethod

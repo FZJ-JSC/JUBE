@@ -433,8 +433,13 @@ def _analyse_benchmark(benchmark_folder, args):
     LOGGER.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
     benchmark.analyse()
-    LOGGER.info(">>> Analyse data storage: {0}".format(os.path.join(
-        benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
+    if os.path.isfile(
+            os.path.join(benchmark_folder, jube2.conf.ANALYSE_FILENAME)):
+        LOGGER.info(">>> Analyse data storage: {0}".format(os.path.join(
+            benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
+    else:
+        LOGGER.info(">>> Analyse data storage \"{0}\" not created!".format(
+            os.path.join(benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
     LOGGER.info(jube2.util.text_line())
 
     # Reset logging

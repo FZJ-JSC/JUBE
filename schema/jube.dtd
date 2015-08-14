@@ -107,7 +107,7 @@
 <!ELEMENT analyse ((file|include)*)>
 <!ATTLIST analyse       step CDATA #REQUIRED
                         tag CDATA #IMPLIED>
-<!ELEMENT result ((use|table|include)*)>
+<!ELEMENT result ((use|table|syslog|include)*)>
 <!ATTLIST result        result_dir CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT table ((column|include)*)>
@@ -119,6 +119,18 @@
 <!ELEMENT column (#PCDATA)>
 <!ATTLIST column        colw CDATA #IMPLIED
                         format CDATA #IMPLIED
+                        title CDATA #IMPLIED
+                        null_value CDATA #IMPLIED
+                        tag CDATA #IMPLIED>
+<!ELEMENT syslog ((key|include)*)>
+<!ATTLIST syslog        name CDATA #REQUIRED
+                        address CDATA #IMPLIED
+                        host CDATA #IMPLIED
+                        port CDATA #IMPLIED
+                        sort CDATA #IMPLIED
+                        tag CDATA #IMPLIED>
+<!ELEMENT key (#PCDATA)>
+<!ATTLIST key           format CDATA #IMPLIED
                         title CDATA #IMPLIED
                         null_value CDATA #IMPLIED
                         tag CDATA #IMPLIED>

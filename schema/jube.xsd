@@ -202,6 +202,7 @@
     <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="use" type="stringTagType" />
         <xs:element name="table" type="tableType" />
+        <xs:element name="syslog" type="syslogType" />
         <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="result_dir" type="xs:string" use="optional"/>
@@ -211,7 +212,7 @@
   <xs:complexType name="tableType">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="column" type="columnType" />
-      <xs:element name="include" type="includeType" />    
+      <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="style" type="styleType" use="optional" />
@@ -219,14 +220,34 @@
     <xs:attribute name="separator" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
-  
-  <xs:complexType name="columnType">
+
+  <xs:complexType name="syslogType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="key" type="columnType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="address" type="xs:string" use="optional" />
+    <xs:attribute name="host" type="xs:string" use="optional" />
+    <xs:attribute name="port" type="xs:int" use="optional" />
+    <xs:attribute name="sort" type="xs:string" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="keyType">
     <xs:complexContent>
       <xs:extension base="stringTagType">
-        <xs:attribute name="colw" type="xs:integer" use="optional" />
         <xs:attribute name="format" type="xs:string" use="optional" />
         <xs:attribute name="title" type="xs:string" use="optional" />
         <xs:attribute name="null_value" type="xs:string" use="optional" />
+      </xs:extension> 
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="columnType">
+    <xs:complexContent>
+      <xs:extension base="keyType">
+        <xs:attribute name="colw" type="xs:integer" use="optional" />
       </xs:extension> 
     </xs:complexContent>
   </xs:complexType>
