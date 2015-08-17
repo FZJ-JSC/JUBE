@@ -256,7 +256,7 @@ def convert_type(value_type, value, stop=True):
     result_value = None
     try:
         if value_type == "int":
-            result_value = int(value)
+            result_value = int(float(value))
         elif value_type == "float":
             result_value = float(value)
         else:
