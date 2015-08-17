@@ -115,13 +115,11 @@
       <use>executeset</use>
       <do>echo $$TEST_PATH</do>
       <do>compile/$execname $nodes</do>
-      <do>echo 'Hello World dada: 12.2e12'</do>
     </step>
     
     <patternset name="pattern">
        <pattern name="nodes_pattern" type="int"> Hello World: $jube_pat_int</pattern>
        <pattern name="zero" mode="python" type="int">${nodes_pattern}-${nodes}</pattern>
-       <pattern name="blubb" type="int"> Hello World dada: $jube_pat_fp</pattern>
     </patternset>
     
     <analyser name="analyse">
@@ -137,7 +135,6 @@
          <column>cppflagslist</column>
          <column>nodes</column>
          <column>nodes_pattern</column>
-         <column>blubb</column>
          <column>zero</column>
        </table>
     </result>
