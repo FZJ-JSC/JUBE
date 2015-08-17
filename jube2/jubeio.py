@@ -37,7 +37,8 @@ import jube2.analyser
 import jube2.step
 import jube2.util
 import jube2.conf
-import jube2.result
+import jube2.result_types.table
+import jube2.result_types.syslog
 import sys
 import re
 import hashlib
@@ -623,22 +624,24 @@ class XMLParser(object):
         # dict of local results
         results, results_order = self._extract_results(benchmark_etree)
 
-        benchmark = jube2.benchmark.Benchmark(name, outpath,
-                                              parametersets, substitutesets,
-                                              filesets, patternsets, steps,
-                                              analyser, results, results_order,
-                                              comment, self._tags)
-
-        # Change file path reference for relative file location
+        # File path reference for relative file location
         if file_path_ref is not None:
             file_path_ref = file_path_ref.strip()
             file_path_ref = \
                 os.path.expandvars(os.path.expanduser(file_path_ref))
         else:
             file_path_ref = "."
+
         # Add position of user to file_path_ref
-        benchmark.file_path_ref = \
+        file_path_ref = \
             os.path.normpath(os.path.join(self.file_path_ref, file_path_ref))
+
+        benchmark = jube2.benchmark.Benchmark(name, outpath,
+                                              parametersets, substitutesets,
+                                              filesets, patternsets, steps,
+                                              analyser, results, results_order,
+                                              comment, self._tags,
+                                              file_path_ref)
 
         return benchmark
 
@@ -794,7 +797,7 @@ class XMLParser(object):
         """Extract all results from etree"""
         results = dict()
         results_order = list()
-        valid_tags = ["use", "table"]
+        valid_tags = ["use", "table", "syslog"]
         for result_etree in etree.findall("result"):
             result_dir = result_etree.get("result_dir")
             if result_dir is not None:
@@ -809,12 +812,27 @@ class XMLParser(object):
                 elif element.tag == "table":
                     result = XMLParser._extract_table(element)
                     result.result_dir = result_dir
+                elif element.tag == "syslog":
+                    result = XMLParser._extract_syslog(element)
+                if element.tag in ["table", "syslog"]:
+                    if result.name in sub_results:
+                        raise ValueError(
+                            ("Result name \"{0}\" is used " +
+                             "multiple times").format(result.name))
                     sub_results[result.name] = result
                     if result.name not in results_order:
                         results_order.append(result.name)
             for result in sub_results.values():
                 for use in uses:
                     result.add_uses(use)
+            if len(set(results.keys()).intersection(
+                    set(sub_results.keys()))) > 0:
+                raise ValueError(
+                    ("Result name(s) \"{0}\" is/are used " +
+                     "multiple times").format(
+                        ",".join(set(results.keys()).intersection(
+                            set(sub_results.keys())))))
+
             results.update(sub_results)
         return results, results_order
 
@@ -833,7 +851,8 @@ class XMLParser(object):
         sort_names = [sort_name.strip() for sort_name in sort_names]
         sort_names = [
             sort_name for sort_name in sort_names if len(sort_name) > 0]
-        table = jube2.result.Table(name, style, separator, sort_names)
+        table = jube2.result_types.table.Table(name, style, separator,
+                                               sort_names)
         for element in etree_table:
             XMLParser._check_tag(element, ["column"])
             column_name = element.text
@@ -853,6 +872,49 @@ class XMLParser(object):
             table.add_column(
                 column_name, colw, format_string, title, null_value)
         return table
+
+    @staticmethod
+    def _extract_syslog(etree_syslog):
+        """Extract requires syslog information from etree."""
+        name = XMLParser._attribute_from_element(etree_syslog, "name").strip()
+        # see if the host, port combination or address is given
+        syslog_address = etree_syslog.get("address")
+        if syslog_address is not None:
+            syslog_address = \
+                os.path.expandvars(os.path.expanduser(syslog_address.strip()))
+        syslog_host = etree_syslog.get("host")
+        if syslog_host is not None:
+            syslog_host = syslog_host.strip()
+        syslog_port = etree_syslog.get("port")
+        if syslog_port is not None:
+            syslog_port = int(syslog_port.strip())
+        syslog_fmt_string = etree_syslog.get("format")
+        if syslog_fmt_string is not None:
+            syslog_fmt_string = syslog_fmt_string.strip()
+        sort_names = etree_syslog.get("sort", "").split(
+            jube2.conf.DEFAULT_SEPARATOR)
+        sort_names = [sort_name.strip() for sort_name in sort_names]
+        sort_names = [
+            sort_name for sort_name in sort_names if len(sort_name) > 0]
+        syslog_result = jube2.result_types.syslog.SysloggedResult(
+            name, syslog_address, syslog_host, syslog_port, syslog_fmt_string,
+            sort_names)
+
+        for element in etree_syslog:
+            XMLParser._check_tag(element, ["key"])
+            key_name = element.text
+            if key_name is None:
+                key_name = ""
+            key_name = key_name.strip()
+            if key_name == "":
+                raise ValueError("Empty <key> not allowed")
+            title = element.get("title")
+            null_value = element.get("null_value", "").strip()
+            format_string = element.get("format")
+            if format_string is not None:
+                format_string = format_string.strip()
+            syslog_result.add_key(key_name, format_string, title, null_value)
+        return syslog_result
 
     @staticmethod
     def _extract_use(etree_use):

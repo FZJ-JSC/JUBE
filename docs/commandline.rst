@@ -33,6 +33,32 @@ to get a list of all available commands.
 Because of the *shell* parsing mechanism take care if you write your optional arguments after the command name before the positional
 arguments. You **must** use ``--`` to split the ending of an optional (if the optional argument takes multiple input elements) and the start of the positional argument.
 
+.. index:: general commandline options 
+
+general
+~~~~~~~
+
+General commandline options (can also be used in front of a subcommand)
+
+.. code-block:: none
+
+   jube [-h] [-V] [-v] [--debug] [--devel] {...}
+
+``-h``, ``--help``
+   show general help information
+
+``-V``, ``--version``
+   show version information
+
+``-v``, ``--verbose``
+   enable verbose console output (use ``-vv`` to show stdout during execution and ``-vvv`` to show log and stdout)
+
+``--debug``
+   use debugging mode (no shell script execution)
+
+``--devel``
+   developer mode (show complete error messages)
+
 .. index:: run
 
 run
@@ -337,3 +363,17 @@ Command help
 
 ``command``
    command to get help about
+
+.. index:: update
+
+update
+~~~~~~
+
+Check *JUBE* version
+
+.. code-block:: none
+
+   jube update [-h]
+
+``-h``, ``--help``
+   show command help information

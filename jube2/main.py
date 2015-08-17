@@ -84,13 +84,8 @@ def benchmarks_results(args):
                                             result_list=result_list)
             cnt += 1
 
-    jube2.log.setup_logging("console")
-
     for result_data in result_list:
-        # If there are multiple benchmarks, add benchmark id information
-        if len(found_benchmarks) > 1:
-            result_data.add_id_information(reverse=args.reverse)
-        result_data.create_result()
+        result_data.create_result(reverse=args.reverse)
 
 
 def analyse_benchmarks(args):
@@ -203,6 +198,10 @@ def show_log_single(args, benchmark_folder):
 def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
                              load_analyse=True):
     """Load an existing benchmark, given by directory benchmark_folder."""
+
+    jube2.log.change_logfile_name(os.path.join(
+        benchmark_folder, jube2.conf.LOGFILE_PARSE_NAME))
+
     # Read existing benchmark configuration
     parser = jube2.jubeio.XMLParser(os.path.join(
         benchmark_folder, jube2.conf.CONFIGURATION_FILENAME))
@@ -232,6 +231,8 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
         for analyser in benchmark.analyser.values():
             if analyser.name in analyse_result:
                 analyser.analyse_result = analyse_result[analyser.name]
+
+    jube2.log.setup_logging("console")
 
     return benchmark
 
@@ -368,6 +369,9 @@ def run_new_benchmark(args):
             if jube2.conf.DEBUG_MODE:
                 bench.delete_bench_dir()
 
+        # Reset logging
+        jube2.log.setup_logging("console")
+
 
 def jube2jube2(args):
     """Convert jube XMLs to jube2 XMLs"""
@@ -409,6 +413,9 @@ def _continue_benchmark(benchmark_folder, args):
     if jube2.conf.DEBUG_MODE:
         benchmark.reset_all_workpackages()
 
+    # Reset logging
+    jube2.log.setup_logging("console")
+
 
 def _analyse_benchmark(benchmark_folder, args):
     """Analyse existing benchmark"""
@@ -426,9 +433,17 @@ def _analyse_benchmark(benchmark_folder, args):
     LOGGER.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
                                       .format(benchmark.name, benchmark.id)))
     benchmark.analyse()
-    LOGGER.info(">>> Analyse data storage: {0}".format(os.path.join(
-        benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
+    if os.path.isfile(
+            os.path.join(benchmark_folder, jube2.conf.ANALYSE_FILENAME)):
+        LOGGER.info(">>> Analyse data storage: {0}".format(os.path.join(
+            benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
+    else:
+        LOGGER.info(">>> Analyse data storage \"{0}\" not created!".format(
+            os.path.join(benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
     LOGGER.info(jube2.util.text_line())
+
+    # Reset logging
+    jube2.log.setup_logging("console")
 
 
 def _benchmark_result(benchmark_folder, args, result_list=None):
@@ -461,7 +476,7 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
                                           data_list=result_list)
 
     # Reset logging
-    jube2.log.change_logfile_name(jube2.conf.DEFAULT_LOGFILE_NAME)
+    jube2.log.setup_logging("console")
 
     return result_list
 
@@ -808,7 +823,6 @@ def main(command=None):
         jube2.log.setup_logging(mode="console",
                                 verbose=(jube2.conf.VERBOSE_LEVEL == 1) or
                                         (jube2.conf.VERBOSE_LEVEL == 3))
-
         if args.devel:
             args.func(args)
         else:

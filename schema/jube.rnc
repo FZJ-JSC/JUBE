@@ -157,7 +157,7 @@ analyse = element analyse { attlist.analyse, (file | \include)* }
 attlist.analyse &=
   attribute step { text },
   attribute tag { text }?
-result = element result { attlist.result, (use | table | \include)* }
+result = element result { attlist.result, (use | table | syslog | \include)* }
 attlist.result &=
   attribute result_dir { text }?,
   attribute tag { text }?
@@ -168,9 +168,24 @@ attlist.table &=
   attribute separator { text }?,
   attribute sort { text }?,
   attribute tag { text }?
+syslog = element syslog { attlist.syslog, (key | \include)* }
+attlist.syslog &=
+  attribute name { text },
+  attribute address { text }?,
+  attribute host { text }?,
+  attribute port { text }?,
+  attribute format { text }?,
+  attribute sort { text }?,
+  attribute tag { text }?
 column = element column { attlist.column, text }
 attlist.column &=
   attribute colw { text }?,
+  attribute format { text }?,
+  attribute title { text }?,
+  attribute null_value { text }?,
+  attribute tag { text }?
+key = element key { attlist.key, text }
+attlist.key &=
   attribute format { text }?,
   attribute title { text }?,
   attribute null_value { text }?,
