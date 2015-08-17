@@ -621,6 +621,9 @@ class XMLParser(object):
         # dict of local analysers
         analyser = self._extract_analysers(benchmark_etree)
 
+        # dict of local results
+        results, results_order = self._extract_results(benchmark_etree)
+
         # File path reference for relative file location
         if file_path_ref is not None:
             file_path_ref = file_path_ref.strip()
@@ -632,10 +635,6 @@ class XMLParser(object):
         # Add position of user to file_path_ref
         file_path_ref = \
             os.path.normpath(os.path.join(self.file_path_ref, file_path_ref))
-
-        # dict of local results
-        results, results_order = self._extract_results(benchmark_etree,
-                                                       file_path_ref)
 
         benchmark = jube2.benchmark.Benchmark(name, outpath,
                                               parametersets, substitutesets,
@@ -794,7 +793,7 @@ class XMLParser(object):
         return analyser
 
     @staticmethod
-    def _extract_results(etree, file_path_ref=None):
+    def _extract_results(etree):
         """Extract all results from etree"""
         results = dict()
         results_order = list()
@@ -814,7 +813,7 @@ class XMLParser(object):
                     result = XMLParser._extract_table(element)
                     result.result_dir = result_dir
                 elif element.tag == "syslog":
-                    result = XMLParser._extract_syslog(element, file_path_ref)
+                    result = XMLParser._extract_syslog(element)
                 if element.tag in ["table", "syslog"]:
                     if result.name in sub_results:
                         raise ValueError(
@@ -875,7 +874,7 @@ class XMLParser(object):
         return table
 
     @staticmethod
-    def _extract_syslog(etree_syslog, file_path_ref=None):
+    def _extract_syslog(etree_syslog):
         """Extract requires syslog information from etree."""
         name = XMLParser._attribute_from_element(etree_syslog, "name").strip()
         # see if the host, port combination or address is given
@@ -889,14 +888,17 @@ class XMLParser(object):
         syslog_port = etree_syslog.get("port")
         if syslog_port is not None:
             syslog_port = int(syslog_port.strip())
+        syslog_fmt_string = etree_syslog.get("format")
+        if syslog_fmt_string is not None:
+            syslog_fmt_string = syslog_fmt_string.strip()
         sort_names = etree_syslog.get("sort", "").split(
             jube2.conf.DEFAULT_SEPARATOR)
         sort_names = [sort_name.strip() for sort_name in sort_names]
         sort_names = [
             sort_name for sort_name in sort_names if len(sort_name) > 0]
         syslog_result = jube2.result_types.syslog.SysloggedResult(
-            name, syslog_address, syslog_host, syslog_port, sort_names,
-            file_path_ref)
+            name, syslog_address, syslog_host, syslog_port, syslog_fmt_string,
+            sort_names)
 
         for element in etree_syslog:
             XMLParser._check_tag(element, ["key"])

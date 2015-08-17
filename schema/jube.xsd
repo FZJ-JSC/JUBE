@@ -230,6 +230,7 @@
     <xs:attribute name="address" type="xs:string" use="optional" />
     <xs:attribute name="host" type="xs:string" use="optional" />
     <xs:attribute name="port" type="xs:int" use="optional" />
+    <xs:attribute name="format" type="xs:string" use="optional" />
     <xs:attribute name="sort" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
