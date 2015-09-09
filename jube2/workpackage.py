@@ -268,7 +268,8 @@ class Workpackage(object):
                                                              env_str)
         if substitute:
             env_par = env_par.substitute_and_evaluate(
-                [self._parameterset], final_sub=True)[0]
+                [self._parameterset], final_sub=True,
+                no_templates=True)[0]
         parameterset.add_parameter(env_par)
 
         # environment export list
