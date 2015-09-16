@@ -8,9 +8,13 @@
       <!-- Normal template -->
       <parameter name="number" type="int">1,2,4</parameter>
       <!-- A template created by a scripting parameter-->
-      <parameter name="additional_number" mode="python" type="int">",".join(str(a*${number}) for a in [1,2])</parameter>
+      <parameter name="additional_number" mode="python" type="int">
+        ",".join(str(a*${number}) for a in [1,2])
+      </parameter>
       <!-- A scripting parameter -->
-      <parameter name="number_mult" mode="python" type="float">${number}*${additional_number}</parameter>
+      <parameter name="number_mult" mode="python" type="float">
+        ${number}*${additional_number}
+      </parameter>
       <!-- Normal template -->
       <parameter name="text">Number: $number</parameter>
     </parameterset>

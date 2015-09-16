@@ -42,7 +42,8 @@ To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the positio
 
    >>> python setup.py install --user
 
-  This will install the *JUBE* package and the binary to your ``$HOME/.local`` directory.
+  This will install the *JUBE* package and the binary to your ``$HOME/.local`` directory (also a user
+  specific ``--prefix`` option is available).
 
 * You can also add **parent folder path** of the *JUBE* package-folder to the ``PYTHONPATH`` environment variable::
 
@@ -53,6 +54,12 @@ To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the positio
 To use the *JUBE* command line tool like a normal command line command you can add it to the ``PATH`` environment variable::
 
    >>> export PATH=$HOME/.local/bin:$PATH
+
+To check your final installation, you can use
+
+   >>> jube --version
+
+which should highlight you the current version number.
 
 
 .. index:: configuration
@@ -158,7 +165,8 @@ This benchmark will produce the follwing output:
 
    >>>> Benchmark information and further useful commands:
    >>>>       id: 0
-   >>>>      dir: bench_run
+   >>>>   handle: bench_run
+   >>>>      dir: bench_run/000000
    >>>>  analyse: jube analyse bench_run --id 0
    >>>>   result: jube result bench_run --id 0
    >>>>     info: jube info bench_run --id 0
@@ -167,8 +175,8 @@ This benchmark will produce the follwing output:
 As you can see, there was a single step ``say_hello``,
 which runs one shell command ``echo $hello_str`` that will be expanded to ``echo Hello World``.
 
-The **id** is (in addition to the benchmark directory) an important number. Every benchmark run will
-get a new unique **id** inside the benchmark directory.
+The **id** is (in addition to the benchmark directory handle) an important number.
+Every benchmark run will get a new unique **id** inside the benchmark directory.
 
 Inside the benchmark directory you will see the follwing structure:
 

@@ -545,7 +545,8 @@ class Benchmark(object):
         LOGGER.info("\n>>>> Benchmark information and " +
                     "further useful commands:")
         LOGGER.info(">>>>       id: {0}".format(self._id))
-        LOGGER.info(">>>>      dir: {0}".format(self._outpath))
+        LOGGER.info(">>>>   handle: {0}".format(self._outpath))
+        LOGGER.info(">>>>      dir: {0}".format(self.bench_dir))
 
         # Store workpackage information
         self.write_workpackage_information(

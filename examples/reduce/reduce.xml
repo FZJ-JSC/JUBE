@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="reduce_example" outpath="bench_run">
+    <comment>A result reduce example</comment>
+
+    <!-- Regex pattern -->
+    <patternset name="pattern">
+      <!-- all Reduce option to create last,min,max,avg,cnt and sum -->
+      <pattern name="number_pat" type="int" reduce="all">$jube_pat_int</pattern>
+    </patternset>
+    
+    <!-- Operation -->
+    <step name="write_some_numbers">
+      <do>echo "1 2 3 4 5 6 7 8 9 10"</do> <!-- shell command -->
+    </step>
+    
+    <!-- Analyse -->
+    <analyser name="analyse">
+      <use>pattern</use> <!-- use existing patternset -->
+      <analyse step="write_some_numbers">
+        <file>stdout</file> <!-- file which should be scanned -->
+      </analyse>
+    </analyser>
+    
+    <!-- Create result table -->
+    <result>
+      <use>analyse</use> <!-- use existing analyser -->
+      <table name="result" style="pretty">
+        <column>number_pat</column> <!-- first match -->
+        <column>number_pat_last</column> <!-- last match -->
+        <column>number_pat_min</column> <!-- min of all matches -->
+        <column>number_pat_max</column> <!-- max of all matches -->
+        <column>number_pat_sum</column> <!-- sum of all matches -->
+        <column>number_pat_cnt</column> <!-- number of matches -->
+        <column>number_pat_avg</column> <!-- avg of all matches -->
+      </table>
+    </result>
+  </benchmark>
+</jube>

@@ -140,6 +140,37 @@ For this example we will find the following output inside the ``run.log``-file:
 Implicit Perl or Python scripting inside the ``<do>`` or any other position is not possible.
 If you want to use some scripting expressions you have to create a new parameter.
 
+.. index:: reduce
+
+Pattern reduce
+~~~~~~~~~~~~~~
+
+Normally a pattern should only match a single entry in your result files. But sometimes there are multiple
+similar entries (e.g. if the benchmark uses some internal iteration feature). Without further changes the 
+pattern will only find the first match.
+
+To allow a different behaviour the user can specify a ``reduce``-attribute inside the ``<pattern>``-tag.
+Possible choices are: ``last``, ``min``, ``max``, ``avg``, ``cnt``, ``sum``, ``all`` (also any combination separated by 
+``,`` is allowed) ``all`` will create all different reduce types.
+
+To use the reduced pattern value, the user had to specify the pattern name followed by ``_<reduce_option>``,
+e.g. ``pattern_name_last`` (pattern_name itself will be the first match).
+
+A example describing the reduce option can be found in ``examples/reduce``.
+
+The input file ``reduce.xml``:
+
+.. literalinclude:: ../examples/reduce/reduce.xml
+   :language: xml
+
+It will create the following output:
+
+.. code-block:: none
+
+   number_pat | number_pat_last | number_pat_min | number_pat_max | number_pat_sum | number_pat_cnt | number_pat_avg
+   -----------+-----------------+----------------+----------------+----------------+----------------+---------------
+            1 |              10 |              1 |             10 |             55 |             10 |            5.5
+
 .. index:: jobsystem
 
 Jobsystem
