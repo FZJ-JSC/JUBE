@@ -248,9 +248,10 @@ class Parameterset(object):
             parameter = [par for par in self]
             for par in parameter:
                 if par.is_template:
-                    LOGGER.debug(("Parameter ${0} = {1} is handled as " +
-                    "a template and will not be evaluated.\n").format(
-                        par.name,par.value))
+                    LOGGER.debug(
+                        ("Parameter ${0} = {1} is handled as " +
+                         "a template and will not be evaluated.\n").format(
+                            par.name, par.value))
                 else:
                     new_par, param_changed = \
                         par.substitute_and_evaluate(final_sub=True)

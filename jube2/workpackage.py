@@ -270,9 +270,11 @@ class Workpackage(object):
 
         # environment export string
         env_str = ""
-        for parameter in self._parameterset.export_parameter_dict.values():
-            env_str += "export {0}=${1}\n".format(parameter.name,
-                                                  parameter.name)
+        parameter_names = [parameter.name for parameter in
+                           self._parameterset.export_parameter_dict.values()]
+        parameter_names.sort(key=str.lower)
+        for name in parameter_names:
+            env_str += "export {0}=${1}\n".format(name, name)
         env_par = jube2.parameter.Parameter.create_parameter("jube_wp_envstr",
                                                              env_str)
         if substitute:
@@ -285,9 +287,7 @@ class Workpackage(object):
         parameterset.add_parameter(
             jube2.parameter.Parameter.create_parameter(
                 "jube_wp_envlist",
-                ",".join(
-                    [parameter.name for parameter
-                     in self._parameterset.export_parameter_dict.values()]),
+                ",".join([name for name in parameter_names]),
                 no_templates=True))
 
         return parameterset
