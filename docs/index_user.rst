@@ -26,4 +26,5 @@ Welcome to JUBE's documentation!
    tutorial
    advanced
    commandline
+   release_notes
    glossar

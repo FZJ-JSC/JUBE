@@ -3,6 +3,60 @@ Release notes
 *************
 
 
+Version 2.0.7
+=============
+
+Release: 2015-09-17
+
+* *JUBE* will ignore folders in the benchmark directory which does
+  not contain a "configuration.xml"
+
+* New pattern reduce example *Pattern reduce*
+
+* New internal directory handling to allow more flexible feature
+  addition
+
+* New internal result structure
+
+* Fix derived pattern bug when scanning multiple result files
+
+* *JUBE* version number will now be stored inside the
+  "configuration.xml"
+
+* *JUBE* version number will be checked when loading an existing
+  benchmark run
+
+* New *JUBE* variable: "$jube_wp_relpath" (contains relative
+  workpackage path)
+
+* Add Verbose-Mode "-v" / "--verbose"
+
+  * Enable verbose console output "jube -v run ..."
+
+  * Show stdout during execution: "-vv"
+
+  * Show log and stdout during execution: "-vvv"
+
+* Change version mode to "-V" / "--version"
+
+* "jube_parse.log" will now be created next to the
+  "<input_config>.xml" file
+
+* New syslog result type (thanks to Andy Georges for contribution),
+  see *syslog_tag*
+
+* New environment variable "JUBE_GROUP_NAME": By setting and
+  exporting "JUBE_GROUP_NAME" to an available UNIX group, *JUBE* will
+  create benchmark directory structures which can be accessed by the
+  given group.
+
+* Benchmark results can now be created also by user without write-
+  access to the benchmark directory
+
+* Parametersets are not available within each dependent step. there
+  is no need to reuse them anymore.
+
+
 Version 2.0.6
 =============
 

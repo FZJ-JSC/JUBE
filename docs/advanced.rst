@@ -142,6 +142,8 @@ If you want to use some scripting expressions you have to create a new parameter
 
 .. index:: reduce
 
+.. _pattern-reduce:
+
 Pattern reduce
 ~~~~~~~~~~~~~~
 
