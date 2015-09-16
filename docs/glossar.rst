@@ -492,6 +492,7 @@ Glossary
           <use>...</use>
           ...
           <table>...</table>
+          <syslog>...</syslog>
           ...
         </result>
 
@@ -512,11 +513,31 @@ Glossary
 
      * ``style`` is optional; allowed styles: ``csv``, ``pretty``; default: ``csv``
      * ``separator`` is optional; only used in csv-style, default: ``,``
-     * ``sort`` is optional can contain a list of parameter- or patternnames (separated by ,).
+     * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
      * ``<column>`` must contain an single parameter- or patternname
      * ``colw`` is optional: column width
      * ``title`` is optional: column title
+     * ``format`` can contain a C like format string: e.g. format=".2f"
+     * ``null_value`` is optional: NULL value representation (default: empty string)
+
+   syslog_tag
+     A syslog result type
+
+     .. code-block:: xml
+
+        <syslog name="..." address="..." host="..." port="..." sort="..." format="...">
+          <key format="..." title="..." null_value="...">...</key>
+          ...
+        </syslog>
+
+     * Syslog deamon can be given by a ``host`` and ``port`` combination (default ``port``: 541) or
+       by a socket ``address`` e.g.: ``/dev/log`` (mixing of host and address isn't allowed)
+     * ``format`` is optional: can contain a log format written in a pythonic way (default: ``jube[%(process)s]: %(message)s``)
+     * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
+       Given patterntype or parametertype will be used for sorting
+     * ``<key>`` must contain an single parameter- or patternname
+     * ``title`` is optional: alternative key title
      * ``format`` can contain a C like format string: e.g. format=".2f"
      * ``null_value`` is optional: NULL value representation (default: empty string)
 
@@ -678,6 +699,7 @@ Glossary
         * ``$jube_wp_id``: current workpackage id
         * ``$jube_wp_iteration``: current iteration number (default: 0)
         * ``$jube_wp_parent_<parent_name>_id``: workpackage id of selected parent step
+        * ``$jube_wp_relpath``: relative path to workpackage work directory (relative towards configuration file)
         * ``$jube_wp_abspath``: absolute path to workpackage work directory
         * ``$jube_wp_envstr``: a string containing all exported parameter in shell syntax::
 

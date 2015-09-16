@@ -45,6 +45,7 @@ logging.setLoggerClass(JubeLogger)
 
 LOGGING_MODE = jube2.conf.DEFAULT_LOGGING_MODE
 LOGFILE_NAME = jube2.conf.DEFAULT_LOGFILE_NAME
+CONSOLE_VERBOSE = False
 
 
 def get_logger(name=None):
@@ -52,7 +53,7 @@ def get_logger(name=None):
     return logging.getLogger(name)
 
 
-def setup_logging(mode=None, filename=None):
+def setup_logging(mode=None, filename=None, verbose=None):
     """Setup the logging configuration.
 
     Available modes are
@@ -61,12 +62,14 @@ def setup_logging(mode=None, filename=None):
 
     filename can be given optionally.
 
+    verbose: enable verbose console output
+
     The setup includes setting the handlers and formatters. Calling
     this function multiple times causes old handlers to be removed
     before new ones are added.
 
     """
-    global LOGGING_MODE, LOGFILE_NAME
+    global LOGGING_MODE, LOGFILE_NAME, CONSOLE_VERBOSE
 
     # Use debug file name and debug file mode when in debug mode
     if jube2.conf.DEBUG_MODE:
@@ -76,14 +79,18 @@ def setup_logging(mode=None, filename=None):
     else:
         filemode = jube2.conf.LOGFILE_MODE
 
-    if not mode:
+    if mode is None:
         mode = LOGGING_MODE
     else:
         LOGGING_MODE = mode
-    if not filename:
+    if filename is None:
         filename = LOGFILE_NAME
     else:
         LOGFILE_NAME = filename
+    if verbose is None:
+        verbose = CONSOLE_VERBOSE
+    else:
+        CONSOLE_VERBOSE = verbose
 
     # this is needed to make the other handlers accept on low priority
     # events
@@ -99,7 +106,10 @@ def setup_logging(mode=None, filename=None):
     # create, configure and add console handler
     console_formatter = logging.Formatter(jube2.conf.LOG_CONSOLE_FORMAT)
     console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.INFO)
+    if verbose:
+        console_handler.setLevel(logging.DEBUG)
+    else:
+        console_handler.setLevel(logging.INFO)
     console_handler.setFormatter(console_formatter)
     _logger.addHandler(console_handler)
 
@@ -138,12 +148,12 @@ def matching_logs(commands, available_logs):
 
     """
     requested_logs = set("{0}.log".format(command) for command in commands)
-
-    available_base = set(os.path.basename(log) for log in available_logs)
-
-    matching = list(requested_logs.intersection(available_base))
-    not_matching = list(requested_logs.difference(available_base))
-
+    matching = list()
+    for log in available_logs:
+        if os.path.basename(log) in requested_logs:
+            matching.append(log)
+    not_matching = requested_logs.difference(set([os.path.basename(log)
+                                                  for log in matching]))
     return matching, not_matching
 
 
@@ -160,7 +170,7 @@ def change_logfile_name(filename):
     """Change log file name if not in debug mode."""
     if jube2.conf.DEBUG_MODE:
         return
-    setup_logging(filename=filename)
+    setup_logging(filename=filename, mode="default")
 
 
 def reset_logging():

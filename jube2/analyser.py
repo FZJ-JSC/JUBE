@@ -359,7 +359,7 @@ class Analyser(object):
             for match in match_list:
                 try:
                     if pattern.content_type == "int":
-                        new_match_list.append(int(match))
+                        new_match_list.append(int(float(match)))
                     elif pattern.content_type == "float":
                         new_match_list.append(float(match))
                     else:

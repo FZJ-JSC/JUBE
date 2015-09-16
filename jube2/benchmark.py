@@ -42,7 +42,7 @@ class Benchmark(object):
 
     def __init__(self, name, outpath, parametersets, substitutesets,
                  filesets, patternsets, steps, analyser, results,
-                 results_order, comment="", tags=None):
+                 results_order, comment="", tags=None, file_path_ref="."):
         self._name = name
         self._outpath = outpath
         self._parametersets = parametersets
@@ -61,9 +61,7 @@ class Benchmark(object):
         self._work_stat = jube2.util.WorkStat()
         self._comment = comment
         self._id = -1
-        self._org_cwd = "."
-        self._cwd = "."
-        self._file_path_ref = "."
+        self._file_path_ref = file_path_ref
         if tags is None:
             self._tags = set()
         else:
@@ -113,26 +111,6 @@ class Benchmark(object):
     def results_order(self):
         """Return results_order"""
         return self._results_order
-
-    @property
-    def cwd(self):
-        """Get current working directory"""
-        return self._cwd
-
-    @cwd.setter
-    def cwd(self, cwd):
-        """Set current working directory"""
-        self._cwd = cwd
-
-    @property
-    def org_cwd(self):
-        """Get original current working directory"""
-        return self._org_cwd
-
-    @org_cwd.setter
-    def org_cwd(self, org_cwd):
-        """Set original current working directory"""
-        self._org_cwd = org_cwd
 
     @property
     def file_path_ref(self):
@@ -256,6 +234,8 @@ class Benchmark(object):
             comment_element = ET.SubElement(benchmark_etree, "comment")
             comment_element.text = self._comment
         benchmark_etree.attrib["name"] = self._name
+        # Modify file_path_ref and outpath to be relativly correct towards
+        # new configuration file position
         if new_cwd is not None:
             benchmark_etree.attrib["file_path_ref"] = \
                 os.path.relpath(self._file_path_ref, new_cwd)
@@ -279,7 +259,7 @@ class Benchmark(object):
             benchmark_etree.append(analyser.etree_repr())
         for result_name in self._results_order:
             result = self._results[result_name]
-            benchmark_etree.append(result.etree_repr(new_cwd))
+            benchmark_etree.append(result.etree_repr())
         return benchmark_etree
 
     def __repr__(self):
@@ -334,8 +314,11 @@ class Benchmark(object):
                     result_dir = os.path.join(self.bench_dir,
                                               jube2.conf.RESULT_DIRNAME)
                 else:
-                    result_dir = jube2.util.id_dir(result.result_dir,
-                                                   self.id)
+                    result_dir = result.result_dir
+                    result_dir = os.path.expanduser(result_dir)
+                    result_dir = os.path.expandvars(result_dir)
+                    result_dir = jube2.util.id_dir(
+                        os.path.join(self.file_path_ref, result_dir), self.id)
                 if (not os.path.exists(result_dir)) and \
                    (not jube2.conf.DEBUG_MODE):
                     try:
@@ -380,9 +363,7 @@ class Benchmark(object):
                    (new_cwd is not None) and \
                    (not os.path.isabs(result.result_dir)):
                     result.result_dir = \
-                        os.path.relpath(os.path.join(new_cwd,
-                                                     result.result_dir),
-                                        self._cwd)
+                        os.path.join(new_cwd, result.result_dir)
             if ((not jube2.conf.DEBUG_MODE) and
                     (os.access(self.bench_dir, os.W_OK))):
                 self.write_benchmark_configuration(
@@ -564,9 +545,7 @@ class Benchmark(object):
         LOGGER.info("\n>>>> Benchmark information and " +
                     "further useful commands:")
         LOGGER.info(">>>>       id: {0}".format(self._id))
-        path = os.path.relpath(os.path.join(self._cwd, self._outpath),
-                               self._org_cwd)
-        LOGGER.info(">>>>      dir: {0}".format(path))
+        LOGGER.info(">>>>      dir: {0}".format(self._outpath))
 
         # Store workpackage information
         self.write_workpackage_information(
@@ -575,15 +554,15 @@ class Benchmark(object):
         status = self.benchmark_status
         if status["all"] != status["done"]:
             LOGGER.info((">>>> continue: jube continue {0} " +
-                         "--id {1}").format(path, self._id))
+                         "--id {1}").format(self._outpath, self._id))
         LOGGER.info((">>>>  analyse: jube analyse {0} " +
-                     "--id {1}").format(path, self._id))
+                     "--id {1}").format(self._outpath, self._id))
         LOGGER.info((">>>>   result: jube result {0} " +
-                     "--id {1}").format(path, self._id))
+                     "--id {1}").format(self._outpath, self._id))
         LOGGER.info((">>>>     info: jube info {0} " +
-                     "--id {1}").format(path, self._id))
+                     "--id {1}").format(self._outpath, self._id))
         LOGGER.info((">>>>      log: jube log {0} " +
-                     "--id {1}").format(path, self._id))
+                     "--id {1}").format(self._outpath, self._id))
         LOGGER.info(jube2.util.text_line() + "\n")
 
     def _create_bench_dir(self):
@@ -601,9 +580,8 @@ class Benchmark(object):
             self._id = jube2.util.get_current_id(self._outpath) + 1
         if os.path.exists(self.bench_dir):
             raise RuntimeError("Benchmark directory \"{0}\" already exist"
-                               .format(os.path.relpath(
-                                   os.path.join(self._cwd, self.bench_dir),
-                                   self._org_cwd)))
+                               .format(self.bench_dir))
+
         os.makedirs(self.bench_dir)
         # If JUBE_GROUP_NAME is given, set GID-Bit and change group
         if group_id is not None:

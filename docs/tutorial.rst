@@ -95,22 +95,22 @@ This root tag must be unique. *XML* does not allow multiple root tags.
 
 The first tag which contains benchmark specific information is ``<benchmark>``. ``hello_world`` is
 the benchmarkname which can be used to identify the benchmark (e.g. when there are multiple
-benchmarks inside a single input file, or when different benchmarks using the same run directory).
+benchmarks inside a single input file, or when different benchmarks use the same run directory).
 
 The ``outpath`` describes the benchmark run directory (relative to the position of the input file).
 This directory will be managed by *JUBE* and will be automatically created if it doesn't exist.
 The directory name and position are very important, because they are the main interface to communicate
 with your benchmark, after it was submitted.
 
-Using the ``<comment>`` you can store some benchmark related comment inside the benchmark directory.
+Using the ``<comment>`` you can store some benchmark related comments inside the benchmark directory.
 You can also use normal *XML*-comments to structure your input-file:
 
 .. code-block:: xml
 
    <!-- your comment -->
 
-In this benchmark a ``<parameterset>`` is used to store the single ``<parameter name="hello_str">`` parameter.
-The ``name`` of the parameter should only contain letters, numbers (should not be the first character) or the ``_`` (like a normal *Python* identifier). 
+In this benchmark a ``<parameterset>`` is used to store the single ``<parameter name="hello_str">``.
+The ``name`` of the parameter should contain only letters, numbers (should not be the first character) or the ``_`` (like a normal *Python* identifier). 
 The ``name`` of the parameterset must be unique (relative to the current benchmark). In further examples we
 will see that there are more types of sets, which can be distinguished by their names. Also the ``name`` of the
 parameter must be unique (relative to the parameterset).
@@ -122,7 +122,7 @@ Only sets, which are explicitly used, are available inside the step! The ``<do>`
 This command will run inside of a sandbox directory environment (inside the ``outpath`` directory tree).
 The step and its corresponding :term:`parameter space <parameter_space>` is named :term:`workpackage`.
 
-**Available** parameters can be used inside the shell commands. To use a parameter you had to write ::
+**Available** parameters can be used inside the shell commands. To use a parameter you have to write ::
 
    $parametername
 
@@ -130,10 +130,10 @@ or ::
 
    ${parametername}
 
-The brackets must be used if you want some variable concatenation. ``$hello_strtest`` will not be replaced,
+The brackets must be used if you want variable concatenation. ``$hello_strtest`` will not be replaced,
 ``${hello_str}test`` will be replaced. If a parameter doesn't exist or isn't available the variable will not
-be replaced! If you want to use ``$`` inside your command, you had to write ``$$`` to mask the symbol. Parameter
-substitution will run before the normal shell substitution!
+be replaced! If you want to use ``$`` inside your command, you have to write ``$$`` to mask the symbol. Parameter
+substitution will be done before the normal shell substitution!
 
 To run the benchmark just type::
 
@@ -165,7 +165,7 @@ This benchmark will produce the follwing output:
    ######################################################################
 
 As you can see, there was a single step ``say_hello``,
-which run one shell command ``echo $hello_str`` which will be expanded to ``echo Hello World``.
+which runs one shell command ``echo $hello_str`` that will be expanded to ``echo Hello World``.
 
 The **id** is (in addition to the benchmark directory) an important number. Every benchmark run will
 get a new unique **id** inside the benchmark directory.
@@ -211,7 +211,7 @@ Another useful command is the ``info`` command. It will show you information con
    # display information about a step inside the given benchmark
    >>> jube info <benchmark-directory> -- id <id> --step <stepname>
 
-The third, but very important, functionality is the **logger**. Every ``run``, ``continue``, ``analyse``
+The third, also very important, functionality is the **logger**. Every ``run``, ``continue``, ``analyse``
 and ``result`` execution will produce log information inside your benchmark directory.
 This file contains much useful debugging output.
 
@@ -225,14 +225,21 @@ e.g.::
 
 will display the ``run.log`` of the last benchmark found inside of ``bench_runs``.
 
-Because the parsing step is done before creating the benchmark directory, there will be a
-``jube-parse.log`` inside your current workign directory, which contain the parser log information.
+Log output can also be displayed during runtime by using the verbose output::
 
-There is also a debugging mode inside of *JUBE*::
+   >>> jube -v run <input-file>
+
+``-vv`` can be used to display stdout output during runtime and ``-vvv`` will display the
+stdout output as well as the log output at the same time.
+
+Since the parsing step is done before creating the benchmark directory, there will be a
+``jube-parse.log`` inside your current workign directory, which contains the parser log information.
+
+There is also a debugging mode integrated in *JUBE*::
 
    >>> jube --debug <command> [other-args]
 
-This mode avoid any *shell* execution but will generate a single log file (``jube-debug.log``) in your current working directory.
+This mode avoids any *shell* execution but will generate a single log file (``jube-debug.log``) in your current working directory.
 
 .. index:: parameter space creation
 
@@ -250,7 +257,7 @@ The input file ``parameterspace.xml``:
 
 Whenever a parameter contains a ``,`` (this can be changed using the ``separator`` attribute) this parameter becomes
 a **template**. A step which **uses the parameterset** containing this parameter will run multiple times to iterate over
-possible parameter combinations. In this example the step ``say_hello`` will run 6 times:
+all possible parameter combinations. In this example the step ``say_hello`` will run 6 times:
 
 .. code-block:: none
 
@@ -262,7 +269,7 @@ possible parameter combinations. In this example the step ``say_hello`` will run
 Every parameter combination will run in its own sandbox directory.
 
 Another new keyword is the ``type`` attribute. The parameter type isn't used inside the substitution process, but
-it is used for sorting operation inside the ``result`` creation. The default type is ``string``.
+for sorting operations inside the ``result`` creation. The default type is ``string``.
 Possible basic types are ``string``, ``int`` and ``float``.
 
 .. index::  step dependencies, dependencies
@@ -270,7 +277,7 @@ Possible basic types are ``string``, ``int`` and ``float``.
 Step dependencies
 ~~~~~~~~~~~~~~~~~
 
-If you start writing a complex benchmark structure, you want to have dependencies between different :term:`steps <step_tag>`. For
+If you start writing a complex benchmark structure, you might want to have dependencies between different :term:`steps <step_tag>`, for
 example between a compile and the execution step. *JUBE* can handle these dependencies and will also preserve the given
 :term:`parameter space <parameter_space>`.
 
@@ -282,7 +289,7 @@ The input file ``dependencies.xml``:
    :language: xml
 
 In this example we create a dependency between ``first_step`` and ``second_step``. After ``first_step`` finished, the
-corresponding ``second_step`` will start. You are able to have multiple dependencies (separated by ``,`` in the definition), but
+corresponding ``second_step`` will start. Steps can also have multiple dependencies (separated by ``,`` in the definition), but
 circular definitions will not be resolved. A dependency is a unidirectional link!
 
 To communicate between a step and its dependency there is a link inside the work directory pointing to the corresponding
@@ -292,8 +299,8 @@ dependency step work directory. In this example we use ::
 
 to write the ``stdout``-file content of the dependency step into the ``stdout``-file of the current step.
 
-Because the ``first_step`` uses a template parameter which creates three execution runs. There will also be
-three ``second_step`` runs each pointing to a different ``first_step``-directory:
+Because the ``first_step`` uses a template parameter which creates three execution runs, there will also be
+three ``second_step`` runs each pointing to different ``first_step``-directories:
 
 .. code-block:: none
 
@@ -307,7 +314,7 @@ three ``second_step`` runs each pointing to a different ``first_step``-directory
 Loading files and substitution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Every step runs inside a unique sandbox directory. In normal cases you need external files inside this directory (e.g. the source files)
+Every step runs inside a unique sandbox directory. Usually, you will need to have external files inside this directory (e.g. the source files)
 and in some cases you want to change a parameter inside the file based on your current :term:`parameter space <parameter_space>`. There are two additional set-types
 which handle this behaviour inside of *JUBE*.
 
@@ -323,20 +330,20 @@ The content of file ``file.in``:
 .. literalinclude:: ../examples/files_and_sub/file.in
    :language: none
 
-Inside the ``<fileset>`` the current location (relativly seen towards the current input file, also absolute pathes are allowed) of files is given. ``<copy>`` specify that the
+Inside the ``<fileset>`` the current location (relativly to the current input file; also absolute pathes are allowed) of files is defined. ``<copy>`` specifies that the
 file should be copied to the sandbox directory when the fileset is used. Also a ``<link>`` option is available to create a symbolic link to the given file
 inside the sandbox directory.
 
 If there are additional operations needed to :term:`prepare <prepare_tag>` your files (e.g. expand a tar-file). You can use the ``<prepare>``-tag inside your ``<fileset>``.
 
-The ``<substituteset>`` describe the substitution process. The ``<iofile>`` contains the input and output filename. The path is relativly seen
-towards the sandbox directory. Because we do/should not know that location we used the fileset to copy ``file.in`` to this directory.
+The ``<substituteset>`` describe the substitution process. The ``<iofile>`` contains the input and output filename. The path is relative to
+the sandbox directory. Because we do/should not know that location we use the fileset to copy ``file.in`` to this directory.
 
-The ``<sub>`` specify the substitution. All occurrence of ``source`` will be substituted by ``dest``. As you can see, you can
-use Parameter inside the substitution.
+The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
+use parameters inside the substitution.
 
 There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
-``<sub>`` you must also use the corresponding ``<parameterset>`` inside the ``<step>`` where you use the ``<substituteset>``!
+``<sub>`` you must also add the corresponding ``<parameterset>`` inside the ``<step>`` where you use the ``<substituteset>``!
 
 In the ``sub_step`` we use all available sets. The use order isn't relevant. The normal execution process will be:
 
@@ -375,7 +382,7 @@ The resulting directory-tree will be:
 Creating a result table
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Finally, after running the benchmark, you will get several directories. *JUBE* allows you to parse your result files to extract
+Finally, after running the benchmark, you will get several directories. *JUBE* allows you to parse your result files distributed over these directories to extract
 relevant data (e.g. walltime information) and create a result table.
 
 The files used for this example can be found inside ``examples/result_creation``.
@@ -387,32 +394,39 @@ The input file ``result_creation.xml``:
 
 Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``stdout``.
 
-Now we want to parse these ``stdout`` files to extract information (in this example case the written number). First of all we had to declare a
+Now we want to parse these ``stdout`` files to extract information (in this example case the written number). First of all we have to declare a
 ``<patternset>``. Here we can describe a set of ``<pattern>``. A ``<pattern>`` is a regular expression which will be used to parse your result files
 and search for a given string. In this example we only have the ``<pattern>`` ``number_pat``. The name of the pattern must be unique (based on the usage of the ``<patternset>``).
-The ``type`` is optional. It is used when the extracted data will be sorted. The regular expression can contain other pattern or parameter. The example uses ``$jube_pat_int`` which
-is a *JUBE* given :term:`default pattern <jube_pattern>` matching integer values. The pattern must contain a group, given by brackets ``(...)``, to declare the extraction part
+The ``type`` is optional. It is used when the extracted data will be sorted. The regular expression can contain other patterns or parameters. The example uses ``$jube_pat_int`` which
+is a *JUBE* :term:`default pattern <jube_pattern>` matching integer values. The pattern can contain a group, given by brackets ``(...)``, to declare the extraction part
 (``$jube_pat_int`` already contains these brackets).
 
-If there are multiple matches inside a single file you can add a :term:`reduce option <pattern_tag>`. Normally only the first match will be available.
+E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
 
-To use your ``<patternset>`` you had to specify the files which should be parsed. This can be done using the ``<analyser>``.
+.. code-block:: xml
+
+   <pattern name="jube_pat_int" type="int">([+-]?\d+)</pattern>
+   <pattern name="jube_pat_fp" type="float">([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)</pattern>
+
+If there are multiple matches inside a single file you can add a :term:`reduce option <pattern_tag>`. Normally only the first match will be extracted.
+
+To use your ``<patternset>`` you have to specify the files which should be parsed. This can be done using the ``<analyser>``.
 It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
-The analyser automatically knows all parameter which where used in the given step and in depending steps. There is no ``<use>`` option to add additonal completely new
+The analyser automatically knows all parameters which where used in the given step and in depending steps. There is no ``<use>`` option to add additonal completely new
 parametersets.
 
-To run the anlayse you had to write::
+To run the anlayse you have to write::
 
    >>> jube analyse bench_run
 
 The analyse data will be stored inside the benchmark directory.
 
-The last part is the result table creation. Here you had to used an existing analyser. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
+The last part is the result table creation. Here you have to use an existing analyser. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
 the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv`` or ``pretty`` to get different ASCII representations.
 
-To create the result table you had to write::
+To create the result table you have to write::
 
    >>> jube result bench_run -i last
 
