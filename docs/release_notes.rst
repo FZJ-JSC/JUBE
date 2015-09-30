@@ -46,7 +46,7 @@ Release: 2015-09-17
   available UNIX group, *JUBE* will create benchmark directory structures which can be accessed
   by the given group.
 * Benchmark results can now be created also by user without write-access to the benchmark directory
-* Parametersets are not available within each dependent step. there is no need to reuse them anymore.
+* Parametersets are now available within each dependent step. There is no need to reuse them anymore.
 
 Version 2.0.6
 ~~~~~~~~~~~~~

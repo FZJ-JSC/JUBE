@@ -367,7 +367,7 @@ class Operation(object):
             # trouble when adding ; env
             do = do.strip(";")
 
-            if (not jube2.conf.DEBUG_MODE) and (do != ""):
+            if (not jube2.conf.DEBUG_MODE) and (do.strip() != ""):
                 # Change stdout
                 if self._stdout_filename is not None:
                     stdout_filename = jube2.util.substitution(

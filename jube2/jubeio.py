@@ -996,9 +996,10 @@ class XMLParser(object):
                             file_obj.file_path_ref = \
                                 os.path.join(os.path.dirname(file_path),
                                              file_obj.file_path_ref)
-                            file_obj.file_path_ref = \
-                                os.path.relpath(file_obj.file_path_ref,
-                                                self.file_path_ref)
+                            if not os.path.isabs(file_obj.file_path_ref):
+                                file_obj.file_path_ref = \
+                                    os.path.relpath(file_obj.file_path_ref,
+                                                    self.file_path_ref)
                     result_set += files
             elif set_type == "patternset":
                 if result_set is None:

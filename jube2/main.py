@@ -809,6 +809,10 @@ def main(command=None):
     jube2.conf.DEBUG_MODE = args.debug
     jube2.conf.VERBOSE_LEVEL = args.verbose
 
+    # Remove old debug log
+    if jube2.conf.DEBUG_MODE and os.path.isfile(jube2.conf.LOGFILE_DEBUG_NAME):
+        os.unlink(jube2.conf.LOGFILE_DEBUG_NAME)
+
     if jube2.conf.VERBOSE_LEVEL > 0:
         args.hide_animation = True
 
