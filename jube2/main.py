@@ -232,7 +232,7 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
             if analyser.name in analyse_result:
                 analyser.analyse_result = analyse_result[analyser.name]
 
-    jube2.log.setup_logging("console")
+    jube2.log.only_console_log()
 
     return benchmark
 
@@ -321,8 +321,7 @@ def run_new_benchmark(args):
 
     for path in args.files:
         # Setup Logging
-        jube2.log.setup_logging(
-            mode="default",
+        jube2.log.change_logfile_name(
             filename=os.path.join(os.path.dirname(path),
                                   jube2.conf.DEFAULT_LOGFILE_NAME))
         # Read new benchmarks
@@ -370,7 +369,7 @@ def run_new_benchmark(args):
                 bench.delete_bench_dir()
 
         # Reset logging
-        jube2.log.setup_logging("console")
+        jube2.log.only_console_log()
 
 
 def jube2jube2(args):
@@ -414,7 +413,7 @@ def _continue_benchmark(benchmark_folder, args):
         benchmark.reset_all_workpackages()
 
     # Reset logging
-    jube2.log.setup_logging("console")
+    jube2.log.only_console_log()
 
 
 def _analyse_benchmark(benchmark_folder, args):
@@ -443,7 +442,7 @@ def _analyse_benchmark(benchmark_folder, args):
     LOGGER.info(jube2.util.text_line())
 
     # Reset logging
-    jube2.log.setup_logging("console")
+    jube2.log.only_console_log()
 
 
 def _benchmark_result(benchmark_folder, args, result_list=None):
@@ -476,7 +475,7 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
                                           data_list=result_list)
 
     # Reset logging
-    jube2.log.setup_logging("console")
+    jube2.log.only_console_log()
 
     return result_list
 
@@ -808,10 +807,6 @@ def main(command=None):
 
     jube2.conf.DEBUG_MODE = args.debug
     jube2.conf.VERBOSE_LEVEL = args.verbose
-
-    # Remove old debug log
-    if jube2.conf.DEBUG_MODE and os.path.isfile(jube2.conf.LOGFILE_DEBUG_NAME):
-        os.unlink(jube2.conf.LOGFILE_DEBUG_NAME)
 
     if jube2.conf.VERBOSE_LEVEL > 0:
         args.hide_animation = True

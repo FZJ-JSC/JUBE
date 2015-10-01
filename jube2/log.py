@@ -75,6 +75,9 @@ def setup_logging(mode=None, filename=None, verbose=None):
     if jube2.conf.DEBUG_MODE:
         filename = jube2.conf.LOGFILE_DEBUG_NAME
         mode = "default"
+        filemode = jube2.conf.LOGFILE_DEBUG_MODE
+    else:
+        filemode = "a"
 
     if mode is None:
         mode = LOGGING_MODE
@@ -114,7 +117,7 @@ def setup_logging(mode=None, filename=None, verbose=None):
         try:
             # create, configure and add file handler
             file_formatter = logging.Formatter(jube2.conf.LOG_FILE_FORMAT)
-            file_handler = logging.FileHandler(filename, "a")
+            file_handler = logging.FileHandler(filename, filemode)
             file_handler.setLevel(logging.DEBUG)
             file_handler.setFormatter(file_formatter)
             _logger.addHandler(file_handler)
@@ -168,6 +171,13 @@ def change_logfile_name(filename):
     if jube2.conf.DEBUG_MODE:
         return
     setup_logging(filename=filename, mode="default")
+
+
+def only_console_log():
+    """Change to console log if not in debug mode."""
+    if jube2.conf.DEBUG_MODE:
+        return
+    setup_logging(mode="console")
 
 
 def reset_logging():

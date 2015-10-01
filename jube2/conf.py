@@ -52,6 +52,7 @@ TIMESTAMPS_INFO = "timestamps"
 # logging
 DEFAULT_LOGFILE_NAME = "jube-parse.log"
 LOGFILE_DEBUG_NAME = "jube-debug.log"
+LOGFILE_DEBUG_MODE = "w"
 LOGFILE_RUN_NAME = "run.log"
 LOGFILE_CONTINUE_NAME = "continue.log"
 LOGFILE_ANALYSE_NAME = "analyse.log"
