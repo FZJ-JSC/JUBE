@@ -41,6 +41,7 @@ import jube2.result_types.table
 import jube2.result_types.syslog
 import sys
 import re
+import copy
 import hashlib
 import jube2.log
 from distutils.version import StrictVersion
@@ -52,9 +53,13 @@ class XMLParser(object):
 
     """JUBE XML input file parser"""
 
-    def __init__(self, filename, tags=None):
+    def __init__(self, filename, tags=None, include_path=None):
         self._filename = filename
-        self._include_path = list()
+        if include_path is None:
+            include_path = list()
+        self._include_path = include_path
+        if tags is None:
+            tags = set()
         self._tags = tags
 
     @property
@@ -118,50 +123,81 @@ class XMLParser(object):
         valid_tags = ["selection", "include-path", "parameterset", "benchmark",
                       "substituteset", "fileset", "include", "patternset"]
 
-        # Preprocess xml-tree (using tags-attribute)
-        LOGGER.debug("  Remove invalid tags using tags-attribute")
-        if self._tags is None:
-            self._tags = set()
+        # Save init include pathe (from command line)
+        init_include_path = list(self._include_path)
+
+        # Preprocess xml-tree, this must be done multiple times because of
+        # recursive include structures
+        changed = True
+        counter = 0
+        while changed and counter < 10:
+            # Reset variables
+            only_bench = set()
+            not_bench = set()
+            local_tree = copy.deepcopy(tree)
+            self._include_path = list(init_include_path)
+            counter += 1
+            LOGGER.debug("  --> Preprocess run {0} <--".format(counter))
+
+            LOGGER.debug("  Remove invalid tags")
+            LOGGER.debug("    Available tags: {0}"
+                         .format(jube2.conf.DEFAULT_SEPARATOR.join(
+                             self._tags)))
+            XMLParser._remove_invalid_tags(local_tree.getroot(), self._tags)
+
+            # Read selection area
+            for selection_tree in local_tree.findall("selection"):
+                new_only_bench, new_not_bench, new_tags = \
+                    XMLParser._extract_selection(selection_tree)
+                self._tags.update(new_tags)
+                only_bench.update(new_only_bench)
+                not_bench.update(new_not_bench)
+
+            LOGGER.debug("  Remove invalid tags")
+            LOGGER.debug("    Available tags: {0}"
+                         .format(jube2.conf.DEFAULT_SEPARATOR.join(
+                             self._tags)))
+            XMLParser._remove_invalid_tags(local_tree.getroot(), self._tags)
+
+            # Read include-path
+            for include_path_tree in local_tree.findall("include-path"):
+                self._extract_include_path(include_path_tree)
+
+            # Add env var based include path
+            self._read_envvar_include_path()
+
+            # Add local dir to include path
+            self._include_path += [self.file_path_ref]
+
+            # Preprocess xml-tree
+            LOGGER.debug("  Preprocess xml tree")
+            for path in self._include_path:
+                LOGGER.debug("    path: {0}".format(path))
+
+            changed = self._preprocessor(tree.getroot())
+            if changed:
+                LOGGER.debug("  New tags included, start additional run.")
+
+        # Rerun removing invalid tags
+        LOGGER.debug("  Remove invalid tags")
         LOGGER.debug("    Available tags: {0}"
                      .format(jube2.conf.DEFAULT_SEPARATOR.join(self._tags)))
-        XMLParser._remove_invalid_tags(tree.getroot(), self._tags)
-
-        # Read selection area
-        selection = tree.findall("selection")
-        if len(selection) > 1:
-            raise ValueError("Only one <selection> tag allowed")
-        elif len(selection) == 1:
-            only_bench, not_bench, new_tags = \
-                XMLParser._extract_selection(selection[0])
-        else:
-            only_bench = list()
-            not_bench = list()
-            new_tags = set()
-
-        # Read include-path
-        include_path = tree.findall("include-path")
-        if len(include_path) > 1:
-            raise ValueError("Only one <include-path> tag allowed")
-        elif len(include_path) == 1:
-            self._extract_include_path(include_path[0])
-
-        # Add env var based include path
-        self._read_envvar_include_path()
-
-        # Add local dir to include path
-        self._include_path += [self.file_path_ref]
-
-        # Preprocess xml-tree
-        LOGGER.debug("  Preprocess xml tree")
-        self._preprocessor(tree.getroot())
-
-        # Add file tags and rerun removing invalid tags
-        self._tags.update(new_tags)
         XMLParser._remove_invalid_tags(tree.getroot(), self._tags)
 
         # Check tags
         for element in tree.getroot():
             XMLParser._check_tag(element, valid_tags)
+
+        # Check for remaing <include> tags
+        node = jube2.util.get_tree_element(tree.getroot(), tag_path="include")
+        if node is not None:
+            raise ValueError(("Remaining include element found, which " +
+                              "wasn't replaced (e.g. due to a missing " +
+                              "include-path):\n" +
+                              "<include from=\"{0}\" ... />")
+                             .format(node.attrib["from"]))
+
+        LOGGER.debug("  Preprocess done")
 
         # Read all global parametersets
         global_parametersets = self._extract_parametersets(tree)
@@ -182,7 +218,7 @@ class XMLParser(object):
                                                global_filesets,
                                                global_patternsets)
             benchmarks[benchmark.name] = benchmark
-        return benchmarks, only_bench, not_bench
+        return benchmarks, list(only_bench), list(not_bench)
 
     @staticmethod
     def _remove_invalid_tags(etree, tags):
@@ -218,6 +254,7 @@ class XMLParser(object):
         children = list(etree)
         new_children = list()
         include_index = 0
+        changed = False
         for child in children:
             # Replace include tags
             if child.tag == "include":
@@ -225,27 +262,29 @@ class XMLParser(object):
                 path = child.get("path", ".")
                 if path == "":
                     path = "."
-                file_path = self._find_include_file(filename)
-                include_tree = ET.parse(file_path)
-                # Remove include-node
-                etree.remove(child)
-                # Find external nodes
-                includes = include_tree.findall(path)
-                if len(includes) == 0:
-                    raise ValueError(("Found nothing to include when using "
-                                      "xpath \"{0}\" in file \"{1}\"")
-                                     .format(path, filename))
-                # Insert external nodes
-                for include in includes:
-                    etree.insert(include_index, include)
-                    include_index += 1
-                    new_children.append(include)
-                include_index -= 1
+                try:
+                    file_path = self._find_include_file(filename)
+                    include_tree = ET.parse(file_path)
+                    # Find external nodes
+                    includes = include_tree.findall(path)
+                except ValueError:
+                    includes = list()
+                if len(includes) > 0:
+                    # Remove include-node
+                    etree.remove(child)
+                    # Insert external nodes
+                    for include in includes:
+                        etree.insert(include_index, include)
+                        include_index += 1
+                        new_children.append(include)
+                    include_index -= 1
+                    changed = True
             else:
                 new_children.append(child)
             include_index += 1
         for child in new_children:
             self._preprocessor(child)
+        return changed
 
     def _benchmark_preprocessor(self, benchmark_etree):
         """Preprocess the xml-tree of given benchmark."""
@@ -518,7 +557,8 @@ class XMLParser(object):
     def _extract_selection(selection_etree):
         """Extract selction information from etree
 
-        Return names of benchmarks ([only,...],[not,...])
+        Return names of benchmarks and tags (set([only,...]),set([not,...]),
+        set([tag, ...]))
         """
         LOGGER.debug("  Parsing <selection>")
         valid_tags = ["only", "not", "tag"]
@@ -530,19 +570,19 @@ class XMLParser(object):
             separator = jube2.conf.DEFAULT_SEPARATOR
             if element.text is not None:
                 if element.tag == "only":
-                    only_bench = only_bench + element.text.split(separator)
+                    only_bench += element.text.split(separator)
                 elif element.tag == "not":
-                    not_bench = not_bench + element.text.split(separator)
+                    not_bench += element.text.split(separator)
                 elif element.tag == "tag":
                     tags.update(set([tag.strip() for tag in
                                      element.text.split(separator)]))
-        only_bench = [bench.strip() for bench in only_bench]
-        not_bench = [bench.strip() for bench in not_bench]
+        only_bench = set([bench.strip() for bench in only_bench])
+        not_bench = set([bench.strip() for bench in not_bench])
         return only_bench, not_bench, tags
 
     def _extract_include_path(self, include_path_etree):
         """Extract include-path pathes from etree"""
-        LOGGER.debug("Parsing <include-path>")
+        LOGGER.debug("  Parsing <include-path>")
         valid_tags = ["path"]
         for element in include_path_etree:
             XMLParser._check_tag(element, valid_tags)
@@ -555,10 +595,11 @@ class XMLParser(object):
             path = os.path.expandvars(os.path.expanduser(path))
             path = os.path.join(self.file_path_ref, path)
             self._include_path += [path]
+            LOGGER.debug("    New path: {0}".format(path))
 
     def _read_envvar_include_path(self):
         """Add environment var include-path"""
-        LOGGER.debug("Read $JUBE_INCLUDE_PATH")
+        LOGGER.debug("  Read $JUBE_INCLUDE_PATH")
         if "JUBE_INCLUDE_PATH" in os.environ:
             self._include_path += \
                 [include_path for include_path in

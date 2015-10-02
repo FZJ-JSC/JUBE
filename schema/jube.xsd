@@ -294,7 +294,7 @@
 
   <xs:complexType name="jubeType">
     <xs:sequence minOccurs="0" maxOccurs="1">
-      <xs:choice minOccurs="0" maxOccurs="2">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="include-path" type="includePathType" />
         <xs:element name="selection" type="selectionType" />
       </xs:choice>

@@ -293,26 +293,12 @@ def search_for_benchmarks(args, load_all=False):
     return found_benchmarks
 
 
-def _update_include_path(args):
-    """Update the global include path information list"""
-    jube2.jubeio.INCLUDE_PATH = list()
-
-    # Add commandline include-path
-    if args.include_path is not None:
-        jube2.jubeio.INCLUDE_PATH = \
-            [include_path for include_path in args.include_path
-             if include_path != ""]
-
-
 def run_new_benchmark(args):
     """Start a new benchmark run"""
 
     jube2.conf.HIDE_ANIMATIONS = args.hide_animation
 
     id_cnt = 0
-
-    # Update include path
-    _update_include_path(args)
 
     # Extract tags
     tags = args.tag
@@ -325,7 +311,12 @@ def run_new_benchmark(args):
             filename=os.path.join(os.path.dirname(path),
                                   jube2.conf.DEFAULT_LOGFILE_NAME))
         # Read new benchmarks
-        parser = jube2.jubeio.XMLParser(path, tags)
+        if args.include_path is not None:
+            include_pathes = [include_path for include_path in
+                              args.include_path if include_path != ""]
+        else:
+            include_pathes = None
+        parser = jube2.jubeio.XMLParser(path, tags, include_pathes)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
@@ -486,16 +477,18 @@ def _update_analyse_and_result(args, benchmark, benchmark_folder):
     if args.update is not None:
         dirname = os.path.dirname(args.update)
 
-        # Update include path
-        _update_include_path(args)
-
         # Extract tags
         tags = args.tag
         if tags is not None:
             tags = set(tags)
 
         # Read new benchmarks
-        parser = jube2.jubeio.XMLParser(args.update, tags)
+        if args.include_path is not None:
+            include_pathes = [include_path for include_path in
+                              args.include_path if include_path != ""]
+        else:
+            include_pathes = None
+        parser = jube2.jubeio.XMLParser(args.update, tags, include_pathes)
         benchmarks = parser.benchmarks_from_xml()[0]
 
         # Update benchmark
