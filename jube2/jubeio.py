@@ -130,7 +130,7 @@ class XMLParser(object):
         # recursive include structures
         changed = True
         counter = 0
-        while changed and counter < 10:
+        while changed and counter < jube2.conf.PREPROCESS_MAX_ITERATION:
             # Reset variables
             only_bench = set()
             not_bench = set()
@@ -157,6 +157,8 @@ class XMLParser(object):
             LOGGER.debug("    Available tags: {0}"
                          .format(jube2.conf.DEFAULT_SEPARATOR.join(
                              self._tags)))
+            # Reset tree, because selection might add additional tags
+            local_tree = copy.deepcopy(tree)
             XMLParser._remove_invalid_tags(local_tree.getroot(), self._tags)
 
             # Read include-path
