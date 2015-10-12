@@ -271,7 +271,7 @@ class Workpackage(object):
         # environment export string
         env_str = ""
         parameter_names = [parameter.name for parameter in
-                           self._parameterset.export_parameter_dict.values()]
+                           self._history.export_parameter_dict.values()]
         parameter_names.sort(key=str.lower)
         for name in parameter_names:
             env_str += "export {0}=${1}\n".format(name, name)
@@ -279,7 +279,7 @@ class Workpackage(object):
                                                              env_str)
         if substitute:
             env_par = env_par.substitute_and_evaluate(
-                [self._parameterset], final_sub=True,
+                [self._history], final_sub=True,
                 no_templates=True)[0]
         parameterset.add_parameter(env_par)
 
