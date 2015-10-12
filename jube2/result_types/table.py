@@ -37,7 +37,7 @@ class Table(KeyValuesResult):
 
         """Table data"""
 
-        def __init__(self, name_or_other, style, separator):
+        def __init__(self, name_or_other, style, separator, transpose):
             if type(name_or_other) is KeyValuesResult.KeyValuesData:
                 self._name = name_or_other.name
                 self._keys = name_or_other.keys
@@ -47,6 +47,7 @@ class Table(KeyValuesResult):
                 KeyValuesResult.KeyValuesData.__init__(self, name_or_other)
             self._style = style
             self._separator = separator
+            self._transpose = transpose
 
         @property
         def _columns(self):
@@ -89,7 +90,7 @@ class Table(KeyValuesResult):
             return jube2.util.text_table(
                 data, use_header_line=True, auto_linebreak=False, colw=colw,
                 indent=0, pretty=(self._style == "pretty"),
-                separator=self._separator)
+                separator=self._separator, transpose=self._transpose)
 
         def create_result(self, show=True, filename=None, **kwargs):
             """Create result output"""
@@ -138,10 +139,12 @@ class Table(KeyValuesResult):
 
     def __init__(self, name, style="csv",
                  separator=jube2.conf.DEFAULT_SEPARATOR,
-                 sort_names=None):
+                 sort_names=None,
+                 transpose=False):
         KeyValuesResult.__init__(self, name, sort_names)
         self._style = style
         self._separator = separator
+        self._transpose = transpose
 
     def add_column(self, name, colw=None, format_string=None, title=None,
                    null_value=""):
@@ -158,7 +161,8 @@ class Table(KeyValuesResult):
     def create_result_data(self):
         """Create result data"""
         result_data = KeyValuesResult.create_result_data(self)
-        return Table.TableData(result_data, self._style, self._separator)
+        return Table.TableData(result_data, self._style, self._separator,
+                               self._transpose)
 
     def etree_repr(self):
         """Return etree object representation"""

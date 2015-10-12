@@ -166,6 +166,7 @@ attlist.table &=
   attribute name { text },
   attribute style { "csv" | "pretty" }?,
   attribute separator { text }?,
+  attribute transpose { "true" | "false" | "True" | "False" }?,
   attribute sort { text }?,
   attribute tag { text }?
 syslog = element syslog { attlist.syslog, (key | \include)* }

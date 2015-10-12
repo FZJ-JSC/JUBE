@@ -114,6 +114,7 @@
 <!ATTLIST table         name CDATA #REQUIRED
                         style (csv|pretty) #IMPLIED
                         separator CDATA #IMPLIED
+                        transpose (true|false|True|False) #IMPLIED
                         sort CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT column (#PCDATA)>

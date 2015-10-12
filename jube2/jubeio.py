@@ -894,8 +894,13 @@ class XMLParser(object):
         sort_names = [sort_name.strip() for sort_name in sort_names]
         sort_names = [
             sort_name for sort_name in sort_names if len(sort_name) > 0]
+        transpose = etree_table.get("transpose")
+        if transpose is not None:
+            transpose = transpose.strip().lower() == "true"
+        else:
+            transpose = False
         table = jube2.result_types.table.Table(name, style, separator,
-                                               sort_names)
+                                               sort_names, transpose)
         for element in etree_table:
             XMLParser._check_tag(element, ["column"])
             column_name = element.text
@@ -1372,4 +1377,5 @@ class XMLParser(object):
         valid_tags -- list of valid strings
         """
         if element.tag not in valid_tags:
-            raise ValueError("Unknown tag <{0}>".format(element.tag))
+            raise ValueError(("Unknown tag or tag used in wrong " +
+                              "position: <{0}>").format(element.tag))

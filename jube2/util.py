@@ -37,6 +37,7 @@ import textwrap
 import jube2.conf
 import grp
 import pwd
+import copy
 
 
 LOGGER = jube2.log.get_logger(__name__)
@@ -144,8 +145,9 @@ def text_line():
     return "#" * jube2.conf.DEFAULT_WIDTH
 
 
-def text_table(entries, use_header_line=False, indent=1, align_right=True,
-               auto_linebreak=True, colw=None, pretty=True, separator=","):
+def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
+               auto_linebreak=True, colw=None, pretty=True, separator=",",
+               transpose=False):
     """Create a ASCII based table.
     entries must contain a list of lists, use_header_line can be used to
     mark the first entry as title.
@@ -157,6 +159,13 @@ def text_table(entries, use_header_line=False, indent=1, align_right=True,
         auto_linebreak = False
         use_header_line = False
         indent = 0
+
+    # Transpose data entries if needed
+    if transpose:
+        entries = zip(*entries_ext)
+        use_header_line = False
+    else:
+        entries = copy.deepcopy(entries_ext)
 
     max_length = list()
     table_str = ""
