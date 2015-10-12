@@ -162,7 +162,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
 
     # Transpose data entries if needed
     if transpose:
-        entries = zip(*entries_ext)
+        entries = list(zip(*entries_ext))
         use_header_line = False
     else:
         entries = copy.deepcopy(entries_ext)
