@@ -240,6 +240,19 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
 
 def substitution(text, substitution_dict):
     """Substitute templates given by parameter_dict inside of text"""
+    changed = True
+    count = 0
+    # Run multiple times to allow recursive parameter substitution
+    while changed and count < jube2.conf.MAX_RECURSIVE_SUB:
+        count += 1
+        orig_text = text
+        # Save double $$
+        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text)
+        tmp = string.Template(text)
+        new_text = tmp.safe_substitute(substitution_dict)
+        changed = new_text != orig_text
+        text = new_text
+    # Final substitution to remove $$
     tmp = string.Template(text)
     return tmp.safe_substitute(substitution_dict)
 

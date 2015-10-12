@@ -28,7 +28,6 @@ import jube2.util
 import jube2.conf
 import jube2.log
 import re
-import string
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -213,7 +212,7 @@ class Parameterset(object):
         additional_parameterset will be used for substitution but will not be
         added to the set. final_sub marks the last substitution process."""
         set_changed = True
-        max_count = 5
+        max_count = jube2.conf.MAX_RECURSIVE_SUB
         while set_changed and (not self.has_templates) and (max_count > 0):
             set_changed = False
             max_count -= 1
@@ -468,14 +467,13 @@ class StaticParameter(Parameter):
             # $$$$ -> $$$$$$$$ -> $$$$
             # $$$$$ -> $$$$$$$ -> $$$
             value = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", value)
-        temp = string.Template(value)
         parameter_dict = dict()
         if parametersets is not None:
             for parameterset in parametersets:
                 parameter_dict.update(
                     dict([(name, param.value) for name, param in
                           parameterset.constant_parameter_dict.items()]))
-        value = temp.safe_substitute(parameter_dict)
+        value = jube2.util.substitution(value, parameter_dict)
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
         mode = self._mode
