@@ -171,6 +171,7 @@ class Table(KeyValuesResult):
         table_etree.attrib["name"] = self._name
         table_etree.attrib["style"] = self._style
         table_etree.attrib["separator"] = self._separator
+        table_etree.attrib["transpose"] = str(self._transpose)
         if len(self._sort_names) > 0:
             table_etree.attrib["sort"] = \
                 jube2.conf.DEFAULT_SEPARATOR.join(self._sort_names)
