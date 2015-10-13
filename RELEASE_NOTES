@@ -11,7 +11,7 @@ Release: 2015-09-17
 * *JUBE* will ignore folders in the benchmark directory which does
   not contain a "configuration.xml"
 
-* New pattern reduce example *Pattern reduce*
+* New pattern reduce example *Statistic pattern values*
 
 * New internal directory handling to allow more flexible feature
   addition

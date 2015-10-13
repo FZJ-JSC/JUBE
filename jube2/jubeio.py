@@ -439,6 +439,7 @@ class XMLParser(object):
         tmp = dict()
         # parents_tmp: Dict workpackage_id => list of parent_workpackage_ids
         parents_tmp = dict()
+        iteration_siblings_tmp = dict()
         work_list = queue.Queue()
         LOGGER.debug("Parsing {0}".format(self._filename))
         if not os.path.isfile(self._filename):
@@ -449,8 +450,8 @@ class XMLParser(object):
         for element in tree.getroot():
             XMLParser._check_tag(element, ["workpackage"])
             # Read XML-data
-            (workpackage_id, step_name, parameterset, parents, iteration,
-             set_env, unset_env) = \
+            (workpackage_id, step_name, parameterset, parents,
+             iteration_siblings, iteration, set_env, unset_env) = \
                 XMLParser._extract_workpackage_data(element)
             # Search for step
             step = benchmark.steps[step_name]
@@ -460,6 +461,7 @@ class XMLParser(object):
                                               workpackage_id, iteration)
             max_id = max(max_id, workpackage_id)
             parents_tmp[workpackage_id] = parents
+            iteration_siblings_tmp[workpackage_id] = iteration_siblings
             tmp[workpackage_id].env.update(set_env)
             for env_name in unset_env:
                 if env_name in tmp[workpackage_id].env:
@@ -475,6 +477,11 @@ class XMLParser(object):
             for parent_id in parents_tmp[workpackage_id]:
                 tmp[workpackage_id].add_parent(tmp[parent_id])
                 tmp[parent_id].add_children(tmp[workpackage_id])
+
+        # Rebuild sibling structure
+        for workpackage_id in iteration_siblings_tmp:
+            for sibling_id in iteration_siblings_tmp[workpackage_id]:
+                tmp[workpackage_id].iteration_siblings.add(tmp[sibling_id])
 
         # Rebuild history
         done_list = list()
@@ -518,7 +525,8 @@ class XMLParser(object):
         Return workpackage id, name of step, local parameterset and list of
         parent ids
         """
-        valid_tags = ["step", "parameterset", "parents", "environment"]
+        valid_tags = ["step", "parameterset", "parents", "iteration_siblings",
+                      "environment"]
         for element in workpackage_etree:
             XMLParser._check_tag(element, valid_tags)
         workpackage_id = int(XMLParser._attribute_from_element(
@@ -537,9 +545,15 @@ class XMLParser(object):
         parents_etree = workpackage_etree.find("parents")
         if parents_etree is not None:
             parents = [int(parent) for parent in
-                       parents_etree.text.split(jube2.conf.DEFAULT_SEPARATOR)]
+                       parents_etree.text.split(",")]
         else:
             parents = list()
+        siblings_etree = workpackage_etree.find("iteration_siblings")
+        if siblings_etree is not None:
+            iteration_siblings = set([int(sibling) for sibling in
+                                      siblings_etree.text.split(",")])
+        else:
+            iteration_siblings = set([workpackage_id])
         environment_etree = workpackage_etree.find("environment")
         set_env = dict()
         unset_env = list()
@@ -552,8 +566,8 @@ class XMLParser(object):
                         set_env[env_name] = env_etree.text.strip()
                 elif env_etree.tag == "nonenv":
                     unset_env.append(env_name)
-        return (workpackage_id, step_name, parameterset, parents, iteration,
-                set_env, unset_env)
+        return (workpackage_id, step_name, parameterset, parents,
+                iteration_siblings, iteration, set_env, unset_env)
 
     @staticmethod
     def _extract_selection(selection_etree):
@@ -805,7 +819,9 @@ class XMLParser(object):
         valid_tags = ["use", "analyse"]
         name = XMLParser._attribute_from_element(etree_analyser,
                                                  "name").strip()
-        analyser = jube2.analyser.Analyser(name)
+        reduce_iteration = \
+            etree_analyser.get("reduce", "true").strip().lower() == "true"
+        analyser = jube2.analyser.Analyser(name, reduce_iteration)
         LOGGER.debug("  Parsing <analyser name=\"{0}\">".format(name))
         for element in etree_analyser:
             XMLParser._check_tag(element, valid_tags)
@@ -1184,21 +1200,12 @@ class XMLParser(object):
                     pattern_mode, name))
             content_type = pattern.get("type", default="string").strip()
             unit = pattern.get("unit", "").strip()
-            reduce_options_str = pattern.get("reduce", "first").strip()
-            reduce_options = set([opt.strip() for opt in
-                                  reduce_options_str.split(
-                                      jube2.conf.DEFAULT_SEPARATOR)])
-            if reduce_options.difference(jube2.pattern.REDUCE_OPTIONS):
-                raise ValueError(("unknown reduce option \"{0}\" in " +
-                                  "<pattern name=\"{1}\">")
-                                 .format(reduce_options_str, name))
             if pattern.text is None:
                 value = ""
             else:
                 value = pattern.text.strip()
             patternlist.append(jube2.pattern.Pattern(name, value, pattern_mode,
-                                                     content_type, unit,
-                                                     reduce_options))
+                                                     content_type, unit))
         return patternlist
 
     def _extract_filesets(self, etree):

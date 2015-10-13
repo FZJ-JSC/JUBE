@@ -140,38 +140,34 @@ For this example we will find the following output inside the ``run.log``-file:
 Implicit Perl or Python scripting inside the ``<do>`` or any other position is not possible.
 If you want to use some scripting expressions you have to create a new parameter.
 
-.. index:: reduce
+.. index:: statistic values
 
-.. _pattern-reduce:
+.. _statistic_values:
 
-Pattern reduce
-~~~~~~~~~~~~~~
+Statistic pattern values
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Normally a pattern should only match a single entry in your result files. But sometimes there are multiple
-similar entries (e.g. if the benchmark uses some internal iteration feature). Without further changes the 
-pattern will only find the first match.
+similar entries (e.g. if the benchmark uses some iteration feature).
 
-To allow a different behaviour the user can specify a ``reduce``-attribute inside the ``<pattern>``-tag.
-Possible choices are: ``last``, ``min``, ``max``, ``avg``, ``cnt``, ``sum``, ``all`` (also any combination separated by 
-``,`` is allowed) ``all`` will create all different reduce types.
+*JUBE* will create the statistical values ``last``, ``min``, ``max``, ``avg``, ``std``, ``cnt`` and ``sum`` automatically.
+To use these values, the user had to specify the pattern name followed by ``_<statistic_option>``,
+e.g. ``pattern_name_last`` (the pattern_name itself will always be the first match).
 
-To use the reduced pattern value, the user had to specify the pattern name followed by ``_<reduce_option>``,
-e.g. ``pattern_name_last`` (pattern_name itself will be the first match).
+A example describing the reduce option can be found in ``examples/statistic``.
 
-A example describing the reduce option can be found in ``examples/reduce``.
+The input file ``statistic.xml``:
 
-The input file ``reduce.xml``:
-
-.. literalinclude:: ../examples/reduce/reduce.xml
+.. literalinclude:: ../examples/statistic/statistic.xml
    :language: xml
 
 It will create the following output:
 
 .. code-block:: none
 
-   number_pat | number_pat_last | number_pat_min | number_pat_max | number_pat_sum | number_pat_cnt | number_pat_avg
-   -----------+-----------------+----------------+----------------+----------------+----------------+---------------
-            1 |              10 |              1 |             10 |             55 |             10 |            5.5
+   number_pat | number_pat_last | number_pat_min | number_pat_max | number_pat_sum | number_pat_cnt | number_pat_avg | number_pat_std
+   -----------+-----------------+----------------+----------------+----------------+----------------+----------------+---------------
+            1 |              10 |              1 |             10 |             55 |             10 |            5.5 |           3.03
 
 .. index:: jobsystem
 

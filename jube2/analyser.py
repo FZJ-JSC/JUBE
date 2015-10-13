@@ -26,6 +26,7 @@ import jube2.log
 import os
 import re
 import glob
+import math
 import jube2.pattern
 import jube2.util
 
@@ -79,12 +80,13 @@ class Analyser(object):
                     jube2.conf.DEFAULT_SEPARATOR.join(self._use)
             return file_etree
 
-    def __init__(self, name):
+    def __init__(self, name, reduce_iteration=True):
         self._name = name
         self._use = set()
         self._analyse = dict()
         self._benchmark = None
         self._analyse_result = None
+        self._reduce_iteration = reduce_iteration
 
     @property
     def benchmark(self):
@@ -116,12 +118,12 @@ class Analyser(object):
         """Set analyse result"""
         self._analyse_result = analyse_result
 
-    def add_analyse(self, step_name, filename):
+    def add_analyse(self, step_name, analyse_file):
         """Add an addtional analyse file"""
         if step_name not in self._analyse:
             self._analyse[step_name] = list()
-        if filename not in self._analyse[step_name]:
-            self._analyse[step_name].append(filename)
+        if analyse_file not in self._analyse[step_name]:
+            self._analyse[step_name].append(analyse_file)
 
     def add_uses(self, use_names):
         """Add an addtional patternset name"""
@@ -140,6 +142,7 @@ class Analyser(object):
         """Return etree object representation"""
         analyser_etree = ET.Element("analyser")
         analyser_etree.attrib["name"] = self._name
+        analyser_etree.attrib["reduce"] = str(self._reduce_iteration)
         for use in self._use:
             use_etree = ET.SubElement(analyser_etree, "use")
             use_etree.text = use
@@ -205,57 +208,72 @@ class Analyser(object):
                                     "when using analyser \"{1}\"").format(
                                         stepname, self._name))
             step = self._benchmark.steps[stepname]
-            for workpackage in self._benchmark.workpackages[stepname]:
+            workpackages = set(self._benchmark.workpackages[stepname])
+            while len(workpackages) > 0:
+                root_workpackage = workpackages.pop()
                 match_dict = dict()
                 local_patternset = patternset.copy()
-                result[stepname][workpackage.id] = dict()
-                # Ignore workpackages not started yet
-                if not workpackage.started:
-                    continue
+                result[stepname][root_workpackage.id] = dict()
+                # Should multiple iterations be reduced to a single result line
+                if self._reduce_iteration:
+                    siblings = set(root_workpackage.iteration_siblings)
+                else:
+                    siblings = set([root_workpackage])
+                while len(siblings) > 0:
+                    workpackage = siblings.pop()
+                    if workpackage in workpackages:
+                        workpackages.remove(workpackage)
 
-                # Get parameterset of current workpackage
-                parameterset = \
-                    workpackage.add_jube_parameter(workpackage.history.copy())
+                    # Ignore workpackages not started yet
+                    if not workpackage.started:
+                        continue
 
-                parameter = \
-                    dict([[par.name, par.value] for par in
-                          parameterset.constant_parameter_dict.values()])
+                    # Get parameterset of current workpackage
+                    parameterset = \
+                        workpackage.add_jube_parameter(
+                            workpackage.history.copy())
 
-                for file_obj in self._analyse[stepname]:
-                    if step.alt_work_dir is not None:
-                        file_path = step.alt_work_dir
-                        file_path = jube2.util.substitution(file_path,
-                                                            parameter)
-                        file_path = \
-                            os.path.expandvars(os.path.expanduser(file_path))
-                        file_path = os.path.join(self._benchmark.file_path_ref,
-                                                 file_path)
-                    else:
-                        file_path = workpackage.work_dir
+                    parameter = \
+                        dict([[par.name, par.value] for par in
+                              parameterset.constant_parameter_dict.values()])
 
-                    filename = \
-                        jube2.util.substitution(file_obj.path, parameter)
-                    filename = \
-                        os.path.expandvars(os.path.expanduser(filename))
+                    for file_obj in self._analyse[stepname]:
+                        if step.alt_work_dir is not None:
+                            file_path = step.alt_work_dir
+                            file_path = jube2.util.substitution(file_path,
+                                                                parameter)
+                            file_path = \
+                                os.path.expandvars(
+                                    os.path.expanduser(file_path))
+                            file_path = os.path.join(
+                                self._benchmark.file_path_ref, file_path)
+                        else:
+                            file_path = workpackage.work_dir
 
-                    file_path = os.path.join(file_path, filename)
-                    for path in glob.glob(file_path):
-                        # scan files
-                        LOGGER.debug(("    scan file {0}").format(path))
+                        filename = \
+                            jube2.util.substitution(file_obj.path, parameter)
+                        filename = \
+                            os.path.expandvars(os.path.expanduser(filename))
 
-                        new_result_dict, match_dict = \
-                            self._analyse_file(path, local_patternset,
-                                               parameterset, match_dict,
-                                               file_obj.use)
-                        result[stepname][workpackage.id].update(
-                            new_result_dict)
+                        file_path = os.path.join(file_path, filename)
+                        for path in glob.glob(file_path):
+                            # scan files
+                            LOGGER.debug(("    scan file {0}").format(path))
+
+                            new_result_dict, match_dict = \
+                                self._analyse_file(path, local_patternset,
+                                                   parameterset, match_dict,
+                                                   file_obj.use)
+                            result[stepname][root_workpackage.id].update(
+                                new_result_dict)
 
                 # Evaluate derived pattern
-                if len(result[stepname][workpackage.id]) > 0:
+                if len(result[stepname][root_workpackage.id]) > 0:
                     new_result_dict = self._eval_derived_pattern(
                         local_patternset, parameterset,
-                        result[stepname][workpackage.id])
-                    result[stepname][workpackage.id].update(new_result_dict)
+                        result[stepname][root_workpackage.id])
+                    result[stepname][root_workpackage.id].update(
+                        new_result_dict)
 
         self._analyse_result = result
 
@@ -336,6 +354,7 @@ class Analyser(object):
         for pattern in patternlist:
             if pattern.name not in match_dict:
                 match_dict[pattern.name] = dict()
+                match_dict[pattern.name]["cnt"] = 0
             try:
                 regex = re.compile(pattern.value, re.MULTILINE)
             except re.error as ree:
@@ -344,7 +363,7 @@ class Analyser(object):
                                    .format(pattern.name, pattern.value, ree))
             # Run regular expression
             matches = re.findall(regex, data)
-            # If there are differnt groups reduce result shape
+            # If there are different groups reduce result shape
             if regex.groups > 1:
                 match_list = list()
                 for match in matches:
@@ -374,42 +393,46 @@ class Analyser(object):
                 # First match is default
                 if "first" not in match_dict[pattern.name]:
                     match_dict[pattern.name]["first"] = match_list[0]
+
+                for match in match_list:
+                    if pattern.content_type in ["int", "float"]:
+                        if "min" in match_dict[pattern.name]:
+                            match_dict[pattern.name]["min"] = \
+                                min(match_dict[pattern.name]["min"], match)
+                        else:
+                            match_dict[pattern.name]["min"] = match
+                        if "max" in match_dict[pattern.name]:
+                            match_dict[pattern.name]["max"] = \
+                                max(match_dict[pattern.name]["max"], match)
+                        else:
+                            match_dict[pattern.name]["max"] = match
+                        if "sum" in match_dict[pattern.name]:
+                            match_dict[pattern.name]["sum"] += match
+                        else:
+                            match_dict[pattern.name]["sum"] = match
+                        if "sum2" in match_dict[pattern.name]:
+                            match_dict[pattern.name]["sum2"] += match**2
+                        else:
+                            match_dict[pattern.name]["sum2"] = match**2
+
+                    match_dict[pattern.name]["cnt"] += 1
+
                 if pattern.content_type in ["int", "float"]:
-                    for match in match_list:
+                    if match_dict[pattern.name]["cnt"] > 0:
+                            match_dict[pattern.name]["avg"] = \
+                                (match_dict[pattern.name]["sum"] /
+                                 match_dict[pattern.name]["cnt"])
 
-                        if "min" in pattern.reduce_option:
-                            if "min" in match_dict[pattern.name]:
-                                match_dict[pattern.name]["min"] = \
-                                    min(match_dict[pattern.name]["min"],
-                                        match)
-                            else:
-                                match_dict[pattern.name]["min"] = match
-                        if "max" in pattern.reduce_option:
-                            if "max" in match_dict[pattern.name]:
-                                match_dict[pattern.name]["max"] = \
-                                    max(match_dict[pattern.name]["max"],
-                                        match)
-                            else:
-                                match_dict[pattern.name]["max"] = match
-                        if ("sum" in pattern.reduce_option) or \
-                                ("avg" in pattern.reduce_option):
-                            if "sum" in match_dict[pattern.name]:
-                                match_dict[pattern.name]["sum"] += match
-                            else:
-                                match_dict[pattern.name]["sum"] = match
-                        if ("cnt" in pattern.reduce_option) or \
-                                ("avg" in pattern.reduce_option):
-                            if "cnt" in match_dict[pattern.name]:
-                                match_dict[pattern.name]["cnt"] += 1
-                            else:
-                                match_dict[pattern.name]["cnt"] = 1
+                    if match_dict[pattern.name]["cnt"] > 1:
+                        match_dict[pattern.name]["std"] = math.sqrt(
+                            (match_dict[pattern.name]["sum2"] -
+                             (match_dict[pattern.name]["sum"]**2 /
+                              match_dict[pattern.name]["cnt"])) /
+                            (match_dict[pattern.name]["cnt"] - 1))
+                    else:
+                        match_dict[pattern.name]["std"] = 0
 
-                if "last" in pattern.reduce_option:
-                    match_dict[pattern.name]["last"] = match_list[-1]
-                if "avg" in pattern.reduce_option:
-                    match_dict[pattern.name]["avg"] = \
-                        (match_dict[pattern.name]["sum"] /
-                         match_dict[pattern.name]["cnt"])
+                match_dict[pattern.name]["last"] = match_list[-1]
 
         info_str = "      file \"{0}\" scanned pattern found:\n".format(
             os.path.basename(file_path))

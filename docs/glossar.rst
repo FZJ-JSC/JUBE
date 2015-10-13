@@ -165,7 +165,7 @@ Glossary
 
       .. code-block:: xml
 
-         <pattern name="..." unit="..." mode="..." type="..." reduce="...">...</pattern>
+         <pattern name="..." unit="..." mode="..." type="...">...</pattern>
 
       * ``unit`` is optional, will be used in the result table
       * ``mode`` is optional, allowed modes:
@@ -180,18 +180,24 @@ Glossary
         * default: ``string``
         * allowed: ``int``, ``float`` or ``string``
 
-      * ``reduce`` is optional, specify handling of multiple matches
+   statistical_values
+      If there are multiple pattern matches within oen file, multiple files or
+      when using multiple iterations. *JUBE* will create some statistical values
+      automatically:
 
-        * ``first``: use first match (default)
-        * ``last``: use last match
-        * ``min``: use min (using float casting)
-        * ``max``: use max (using float casting)
-        * ``avg``: use avg (using float casting)
-        * ``sum``: use sum (using float casting)
-        * ``cnd``: use counter
-        * ``all``: use all of the options
-        * reduce can contain a list
-        * reduced variables can be used by name_<reduce_option>
+      * ``first``: first match (default)
+      * ``last``: last match
+      * ``min``: min value
+      * ``max``: max value
+      * ``avg``: average value
+      * ``std``: standard deviation
+      * ``sum``: sum 
+      * ``cnt``: counter
+
+      These variabels can be accessed within the the result creation or to create derived pattern
+      by ``variable_name_<statistic_option>`` e.g. ``${nodes_min}``
+
+      The variable name itself always matches the first match.
 
    parameterset_tag
       A parameterset is a container to store a bundle of :term:`parameters <parameter_tag>`.
@@ -399,7 +405,7 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="...">
+        <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="..." iterations="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -429,6 +435,8 @@ Glossary
      * ``export="true"``
 
        * the environment of the current step will be exported to an dependent step
+
+     * ``iterations`` is optional. All workpackages within this step will be executed multiple times if the iterations value is used.
 
    do_tag
      A do contain a executable *Shell* operation.
@@ -466,7 +474,7 @@ Glossary
 
      .. code-block:: xml
 
-        <analyser name="...">
+        <analyser name="..." reduce="...">
           <use from="">...</use>
           ...
           <analyse step="...">
@@ -482,6 +490,10 @@ Glossary
      * any name must be unique, it is not allowed to reuse a set
      * the step-attribute contains an existing stepname
      * each file using each workpackage will be scanned seperatly
+     * ``reduce`` is optional (default: ``true`` )
+
+       * ``true`` : Combine result lines if iteration-option is used
+       * ``false`` : Create single line for each iteration
 
    result_tag
      The result tag is used to handle different visualisation types of your analysed data.
@@ -506,7 +518,7 @@ Glossary
 
      .. code-block:: xml
 
-        <table name="..." style="..." sort="..." separator="...">
+        <table name="..." style="..." sort="..." separator="..." transpose="...">
           <column colw="..." format="..." title="..." null_value="...">...</column>
           ...
         </table>
@@ -520,6 +532,7 @@ Glossary
      * ``title`` is optional: column title
      * ``format`` can contain a C like format string: e.g. format=".2f"
      * ``null_value`` is optional: NULL value representation (default: empty string)
+     * ``transpose`` is optional (default: ``false``)
 
    syslog_tag
      A syslog result type

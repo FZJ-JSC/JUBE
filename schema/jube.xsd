@@ -134,7 +134,6 @@
         <xs:attribute name="unit" type="xs:string" use="optional" />
         <xs:attribute name="type" type="contentType" use="optional" />
         <xs:attribute name="mode" type="xs:string" use="optional" />
-        <xs:attribute name="reduce" type="xs:string" use="optional" />
         <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent> 
@@ -178,6 +177,7 @@
       <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="reduce" type="booleanType" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 

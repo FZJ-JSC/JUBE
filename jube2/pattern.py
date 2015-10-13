@@ -24,9 +24,6 @@ from __future__ import (print_function,
 import jube2.parameter
 import xml.etree.ElementTree as ET
 
-REDUCE_OPTIONS = set(
-    ["first", "last", "min", "max", "avg", "sum", "cnt", "all"])
-
 
 class Patternset(object):
 
@@ -169,7 +166,7 @@ class Pattern(jube2.parameter.StaticParameter):
     or to represent a derived pattern."""
 
     def __init__(self, name, value, pattern_mode="pattern",
-                 content_type="string", unit="", reduce_option=None):
+                 content_type="string", unit=""):
         self._derived = pattern_mode != "pattern"
 
         if not self._derived:
@@ -183,22 +180,11 @@ class Pattern(jube2.parameter.StaticParameter):
             parameter_mode=pattern_mode)
 
         self._unit = unit
-        if reduce_option is None:
-            self._reduce_option = set(["first"])
-        else:
-            self._reduce_option = reduce_option
-        if "all" in self._reduce_option:
-            self._reduce_option = self._reduce_option.union(REDUCE_OPTIONS)
 
     @property
     def derived(self):
         """pattern is a derived pattern"""
         return self._derived
-
-    @property
-    def reduce_option(self):
-        """Get pattern reduce option"""
-        return self._reduce_option
 
     @property
     def content_type(self):
@@ -230,8 +216,7 @@ class Pattern(jube2.parameter.StaticParameter):
             else:
                 pattern_mode = param.mode
             pattern = Pattern(param.name, param.value, pattern_mode,
-                              param.parameter_type, self._unit,
-                              self._reduce_option)
+                              param.parameter_type, self._unit)
             pattern.based_on = param.based_on
         else:
             pattern = param
@@ -250,8 +235,6 @@ class Pattern(jube2.parameter.StaticParameter):
 
         if self._unit != "":
             pattern_etree.attrib["unit"] = self._unit
-        pattern_etree.attrib["reduce"] = \
-            jube2.conf.DEFAULT_SEPARATOR.join(self._reduce_option)
         pattern_etree.text = self.value
         return pattern_etree
 

@@ -76,7 +76,6 @@
                         type (int|string|float) #IMPLIED
                         mode CDATA #IMPLIED
                         unit CDATA #IMPLIED
-                        reduce CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT step ((use|do|include)*)>
 <!ATTLIST step          name CDATA #REQUIRED
@@ -92,6 +91,7 @@
                         tag CDATA #IMPLIED>
 <!ELEMENT analyser ((use|analyse|include)*)>
 <!ATTLIST analyser      name CDATA #REQUIRED
+                        reduce (true|false|True|False) #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT use (#PCDATA)>
 <!ATTLIST use           from CDATA #IMPLIED

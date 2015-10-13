@@ -118,7 +118,6 @@ attlist.pattern &=
   attribute type { "int" | "string" | "float" }?,
   attribute mode { text }?,
   attribute unit { text }?,
-  attribute reduce { text }?,
   attribute tag { text }?
 step = element step { attlist.step, (use | do | \include)* }
 attlist.step &=
@@ -139,6 +138,7 @@ analyser =
   element analyser { attlist.analyser, (use | analyse | \include)* }
 attlist.analyser &=
   attribute name { text },
+  attribute reduce { "true" | "false" | "True" | "False" }?,
   attribute tag { text }?
 use = element use { attlist.use, text }
 attlist.use &=

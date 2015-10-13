@@ -455,11 +455,38 @@ class Benchmark(object):
         if not compatible:
             return list()
 
+        # Sort parent workpackges after total iteration number and name
+        sorted_parents = list(parent_workpackages)
+        sorted_parents.sort(key=lambda x: x.step.name)
+        sorted_parents.sort(key=lambda x: x.step.iterations)
+
+        iteration_base = 0
+        for i, parent in enumerate(sorted_parents):
+            if i == 0:
+                iteration_base = parent.iteration
+            else:
+                iteration_base = \
+                    parent.step.iterations * iteration_base + parent.iteration
+
         # Create empty local parameterset
         local_parameterset = jube2.parameter.Parameterset()
 
-        return step.create_workpackages(self, local_parameterset,
-                                        history_parameterset)
+        # Create new workpackages
+        new_workpackages = step.create_workpackages(
+            self, local_parameterset, history_parameterset,
+            iteration_base=iteration_base)
+
+        if len(parent_workpackages) > 0:
+            for sibling in parent_workpackages[0].iteration_siblings:
+                if sibling != parent_workpackages[0]:
+                    for child in sibling.children:
+                        for workpackage in new_workpackages:
+                            if workpackage.history.is_compatible(
+                                    child.history):
+                                workpackage.iteration_siblings.add(child)
+                                child.iteration_siblings.add(workpackage)
+
+        return new_workpackages
 
     def new_run(self):
         """Create workpackage structure and run benchmark"""

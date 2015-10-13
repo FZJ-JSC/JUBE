@@ -57,6 +57,7 @@ class Workpackage(object):
         self._iteration = iteration
         self._parents = list()
         self._children = list()
+        self._iteration_siblings = set()
         self._queued = False
         self._env = dict(os.environ)
 
@@ -72,8 +73,13 @@ class Workpackage(object):
                 self._parameterset.etree_repr(use_current_selection=True))
         if len(self._parents) > 0:
             parents_etree = ET.SubElement(workpackage_etree, "parents")
-            parents_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(
+            parents_etree.text = ",".join(
                 [str(parent.id) for parent in self._parents])
+        if len(self._iteration_siblings) > 0:
+            sibling_etree = ET.SubElement(workpackage_etree,
+                                          "iteration_siblings")
+            sibling_etree.text = ",".join(
+                [str(sibling.id) for sibling in self._iteration_siblings])
         environment_etree = ET.SubElement(workpackage_etree, "environment")
         for env_name, value in self._env.items():
             if (env_name not in ["PWD", "OLDPWD", "_"]) and \
@@ -192,7 +198,7 @@ class Workpackage(object):
         return self._parameterset
 
     def add_children(self, workpackage):
-        """Add a children Workpackage"""
+        """Add a children workpackage"""
         self._children.append(workpackage)
 
     @property
@@ -202,17 +208,27 @@ class Workpackage(object):
 
     @property
     def id(self):
-        """Return Workpackage id"""
+        """Return workpackage id"""
         return self._id
 
     @property
     def parents(self):
-        """Return list of parent Workpackages"""
+        """Return list of parent workpackages"""
         return self._parents
 
     @property
+    def iteration_siblings(self):
+        """Return set of iteration siblings"""
+        return self._iteration_siblings
+
+    @property
+    def iteration(self):
+        """Return workpackage iteration number"""
+        return self._iteration
+
+    @property
     def children(self):
-        """Return list of child Workpackages"""
+        """Return list of child workpackages"""
         return self._children
 
     @property
@@ -347,19 +363,11 @@ class Workpackage(object):
         if self.done:
             return
 
-        # Create debug string
-        if self._step.iterations > 1:
-            stepstr = ("{0} ( iter:{1}"
-                       .format(self._step.name, self._iteration))
-        else:
-            stepstr = ("{0} ("
-                       .format(self._step.name))
-
-        stepstr += (" id:{1} | parents:{3} )"
-                    .format(self._step.name, self._id, self._iteration,
-                            ",".join([parent.step.name + "(" +
-                                      str(parent.id) + ")"
-                                      for parent in self._parents])))
+        stepstr = ("{0} ( iter:{2} | id:{1} | parents:{3} )"
+                   .format(self._step.name, self._id, self._iteration,
+                           ",".join([parent.step.name + "(" +
+                                     str(parent.id) + ")"
+                                     for parent in self._parents])))
         stepstr = "----- {0} -----".format(stepstr)
         LOGGER.debug(stepstr)
 

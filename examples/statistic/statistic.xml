@@ -5,8 +5,7 @@
 
     <!-- Regex pattern -->
     <patternset name="pattern">
-      <!-- all Reduce option to create last,min,max,avg,cnt and sum -->
-      <pattern name="number_pat" type="int" reduce="all">$jube_pat_int</pattern>
+      <pattern name="number_pat" type="int">$jube_pat_int</pattern>
     </patternset>
     
     <!-- Operation -->
@@ -33,6 +32,7 @@
         <column>number_pat_sum</column> <!-- sum of all matches -->
         <column>number_pat_cnt</column> <!-- number of matches -->
         <column>number_pat_avg</column> <!-- avg of all matches -->
+        <column format=".2f">number_pat_std</column> <!-- std of all matches -->
       </table>
     </result>
   </benchmark>

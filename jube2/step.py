@@ -160,7 +160,8 @@ class Step(object):
         return parameterset
 
     def create_workpackages(self, benchmark, local_parameterset,
-                            history_parameterset, used_sets=None):
+                            history_parameterset, used_sets=None,
+                            iteration_base=0):
         """Create workpackages for current step using given
         benchmark context"""
 
@@ -172,7 +173,7 @@ class Step(object):
         # Create parameter dictionary for substitution
         parameter_dict = \
             dict([[par.name, par.value] for par in
-                  local_parameterset.constant_parameter_dict.values()])
+                  history_parameterset.constant_parameter_dict.values()])
 
         # Filter for parametersets in uses
         parameterset_names = \
@@ -240,16 +241,18 @@ class Step(object):
                 new_workpackages += \
                     self.create_workpackages(benchmark,
                                              workpackage_parameterset,
-                                             parameterset, used_sets)
+                                             parameterset, used_sets,
+                                             iteration_base)
             else:
                 # Create new workpackage
+                created_workpackages = list()
                 for iteration in range(self.iterations):
                     workpackage = jube2.workpackage.Workpackage(
                         benchmark=benchmark,
                         step=self,
                         parameterset=workpackage_parameterset,
                         history=parameterset.copy(),
-                        iteration=iteration)
+                        iteration=iteration_base * self.iterations + iteration)
 
                     # --- Final parameter substitution ---
                     workpackage.parameterset.parameter_substitution(
@@ -269,7 +272,13 @@ class Step(object):
                     workpackage.history.update_parameterset(
                         workpackage.parameterset)
 
-                    new_workpackages.append(workpackage)
+                    created_workpackages.append(workpackage)
+
+                for workpackage in created_workpackages:
+                    workpackage.iteration_siblings.update(
+                        set(created_workpackages))
+
+                new_workpackages += created_workpackages
 
         return new_workpackages
 
