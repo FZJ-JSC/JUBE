@@ -65,7 +65,7 @@ else
 fi
 
 # extract benchmark dir
-BENCHMARK_DIR=`egrep -o 'dir: .+$' jube_job_output.txt | cut -c6-`
+BENCHMARK_DIR=`egrep -o 'handle: .+$' jube_job_output.txt | cut -c9-`
 
 # BENCHMARK_DIR must exist
 if [ ! -d "$BENCHMARK_DIR" ]
@@ -82,17 +82,17 @@ do
         jube continue $BENCHMARK_DIR --hide-animation $CONTINUE_ARG 2>&1 >> $OUTPUT_FILE
     else
         echo "Update benchmark information (`date`)"
-        jube continue $BENCHMARK_DIR --hide-animation $CONTINUE_ARG | tee -a $OUTPUT_FILE
+        jube continue $BENCHMARK_DIR --hide-animation --id last $CONTINUE_ARG | tee -a $OUTPUT_FILE
     fi
 done
 
 # benchmark analyse
 if [ $ONLY_RESULT_OUTPUT ]
 then
-    jube analyse $BENCHMARK_DIR $ANALYSE_ARG 2>&1 >> $OUTPUT_FILE
+    jube analyse $BENCHMARK_DIR --id last $ANALYSE_ARG 2>&1 >> $OUTPUT_FILE
 else
-    jube analyse $BENCHMARK_DIR $ANALYSE_ARG | tee -a $OUTPUT_FILE
+    jube analyse $BENCHMARK_DIR --id last $ANALYSE_ARG | tee -a $OUTPUT_FILE
 fi
 
 # create benchmark result
-jube result $BENCHMARK_DIR $RESULT_ARG 2>&1 | tee -a $OUTPUT_FILE
+jube result $BENCHMARK_DIR --id last $RESULT_ARG 2>&1 | tee -a $OUTPUT_FILE
