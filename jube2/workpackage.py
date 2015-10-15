@@ -109,6 +109,9 @@ class Workpackage(object):
         else:
             return False
 
+    def __hash__(self):
+        return object.__hash__(self)
+
     @property
     def env(self):
         """Return workpackage environment"""

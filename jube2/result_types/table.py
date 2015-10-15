@@ -87,10 +87,16 @@ class Table(KeyValuesResult):
             data = list()
             data.append([column.resulting_name for column in self._columns])
             data += self._data
-            return jube2.util.text_table(
+            if self._style == "pretty":
+                output = "{0}:\n".format(self.name)
+            else:
+                output = ""
+            output += jube2.util.text_table(
                 data, use_header_line=True, auto_linebreak=False, colw=colw,
                 indent=0, pretty=(self._style == "pretty"),
                 separator=self._separator, transpose=self._transpose)
+
+            return output
 
         def create_result(self, show=True, filename=None, **kwargs):
             """Create result output"""

@@ -24,10 +24,13 @@
 #   -c: additional continue args
 #   -a: additional analyse args
 #   -s: additional result args
+#   -p: progress check interval in seconds (default:30)
 #   -o: only show result output
 # Usage: jube-autorun [OPTIONS] input_file.xml
 
 OUTPUT_FILE=jube_job_output.txt
+ONLY_RESULT_OUTPUT=0
+PROGRESS_INTERVAL=30
 
 # Remove existing output file
 if [ -f $OUTPUT_FILE ]
@@ -36,13 +39,14 @@ then
 fi
 
 # Parse optional arguments
-while getopts r:c:a:s:o opt
+while getopts r:c:a:s:p:o opt
 do
 	case $opt in
         r) RUN_ARG=$OPTARG;;
         c) CONTINUE_ARG=$OPTARG;;
         a) ANALYSE_ARG=$OPTARG;;
         s) RESULT_ARG=$OPTARG;;
+        p) PROGRESS_INTERVAL=$OPTARG;;
         o) ONLY_RESULT_OUTPUT=1;;
         ?) exit 1;;
     esac
@@ -57,7 +61,7 @@ then
 fi
 
 # start benchmark execution
-if [ $ONLY_RESULT_OUTPUT ]
+if [ $ONLY_RESULT_OUTPUT -eq 1 ]
 then
     jube run $1 --hide-animation $RUN_ARG 2>&1 >> $OUTPUT_FILE
 else
@@ -76,8 +80,8 @@ fi
 # continue benchmark execution
 while [ `jube status $BENCHMARK_DIR` = "RUNNING" ]
 do
-    sleep 30s
-    if [ $ONLY_RESULT_OUTPUT ]
+    sleep $PROGRESS_INTERVAL
+    if [ $ONLY_RESULT_OUTPUT -eq 1 ]
     then
         jube continue $BENCHMARK_DIR --hide-animation $CONTINUE_ARG 2>&1 >> $OUTPUT_FILE
     else
@@ -87,7 +91,7 @@ do
 done
 
 # benchmark analyse
-if [ $ONLY_RESULT_OUTPUT ]
+if [ $ONLY_RESULT_OUTPUT -eq 1 ]
 then
     jube analyse $BENCHMARK_DIR --id last $ANALYSE_ARG 2>&1 >> $OUTPUT_FILE
 else
