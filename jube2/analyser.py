@@ -204,7 +204,7 @@ class Analyser(object):
             result[stepname] = dict()
             LOGGER.debug("  analyse step \"{0}\"".format(stepname))
             if stepname not in self._benchmark.steps:
-                raise RuntimeError(("Does not found <step name=\"{0}\"> "
+                raise RuntimeError(("Could not find <step name=\"{0}\"> "
                                     "when using analyser \"{1}\"").format(
                                         stepname, self._name))
             step = self._benchmark.steps[stepname]
@@ -354,7 +354,6 @@ class Analyser(object):
         for pattern in patternlist:
             if pattern.name not in match_dict:
                 match_dict[pattern.name] = dict()
-                match_dict[pattern.name]["cnt"] = 0
             try:
                 regex = re.compile(pattern.value, re.MULTILINE)
             except re.error as ree:
@@ -415,7 +414,10 @@ class Analyser(object):
                         else:
                             match_dict[pattern.name]["sum2"] = match**2
 
-                    match_dict[pattern.name]["cnt"] += 1
+                    if "cnt" in match_dict[pattern.name]:
+                        match_dict[pattern.name]["cnt"] += 1
+                    else:
+                        match_dict[pattern.name]["cnt"] = 1
 
                 if pattern.content_type in ["int", "float"]:
                     if match_dict[pattern.name]["cnt"] > 0:
