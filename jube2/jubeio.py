@@ -563,7 +563,11 @@ class XMLParser(object):
                                                              "name")
                 if env_etree.tag == "env":
                     if env_etree.text is not None:
-                        set_env[env_name] = env_etree.text.strip()
+                        set_env[env_name] = env_etree.text
+                        # string repr must be evaluated
+                        if (set_env[env_name][0] == "'") and \
+                           (set_env[env_name][-1] == "'"):
+                            set_env[env_name] = eval(set_env[env_name])
                 elif env_etree.tag == "nonenv":
                     unset_env.append(env_name)
         return (workpackage_id, step_name, parameterset, parents,

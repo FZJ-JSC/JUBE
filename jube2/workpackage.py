@@ -87,7 +87,8 @@ class Workpackage(object):
                      os.environ[env_name] != value):
                 env_etree = ET.SubElement(environment_etree, "env")
                 env_etree.attrib["name"] = env_name
-                env_etree.text = value
+                # use string repr to avoid special characters
+                env_etree.text = repr(value)
         for env_name in os.environ:
             if (env_name not in ["PWD", "OLDPWD", "_"]) and \
                     (env_name not in self._env):
