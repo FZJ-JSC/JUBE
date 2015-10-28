@@ -32,10 +32,9 @@ class TestPattern(unittest.TestCase):
 
     def setUp(self):
         self.std_pattern = jube2.pattern.Pattern("std", ".*", unit="s")
-        self.reduce_pattern = jube2.pattern.Pattern(
-            "reduce", ".*", reduce_option=set(["all"]))
+        self.std_pattern2 = jube2.pattern.Pattern("std2", ".*")
         self.derived_pattern = jube2.pattern.Pattern(
-            "derived", "$reduce", pattern_mode="text")
+            "derived", "$std2", pattern_mode="text")
         self.calculate_pattern = jube2.pattern.Pattern(
             "derived", "100*2", pattern_mode="python", content_type="int")
         self.calculate_pattern_non_derived = jube2.pattern.Pattern(
@@ -55,21 +54,16 @@ class TestPattern(unittest.TestCase):
         self.assertTrue(repr(self.std_pattern).startswith("Pattern({"))
         self.assertTrue(repr(self.std_pattern).endswith("})"))
 
-    def test_reduce_pattern(self):
-        """Test reduce option"""
-        for option in jube2.pattern.REDUCE_OPTIONS:
-            self.assertTrue(option in self.reduce_pattern.reduce_option)
-
     def test_derived_pattern(self):
         """Test derived pattern"""
         self.assertTrue(self.derived_pattern.derived)
         self.assertFalse(self.std_pattern.derived)
         patternset = jube2.pattern.Patternset("test_set")
-        patternset.add_pattern(self.reduce_pattern)
+        patternset.add_pattern(self.std_pattern2)
         result_pattern, changed = self.derived_pattern.substitute_and_evaluate(
             [patternset.pattern_storage])
         self.assertTrue(changed)
-        self.assertEqual(result_pattern.value, self.reduce_pattern.value)
+        self.assertEqual(result_pattern.value, self.std_pattern2.value)
         self.assertNotEqual(id(result_pattern), id(self.derived_pattern))
 
     def test_calculate_pattern(self):
@@ -92,7 +86,6 @@ class TestPattern(unittest.TestCase):
         self.assertEqual(etree.tag, "pattern")
         self.assertEqual(etree.get("type"), "string")
         self.assertEqual(etree.get("mode"), "pattern")
-        self.assertEqual(etree.get("reduce"), "first")
         self.assertEqual(etree.text, ".*")
         etree = self.calculate_pattern.etree_repr()
         self.assertEqual(etree.get("mode"), "python")
