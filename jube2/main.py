@@ -63,7 +63,7 @@ def status(args):
     """Show benchmark status"""
     found_benchmarks = search_for_benchmarks(args)
     for benchmark_folder in found_benchmarks:
-        benchmark = _load_existing_benchmark(benchmark_folder,
+        benchmark = _load_existing_benchmark(args, benchmark_folder,
                                              load_analyse=False)
         if benchmark is None:
             return
@@ -126,7 +126,8 @@ def info(args):
         found_benchmarks = search_for_benchmarks(args)
         for benchmark_folder in found_benchmarks:
             benchmark = \
-                _load_existing_benchmark(benchmark_folder, load_analyse=False)
+                _load_existing_benchmark(args, benchmark_folder,
+                                         load_analyse=False)
             if benchmark is None:
                 continue
             if args.step is None:
@@ -195,7 +196,7 @@ def show_log_single(args, benchmark_folder):
             ",".join(not_matching)))
 
 
-def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
+def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
                              load_analyse=True):
     """Load an existing benchmark, given by directory benchmark_folder."""
 
@@ -204,7 +205,7 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
 
     # Read existing benchmark configuration
     parser = jube2.jubeio.XMLParser(os.path.join(
-        benchmark_folder, jube2.conf.CONFIGURATION_FILENAME))
+        benchmark_folder, jube2.conf.CONFIGURATION_FILENAME), force=args.force)
     benchmarks = parser.benchmarks_from_xml()[0]
     # Only one single benchmark exist inside benchmarks
     if benchmarks is not None:
@@ -218,7 +219,8 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
     if restore_workpackages:
         # Read existing workpackage information
         parser = jube2.jubeio.XMLParser(os.path.join(
-            benchmark_folder, jube2.conf.WORKPACKAGES_FILENAME))
+            benchmark_folder, jube2.conf.WORKPACKAGES_FILENAME),
+            force=args.force)
         workpackages, work_stat = parser.workpackages_from_xml(benchmark)
         benchmark.set_workpackage_information(workpackages, work_stat)
 
@@ -226,7 +228,8 @@ def _load_existing_benchmark(benchmark_folder, restore_workpackages=True,
             benchmark_folder, jube2.conf.ANALYSE_FILENAME)):
         # Read existing analyse data
         parser = jube2.jubeio.XMLParser(os.path.join(
-            benchmark_folder, jube2.conf.ANALYSE_FILENAME))
+            benchmark_folder, jube2.conf.ANALYSE_FILENAME),
+            force=args.force)
         analyse_result = parser.analyse_result_from_xml()
         for analyser in benchmark.analyser.values():
             if analyser.name in analyse_result:
@@ -316,7 +319,7 @@ def run_new_benchmark(args):
                               args.include_path if include_path != ""]
         else:
             include_pathes = None
-        parser = jube2.jubeio.XMLParser(path, tags, include_pathes)
+        parser = jube2.jubeio.XMLParser(path, tags, include_pathes, args.force)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
@@ -375,7 +378,7 @@ def jube2jube2(args):
 
 def _continue_benchmark(benchmark_folder, args):
     """Continue existing benchmark"""
-    benchmark = _load_existing_benchmark(benchmark_folder)
+    benchmark = _load_existing_benchmark(args, benchmark_folder)
 
     if benchmark is None:
         return
@@ -409,7 +412,8 @@ def _continue_benchmark(benchmark_folder, args):
 
 def _analyse_benchmark(benchmark_folder, args):
     """Analyse existing benchmark"""
-    benchmark = _load_existing_benchmark(benchmark_folder, load_analyse=False)
+    benchmark = _load_existing_benchmark(args, benchmark_folder,
+                                         load_analyse=False)
     if benchmark is None:
         return
 
@@ -438,7 +442,7 @@ def _analyse_benchmark(benchmark_folder, args):
 
 def _benchmark_result(benchmark_folder, args, result_list=None):
     """Show benchmark result"""
-    benchmark = _load_existing_benchmark(benchmark_folder)
+    benchmark = _load_existing_benchmark(args, benchmark_folder)
     if result_list is None:
         result_list = list()
 
@@ -488,7 +492,8 @@ def _update_analyse_and_result(args, benchmark, benchmark_folder):
                               args.include_path if include_path != ""]
         else:
             include_pathes = None
-        parser = jube2.jubeio.XMLParser(args.update, tags, include_pathes)
+        parser = jube2.jubeio.XMLParser(args.update, tags, include_pathes,
+                                        args.force)
         benchmarks = parser.benchmarks_from_xml()[0]
 
         # Update benchmark
@@ -520,7 +525,8 @@ def _remove_benchmark(benchmark_folder, args):
 
 def _manipulate_comment(benchmark_folder, args):
     """Change or append the comment in given benchmark."""
-    benchmark = _load_existing_benchmark(benchmark_folder=benchmark_folder,
+    benchmark = _load_existing_benchmark(args,
+                                         benchmark_folder=benchmark_folder,
                                          restore_workpackages=False,
                                          load_analyse=False)
     if benchmark is None:
@@ -549,9 +555,11 @@ def _get_args_parser():
                              "show stdout during execution and -vvv to " +
                              "show log and stdout)",
                         action="count", default=0)
-    parser.add_argument('--debug', action="store_true",
+    parser.add_argument("--debug", action="store_true",
                         help='use debugging mode')
-    parser.add_argument('--devel', action="store_true",
+    parser.add_argument("--force", action="store_true",
+                        help='skip version check')
+    parser.add_argument("--devel", action="store_true",
                         help='show development related information')
     subparsers = parser.add_subparsers(dest="subparser", help='subparsers')
 

@@ -63,9 +63,9 @@ fi
 # start benchmark execution
 if [ $ONLY_RESULT_OUTPUT -eq 1 ]
 then
-    jube run $1 --hide-animation $RUN_ARG 2>&1 >> $OUTPUT_FILE
+    jube --force run $1 --hide-animation $RUN_ARG 2>&1 >> $OUTPUT_FILE
 else
-    jube run $1 --hide-animation $RUN_ARG 2>&1 | tee -a $OUTPUT_FILE
+    jube --force run $1 --hide-animation $RUN_ARG 2>&1 | tee -a $OUTPUT_FILE
 fi
 
 # extract benchmark dir
@@ -83,20 +83,20 @@ do
     sleep $PROGRESS_INTERVAL
     if [ $ONLY_RESULT_OUTPUT -eq 1 ]
     then
-        jube continue $BENCHMARK_DIR --hide-animation $CONTINUE_ARG 2>&1 >> $OUTPUT_FILE
+        jube --force continue $BENCHMARK_DIR --hide-animation $CONTINUE_ARG 2>&1 >> $OUTPUT_FILE
     else
         echo "Update benchmark information (`date`)"
-        jube continue $BENCHMARK_DIR --hide-animation --id last $CONTINUE_ARG | tee -a $OUTPUT_FILE
+        jube --force continue $BENCHMARK_DIR --hide-animation --id last $CONTINUE_ARG | tee -a $OUTPUT_FILE
     fi
 done
 
 # benchmark analyse
 if [ $ONLY_RESULT_OUTPUT -eq 1 ]
 then
-    jube analyse $BENCHMARK_DIR --id last $ANALYSE_ARG 2>&1 >> $OUTPUT_FILE
+    jube --force analyse $BENCHMARK_DIR --id last $ANALYSE_ARG 2>&1 >> $OUTPUT_FILE
 else
-    jube analyse $BENCHMARK_DIR --id last $ANALYSE_ARG | tee -a $OUTPUT_FILE
+    jube --force analyse $BENCHMARK_DIR --id last $ANALYSE_ARG | tee -a $OUTPUT_FILE
 fi
 
 # create benchmark result
-jube result $BENCHMARK_DIR --id last $RESULT_ARG 2>&1 | tee -a $OUTPUT_FILE
+jube --force result $BENCHMARK_DIR --id last $RESULT_ARG 2>&1 | tee -a $OUTPUT_FILE

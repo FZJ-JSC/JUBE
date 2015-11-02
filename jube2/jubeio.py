@@ -53,7 +53,7 @@ class XMLParser(object):
 
     """JUBE XML input file parser"""
 
-    def __init__(self, filename, tags=None, include_path=None):
+    def __init__(self, filename, tags=None, include_path=None, force=False):
         self._filename = filename
         if include_path is None:
             include_path = list()
@@ -61,6 +61,7 @@ class XMLParser(object):
         if tags is None:
             tags = set()
         self._tags = tags
+        self._force = force
 
     @property
     def file_path_ref(self):
@@ -104,7 +105,7 @@ class XMLParser(object):
 
         # Check input file version
         version = tree.getroot().get("version")
-        if version is not None:
+        if (version is not None) and (not self._force):
             version = version.strip()
             if StrictVersion(version) > StrictVersion(jube2.conf.JUBE_VERSION):
                 info_str = ("Benchmark file \"{0}\" was created using a " +
