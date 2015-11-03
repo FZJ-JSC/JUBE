@@ -2,9 +2,7 @@
 <jube>
   <include-path>
     <path tag="juqueen">../../platform/juqueen</path>
-    <path tag="juropa2">../../platform/juropa2</path>
-    <path tag="juropatest">../../platform/juropatest</path>
-    <path tag="judge">../../platform/judge</path>
+    <path tag="jureca">../../platform/jureca</path>
     <path tag="deep">../../platform/deep</path>
     <path tag="juniors">../../platform/juniors</path>
   </include-path>

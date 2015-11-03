@@ -12,11 +12,6 @@
         <parameter name="mpi_f77">mpif77</parameter>
     </parameterset>
 
-    <parameterset name="libs">
-        <!-- Library access information -->
-        <parameter name="load_module">module load</parameter>
-    </parameterset>
-
     <substituteset name="compilesub">
         <!-- Default substitution -->
         <sub source="#CC#" dest="$cc" />
@@ -34,7 +29,7 @@
         <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
         <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
-        <parameter name="chainjob_script">./juropa3-chainJobs.sh</parameter>
+        <parameter name="chainjob_script">./jureca-chainJobs.sh</parameter>
         <parameter name="chainjob_needs_submit">false</parameter>
     </parameterset>
 

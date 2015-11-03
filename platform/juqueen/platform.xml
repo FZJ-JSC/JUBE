@@ -12,11 +12,6 @@
         <parameter name="mpi_f77">mpixlf77_r</parameter>
     </parameterset>
 
-    <parameterset name="libs">
-        <!-- Library access information -->
-        <parameter name="load_module">module load</parameter>
-    </parameterset>
-
     <substituteset name="compilesub">
         <!-- Default substitution -->
         <sub source="#CC#" dest="$cc" />

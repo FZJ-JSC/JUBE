@@ -11,11 +11,6 @@
         <parameter name="mpi_f77">mpif77</parameter>
     </parameterset>
 
-    <parameterset name="libs">
-        <!-- Library access information -->
-        <parameter name="load_module">module load</parameter>
-    </parameterset>
-
     <substituteset name="compilesub">
         <sub source="#MPI_CC#" dest="$mpi_cc" />
     </substituteset>
