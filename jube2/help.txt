@@ -699,7 +699,7 @@ step_tag
    A step give a list of *Shell* operations and a corresponding
    parameter environment.
 
-      <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="...">
+      <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="..." iterations="...">
         <use from="">...</use>
         ...
         <do></do>
@@ -752,6 +752,9 @@ step_tag
 
      * the environment of the current step will be exported to an
        dependent step
+
+   * "iterations" is optional. All workpackages within this step
+     will be executed multiple times if the iterations value is used.
 
 sub_tag
    A substition expression.
@@ -818,7 +821,7 @@ syslog_tag
 table_tag
    A simple ASCII based table ouput.
 
-      <table name="..." style="..." sort="..." separator="...">
+      <table name="..." style="..." sort="..." separator="..." transpose="...">
         <column colw="..." format="..." title="..." null_value="...">...</column>
         ...
       </table>
@@ -842,6 +845,8 @@ table_tag
 
    * "null_value" is optional: NULL value representation (default:
      empty string)
+
+   * "transpose" is optional (default: "false")
 
 tagging
    Tagging is a simple way to mark parts of your input file to be

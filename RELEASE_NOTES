@@ -3,6 +3,52 @@ Release notes
 *************
 
 
+Version 2.1.0
+=============
+
+Release: 2015-11-05
+
+* Fix slow verbose mode
+
+* Fix empty debug output file
+
+* Fix broken command line "--include-path" option
+
+* Allow recursive "<include-path>" and "<selection>" handling
+  (additional include-pathes can now be included by using the
+  "<include>" tag)
+
+* Allow multiple "<selection>" and "<include-path>" areas
+
+* New "transpose="true"" attribute possible in "<table>"
+
+* Allow recursive parameter name creation in "<do>" or "<sub>" (e.g.
+  "${param${num}}")
+
+* Extend iteration feature
+
+  * "iteration=#number" can be used in the "<step>" tag, the work
+    package will be executed #number times
+
+  * New "reduce" attribute in analyser, possible values: "true" or
+    "false" (default: "true")
+
+    * "true": use a single result line to combine all iterations
+
+    * "false": each iteration will get its separate result line
+
+* Fix pattern_cnt bug
+
+* New pattern suffix: "_std" (standard deviation)
+
+* "reduce" option in "<pattern>" not needed anymore (all possible
+  reduce options are now calculated automatically)
+
+* Fix jube-autorun and add progress check interval
+
+* Added "--force" command line option to skip *JUBE* version check
+
+
 Version 2.0.7
 =============
 
