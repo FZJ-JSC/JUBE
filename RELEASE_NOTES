@@ -48,6 +48,9 @@ Release: 2015-11-05
 
 * Added "--force" command line option to skip *JUBE* version check
 
+* New version numbering model to divide between feature and bugfix
+  releases
+
 
 Version 2.0.7
 =============

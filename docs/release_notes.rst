@@ -46,6 +46,7 @@ Release: 2015-11-05
 * ``reduce`` option in ``<pattern>`` not needed anymore (all possible reduce options are now calculated automatically)
 * Fix jube-autorun and add progress check interval
 * Added ``--force`` command line option to skip *JUBE* version check
+* New version numbering model to divide between feature and bugfix releases
 
 Version 2.0.7
 ~~~~~~~~~~~~~
