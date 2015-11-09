@@ -73,6 +73,7 @@ iofile = element iofile { attlist.iofile, empty }
 attlist.iofile &=
   attribute in { text },
   attribute out { text },
+  attribute out_mode { "w" | "a" }?,
   attribute tag { text }?
 sub = element sub { attlist.sub, any }
 attlist.sub &=

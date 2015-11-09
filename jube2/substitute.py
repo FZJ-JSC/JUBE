@@ -36,9 +36,9 @@ class Substituteset(object):
 
     """A Substituteset contains all information"""
 
-    def __init__(self, name, file_dict, substitute_dict):
+    def __init__(self, name, file_data, substitute_dict):
         self._name = name
-        self._file_dict = file_dict
+        self._files = file_data
         self._substitute_dict = substitute_dict
 
     @property
@@ -46,9 +46,16 @@ class Substituteset(object):
         """Return name of Substituteset"""
         return self._name
 
-    def update_files(self, file_dict):
+    def update_files(self, file_data):
         """Update iofiles"""
-        self._file_dict.update(file_dict)
+        outfiles = set([data[0] for data in self._files])
+        for data in file_data:
+            if (data[2] == "a") or (data[0] not in outfiles):
+                self._files.append(data)
+            elif (data[2] == "w"):
+                self._files = [fdat for fdat in self._files
+                               if fdat[0] != data[0]]
+                self._files.append(data)
 
     def update_substitute(self, substitute_dict):
         """Update substitute_dict"""
@@ -74,7 +81,10 @@ class Substituteset(object):
             substitute_dict = self._substitute_dict
 
         # Do file substitution
-        for outfile_name, infile_name in self._file_dict.items():
+        for data in self._files:
+            outfile_name = data[0]
+            infile_name = data[1]
+            out_mode = data[2]
 
             infile = jube2.util.substitution(infile_name,
                                              parameter_dict)
@@ -107,7 +117,7 @@ class Substituteset(object):
                     text = text.replace(source, dest)
 
                 # Write out-file
-                file_handle = codecs.open(outfile, "w", "utf-8")
+                file_handle = codecs.open(outfile, out_mode, "utf-8")
                 file_handle.write(text)
                 file_handle.close()
                 if infile != outfile:
@@ -117,10 +127,11 @@ class Substituteset(object):
         """Return etree object representation"""
         substituteset_etree = ET.Element("substituteset")
         substituteset_etree.attrib["name"] = self._name
-        for outfile in self._file_dict:
+        for data in self._files:
             iofile_etree = ET.SubElement(substituteset_etree, "iofile")
-            iofile_etree.attrib["in"] = self._file_dict[outfile]
-            iofile_etree.attrib["out"] = outfile
+            iofile_etree.attrib["in"] = data[1]
+            iofile_etree.attrib["out"] = data[0]
+            iofile_etree.attrib["out_mode"] = data[2]
         for source in self._substitute_dict:
             sub_etree = ET.SubElement(substituteset_etree, "sub")
             sub_etree.attrib["source"] = source

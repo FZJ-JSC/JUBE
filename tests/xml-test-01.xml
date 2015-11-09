@@ -101,6 +101,7 @@
     </fileset>
 
     <substituteset name="compilesub" init_with="platform_test.xml">
+      <iofile in="makefile.in" out="Makefile"/>
       <sub source="#PROGNAME#" dest="$execname" />
     </substituteset>
 

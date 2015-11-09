@@ -385,10 +385,14 @@ Glossary
 
      .. code-block:: xml
 
-        <iofile in="..." out="..." />
+        <iofile in="..." out="..." out_mode="..." />
 
      * ``in`` and ``out`` filepath are relative to the current work directory for every single step (not relative to the path of the inputfile)
-     * ``in`` and ``out`` must be different
+     * ``in`` and ``out`` can be the same
+     * ``out_mode`` is optional, can be ``w`` or ``a`` (default: ``w``)
+
+       * ``w`` : ``out``-file will be overridden
+       * ``a`` : ``out``-file will be appended
 
    sub_tag
      A substition expression.

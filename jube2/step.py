@@ -117,15 +117,15 @@ class Step(object):
         return self._max_wps
 
     def get_used_sets(self, available_sets, parameter_dict=None):
-        """Get set of all used sets, which can be found in available_sets"""
-        set_names = set()
+        """Get list of all used sets, which can be found in available_sets"""
+        set_names = list()
         if parameter_dict is None:
             parameter_dict = dict()
         for use in self._use:
             for name in use:
                 name = jube2.util.substitution(name, parameter_dict)
-                if name in available_sets:
-                    set_names.add(name)
+                if (name in available_sets) and (name not in set_names):
+                    set_names.append(name)
         return set_names
 
     def shared_folder_path(self, benchdir, parameter_dict=None):
@@ -177,7 +177,7 @@ class Step(object):
 
         # Filter for parametersets in uses
         parameterset_names = \
-            self.get_used_sets(benchmark.parametersets, parameter_dict)
+            set(self.get_used_sets(benchmark.parametersets, parameter_dict))
         new_sets_found = len(parameterset_names.difference(used_sets)) > 0
 
         if new_sets_found:

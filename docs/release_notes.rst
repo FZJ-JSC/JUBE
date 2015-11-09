@@ -23,7 +23,7 @@ Release notes
 
 Version 2.1.0
 ~~~~~~~~~~~~~
-Release: 2015-11-05
+Release: 2015-11-10
 
 * Fix slow verbose mode
 * Fix empty debug output file
@@ -46,6 +46,8 @@ Release: 2015-11-05
 * ``reduce`` option in ``<pattern>`` not needed anymore (all possible reduce options are now calculated automatically)
 * Fix jube-autorun and add progress check interval
 * Added ``--force`` command line option to skip *JUBE* version check
+* Added optional ``out_mode`` attribute in ``<iofile>``. It can be ``a`` or ``w`` to allow appending or overwriting
+  an existing ``out``-file (default: ``w``).
 * New version numbering model to divide between feature and bugfix releases
 
 Version 2.0.7

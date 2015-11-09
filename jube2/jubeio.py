@@ -1344,7 +1344,7 @@ class XMLParser(object):
         Return a files dict for substitute and a dict of subs
         """
         valid_tags = ["iofile", "sub"]
-        files = dict()
+        files = list()
         subs = dict()
         for sub in etree_substituteset:
             XMLParser._check_tag(sub, valid_tags)
@@ -1352,9 +1352,13 @@ class XMLParser(object):
                 in_file = XMLParser._attribute_from_element(sub, "in").strip()
                 out_file = XMLParser._attribute_from_element(
                     sub, "out").strip()
+                out_mode = sub.get("out_mode", "w").strip()
+                if out_mode not in ["w", "a"]:
+                    raise ValueError(
+                        "out_mode in <iofile> must be \"w\" or \"a\"")
                 in_file = os.path.expandvars(os.path.expanduser(in_file))
                 out_file = os.path.expandvars(os.path.expanduser(out_file))
-                files[out_file] = in_file
+                files.append((out_file, in_file, out_mode))
             elif sub.tag == "sub":
                 source = "" + \
                     XMLParser._attribute_from_element(sub, "source").strip()

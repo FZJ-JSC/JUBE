@@ -6,7 +6,7 @@ Release notes
 Version 2.1.0
 =============
 
-Release: 2015-11-05
+Release: 2015-11-10
 
 * Fix slow verbose mode
 
@@ -47,6 +47,10 @@ Release: 2015-11-05
 * Fix jube-autorun and add progress check interval
 
 * Added "--force" command line option to skip *JUBE* version check
+
+* Added optional "out_mode" attribute in "<iofile>". It can be "a"
+  or "w" to allow appending or overwriting an existing "out"-file
+  (default: "w").
 
 * New version numbering model to divide between feature and bugfix
   releases
