@@ -204,11 +204,18 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
         benchmark_folder, jube2.conf.LOGFILE_PARSE_NAME))
 
     # Read existing benchmark configuration
-    parser = jube2.jubeio.XMLParser(os.path.join(
-        benchmark_folder, jube2.conf.CONFIGURATION_FILENAME), force=args.force)
-    benchmarks = parser.benchmarks_from_xml()[0]
-    # Only one single benchmark exist inside benchmarks
+    try:
+        parser = jube2.jubeio.XMLParser(os.path.join(
+            benchmark_folder, jube2.conf.CONFIGURATION_FILENAME),
+            force=args.force)
+        benchmarks = parser.benchmarks_from_xml()[0]
+    except IOError as exeption:
+        LOGGER.warning(str(exeption))
+        return None
+
+    # benchmarks can be None if version conflict was blocked
     if benchmarks is not None:
+        # Only one single benchmark exist inside benchmarks
         benchmark = list(benchmarks.values())[0]
     else:
         return None
@@ -218,10 +225,14 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
 
     if restore_workpackages:
         # Read existing workpackage information
-        parser = jube2.jubeio.XMLParser(os.path.join(
-            benchmark_folder, jube2.conf.WORKPACKAGES_FILENAME),
-            force=args.force)
-        workpackages, work_stat = parser.workpackages_from_xml(benchmark)
+        try:
+            parser = jube2.jubeio.XMLParser(os.path.join(
+                benchmark_folder, jube2.conf.WORKPACKAGES_FILENAME),
+                force=args.force)
+            workpackages, work_stat = parser.workpackages_from_xml(benchmark)
+        except IOError as exeption:
+            LOGGER.warning(str(exeption))
+            return None
         benchmark.set_workpackage_information(workpackages, work_stat)
 
     if load_analyse and os.path.isfile(os.path.join(
