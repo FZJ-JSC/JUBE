@@ -241,7 +241,7 @@ Log output can also be displayed during runtime by using the verbose output::
 stdout output as well as the log output at the same time.
 
 Since the parsing step is done before creating the benchmark directory, there will be a
-``jube-parse.log`` inside your current workign directory, which contains the parser log information.
+``jube-parse.log`` inside your current working directory, which contains the parser log information.
 
 There is also a debugging mode integrated in *JUBE*::
 
