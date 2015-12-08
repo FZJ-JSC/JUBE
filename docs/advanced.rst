@@ -202,7 +202,7 @@ There are two new attributes:
 
        >>> jube continue bench_run
 
-    This will continue your benchmark execution (``benchmark_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relativly seen towards the work directory.
+    This will continue your benchmark execution (``bench_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relativly seen towards the work directory.
   * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory gets an unique name. When changing the directory the user must select a
     unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id``, which are *JUBE* :term:`internal parameters <jube_variables>` and will be expanded to the current benchmark and workpackage ids. Files and directories out of a given
     ``<fileset>`` will be copied into the new work directory. Other automatic links, like the dependency links, will not be created!
