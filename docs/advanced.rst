@@ -94,7 +94,7 @@ Example validation tools:
 
 Scripting parameter
 ~~~~~~~~~~~~~~~~~~~
-In some cases it is needed to create a parameter which is based on the value of another paramter.
+In some cases it is needed to create a parameter which is based on the value of another parameter.
 In this case you can use a scripting parameter.
 
 The files used for this example can be found inside ``examples/scripting_parameter``.
