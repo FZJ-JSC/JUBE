@@ -421,9 +421,9 @@ class Workpackage(object):
                 # Get group_id if available (given by JUBE_GROUP_NAME)
                 group_id = jube2.util.check_and_get_group_id()
                 if group_id is not None:
+                    os.chown(alt_work_dir, os.getuid(), group_id)
                     os.chmod(alt_work_dir,
                              os.stat(alt_work_dir).st_mode | stat.S_ISGID)
-                    os.chown(alt_work_dir, os.getuid(), group_id)
 
         # Print debug info
         debugstr = "  available parameter:\n"

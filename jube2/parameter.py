@@ -264,7 +264,7 @@ class Parameter(object):
     value, a template or a specific value out of a given template"""
 
     # This regex can be used to find variables inside parameter values
-    parameter_regex = r"(?<!\$)(?:\$\$)*\$(?!\$)(\{{)?{0}(?(1)\}}|(?:\W|$))"
+    parameter_regex = r"(?<!\$)(?:\$\$)*\$(?!\$)(\{{)?{0}(?(1)\}}|(?=\W|$))"
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", export=False):
@@ -477,10 +477,19 @@ class StaticParameter(Parameter):
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
         mode = self._mode
-        if (not re.search(Parameter.parameter_regex.format("(.+?)"), value)) \
-                and (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
+        if ((not re.search(
+            Parameter.parameter_regex.format("(.+?)"), value)) or
+                final_sub) and (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
             try:
+                # Run additional substitution to remove $$ before running
+                # script evaluation to allow usage of environment variables
+                if not final_sub:
+                    value = jube2.util.substitution(value, parameter_dict)
+                # Run script evaluation
                 value = jube2.util.script_evaluation(value, self._mode)
+                # Insert new $$ if needed
+                if not final_sub:
+                    value = re.sub(r"(\$)(?=(\$|[^$]))", "$$", value)
                 # Select new parameter mode
                 mode = "text"
             except Exception as exception:

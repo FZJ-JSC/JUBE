@@ -613,9 +613,9 @@ class Benchmark(object):
         os.makedirs(self.bench_dir)
         # If JUBE_GROUP_NAME is given, set GID-Bit and change group
         if group_id is not None:
+            os.chown(self.bench_dir, os.getuid(), group_id)
             os.chmod(self.bench_dir,
                      os.stat(self.bench_dir).st_mode | stat.S_ISGID)
-            os.chown(self.bench_dir, os.getuid(), group_id)
         self.write_benchmark_configuration(
             os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME))
         jube2.util.update_timestamps(os.path.join(self.bench_dir,
