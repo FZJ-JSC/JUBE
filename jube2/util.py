@@ -242,6 +242,11 @@ def substitution(text, substitution_dict):
     """Substitute templates given by parameter_dict inside of text"""
     changed = True
     count = 0
+    # Preserve non evaluated parameter before starting substitution
+    local_substitution_dict = dict(substitution_dict)
+    for parameter in local_substitution_dict:
+        local_substitution_dict[parameter] = \
+            re.sub(r"\$", "$$", local_substitution_dict[parameter])
     # Run multiple times to allow recursive parameter substitution
     while changed and count < jube2.conf.MAX_RECURSIVE_SUB:
         count += 1
@@ -249,7 +254,7 @@ def substitution(text, substitution_dict):
         # Save double $$
         text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text)
         tmp = string.Template(text)
-        new_text = tmp.safe_substitute(substitution_dict)
+        new_text = tmp.safe_substitute(local_substitution_dict)
         changed = new_text != orig_text
         text = new_text
     # Final substitution to remove $$

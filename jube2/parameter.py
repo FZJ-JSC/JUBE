@@ -489,7 +489,7 @@ class StaticParameter(Parameter):
                 value = jube2.util.script_evaluation(value, self._mode)
                 # Insert new $$ if needed
                 if not final_sub:
-                    value = re.sub(r"(\$)(?=(\$|[^$]))", "$$", value)
+                    value = re.sub(r"\$", "$$", value)
                 # Select new parameter mode
                 mode = "text"
             except Exception as exception:

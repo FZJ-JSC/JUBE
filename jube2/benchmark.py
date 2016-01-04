@@ -413,9 +413,12 @@ class Benchmark(object):
             workpackage_combinations = \
                 [iterator for iterator in
                  itertools.product(*parent_workpackages)]
+            possible_combination = len(workpackage_combinations)
             for workpackage_combination in workpackage_combinations:
                 new_workpackages = self._create_new_workpackages_with_parents(
                     dependent_step, workpackage_combination)
+                if len(new_workpackages) > 0:
+                    possible_combination -= 1
                 # Create links
                 for new_workpackage in new_workpackages:
                     for parent in workpackage_combination:
@@ -423,6 +426,11 @@ class Benchmark(object):
                         parent.add_children(new_workpackage)
                 self._workpackages[dependent_step.name] += new_workpackages
                 all_new_workpackages += new_workpackages
+            if possible_combination > 0:
+                LOGGER.debug(("  {0} workpackages combinations were skipped"
+                              " while checking possible parent combinations"
+                              " for step {1}").format(possible_combination,
+                                                      dependent_step.name))
 
         # Store workpackage information
         if len(all_new_workpackages) > 0:

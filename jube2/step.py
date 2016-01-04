@@ -422,6 +422,10 @@ class Operation(object):
 
             # Execute "do"
             LOGGER.debug(">>> {0}".format(do))
+            LOGGER.debug("    stdout: {0}".format(
+                os.path.abspath(stdout_path)))
+            LOGGER.debug("    stderr: {0}".format(
+                os.path.abspath(stderr_path)))
             if (not jube2.conf.DEBUG_MODE) and (do != ""):
                 try:
                     if jube2.conf.VERBOSE_LEVEL > 1:
