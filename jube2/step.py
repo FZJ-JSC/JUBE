@@ -162,12 +162,15 @@ class Step(object):
 
     def create_workpackages(self, benchmark, local_parameterset,
                             history_parameterset, used_sets=None,
-                            iteration_base=0):
+                            iteration_base=0, parents=None):
         """Create workpackages for current step using given
         benchmark context"""
 
         if used_sets is None:
             used_sets = set()
+
+        if parents is None:
+            parents = list()
 
         new_workpackages = list()
 
@@ -243,7 +246,7 @@ class Step(object):
                     self.create_workpackages(benchmark,
                                              workpackage_parameterset,
                                              parameterset, used_sets,
-                                             iteration_base)
+                                             iteration_base, parents)
             else:
                 # Create new workpackage
                 created_workpackages = list()
@@ -254,6 +257,10 @@ class Step(object):
                         parameterset=workpackage_parameterset,
                         history=parameterset.copy(),
                         iteration=iteration_base * self.iterations + iteration)
+
+                    # --- Link parent workpackages ---
+                    for parent in parents:
+                        workpackage.add_parent(parent)
 
                     # --- Final parameter substitution ---
                     workpackage.parameterset.parameter_substitution(
@@ -422,11 +429,11 @@ class Operation(object):
 
             # Execute "do"
             LOGGER.debug(">>> {0}".format(do))
-            LOGGER.debug("    stdout: {0}".format(
-                os.path.abspath(stdout_path)))
-            LOGGER.debug("    stderr: {0}".format(
-                os.path.abspath(stderr_path)))
             if (not jube2.conf.DEBUG_MODE) and (do != ""):
+                LOGGER.debug("    stdout: {0}".format(
+                    os.path.abspath(stdout_path)))
+                LOGGER.debug("    stderr: {0}".format(
+                    os.path.abspath(stderr_path)))
                 try:
                     if jube2.conf.VERBOSE_LEVEL > 1:
                         stdout_handle = subprocess.PIPE

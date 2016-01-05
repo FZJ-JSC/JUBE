@@ -409,6 +409,7 @@ class Benchmark(object):
                 if (step_name in self._workpackages) and
                    (step_name != workpackage.step.name)]
             parent_workpackages.append([workpackage])
+
             # Create all possible parent combinations
             workpackage_combinations = \
                 [iterator for iterator in
@@ -419,11 +420,12 @@ class Benchmark(object):
                     dependent_step, workpackage_combination)
                 if len(new_workpackages) > 0:
                     possible_combination -= 1
-                # Create links
+
+                # Create links: parent workpackages -> new children
                 for new_workpackage in new_workpackages:
                     for parent in workpackage_combination:
-                        new_workpackage.add_parent(parent)
                         parent.add_children(new_workpackage)
+
                 self._workpackages[dependent_step.name] += new_workpackages
                 all_new_workpackages += new_workpackages
             if possible_combination > 0:
@@ -482,7 +484,8 @@ class Benchmark(object):
         # Create new workpackages
         new_workpackages = step.create_workpackages(
             self, local_parameterset, history_parameterset,
-            iteration_base=iteration_base)
+            iteration_base=iteration_base,
+            parents=parent_workpackages)
 
         if len(parent_workpackages) > 0:
             for sibling in parent_workpackages[0].iteration_siblings:
