@@ -42,7 +42,7 @@ General commandline options (can also be used in front of a subcommand)
 
 .. code-block:: none
 
-   jube [-h] [-V] [-v] [--debug] [--devel] {...}
+   jube [-h] [-V] [-v] [--debug] [--force] [--devel] {...}
 
 ``-h``, ``--help``
    show general help information
@@ -55,6 +55,9 @@ General commandline options (can also be used in front of a subcommand)
 
 ``--debug``
    use debugging mode (no shell script execution)
+
+``--force``
+   ignore any *JUBE* version conflict
 
 ``--devel``
    developer mode (show complete error messages)
