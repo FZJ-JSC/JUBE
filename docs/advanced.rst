@@ -41,8 +41,8 @@ DTD usage:
    :linenos:
 
    <?xml version="1.0" encoding="UTF-8"?>
-   <!DOCTYPE benchmarks SYSTEM "<jube.dtd path>">
-   <benchmark>
+   <!DOCTYPE jube SYSTEM "<jube.dtd path>">
+   <jube>
    ...
 
 Schema usage:
@@ -51,7 +51,7 @@ Schema usage:
    :linenos:
 
     <?xml version="1.0" encoding="UTF-8"?>
-    <benchmarks xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    <jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="<jube.xsd path>">
     ...
 
