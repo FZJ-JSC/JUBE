@@ -25,6 +25,7 @@ from jube2.result_types.keyvaluesresult import KeyValuesResult
 from jube2.result import Result
 import xml.etree.ElementTree as ET
 import jube2.log
+import jube2.util
 
 LOGGER = jube2.log.get_logger(__name__)
 
