@@ -19,6 +19,11 @@ else
     JOBID=`qsub $SUBMITSCRIPT`
 fi
 
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    exit $JUBE_ERR_CODE
+fi
+
 echo ${JOBID} > $LOCKFILE
 
 exit 0
