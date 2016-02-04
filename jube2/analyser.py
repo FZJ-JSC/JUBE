@@ -427,10 +427,10 @@ class Analyser(object):
 
                     if match_dict[pattern.name]["cnt"] > 1:
                         match_dict[pattern.name]["std"] = math.sqrt(
-                            (match_dict[pattern.name]["sum2"] -
+                            (abs(match_dict[pattern.name]["sum2"] -
                              (match_dict[pattern.name]["sum"]**2 /
                               match_dict[pattern.name]["cnt"])) /
-                            (match_dict[pattern.name]["cnt"] - 1))
+                            (match_dict[pattern.name]["cnt"] - 1)))
                     else:
                         match_dict[pattern.name]["std"] = 0
 
