@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <parameterset name="partestParameter">
+    <!--<parameter name="executable">partest</parameter>-->
+
+    <!-- Sion File Settings: -->
+    <parameter name="numberoffiles" >1</parameter> <!-- Number of Files to use. If set to -1 the optimum number of Files is computed by partest. -->
+    <parameter name="chunksize" >100MiB</parameter> <!-- sion chunk size (see size format) Chunk size used in open call. The chunk size is the amount of contiguous space for a task and hence the maximum size which can be written in one write call. -->
+    <parameter name="fsblksize" >4MiB</parameter> <!-- size of filesystem blocks (see size format) Size of File system blocks. If set to -1 the size is automatically determined by SIONlib. -->
+
+    <!-- Test Configuration: -->
+    <parameter name="testtype" type="int" >3</parameter> <!-- type of test (0:SION, collective): (1: SION:, independant read) (2:MPI IO) (3: Task-Local-File) -->
+    <parameter name="bufsize">100MiB</parameter> <!-- size of blocks written in ONE fwrite (see size format) -->
+    <parameter name="totalsize" >512GiB</parameter> <!-- global total size of data written (see size format) -->
+    <parameter name="localsize" >32768MiB</parameter> <!-- local size of data written by each processor (see size format) -->
+    <parameter name="factor" >0.0</parameter> <!-- Factor for random size of chunk size. Should be avoided to ensure reproducibility. (0.0 to 1.0, def: 0.0) -->
+    <parameter name="read" >1</parameter> <!-- (0|1) switch read  off/on -->
+    <parameter name="write" >1</parameter> <!-- (0|1|2) switch write off, on, or double write -->
+
+    <!-- Special Test Options: -->
+    <parameter name="verbose" >0</parameter> <!-- (0|1) Verbose print info for each task. This is useful for small runs since it shows statistics for all tasks. Due to the high amount of additional output this should be avoided for > 32k tasks. -->
+    <parameter name="nochecksum" >1</parameter> <!-- (0|1) suppress checksum Suppress checking correctness of data. -->
+    <parameter name="debugtask" ><!-- unused --></parameter> <!-- (0|1) debug task 0 -->
+    <parameter name="Debugtask" ><!-- unused --></parameter> <!-- (0|1)debug task n  -->
+    <parameter name="posix" >0</parameter> <!-- (0|1) Use POSIX calls instead of ANSI calls. The important difference is the system internal buffering of the ANSI calls which can be prevented by choosing the unbuffered POSIX calls. -->
+    <parameter name="collwrite" >0</parameter> <!-- (0|1) Use collective write if possible. This uses the collective calls of SIONlib, which is similar to the two stage MPI I/O. Nodes take roles of either collector or sender and during the collective write data is first collected and then only the collectors write the data. This mode also needs the environment variable SION_COLLSIZE to be set to the number of senders per collector or to -1 to let SIONlib compute a reasonable number. For further information see the documentation of SIONlib. -->
+    <parameter name="collread" >0</parameter> <!-- (0|1) use collective read if possible -->
+    <parameter name="taskoffset" >0</parameter> <!-- Shift tasks numbering for reading by offset compared to the mapping while writing to prevent data caching of file system. This is not compatible to the proposed checkpointing strategies. -->
+    <parameter name="byteoffset" >0</parameter> <!-- start offset, write <bytes> first before using blksize (0) -->
+    <parameter name="serialized" >-1</parameter> <!-- serialize I/O, only I/O of #tasks are running in parallel (-1 -> all tasks in parallel, -2 -> use transactions, def: -1) -->
+    <parameter name="unlinkfiles" >0</parameter> <!-- (0|1) remove files after test -->
+
+    <!-- Blue Gene/L, Blue Gene/P , Blue Gene/Q: -->
+    <parameter name="bgionode" >0</parameter> <!-- (0|1) order tasks by BG I/O-node (0 none, 1 I/O-node, 2 I/O-bridge). -->
+    <parameter name="bgtaskperionode" ><!-- SET!  --></parameter> <!-- number of tasks per BG I/O-node -->
+
+    <!-- MPI-IO, GPFS options: -->
+    <parameter name="hintlargeblock" >0</parameter> <!-- (0|1) Hint MPI-IO, IBM, Large Block IO -->
+    <parameter name="hintiobufsize" ><!-- SET!  --></parameter> <!-- Hint MPI-IO, IBM, IO bufsize in KB -->
+    <parameter name="hintsparseacess" >0</parameter> <!-- (0|1) Hint MPI-IO, IBM, sparse access -->
+    
+    <!-- Size Formats: <d>[g,G,Gb,GB, m,M,Mb,MB, k,K,Kb,KB, GiB, MiB, KiB ] -->
+  </parameterset>
+
+  <patternset name="pattern">
+      <pattern mode="pattern" name="pat_number_of_tasks" type="int" unit="#">partest Number of tasks that will use the file tasks:       running on $jube_pat_int tasks</pattern>
+
+      <pattern mode="pattern" name="pat_startdate" type="string" unit="date">SION parallel file I/O benchmark \'partest\': start at (.*)</pattern>
+      <pattern mode="pattern" name="pat_enddate" type="string" unit="date">SION parallel file I/O benchmark \'partest\': end at (.*)</pattern>
+      
+      <pattern mode="pattern" name="pat_datafile" type="string" unit="-">partest parameter:   \(-f\)    datafile\s+= \s*$jube_pat_wrd</pattern>
+      <pattern mode="pattern" name="pat_nfiles" type="int" unit="#">partest parameter:   \(-n\)    number of files\s+= \s*$jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_randomf" type="float" unit="MB">partest parameter:   \(-F\)    random factor\s+= \s*$jube_pat_fp</pattern>
+      <pattern mode="pattern" name="pat_lbufsize" type="float" unit="MB">partest parameter:   \(-b\/-B\) local buffer size / task\s+= \s*$jube_pat_nint bytes\s*$jube_pat_fp MB</pattern>
+      <pattern mode="pattern" name="pat_lbufsizeb" type="int" unit="B">partest parameter:   \(-b\/-B\) local buffer size / task\s+= \s*$jube_pat_int bytes\s*$jube_pat_nfp MB</pattern>
+      <pattern mode="pattern" name="pat_gtotsize" type="float" unit="GB">partest parameter:   \(-g\/-G\) global total data size\s+= \s*$jube_pat_nint bytes\s*$jube_pat_fp GB</pattern>
+      <pattern mode="pattern" name="pat_ltotsize" type="float" unit="MB">partest parameter:   \(-s\/-S\) total data size / task\s+= \s*$jube_pat_nint bytes\s*$jube_pat_fp MB</pattern>
+      <pattern mode="pattern" name="pat_lchunksize" type="float" unit="MB">partest parameter:   \(-r\/-R\) sion chunk size\s+= \s*$jube_pat_nint bytes\s*$jube_pat_fp MB</pattern>
+      <pattern mode="pattern" name="pat_lchunksizeb" type="int" unit="B">partest parameter:   \(-r\/-R\) sion chunk size\s+= \s*$jube_pat_int bytes\s*$jube_pat_nfp MB</pattern>
+      <pattern mode="pattern" name="pat_fsblksize" type="float" unit="MB">partest parameter:   \(-Q\)    fs block size\s+= \s*$jube_pat_nint bytes\s*$jube_pat_fp MB</pattern>
+      <pattern mode="pattern" name="pat_fsblksizeb" type="int" unit="B">partest parameter:   \(-Q\)    fs block size\s+= \s*$jube_pat_int bytes\s*$jube_pat_nfp MB</pattern>
+      <pattern mode="pattern" name="pat_testtype" type="int" unit="#">partest parameter:   \(-T\)    test type\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_serialize_blocknum" type="int" unit="#">partest parameter:   \(-j\)    serialize_blocknum\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_readtaskoffset" type="int" unit="#">partest parameter:   \(-Z\)    read task offset\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_start_offset_bytes" type="int" unit="#">partest parameter:   \(-o\)    start offset bytes\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_verbose" type="int" unit="#">partest parameter:   \(-v\)    verbose\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_debug" type="int" unit="#">partest parameter:   \(-d\)    debug\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_Debug" type="int" unit="#">partest parameter:   \(-D\)    Debug\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_collective_write" type="int" unit="#">partest parameter:   \(-M\)    collective write\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_collective_read" type="int" unit="#">partest parameter:   \(-m\)    collective read\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_MPI_Large_Block_IO" type="int" unit="#">partest parameter:   \(-w\)    MPI-IO. IBM. Large Block IO\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_MPI_IO_bufsize" type="float" unit="KB">partest parameter:   \(-W\)    MPI-IO. IBM. IO bufsize\s+= $jube_pat_fp KB</pattern>
+      <pattern mode="pattern" name="pat_MPI_sparse_access" type="int" unit="#">partest parameter:   \(-x\)    MPI-IO. IBM. sparse access\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_suppress_checksum" type="int" unit="#">partest parameter:   \(-C\)    suppress_checksum\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_do_write" type="int" unit="#">partest parameter:   \(-O\)    do_write\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_do_read" type="int" unit="#">partest parameter:   \(-I\)    do_read\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_use_posix" type="int" unit="#">partest parameter:   \(-L\)    use_posix\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_BGIOnodes" type="int" unit="#">partest parameter:   \(-P\)    Blue Gene. I/O nodes\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_taskpionode" type="int" unit="#">partest parameter:   \(-p\)    Blue Gene: task/IO-nodes\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_BG_task_sort" type="int" unit="#">partest parameter:   \(-Y\)    Blue Gene: task sort\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_commwork_size64" type="int" unit="#">partest parameter:   \(  \)    commwork_size64\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_SION_MAIN_VERSION" type="int" unit="#">partest versioninfo:         SION_MAIN_VERSION\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_SION_SUB_VERSION" type="int" unit="#">partest versioninfo:         SION_SUB_VERSION\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_SION_VERSION_PATCHLEVEL" type="int" unit="#">partest versioninfo:         SION_VERSION_PATCHLEVEL\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_SION_FILEFORMAT_VERSION" type="int" unit="#">partest versioninfo:         SION_FILEFORMAT_VERSION\s+= $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_SION_SVN_REVISION" type="word">partest versioninfo:         SION_SVN_REVISION\s+= $jube_pat_wrd</pattern>
+      <pattern mode="pattern" name="pat_alltasks" type="int" unit="#">partest parameter:   \(  \)    comm\(all\)\s+ = $jube_pat_nint of $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_worktasks" type="int" unit="#">partest parameter:   \(  \)    comm\(work\)\s+ = $jube_pat_nint of $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_localtasks" type="int" unit="#">partest parameter:   \(  \)    comm\(local\)\s+ = $jube_pat_nint of $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_ntasks" type="int" unit="#">partest parameter:   \(  \)    comm\(work\)\s+ = $jube_pat_nint of $jube_pat_int</pattern>
+      <pattern mode="pattern" name="pat_new_totalsize" type="int" unit="#">partest parameter:   \(  \)    new totalsize\s+= $jube_pat_int</pattern>
+
+      <pattern mode="pattern" name="pat_T_STAT_TASK_WRITE_b" type="float" unit="MiB" reduce="all"     >timings\[.*\] T_STAT \s+TASK WRITE  b=\s*$jube_pat_fp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+       <pattern mode="pattern" name="pat_T_STAT_TASK_WRITE_t" type="float" unit="s" reduce="all"      >timings\[.*\] T_STAT \s+TASK WRITE  b=\s*$jube_pat_nfp MiB t=${jube_pat_fp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TASK_WRITE_chunks" type="int" unit="#" reduce="all"    >timings\[.*\] T_STAT \s+TASK WRITE  b=\s*$jube_pat_nfp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_int bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TASK_WRITE_bw" type="float" unit="MB/s" reduce="all"   >timings\[.*\] T_STAT \s+TASK WRITE  b=\s*$jube_pat_nfp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_fp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TASK_WRITE_bw_2" type="float" unit="MiB/s" reduce="all">timings\[.*\] T_STAT \s+TASK WRITE  b=\s*$jube_pat_nfp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_fp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_WRITE_create" type="float" unit="s" reduce="all"    >timings\[.*\] T_PHASE \s*TASK WRITE  create=${jube_pat_fp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_WRITE_create_cls" type="float" unit="s" reduce="all">timings\[.*\] T_PHASE \s*TASK WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_fp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_WRITE_open" type="float" unit="s" reduce="all"      >timings\[.*\] T_PHASE \s*TASK WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_fp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_WRITE_write" type="float" unit="s" reduce="all"     >timings\[.*\] T_PHASE \s*TASK WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_fp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_WRITE_close" type="float" unit="s" reduce="all"     >timings\[.*\] T_PHASE \s*TASK WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_fp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_WRITE_tlog" type="float" unit="s" reduce="all"      >timings\[.*\] T_PHASE \s*TASK WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_fp}s</pattern>
+      
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TASK_WRITE_open" type="float" unit="s" reduce="all" >timings\[.*\] T_FILE_BARRIER \s*TASK WRITE  open=${jube_pat_fp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TASK_WRITE_write" type="float" unit="s" reduce="all">timings\[.*\] T_FILE_BARRIER \s*TASK WRITE  open=${jube_pat_nfp}s. write=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TASK_WRITE_close" type="float" unit="s" reduce="all">timings\[.*\] T_FILE_BARRIER \s*TASK WRITE  open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_WRITE_create" type="float" unit="s" reduce="all"    >timings\[.*\] T_GLOBAL_BARRIER TASK WRITE \s*create=${jube_pat_fp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_WRITE_create_cls" type="float" unit="s" reduce="all">timings\[.*\] T_GLOBAL_BARRIER TASK WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_fp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_WRITE_open" type="float" unit="s" reduce="all"      >timings\[.*\] T_GLOBAL_BARRIER TASK WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_fp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_WRITE_write" type="float" unit="s" reduce="all"     >timings\[.*\] T_GLOBAL_BARRIER TASK WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_WRITE_close" type="float" unit="s" reduce="all"     >timings\[.*\] T_GLOBAL_BARRIER TASK WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_WRITE_b" type="float" unit="MiB"     >timings\[.*\] T_STAT \s*TOTAL WRITE  b=\s+$jube_pat_fp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_WRITE_t" type="float" unit="s"       >timings\[.*\] T_STAT \s*TOTAL WRITE  b=\s+$jube_pat_nfp MiB t=${jube_pat_fp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_WRITE_chunks" type="int" unit="#"    >timings\[.*\] T_STAT \s*TOTAL WRITE  b=\s+$jube_pat_nfp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_int bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_WRITE_bw" type="float" unit="MB/s"   >timings\[.*\] T_STAT \s*TOTAL WRITE  b=\s+$jube_pat_nfp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_fp MB/s \(\s+$jube_pat_nfp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_WRITE_bw_2" type="float" unit="MiB/s">timings\[.*\] T_STAT \s*TOTAL WRITE  b=\s+$jube_pat_nfp MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+$jube_pat_nfp MB/s \(\s+$jube_pat_fp MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_WRITE_create" type="float" unit="s"    >timings\[.*\] T_PHASE \s*TOTAL WRITE  create=${jube_pat_fp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_WRITE_create_cls" type="float" unit="s">timings\[.*\] T_PHASE \s*TOTAL WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_fp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_WRITE_open" type="float" unit="s"      >timings\[.*\] T_PHASE \s*TOTAL WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_fp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_WRITE_write" type="float" unit="s"     >timings\[.*\] T_PHASE \s*TOTAL WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_fp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_WRITE_close" type="float" unit="s"     >timings\[.*\] T_PHASE \s*TOTAL WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_fp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_WRITE_tlog" type="float" unit="s"      >timings\[.*\] T_PHASE \s*TOTAL WRITE  create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TOTAL_WRITE_open" type="float" unit="s" >timings\[.*\] T_FILE_BARRIER \s*TOTAL WRITE  open=${jube_pat_fp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TOTAL_WRITE_write" type="float" unit="s">timings\[.*\] T_FILE_BARRIER \s*TOTAL WRITE  open=${jube_pat_nfp}s. write=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TOTAL_WRITE_close" type="float" unit="s">timings\[.*\] T_FILE_BARRIER \s*TOTAL WRITE  open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_WRITE_create" type="float" unit="s"    >timings\[.*\] T_GLOBAL_BARRIER TOTAL WRITE \s*create=${jube_pat_fp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_WRITE_create_cls" type="float" unit="s">timings\[.*\] T_GLOBAL_BARRIER TOTAL WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_fp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_WRITE_open" type="float" unit="s"      >timings\[.*\] T_GLOBAL_BARRIER TOTAL WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_fp}s. write=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_WRITE_write" type="float" unit="s"     >timings\[.*\] T_GLOBAL_BARRIER TOTAL WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_WRITE_close" type="float" unit="s"     >timings\[.*\] T_GLOBAL_BARRIER TOTAL WRITE \s*create=${jube_pat_nfp}s. create_cls=${jube_pat_nfp}s. open=${jube_pat_nfp}s. write=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_STAT_TASK_READ_b" type="float" unit="MiB" reduce="all"      >timings\[.*\] T_STAT \s*TASK READ  b=\s+${jube_pat_fp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+${jube_pat_nfp} MB/s \(\s+${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TASK_READ_t" type="float" unit="s" reduce="all"        >timings\[.*\] T_STAT \s*TASK READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_fp}s #chunks=$jube_pat_nint bw=\s+${jube_pat_nfp} MB/s \(\s+${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TASK_READ_chunks" type="int" unit="#" reduce="all"     >timings\[.*\] T_STAT \s*TASK READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_int bw=\s+${jube_pat_nfp} MB/s \(\s+${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TASK_READ_bw" type="float" unit="MB/s" reduce="all"    >timings\[.*\] T_STAT \s*TASK READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+${jube_pat_fp} MB/s \(\s+${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TASK_READ_bw2" type="float" unit="MiB/s" reduce="all"  >timings\[.*\] T_STAT \s*TASK READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw=\s+${jube_pat_nfp} MB/s \(\s+${jube_pat_fp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_READ_open" type="float" unit="s" reduce="all" >timings\[.*\] T_PHASE \s*TASK READ  open=${jube_pat_fp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_READ_read" type="float" unit="s" reduce="all" >timings\[.*\] T_PHASE \s*TASK READ  open=${jube_pat_nfp}s. read=${jube_pat_fp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_READ_close" type="float" unit="s" reduce="all">timings\[.*\] T_PHASE \s*TASK READ  open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_fp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TASK_READ_tlog" type="float" unit="s" reduce="all" >timings\[.*\] T_PHASE \s*TASK READ  open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TASK_READ_open" type="float" unit="s" reduce="all" >timings\[.*\] T_FILE_BARRIER \s*TASK READ  open=${jube_pat_fp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TASK_READ_read" type="float" unit="s" reduce="all" >timings\[.*\] T_FILE_BARRIER \s*TASK READ  open=${jube_pat_nfp}s. read=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TASK_READ_close" type="float" unit="s" reduce="all">timings\[.*\] T_FILE_BARRIER \s*TASK READ  open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_READ_open" type="float" unit="s" reduce="all" >timings\[.*\] T_GLOBAL_BARRIER \s*TASK READ \s*open=${jube_pat_fp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_READ_read" type="float" unit="s" reduce="all" >timings\[.*\] T_GLOBAL_BARRIER \s*TASK READ \s*open=${jube_pat_nfp}s. read=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TASK_READ_close" type="float" unit="s" reduce="all">timings\[.*\] T_GLOBAL_BARRIER \s*TASK READ \s*open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_READ_b" type="float" unit="MiB"    >timings\[.*\] T_STAT \s*TOTAL READ  b=\s+${jube_pat_fp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw= ${jube_pat_nfp} MB/s \( ${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_READ_t" type="float" unit="s"      >timings\[.*\] T_STAT \s*TOTAL READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_fp}s #chunks=$jube_pat_nint bw= ${jube_pat_nfp} MB/s \( ${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_READ_chunks" type="int" unit="#"   >timings\[.*\] T_STAT \s*TOTAL READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_int bw= ${jube_pat_nfp} MB/s \( ${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_READ_bw" type="float" unit="MB/s"  >timings\[.*\] T_STAT \s*TOTAL READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw= ${jube_pat_fp} MB/s \( ${jube_pat_nfp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+      <pattern mode="pattern" name="pat_T_STAT_TOTAL_READ_bw2" type="float" unit="MiB/s">timings\[.*\] T_STAT \s*TOTAL READ  b=\s+${jube_pat_nfp} MiB t=${jube_pat_nfp}s #chunks=$jube_pat_nint bw= ${jube_pat_nfp} MB/s \( ${jube_pat_fp} MiB/s\) ion=$jube_pat_nint nf=$jube_pat_nint</pattern>
+
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_READ_open" type="float" unit="s" >timings\[.*\] T_PHASE \s*TOTAL READ  open=${jube_pat_fp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_READ_read" type="float" unit="s" >timings\[.*\] T_PHASE \s*TOTAL READ  open=${jube_pat_nfp}s. read=${jube_pat_fp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_READ_close" type="float" unit="s">timings\[.*\] T_PHASE \s*TOTAL READ  open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_fp}s. tlog=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_PHASE_TOTAL_READ_tlog" type="float" unit="s" >timings\[.*\] T_PHASE \s*TOTAL READ  open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s. tlog=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TOTAL_READ_open" type="float" unit="s" >timings\[.*\] T_FILE_BARRIER \s*TOTAL READ  open=${jube_pat_fp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TOTAL_READ_read" type="float" unit="s" >timings\[.*\] T_FILE_BARRIER \s*TOTAL READ  open=${jube_pat_nfp}s. read=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_FILE_BARRIER_TOTAL_READ_close" type="float" unit="s">timings\[.*\] T_FILE_BARRIER \s*TOTAL READ  open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_READ_open" type="float" unit="s" >timings\[.*\] T_GLOBAL_BARRIER \s*TOTAL READ  open=${jube_pat_fp}s. read=${jube_pat_nfp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_READ_read" type="float" unit="s" >timings\[.*\] T_GLOBAL_BARRIER \s*TOTAL READ  open=${jube_pat_nfp}s. read=${jube_pat_fp}s. close=${jube_pat_nfp}s</pattern>
+      <pattern mode="pattern" name="pat_T_GLOBAL_BARRIER_TOTAL_READ_close" type="float" unit="s">timings\[.*\] T_GLOBAL_BARRIER \s*TOTAL READ  open=${jube_pat_nfp}s. read=${jube_pat_nfp}s. close=${jube_pat_fp}s</pattern>
+  </patternset>
+
+</jube>
