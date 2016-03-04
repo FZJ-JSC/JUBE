@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
 
-  <!--Bedienungsanleitung hier hin!!!!!! hello world bsp-->
+  <!-- jube configuration for darshan profiling tool on JURECA
+    usage example:
+        <benchmark>
+            <step>
+                <use from="darshan_in.xml" tag="darshan">darshanParam</use>
+            </step>
+            <step name="darshan">
+                <include from="darshan_in.xml" path="darshanstep/*"/>
+            </step>
+            <include from="darshan_in.xml" path="analyser[@name='analyse_darshan']" tag="darshan"/>
+            <include from="darshan_in.xml" path="result" tag="darshan"/>
+        </benchmark>
+  -->
 
   <parameterset name="darshanParam">
     <parameter name="py_parser">darshanparser_jube.py</parameter>
