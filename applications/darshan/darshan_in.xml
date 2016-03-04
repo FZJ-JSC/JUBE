@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+
+  <!--Bedienungsanleitung hier hin!!!!!! hello world bsp-->
+
+  <parameterset name="darshanParam">
+    <parameter name="py_parser">darshanparser_jube.py</parameter>
+    <parameter name="darshan_log_file">darshan.log</parameter>
+    <parameter name="darshan_libpath"> $$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so</parameter>
+  </parameterset>
+
+  <fileset name="darshan_pyparser">
+    <!--${py_parser} file and the jube input file have to be in the same directory-->
+    <copy>./${py_parser}</copy>
+  </fileset>
+
+  <subs>
+    <sub source="!profiling_export!">
+      export LD_PRELOAD=${darshan_libpath}
+      export DARSHAN_LOG_PATH=$$PWD
+      export DARSHAN_LOGFILE=${darshan_log_file}
+    </sub>
+    <sub source="!MSH_RUN!">
+    "srun $EXECUTABLE"
+    </sub>
+  </subs>
+
+  <dos name="mod_load">
+    <do>module load darshan-runtime darshan-util </do>
+  </dos>
+
+  <darshanstep>
+    <!-- copy darshan profiling output to current directory -->
+    <use from="darshan_in.xml">darshanParam</use>
+    <use from="darshan_in.xml">darshan_pyparser</use>
+    <do>darshan-job-summary.pl ${darshan_log_file}</do>
+    <do>python ${py_parser} -f ${darshan_log_file} -j</do>
+  </darshanstep>
+
+  <patternset name="darshan_pattern" tag="darshan">
+    <pattern mode="pattern" name="posix_other" type="float">
+      POSIX: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="posix_read" type="float">
+      POSIX: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="posix_write" type="float">
+      POSIX: (?:${jube_pat_nfp} ){2}${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="posix_meta" type="float">
+      POSIX: (?:${jube_pat_nfp} ){3}${jube_pat_fp}
+    </pattern>
+
+    <pattern mode="pattern" name="mpi_other" type="float">
+      MPI-IO: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="mpi_read" type="float">
+      MPI-IO: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="mpi_write" type="float">
+      MPI-IO: (?:${jube_pat_nfp} ){2}${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="mpi_meta" type="float">
+      MPI-IO: (?:${jube_pat_nfp} ){3}${jube_pat_fp}
+    </pattern>
+
+    <pattern mode="pattern" name="read_calls" type="int">
+      posix calls: ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="write_calls" type="int">
+      posix calls: ${jube_pat_nint} ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="open_calls" type="int">
+      posix calls: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="stat_calls" type="int">
+      posix calls: (?:${jube_pat_nint} ){3}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="seek_calls" type="int">
+      posix calls: (?:${jube_pat_nint} ){4}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="mmap_calls" type="int">
+      posix calls: (?:${jube_pat_nint} ){5}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="fsync_calls" type="int">
+      posix calls: (?:${jube_pat_nint} ){6}${jube_pat_int}</pattern>
+    <pattern mode="python" name="sum_calls" type="int">
+      ${read_calls}+${write_calls}+${open_calls}+${stat_calls}+${seek_calls}+${mmap_calls}+${fsync_calls}
+    </pattern>
+
+
+    <pattern mode="pattern" name="ac_size1" type="int">
+      access size: ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="ac_size2" type="int">
+      access size: ${jube_pat_nint} ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="ac_size3" type="int">
+      access size: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="ac_size4" type="int">
+      access size: (?:${jube_pat_nint} ){3}${jube_pat_int}</pattern>
+
+    <pattern mode="pattern" name="ac_cnt1" type="int">
+      count: ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="ac_cnt2" type="int">
+      count: ${jube_pat_nint} ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="ac_cnt3" type="int">
+      count: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="ac_cnt4" type="int">
+      count: (?:${jube_pat_nint} ){3}${jube_pat_int}
+    </pattern>
+
+    <pattern mode="pattern" name="avg_io_ac_size" type="float">
+      avg_io_ac_size: ${jube_pat_fp}</pattern>
+
+    <pattern mode="pattern" name="ind_read_time" type="float">
+      cumul_avg_io_time: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="ind_write_time" type="float">
+      cumul_avg_io_time: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="ind_meta_time" type="float">
+      cumul_avg_io_time: (?:${jube_pat_nfp} ){2}${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="sh_read_time" type="float">
+      cumul_avg_io_time: (?:${jube_pat_nfp} ){3}${jube_pat_fp}
+    </pattern>
+    <pattern mode="pattern" name="sh_write_time" type="float">
+      cumul_avg_io_time: (?:${jube_pat_nfp} ){4}${jube_pat_fp}
+    </pattern>
+    <pattern mode="pattern" name="sh_meta_time" type="float">
+      cumul_avg_io_time: (?:${jube_pat_nfp} ){5}${jube_pat_fp}
+    </pattern>
+
+    <pattern mode="pattern" name="ind_read_amount" type="float">
+      avg_amout_io: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="ind_write_amount" type="float">
+      avg_amout_io: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="ind_meta_amount" type="string">
+      avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_wrd}</pattern>
+    <pattern mode="pattern" name="sh_read_amount" type="float">
+      avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_nwrd} ${jube_pat_fp}
+    </pattern>
+    <pattern mode="pattern" name="sh_write_amount" type="float">
+      avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_nwrd} ${jube_pat_nfp} ${jube_pat_fp}
+    </pattern>
+    <pattern mode="pattern" name="sh_meta_amount" type="string">
+      avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_nwrd} (?:${jube_pat_nfp} ){2}${jube_pat_wrd}
+    </pattern>
+
+
+    <pattern mode="pattern" name="ind_read_bw" type="float">
+      Independent Bandwidth: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="ind_write_bw" type="float">
+      Independent Bandwidth: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="sh_read_bw" type="float">
+      Shared Bandwidth: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="sh_write_bw" type="float">
+      Shared Bandwidth: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
+
+    <pattern mode="pattern" name="total_mb_read" type="float">
+      Total MB read: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="total_mb_written" type="float">
+      Total MB written: ${jube_pat_fp}</pattern>
+
+    <!-- test calculation
+    <pattern mode="python" name="mb_amount_read" type="float">
+      (${ind_read_amount}+${sh_read_amount})*48
+    </pattern>
+    <pattern mode="python" name="mb_amount_write" type="float">
+      (${ind_write_amount}+${sh_write_amount})*48
+    </pattern>-->
+  </patternset>
+
+  <analyser name="analyse_darshan">
+    <use from="darshan_in.xml">darshan_pattern</use>
+    <analyse step="darshan">
+      <file>darshan.jube</file>
+    </analyse>
+  </analyser>
+
+  <result>
+    <use>analyse_darshan</use> <!-- use existing analyser -->
+
+    <table name="darshan_eocoe" style="pretty">
+      <column>total_mb_read</column>
+      <column>total_mb_written</column>
+      <column>sum_calls</column>
+      <column>ind_read_bw</column>
+      <column>ind_write_bw</column>
+      <column>sh_read_bw</column>
+      <column>sh_write_bw</column>
+      <column>avg_io_ac_size</column>
+    </table>
+
+
+    <table name="darshan_posix" style="pretty">
+      <column>posix_other</column>
+      <column>posix_read</column>
+      <column>posix_write</column>
+      <column>posix_meta</column>
+    </table>
+    <table name="darshan_mpi" style="pretty">
+      <column>mpi_other</column>
+      <column>mpi_read</column>
+      <column>mpi_write</column>
+      <column>mpi_meta</column>
+    </table>
+
+    <table name="darshan_calls" style="pretty">
+      <column>read_calls</column>
+      <column>write_calls</column>
+      <column>open_calls</column>
+      <column>stat_calls</column>
+      <column>seek_calls</column>
+      <column>mmap_calls</column>
+      <column>fsync_calls</column>
+    </table>
+
+    <table name="darshan_ac_size" style="pretty">
+      <column>ac_size1</column>
+      <column>ac_size2</column>
+      <column>ac_size3</column>
+      <column>ac_size4</column>
+    </table>
+    <table name="darshan_ac_cnt" style="pretty">
+      <column>ac_cnt1</column>
+      <column>ac_cnt2</column>
+      <column>ac_cnt3</column>
+      <column>ac_cnt4</column>
+    </table>
+
+    <table name="darshan_avg_time" style="pretty">
+      <column>ind_read_time</column>
+      <column>ind_write_time</column>
+      <column>ind_meta_time</column>
+      <column>sh_read_time</column>
+      <column>sh_write_time</column>
+      <column>sh_meta_time</column>
+    </table>
+    <table name="darshan_avg_amount" style="pretty">
+      <column>ind_read_amount</column>
+      <column>ind_write_amount</column>
+      <column>ind_meta_amount</column>
+      <column>sh_read_amount</column>
+      <column>sh_write_amount</column>
+      <column>sh_meta_amount</column>
+    </table>
+
+    <table name="darshan_bw" style="pretty">
+      <column>ind_read_bw</column>
+      <column>ind_write_bw</column>
+      <column>sh_read_bw</column>
+      <column>sh_write_bw</column>
+    </table>
+
+    <table name="darshan_total_mb" style="pretty">
+      <column>total_mb_read</column>
+      <column>total_mb_written</column>
+      <!-- output of test calculation
+      <column>mb_amount_read</column>
+      <column>mb_amount_write</column>-->
+    </table>
+  </result>
+</jube>
