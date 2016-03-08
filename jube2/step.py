@@ -23,7 +23,6 @@ from __future__ import (print_function,
 
 import subprocess
 import os
-import stat
 import re
 import time
 import xml.etree.ElementTree as ET
@@ -477,26 +476,6 @@ class Operation(object):
                 if environment is not None:
                     environment.clear()
                     environment.update(env)
-
-                # Correct group permissions if needed (job output)
-                # Get group_id if available (given by JUBE_GROUP_NAME)
-                group_id = jube2.util.check_and_get_group_id()
-                # Group id must be set and target directory must be changed
-                if (group_id is not None) and \
-                    (os.stat(work_dir).st_gid == group_id) and \
-                    ((os.stat(work_dir).st_mode | stat.S_ISGID) ==
-                        os.stat(work_dir).st_mode):
-                    for root, dirs, files in os.walk(work_dir):
-                        for name in files:
-                            path = os.path.join(root, name)
-                            if (os.stat(path).st_gid != group_id):
-                                os.chown(path, os.getuid(), group_id)
-                        for name in dirs:
-                            path = os.path.join(root, name)
-                            if (os.stat(path).st_gid != group_id):
-                                os.chown(path, os.getuid(), group_id)
-                                os.chmod(path,
-                                         os.stat(path).st_mode | stat.S_ISGID)
 
                 if returncode != 0:
                     if os.path.isfile(stderr_path):

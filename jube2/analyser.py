@@ -421,16 +421,16 @@ class Analyser(object):
 
                 if pattern.content_type in ["int", "float"]:
                     if match_dict[pattern.name]["cnt"] > 0:
-                            match_dict[pattern.name]["avg"] = \
-                                (match_dict[pattern.name]["sum"] /
-                                 match_dict[pattern.name]["cnt"])
+                        match_dict[pattern.name]["avg"] = \
+                            (match_dict[pattern.name]["sum"] /
+                             match_dict[pattern.name]["cnt"])
 
                     if match_dict[pattern.name]["cnt"] > 1:
                         match_dict[pattern.name]["std"] = math.sqrt(
                             (abs(match_dict[pattern.name]["sum2"] -
-                             (match_dict[pattern.name]["sum"]**2 /
-                              match_dict[pattern.name]["cnt"])) /
-                            (match_dict[pattern.name]["cnt"] - 1)))
+                                 (match_dict[pattern.name]["sum"]**2 /
+                                  match_dict[pattern.name]["cnt"])) /
+                             (match_dict[pattern.name]["cnt"] - 1)))
                     else:
                         match_dict[pattern.name]["std"] = 0
 
