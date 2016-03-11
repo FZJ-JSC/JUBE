@@ -49,7 +49,7 @@
     <do>python ${py_parser} -f ${darshan_log_file} -j</do>
   </darshanstep>
 
-  <patternset name="darshan_pattern" tag="darshan">
+  <patternset name="darshan_pattern">
     <pattern mode="pattern" name="posix_other" type="float">
       POSIX: ${jube_pat_fp}</pattern>
     <pattern mode="pattern" name="posix_read" type="float">
