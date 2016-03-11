@@ -124,7 +124,7 @@ class XMLParser(object):
         valid_tags = ["selection", "include-path", "parameterset", "benchmark",
                       "substituteset", "fileset", "include", "patternset"]
 
-        # Save init include pathe (from command line)
+        # Save init include path (from command line)
         init_include_path = list(self._include_path)
 
         # Preprocess xml-tree, this must be done multiple times because of
@@ -179,7 +179,8 @@ class XMLParser(object):
 
             changed = self._preprocessor(tree.getroot())
             if changed:
-                LOGGER.debug("  New tags included, start additional run.")
+                LOGGER.debug("  New tags might be included, start " +
+                             "additional run.")
 
         # Rerun removing invalid tags
         LOGGER.debug("  Remove invalid tags")
@@ -224,32 +225,38 @@ class XMLParser(object):
         return benchmarks, list(only_bench), list(not_bench)
 
     @staticmethod
+    def _check_valid_tags(element, tags):
+        """Check if element contains only valid tags"""
+        if tags is None:
+            tags = set()
+        tag_tags_str = element.get("tag")
+        if tag_tags_str is not None:
+            tag_tags = \
+                set([tag.strip() for tag in
+                     tag_tags_str.split(jube2.conf.DEFAULT_SEPARATOR)])
+            valid_tags = set()
+            invalid_tags = set()
+            # Switch tags between valid and invalid tagnames
+            for tag in tag_tags:
+                if (len(tag) > 1) and (tag[0] == "!"):
+                    invalid_tags.add(tag[1:])
+                elif (len(tag) > 0) and (tag[0] != "!"):
+                    valid_tags.add(tag)
+            return not (((len(valid_tags) > 0) and
+                         (len(valid_tags.intersection(tags)) == 0)) or
+                        ((len(invalid_tags) > 0) and
+                         (len(invalid_tags.intersection(tags)) > 0)))
+        else:
+            return True
+
+    @staticmethod
     def _remove_invalid_tags(etree, tags):
         """Remove tags which contain an invalid tags-attribute"""
-        if tags is None:
-            return
         children = list(etree)
         for child in children:
-            tag_tags_str = child.get("tag")
-            if tag_tags_str is not None:
-                tag_tags = \
-                    set([tag.strip() for tag in
-                         tag_tags_str.split(jube2.conf.DEFAULT_SEPARATOR)])
-                valid_tags = set()
-                invalid_tags = set()
-                # Switch tags between valid and invalid tagnames
-                for tag in tag_tags:
-                    if (len(tag) > 1) and (tag[0] == "!"):
-                        invalid_tags.add(tag[1:])
-                    elif (len(tag) > 0) and (tag[0] != "!"):
-                        valid_tags.add(tag)
-                # Tag selection
-                if (((len(valid_tags) > 0) and
-                     (len(valid_tags.intersection(tags)) == 0)) or
-                    ((len(invalid_tags) > 0) and
-                     (len(invalid_tags.intersection(tags)) > 0))):
-                    etree.remove(child)
-                    continue
+            if not XMLParser._check_valid_tags(child, tags):
+                etree.remove(child)
+                continue
             XMLParser._remove_invalid_tags(child, tags)
 
     def _preprocessor(self, etree):
@@ -260,7 +267,8 @@ class XMLParser(object):
         changed = False
         for child in children:
             # Replace include tags
-            if child.tag == "include":
+            if ((child.tag == "include") and
+                    XMLParser._check_valid_tags(child, self._tags)):
                 filename = XMLParser._attribute_from_element(child, "from")
                 path = child.get("path", ".")
                 if path == "":
