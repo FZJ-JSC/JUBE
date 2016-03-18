@@ -200,8 +200,8 @@ class KeyValuesResult(Result):
         def __hash__(self):
             return hash(self.resulting_name)
 
-    def __init__(self, name, sort_names=None):
-        Result.__init__(self, name)
+    def __init__(self, name, sort_names=None, show=None):
+        Result.__init__(self, name, show)
         self._keys = list()
         if sort_names is None:
             self._sort_names = list()

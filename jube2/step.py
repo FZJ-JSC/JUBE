@@ -364,11 +364,8 @@ class Operation(object):
         False => operation pending
         """
         active = jube2.util.substitution(self._active, parameter_dict)
-        if active.lower() == "false":
+        if not jube2.util.eval_bool(active):
             return True
-        elif active.lower() != "true":
-            raise RuntimeError(("<do active=\"{0}\"> not allowed. Must be " +
-                                "true or false").format(active.lower()))
 
         if environment is not None:
             env = environment

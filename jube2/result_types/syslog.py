@@ -92,8 +92,9 @@ class SysloggedResult(KeyValuesResult):
             log.removeHandler(handler)
 
     def __init__(self, name, syslog_address=None, syslog_host=None,
-                 syslog_port=None, syslog_fmt_string=None, sort_names=None):
-        KeyValuesResult.__init__(self, name, sort_names)
+                 syslog_port=None, syslog_fmt_string=None, sort_names=None,
+                 show=None):
+        KeyValuesResult.__init__(self, name, sort_names, show)
         if (syslog_address is None) and (syslog_host is None) and \
                 (syslog_port is None):
             raise IOError("Neither a syslog address nor a hostname port " +

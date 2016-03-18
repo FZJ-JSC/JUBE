@@ -242,11 +242,12 @@ def substitution(text, substitution_dict):
     """Substitute templates given by parameter_dict inside of text"""
     changed = True
     count = 0
+    # All values must be string values
+    str_substitution_dict = dict([(k, str(v)) for k, v in
+                                  substitution_dict.items()])
     # Preserve non evaluated parameter before starting substitution
-    local_substitution_dict = dict(substitution_dict)
-    for parameter in local_substitution_dict:
-        local_substitution_dict[parameter] = \
-            re.sub(r"\$", "$$", local_substitution_dict[parameter])
+    local_substitution_dict = dict([(k, re.sub(r"\$", "$$", v)) for k, v in
+                                    str_substitution_dict.items()])
     # Run multiple times to allow recursive parameter substitution
     while changed and count < jube2.conf.MAX_RECURSIVE_SUB:
         count += 1
@@ -259,7 +260,7 @@ def substitution(text, substitution_dict):
         text = new_text
     # Final substitution to remove $$
     tmp = string.Template(text)
-    return tmp.safe_substitute(substitution_dict)
+    return tmp.safe_substitute(str_substitution_dict)
 
 
 def format_value(format_string, value):
@@ -311,6 +312,11 @@ def script_evaluation(cmd, script_type):
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
         return sub.communicate()[0]
+
+
+def eval_bool(cmd):
+    """Evaluate a bool expression"""
+    return bool(eval(cmd))
 
 
 def print_loading_bar(current_cnt, all_cnt, second_cnt=0):

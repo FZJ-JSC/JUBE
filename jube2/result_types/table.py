@@ -147,8 +147,9 @@ class Table(KeyValuesResult):
     def __init__(self, name, style="csv",
                  separator=jube2.conf.DEFAULT_SEPARATOR,
                  sort_names=None,
-                 transpose=False):
-        KeyValuesResult.__init__(self, name, sort_names)
+                 transpose=False,
+                 show=None):
+        KeyValuesResult.__init__(self, name, sort_names, show)
         self._style = style
         self._separator = separator
         self._transpose = transpose
