@@ -72,7 +72,7 @@ def status(args):
 
 def benchmarks_results(args):
     """Show benchmark results"""
-    found_benchmarks = search_for_benchmarks(args, load_all=True)
+    found_benchmarks = search_for_benchmarks(args)
     result_list = list()
     # Start with the newest benchmark to set the newest result configuration
     found_benchmarks.reverse()
@@ -258,7 +258,7 @@ def manipulate_comments(args):
         _manipulate_comment(benchmark_folder, args)
 
 
-def search_for_benchmarks(args, load_all=False):
+def search_for_benchmarks(args):
     """Search for existing benchmarks"""
     found_benchmarks = list()
     if not os.path.isdir(args.dir):
@@ -281,7 +281,7 @@ def search_for_benchmarks(args, load_all=False):
             if benchmark_folder not in found_benchmarks:
                 found_benchmarks.append(benchmark_folder)
     else:
-        if load_all or ((args.id is not None) and ("all" in args.id)):
+        if (args.id is not None) and ("all" in args.id):
             # Add all available benchmark folder
             found_benchmarks = [
                 os.path.join(args.dir, directory)
