@@ -23,7 +23,7 @@ from __future__ import (print_function,
 
 # general
 JUBE_VERSION = "2.1.0"
-ALLOWED_SCRIPTTYPES = ["python", "perl"]
+ALLOWED_SCRIPTTYPES = ["python", "perl", "shell"]
 DEBUG_MODE = False
 VERBOSE_LEVEL = 0
 UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"

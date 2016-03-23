@@ -177,7 +177,8 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
             if i > len(max_length) - 1:
                 max_length.append(0)
             if pretty:
-                max_length[i] = max(max_length[i], len(text))
+                for line in text.splitlines():
+                    max_length[i] = max(max_length[i], len(line))
                 if auto_linebreak:
                     max_length[i] = min(max_length[i],
                                         jube2.conf.MAX_TABLE_CELL_WIDTH)
@@ -194,10 +195,13 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
         wraps = list()
         for text in item:
             if auto_linebreak:
-                wraps.append(textwrap.wrap(text,
-                                           jube2.conf.MAX_TABLE_CELL_WIDTH))
+                lines = list()
+                for line in text.splitlines():
+                    lines += \
+                        textwrap.wrap(line, jube2.conf.MAX_TABLE_CELL_WIDTH)
+                wraps.append(lines)
             else:
-                wraps.append([text])
+                wraps.append(text.splitlines())
 
         grow = True
         height = 0
@@ -312,11 +316,18 @@ def script_evaluation(cmd, script_type):
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
         return sub.communicate()[0]
+    elif script_type == "shell":
+        sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, shell=True)
+        return sub.communicate()[0]
 
 
 def eval_bool(cmd):
     """Evaluate a bool expression"""
-    return bool(eval(cmd))
+    if cmd.lower() == "true":
+        return True
+    else:
+        return bool(eval(cmd))
 
 
 def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
