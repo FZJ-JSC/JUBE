@@ -7,11 +7,12 @@ profiling tool.
 """
 from __future__ import print_function, division
 import argparse
-import subprocess
+#import subprocess
+from subprocess import Popen
+from subprocess import PIPE
 import shlex
 import numpy as np
 import re
-from collections import Counter
 from itertools import groupby
 
 
@@ -69,10 +70,10 @@ def io_percentage(nprocs, runtime, counters, data, out_file):
     write_jube_table(table_head, io_table)
 
     for elem in posix:
-        out_file.write('{} '.format(elem))
+        out_file.write('{0} '.format(elem))
     out_file.write('\n')
     for elem in mpi:
-        out_file.write('{} '.format(elem))
+        out_file.write('{0} '.format(elem))
     out_file.write('\n\n')
 
 
@@ -129,7 +130,7 @@ def operation_counts(counters, data, out_file):
     syncs = ['FSync', int(sum_posix_fsyncs), 0, 0]
 
     out_file.write('# read write open stats seeks mmaps fsyncs\n')
-    out_file.write('posix calls: {} {} {} {} {} {} {}\n\n'.format(
+    out_file.write('posix calls: {0} {1} {2} {3} {4} {5} {6}\n\n'.format(
         int(sum_posix_reads), int(sum_posix_writes), int(sum_posix_opens),
         int(sum_posix_stats), int(sum_posix_seeks), int(sum_posix_mmaps),
         int(sum_posix_fsyncs)))
@@ -155,8 +156,8 @@ def io_sizes(counters, data):
                     '1M-4M', '4M-10M', '10M-100M', '100M-1G', '1G+']
     counter_sizes = [col.replace('-', '_').replace('+', '_PLUS')
                      for col in column_heads]
-    read_counter = 'CP_SIZE_READ_{}'
-    write_counter = 'CP_SIZE_WRITE_{}'
+    read_counter = 'CP_SIZE_READ_{0}'
+    write_counter = 'CP_SIZE_WRITE_{0}'
 
     read_cnt_str = [read_counter.format(size) for size in counter_sizes]
     write_cnt_str = [write_counter.format(size) for size in counter_sizes]
@@ -213,10 +214,10 @@ def access_size(counters, data, out_file, length=4):
     """
 
     # get the four most common access sizes of each file
-    ac_size = np.array([data[counters["CP_ACCESS{}_ACCESS".format(i)]]["value"]
+    ac_size = np.array([data[counters["CP_ACCESS{0}_ACCESS".format(i)]]["value"]
                         for i in range(1, 5)], np.int)
     # get the count of the four most common access sizes of each file
-    ac_cnt = np.array([data[counters["CP_ACCESS{}_COUNT".format(i)]]["value"]
+    ac_cnt = np.array([data[counters["CP_ACCESS{0}_COUNT".format(i)]]["value"]
                        for i in range(1, 5)], np.int)
     merged = np.array(zip(ac_size.flatten(), ac_cnt.flatten()))
     ac_sorted = merged[np.argsort(merged[:, 0])]
@@ -238,16 +239,16 @@ def access_size(counters, data, out_file, length=4):
     table_head = "Most Common Access Sizes"
     write_jube_table(table_head, most_common_ac)
 
-    out_file.write('# {}:\n'.format(table_head))
+    out_file.write('# {0}:\n'.format(table_head))
     for i, title in enumerate(most_common_titel):
-        out_file.write('{}: '.format(title))
+        out_file.write('{0}: '.format(title))
         for elem in np.array(most_common_ac[1:]).T[i]:
-            out_file.write("{} ".format(elem))
+            out_file.write("{0} ".format(elem))
         out_file.write('\n')
 
     avg_io_ac_size = np.inner(cnt_sum_sort[:, 0], cnt_sum_sort[:, 1]) / \
                      np.sum(cnt_sum_sort[:, 1])
-    out_file.write('avg_io_ac_size: {}\n'.format(avg_io_ac_size))
+    out_file.write('avg_io_ac_size: {0}\n'.format(avg_io_ac_size))
     out_file.write('\n')
 
 
@@ -419,9 +420,9 @@ def avg_io(nprocs, ranks, counters, data, out_file):
 
     title = ['cumul_avg_io_time', 'avg_amout_io']
     for i, row in enumerate(np.array(avg_io_table_str).T):
-        out_file.write('{}: '.format(title[i]))
+        out_file.write('{0}: '.format(title[i]))
         for elem in row:
-            out_file.write('{} '.format(elem))
+            out_file.write('{0} '.format(elem))
         out_file.write('\n')
 
     avg_table_titel = ['Cumulative time spent in I/O functions (seconds)',
@@ -457,14 +458,14 @@ def avg_io(nprocs, ranks, counters, data, out_file):
 
     # write information into the output file
     out_file.write('# Bandwidth: read write\n')
-    out_file.write('Independent Bandwidth: {} {}\n'.format(in_r_bw, in_w_bw))
-    out_file.write('Shared Bandwidth: {} {}\n'.format(sh_r_bw, sh_w_bw))
+    out_file.write('Independent Bandwidth: {0} {1}\n'.format(in_r_bw, in_w_bw))
+    out_file.write('Shared Bandwidth: {0} {1}\n'.format(sh_r_bw, sh_w_bw))
 
     total_mb_read = np.sum(bytes_read)/mb
     total_mb_written = np.sum(bytes_written)/mb
     out_file.write('# I/O Volume:\n')
-    out_file.write('Total MB read: {}\n'.format(total_mb_read))
-    out_file.write('Total MB written: {}\n'.format(total_mb_written))
+    out_file.write('Total MB read: {0}\n'.format(total_mb_read))
+    out_file.write('Total MB written: {0}\n'.format(total_mb_written))
     out_file.write('\n')
 
 
@@ -479,11 +480,11 @@ def data_transfer(counters, data, mount_pt):
 
     bytes_read = data[counters["CP_BYTES_READ"]]["value"]
     bytes_written = data[counters["CP_BYTES_WRITTEN"]]["value"]
-    filesystems = Counter(mount_pt)
+    filesystems = set(mount_pt)
 
     byte_table = [[str(key), str(int(np.sum(bytes_written[mount_pt == key]))),
                    str(int(np.sum(bytes_read[mount_pt == key])))]
-                  for key in filesystems.keys()]
+                  for key in filesystems]
 
     table_head = "Data Transfer Per Filesystem"
     column_heads = ['File System', 'write', 'read']
@@ -516,7 +517,7 @@ def data_transfer(counters, data, mount_pt):
                    str(np.sum(posix_read_time[mount_pt == key])),
                    str(np.sum(posix_write_time[mount_pt == key])),
                    str(np.sum(posix_meta_time[mount_pt == key]))]
-                  for key in filesystems.keys()]
+                  for key in filesystems]
     time_table.insert(0, column_heads)
     write_jube_table(table_head, time_table)
 
@@ -544,7 +545,8 @@ def create_ind_sha_table(nprocs, ranks, file_hash, counters, data, mount_pt):
     write_end_time = data[counters["CP_F_WRITE_END_TIMESTAMP"]]["value"]
     posix_write_time = data[counters["CP_F_POSIX_WRITE_TIME"]]["value"]
 
-    file_count = [Counter(file_hash)[i] for i in file_hash]
+    file_count = [list(file_hash).count(i) for i in file_hash]
+
     file_count = [nprocs if r == -1 else file_count[i]
                   for i, r in enumerate(ranks)]
 
@@ -701,13 +703,15 @@ def variance_table(nprocs, ranks, file_hash, counters, data):
     table['variance_time'] = np.around(np.sqrt(table['variance_time']),
                                        decimals=5)
 
-    # remove first column including the hash
-    table = table[list(table.dtype.names[1:])]
     #tab_sort = np.sort(table[table['procs'] > 1], order='slowest_time')[::-1]
     tab_sort = np.sort(table, order='slowest_time')[::-1]
 
-    #table_str = [[str(cell) for cell in row] for row in tab_sort[:20]]
-    table_str = [[str(cell) for cell in row] for row in tab_sort]
+    # remove first column including the hash
+    cols = list(table.dtype.names[1:])
+    table_str = [[str(row[cell]) for cell in cols] for row in tab_sort[:20]]
+    # alternative: remove first column including the hash
+    # tab_sort = tab_sort[list(table.dtype.names[1:])]
+    # table_str = [[str(cell) for cell in row] for row in tab_sort]
     table_head = "Variance in Files"
     column_heads = ['File', '#Procs', 'Fast Rank', 'Fast Time', 'Fast Bytes',
                     'Slow Rank', 'Slow Time', 'Slow Bytes',
@@ -715,7 +719,7 @@ def variance_table(nprocs, ranks, file_hash, counters, data):
     table_str.insert(0, column_heads)
     write_jube_table(table_head, table_str)
 
-    #exit()
+    # exit()
 
 
 def main():
@@ -731,9 +735,11 @@ def main():
     JUBE_TABLE = args.jube
 
     darshan_logfile = args.file
-    output = subprocess.check_output(shlex.split(
-        "darshan-parser {}".format(darshan_logfile)))
+    # alternative for python version > 2.6
+    #output = subprocess.check_output(shlex.split("darshan-parser {0}".format(darshan_logfile)))
 
+    output = Popen(shlex.split("darshan-parser {0}".format(darshan_logfile)),
+                   stdout=PIPE).communicate()[0]
     output = output.decode().strip()
     # print header
     # print("\n".join(output.split("\n")[:94]))
@@ -763,8 +769,10 @@ def main():
             set(data[data["file"] == data["file"][0]]["counter"]))))
     # get boolean mask for every counter to collect
     # all values belonging to a counter in data
-    counters = {counter: data["counter"] == counter
-                for counter in all_counters}
+    counters = dict([(counter, data["counter"] == counter)
+                     for counter in all_counters])
+    # alternative
+    # counters = {counter: data["counter"] == counter for counter in all_counters}
 
     ranks = data["rank"][0::len(all_counters)]
     file_hash = data["file"][0::len(all_counters)]
@@ -772,7 +780,7 @@ def main():
 
     out_file = open('./darshan.jube', 'w')
 
-    #variance_table(nprocs, ranks, file_hash, counters, data)
+    variance_table(nprocs, ranks, file_hash, counters, data)
     #exit()
 
     io_percentage(nprocs, runtime, counters, data, out_file)
