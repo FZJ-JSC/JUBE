@@ -181,7 +181,7 @@ Glossary
         * allowed: ``int``, ``float`` or ``string``
 
    statistical_values
-      If there are multiple pattern matches within oen file, multiple files or
+      If there are multiple pattern matches within one file, multiple files or
       when using multiple iterations. *JUBE* will create some statistical values
       automatically:
 
