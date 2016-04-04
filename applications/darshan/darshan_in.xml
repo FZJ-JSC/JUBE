@@ -19,6 +19,10 @@
     <parameter name="py_parser">darshanparser_jube.py</parameter>
     <parameter name="darshan_log_file">darshan.log</parameter>
     <parameter name="darshan_libpath"> $$EBROOTDARSHANMINRUNTIME/lib/libdarshan.so</parameter>
+    <parameter name="darshan_exp_var"> export LD_PRELOAD=${darshan_libpath}
+      export DARSHAN_LOG_PATH=$$PWD
+      export DARSHAN_LOGFILE=${darshan_log_file}
+    </parameter>
   </parameterset>
 
   <fileset name="darshan_pyparser">
@@ -28,9 +32,7 @@
 
   <subs>
     <sub source="!profiling_export!">
-      export LD_PRELOAD=${darshan_libpath}
-      export DARSHAN_LOG_PATH=$$PWD
-      export DARSHAN_LOGFILE=${darshan_log_file}
+      ${darshan_exp_var}
     </sub>
     <sub source="!MSH_RUN!">
     "srun $EXECUTABLE"
