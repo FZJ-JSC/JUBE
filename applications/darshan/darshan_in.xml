@@ -52,6 +52,9 @@
   </darshanstep>
 
   <patternset name="darshan_pattern">
+    <pattern mode="pattern" name="runtime" type="int">
+      runtime: ${jube_pat_int}</pattern>
+
     <pattern mode="pattern" name="posix_other" type="float">
       POSIX: ${jube_pat_fp}</pattern>
     <pattern mode="pattern" name="posix_read" type="float">
@@ -71,6 +74,9 @@
     <pattern mode="pattern" name="mpi_meta" type="float">
       MPI-IO: (?:${jube_pat_nfp} ){3}${jube_pat_fp}
     </pattern>
+
+    <pattern mode="pattern" name="io_time" type="float">
+      io_time: ${jube_pat_fp}</pattern>
 
     <pattern mode="pattern" name="read_calls" type="int">
       posix calls: ${jube_pat_int}</pattern>
@@ -180,6 +186,8 @@
     <use>analyse_darshan</use> <!-- use existing analyser -->
 
     <table name="darshan_eocoe" style="pretty">
+      <column>runtime</column>
+      <column>io_time</column>
       <column>total_mb_read</column>
       <column>total_mb_written</column>
       <column>sum_calls</column>

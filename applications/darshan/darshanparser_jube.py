@@ -39,6 +39,8 @@ def io_percentage(nprocs, runtime, counters, data, out_file):
     posix_write_perc = (posix_write_sum/(runtime*nprocs))*100
     posix_meta_perc = (posix_meta_sum/(runtime*nprocs))*100
 
+    posix_io_time = (posix_read_perc + posix_write_perc + posix_meta_perc)/100 * runtime
+
     posix_other = ((runtime*nprocs - posix_read_sum -
                    posix_write_sum - posix_meta_sum)/(runtime*nprocs))*100
 
@@ -57,6 +59,8 @@ def io_percentage(nprocs, runtime, counters, data, out_file):
     mpi_write_perc = (mpi_write_sum/(runtime*nprocs))*100
     mpi_meta_perc = (mpi_meta_sum/(runtime*nprocs))*100
 
+    mpi_io_time = (mpi_read_perc + mpi_write_perc + mpi_meta_perc)/100 * runtime
+
     mpi_other = ((runtime*nprocs - mpi_read_sum -
                   mpi_write_sum - mpi_meta_sum)/(runtime*nprocs))*100
 
@@ -74,7 +78,10 @@ def io_percentage(nprocs, runtime, counters, data, out_file):
     out_file.write('\n')
     for elem in mpi:
         out_file.write('{0} '.format(elem))
-    out_file.write('\n\n')
+    out_file.write('\n')
+
+    total_io_time = mpi_io_time if mpi_io_time > posix_io_time else posix_io_time
+    out_file.write('io_time: {0}\n\n'.format(total_io_time))
 
 
 def operation_counts(counters, data, out_file):
@@ -757,13 +764,7 @@ def main():
                  ("value", np.float64), ("name_suffix", object),
                  ("mount_pt", object), ("fs type", object)]
     data = np.array(raw, dtype=log_dtype)
-    #print(data)
-    #print(data.shape)
-    #bla = np.array([(1,1,'1',1,'1','1','1')], dtype=log_dtype)
-    #print(bla.shape)
-    #data = np.append(data, bla)#, axis=1)
-    #print(data[::-1])
-    #exit()
+
     # get all counter names; remove doubles
     all_counters = np.array(sorted(list(
             set(data[data["file"] == data["file"][0]]["counter"]))))
@@ -779,6 +780,7 @@ def main():
     mount_pt = data["mount_pt"][0::len(all_counters)]
 
     out_file = open('./darshan.jube', 'w')
+    out_file.write('runtime: {0}\n\n'.format(runtime))
 
     variance_table(nprocs, ranks, file_hash, counters, data)
     #exit()
