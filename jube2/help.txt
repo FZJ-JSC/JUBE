@@ -185,8 +185,8 @@ do_tag
 
    * "active" is optional
 
-     * can be set to "true" or "false" to enable or disable the
-       single command
+     * can be set to "true" or "false" or any *Python* parsable bool
+       expression to enable or disable the single command
 
      * *parameter* are allowed inside this attribute
 
@@ -799,7 +799,7 @@ substituteset_tag
 syslog_tag
    A syslog result type
 
-      <syslog name="..." address="..." host="..." port="..." sort="..." format="...">
+      <syslog name="..." address="..." host="..." port="..." sort="..." format="..." filter="...">
         <key format="..." title="..." null_value="...">...</key>
         ...
       </syslog>
@@ -824,10 +824,13 @@ syslog_tag
    * "null_value" is optional: NULL value representation (default:
      empty string)
 
+   * "filter" is optional, it can contain a bool expression to show
+     only specific result entries
+
 table_tag
    A simple ASCII based table ouput.
 
-      <table name="..." style="..." sort="..." separator="..." transpose="...">
+      <table name="..." style="..." sort="..." separator="..." transpose="..." filter="...">
         <column colw="..." format="..." title="..." null_value="...">...</column>
         ...
       </table>
@@ -853,6 +856,9 @@ table_tag
      empty string)
 
    * "transpose" is optional (default: "false")
+
+   * "filter" is optional, it can contain a bool expression to show
+     only specific result entries
 
 tagging
    Tagging is a simple way to mark parts of your input file to be

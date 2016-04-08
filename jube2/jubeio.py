@@ -928,11 +928,12 @@ class XMLParser(object):
             transpose = transpose.strip().lower() == "true"
         else:
             transpose = False
-        show = etree_table.get("show")
-        if show is not None:
-            show = show.strip()
+        res_filter = etree_table.get("filter")
+        if res_filter is not None:
+            res_filter = res_filter.strip()
         table = jube2.result_types.table.Table(name, style, separator,
-                                               sort_names, transpose, show)
+                                               sort_names, transpose,
+                                               res_filter)
         for element in etree_table:
             XMLParser._check_tag(element, ["column"])
             column_name = element.text
@@ -976,12 +977,12 @@ class XMLParser(object):
         sort_names = [sort_name.strip() for sort_name in sort_names]
         sort_names = [
             sort_name for sort_name in sort_names if len(sort_name) > 0]
-        show = etree_syslog.get("show")
-        if show is not None:
-            show = show.strip()
+        res_filter = etree_syslog.get("filter")
+        if res_filter is not None:
+            res_filter = res_filter.strip()
         syslog_result = jube2.result_types.syslog.SysloggedResult(
             name, syslog_address, syslog_host, syslog_port, syslog_fmt_string,
-            sort_names, show)
+            sort_names, res_filter)
 
         for element in etree_syslog:
             XMLParser._check_tag(element, ["key"])

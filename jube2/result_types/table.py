@@ -148,8 +148,8 @@ class Table(KeyValuesResult):
                  separator=jube2.conf.DEFAULT_SEPARATOR,
                  sort_names=None,
                  transpose=False,
-                 show=None):
-        KeyValuesResult.__init__(self, name, sort_names, show)
+                 res_filter=None):
+        KeyValuesResult.__init__(self, name, sort_names, res_filter)
         self._style = style
         self._separator = separator
         self._transpose = transpose
@@ -179,6 +179,8 @@ class Table(KeyValuesResult):
         table_etree.attrib["name"] = self._name
         table_etree.attrib["style"] = self._style
         table_etree.attrib["separator"] = self._separator
+        if self._res_filter is not None:
+            table_etree.attrib["filter"] = self._res_filter
         table_etree.attrib["transpose"] = str(self._transpose)
         if len(self._sort_names) > 0:
             table_etree.attrib["sort"] = \

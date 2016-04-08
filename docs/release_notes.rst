@@ -21,6 +21,23 @@
 Release notes
 =============
 
+Version 2.1.1
+~~~~~~~~~~~~~
+Release: 2016-04-08
+
+* *JUBE* will now show only the latest benchmark result by default, ``--id all`` must be used to see all results
+* Bool expressions can now be used directly in the ``<do active="">`` attribute
+* Added ``filter`` attribute in ``<table>`` and ``<syslog>`` to show only specifix result entries (based on a bool expression)
+* New ``<parameter>`` and ``<pattern>`` mode: ``mode="shell"``
+* Allow multiline output in result tables
+* Fix wrong group handling if ``JUBE_GROUP_NAME`` is used
+* Scripting parameter (e.g. ``mode="python"``) can now handle $ to allow access to environment variables
+* Fix $$ bug ($$ were ignored when used within a parameter)
+* Fix ``$jube_wp_parent_..._id`` bug if ``$jube_wp_parent_..._id`` is used within another parameter
+* Fix bug in std calculation when creating statistical result values
+* Fix bug if tags are used within ``<include>``
+
+
 Version 2.1.0
 ~~~~~~~~~~~~~
 Release: 2015-11-10

@@ -169,7 +169,7 @@ attlist.table &=
   attribute separator { text }?,
   attribute transpose { "true" | "false" | "True" | "False" }?,
   attribute sort { text }?,
-  attribute show { text }?,
+  attribute filter { text }?,
   attribute tag { text }?
 syslog = element syslog { attlist.syslog, (key | \include)* }
 attlist.syslog &=
@@ -179,7 +179,7 @@ attlist.syslog &=
   attribute port { text }?,
   attribute format { text }?,
   attribute sort { text }?,
-  attribute show { text }?,
+  attribute filter { text }?,
   attribute tag { text }?
 column = element column { attlist.column, text }
 attlist.column &=

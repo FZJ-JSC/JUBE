@@ -522,7 +522,7 @@ Glossary
 
      .. code-block:: xml
 
-        <table name="..." style="..." sort="..." separator="..." transpose="..." show="...">
+        <table name="..." style="..." sort="..." separator="..." transpose="..." filter="...">
           <column colw="..." format="..." title="..." null_value="...">...</column>
           ...
         </table>
@@ -537,14 +537,14 @@ Glossary
      * ``format`` can contain a C like format string: e.g. format=".2f"
      * ``null_value`` is optional: NULL value representation (default: empty string)
      * ``transpose`` is optional (default: ``false``)
-     * ``show`` is optional, it can contain a bool expression to show only specific result entries
+     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    syslog_tag
      A syslog result type
 
      .. code-block:: xml
 
-        <syslog name="..." address="..." host="..." port="..." sort="..." format="..." show="...">
+        <syslog name="..." address="..." host="..." port="..." sort="..." format="..." filter="...">
           <key format="..." title="..." null_value="...">...</key>
           ...
         </syslog>
@@ -558,7 +558,7 @@ Glossary
      * ``title`` is optional: alternative key title
      * ``format`` can contain a C like format string: e.g. format=".2f"
      * ``null_value`` is optional: NULL value representation (default: empty string)
-     * ``show`` is optional, it can contain a bool expression to show only specific result entries
+     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    parameter_space
      The parameter space for a specific benchmark run is the bundle of all possible parameter combinations.

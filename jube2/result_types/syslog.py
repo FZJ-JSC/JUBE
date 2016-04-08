@@ -93,8 +93,8 @@ class SysloggedResult(KeyValuesResult):
 
     def __init__(self, name, syslog_address=None, syslog_host=None,
                  syslog_port=None, syslog_fmt_string=None, sort_names=None,
-                 show=None):
-        KeyValuesResult.__init__(self, name, sort_names, show)
+                 res_filter=None):
+        KeyValuesResult.__init__(self, name, sort_names, res_filter)
         if (syslog_address is None) and (syslog_host is None) and \
                 (syslog_port is None):
             raise IOError("Neither a syslog address nor a hostname port " +
@@ -132,6 +132,8 @@ class SysloggedResult(KeyValuesResult):
             syslog_etree.attrib["port"] = self._syslog_port
         if self._syslog_fmt_string is not None:
             syslog_etree.attrib["format"] = self._syslog_fmt_string
+        if self._res_filter is not None:
+            syslog_etree.attrib["filter"] = self._res_filter
         if len(self._sort_names) > 0:
             syslog_etree.attrib["sort"] = \
                 jube2.conf.DEFAULT_SEPARATOR.join(self._sort_names)

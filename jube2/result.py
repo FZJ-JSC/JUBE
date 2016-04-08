@@ -56,10 +56,10 @@ class Result(object):
         def __eq__(self, other):
             return self.name == other.name
 
-    def __init__(self, name, show=None):
+    def __init__(self, name, res_filter=None):
         self._use = set()
         self._name = name
-        self._show = show
+        self._res_filter = res_filter
         self._result_dir = None
         self._benchmark = None
 
@@ -139,11 +139,11 @@ class Result(object):
                         "jube_res_analyser": analyser_name,
                     })
 
-                    # If show is set, only show matching result lines
-                    if self._show is not None:
-                        show = jube2.util.substitution(self._show,
-                                                       analyse_dict)
-                        if not jube2.util.eval_bool(show):
+                    # If res_filter is set, only show matching result lines
+                    if self._res_filter is not None:
+                        res_filter = jube2.util.substitution(self._res_filter,
+                                                             analyse_dict)
+                        if not jube2.util.eval_bool(res_filter):
                             continue
 
                     yield analyse_dict
