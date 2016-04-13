@@ -39,7 +39,7 @@
 <!ELEMENT iofile EMPTY>
 <!ATTLIST iofile        in CDATA #REQUIRED
                         out CDATA #REQUIRED
-                        out_mode (w,a) #IMPLIED
+                        out_mode (w|a) #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT sub (#PCDATA)>
 <!ATTLIST sub           source CDATA #REQUIRED

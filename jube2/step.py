@@ -253,7 +253,7 @@ class Step(object):
                     workpackage = jube2.workpackage.Workpackage(
                         benchmark=benchmark,
                         step=self,
-                        parameterset=workpackage_parameterset,
+                        parameterset=workpackage_parameterset.copy(),
                         history=parameterset.copy(),
                         iteration=iteration_base * self.iterations + iteration)
 
