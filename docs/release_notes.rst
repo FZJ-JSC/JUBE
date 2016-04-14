@@ -23,7 +23,7 @@ Release notes
 
 Version 2.1.1
 ~~~~~~~~~~~~~
-Release: 2016-04-08
+Release: 2016-04-14
 
 * *JUBE* will now show only the latest benchmark result by default, ``--id all`` must be used to see all results
 * Bool expressions can now be used directly in the ``<do active="">`` attribute

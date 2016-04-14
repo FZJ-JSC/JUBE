@@ -668,7 +668,7 @@ selection_tag
    * "<only>" and "<not>" can contain a name list divided by ","
 
 statistical_values
-   If there are multiple pattern matches within oen file, multiple
+   If there are multiple pattern matches within one file, multiple
    files or when using multiple iterations. *JUBE* will create some
    statistical values automatically:
 
