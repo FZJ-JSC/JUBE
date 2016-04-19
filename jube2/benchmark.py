@@ -502,9 +502,11 @@ class Benchmark(object):
     def new_run(self):
         """Create workpackage structure and run benchmark"""
         # Check benchmark consistency
+        LOGGER.debug("Start consistency check")
         jube2.util.consistency_check(self)
 
         # Create benchmark directory
+        LOGGER.debug("Create benchmark directory")
         self._create_bench_dir()
 
         # Change logfile
@@ -515,12 +517,15 @@ class Benchmark(object):
         jube2.workpackage.Workpackage.id_counter = 0
 
         # Create initial workpackages
+        LOGGER.debug("Create initial workpackages")
         self._create_initial_workpackages()
 
         # Store workpackage information
+        LOGGER.debug("Store initial workpackage information")
         self.write_workpackage_information(
             os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
+        LOGGER.debug("Start benchmark run")
         self.run()
 
     def run(self):

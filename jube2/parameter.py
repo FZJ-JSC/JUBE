@@ -264,7 +264,8 @@ class Parameter(object):
     value, a template or a specific value out of a given template"""
 
     # This regex can be used to find variables inside parameter values
-    parameter_regex = r"(?<!\$)(?:\$\$)*\$(?!\$)(\{{)?{0}(?(1)\}}|(?=\W|$))"
+    parameter_regex = \
+        re.compile(r"(?<!\$)(?:\$\$)*\$(?!\$)(\{)?(.+?)(?(1)\}|(?=\W|$))")
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", export=False):
@@ -429,24 +430,26 @@ class StaticParameter(Parameter):
 
     """A StaticParameter can be substituted and evaluated."""
 
+    def __init__(self, name, value, separator=None, parameter_type="string",
+                 parameter_mode="text", export=False):
+        Parameter.__init__(self, name, value, separator, parameter_type,
+                           parameter_mode, export)
+        self.__depending_parameter = \
+            [other_par[1] for other_par in
+             re.findall(Parameter.parameter_regex, self._value)]
+
     def can_substitute_and_evaluate(self, parameterset):
         """A parameter can be substituted and evaluated if there are no
         depending templates or unevaluated parameter inside"""
-        param_names = \
-            [found[1] for found in
-             re.findall(Parameter.parameter_regex.format("(.+?)"),
-                        self._value)]
         return all([(param_name not in parameterset) or
                     ((not parameterset[param_name].is_template) and
                      (not parameterset[param_name].mode in
                       jube2.conf.ALLOWED_SCRIPTTYPES))
-                    for param_name in param_names])
+                    for param_name in self.__depending_parameter])
 
     def depends_on(self, parameter):
         """Checks the parameter depends on an other parameter."""
-        return bool(
-            re.search(Parameter.parameter_regex.format(parameter.name),
-                      self._value))
+        return (parameter.name in self.__depending_parameter)
 
     def substitute_and_evaluate(self, parametersets=None,
                                 final_sub=False, no_templates=False):
@@ -477,8 +480,7 @@ class StaticParameter(Parameter):
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
         mode = self._mode
-        if ((not re.search(
-            Parameter.parameter_regex.format("(.+?)"), value)) or
+        if ((not re.search(Parameter.parameter_regex, value)) or
                 final_sub) and (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
             try:
                 # Run additional substitution to remove $$ before running
