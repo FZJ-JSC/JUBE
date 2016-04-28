@@ -135,7 +135,7 @@ class Substituteset(object):
         for source in self._substitute_dict:
             sub_etree = ET.SubElement(substituteset_etree, "sub")
             sub_etree.attrib["source"] = source
-            sub_etree.attrib["dest"] = self._substitute_dict[source]
+            sub_etree.text = self._substitute_dict[source]
         return substituteset_etree
 
     def __repr__(self):
