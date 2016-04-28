@@ -454,7 +454,7 @@ class StaticParameter(Parameter):
     def substitute_and_evaluate(self, parametersets=None,
                                 final_sub=False, no_templates=False):
         """Substitute all variables inside the parameter value by using the
-        parameters inside the given parameterset and additional_parameterset.
+        parameters inside the given parameterset.
         final_sub marks the last substitution.
 
         Return the new parameter and a boolean value which represent a change
@@ -477,6 +477,9 @@ class StaticParameter(Parameter):
                     dict([(name, param.value) for name, param in
                           parameterset.constant_parameter_dict.items()]))
         value = jube2.util.substitution(value, parameter_dict)
+        # Fix jube_wp_envstr if needed
+        if self._name == "jube_wp_envstr":
+            value = StaticParameter.fix_export_string(value)
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
         mode = self._mode
@@ -512,6 +515,18 @@ class StaticParameter(Parameter):
         else:
             param = self
         return param, changed
+
+    @staticmethod
+    def fix_export_string(value):
+        """Add missing quotes to jube_wp_envstr if needed"""
+        env_str = ""
+        for var_name, var_value in re.findall(
+                r"^export (.+?)\s*=\s*(.+?)\s*$", value, re.MULTILINE):
+            if var_value[0] == "'" or var_value[0] == "\"":
+                env_str += "export {0}={1}\n".format(var_name, var_value)
+            else:
+                env_str += "export {0}='{1}'\n".format(var_name, var_value)
+        return env_str
 
 
 class TemplateParameter(Parameter):
