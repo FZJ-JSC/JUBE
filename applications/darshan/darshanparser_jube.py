@@ -593,14 +593,16 @@ def write_jube_table(table_head, data):
     :param data:
     :return:
     """
-    print(table_head)
-    if JUBE_TABLE:
+    if not NOSTDOUT and JUBE_TABLE:
         import jube2.util
+        print(table_head)
         print(jube2.util.text_table(data, use_header_line=True))
-    else:
+        print()
+    elif not NOSTDOUT:
         import sys
+        print(table_head)
         np.savetxt(sys.stdout, np.array(data), fmt='%s', delimiter=' | ')
-    print()
+        print()
 
 
 def variance_table(nprocs, ranks, file_hash, counters, data):
@@ -735,9 +737,16 @@ def main():
                         help='output file of the darshan profiling tool')
     parser.add_argument('-j', '--jube', action='store_true',
                         help='create jube table output')
+    parser.add_argument('-nout', '--nostdout', action='store_true',
+                        help='disable stdout output')
+    parser.add_argument('-s', '--short', action='store_true',
+                        help='without list of files')
 
     args = parser.parse_args()
-
+    
+    global NOSTDOUT
+    NOSTDOUT = args.nostdout
+    
     global JUBE_TABLE
     JUBE_TABLE = args.jube
 
@@ -754,7 +763,7 @@ def main():
     nprocs = int(re_nprocs.group("nprocs"))
     re_runtime = re.search("# run time: (?P<runtime>\d*)", output)
     runtime = int(re_runtime.group("runtime"))
-    print("Runtime: ", runtime)
+    if not NOSTDOUT: print("Runtime: ", runtime) 
 
     raw = [tuple(line.split()) for line in
                 output[output.find("<fs type>\n") + 10:].split("\n")]
@@ -809,7 +818,8 @@ def main():
     data_transfer(counters, data, mount_pt)
     #exit()
     #####################################################################
-    create_ind_sha_table(nprocs, ranks, file_hash, counters, data, mount_pt)
+    if not args.short and not NOSTDOUT:
+        create_ind_sha_table(nprocs, ranks, file_hash, counters, data, mount_pt)
 
 
 if __name__ == "__main__":
