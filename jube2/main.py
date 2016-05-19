@@ -460,7 +460,8 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
     if benchmark is None:
         return result_list
 
-    if (args.tag is not None) and (len(benchmark.tags & set(args.tag)) == 0):
+    if (args.update is None) and (args.tag is not None) and \
+            (len(benchmark.tags & set(args.tag)) == 0):
         return result_list
 
     # Update benchmark data
