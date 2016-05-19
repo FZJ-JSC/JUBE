@@ -326,6 +326,8 @@ def eval_bool(cmd):
     """Evaluate a bool expression"""
     if cmd.lower() == "true":
         return True
+    elif cmd.lower() == "false":
+        return False
     else:
         return bool(eval(cmd))
 
