@@ -41,6 +41,7 @@
 
   <dos name="mod_load">
     <do>module load darshan-runtime darshan-util </do>
+    <do>module load SciPy-Stack </do>
   </dos>
 
   <darshanstep>
@@ -97,27 +98,27 @@
     </pattern>
 
 
-    <pattern mode="pattern" name="ac_size1" type="int">
-      access size: ${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="ac_size2" type="int">
-      access size: ${jube_pat_nint} ${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="ac_size3" type="int">
-      access size: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="ac_size4" type="int">
-      access size: (?:${jube_pat_nint} ){3}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="pos_ac_size1" type="int">
+      POSIX access size: ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="pos_ac_size2" type="int">
+      POSIX access size: ${jube_pat_nint} ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="pos_ac_size3" type="int">
+      POSIX access size: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="pos_ac_size4" type="int">
+      POSIX access size: (?:${jube_pat_nint} ){3}${jube_pat_int}</pattern>
 
-    <pattern mode="pattern" name="ac_cnt1" type="int">
-      count: ${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="ac_cnt2" type="int">
-      count: ${jube_pat_nint} ${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="ac_cnt3" type="int">
-      count: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="ac_cnt4" type="int">
-      count: (?:${jube_pat_nint} ){3}${jube_pat_int}
+    <pattern mode="pattern" name="pos_ac_cnt1" type="int">
+      POSIX count: ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="pos_ac_cnt2" type="int">
+      POSIX count: ${jube_pat_nint} ${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="pos_ac_cnt3" type="int">
+      POSIX count: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
+    <pattern mode="pattern" name="pos_ac_cnt4" type="int">
+      POSIX count: (?:${jube_pat_nint} ){3}${jube_pat_int}
     </pattern>
 
-    <pattern mode="pattern" name="avg_io_ac_size" type="float">
-      avg_io_ac_size: ${jube_pat_fp}</pattern>
+    <pattern mode="pattern" name="pos_avg_io_ac_size" type="float">
+      POSIX avg_io_ac_size: ${jube_pat_fp}</pattern>
 
     <pattern mode="pattern" name="ind_read_time" type="float">
       cumul_avg_io_time: ${jube_pat_fp}</pattern>
@@ -195,7 +196,7 @@
       <column>ind_write_bw</column>
       <column>sh_read_bw</column>
       <column>sh_write_bw</column>
-      <column>avg_io_ac_size</column>
+      <column>pos_avg_io_ac_size</column>
     </table>
 
 
@@ -222,17 +223,17 @@
       <column>fsync_calls</column>
     </table>
 
-    <table name="darshan_ac_size" style="pretty">
-      <column>ac_size1</column>
-      <column>ac_size2</column>
-      <column>ac_size3</column>
-      <column>ac_size4</column>
+    <table name="darshan_pos_ac_size" style="pretty">
+      <column>pos_ac_size1</column>
+      <column>pos_ac_size2</column>
+      <column>pos_ac_size3</column>
+      <column>pos_ac_size4</column>
     </table>
     <table name="darshan_ac_cnt" style="pretty">
-      <column>ac_cnt1</column>
-      <column>ac_cnt2</column>
-      <column>ac_cnt3</column>
-      <column>ac_cnt4</column>
+      <column>pos_ac_cnt1</column>
+      <column>pos_ac_cnt2</column>
+      <column>pos_ac_cnt3</column>
+      <column>pos_ac_cnt4</column>
     </table>
 
     <table name="darshan_avg_time" style="pretty">
