@@ -453,7 +453,7 @@ class Operation(object):
                 if jube2.conf.VERBOSE_LEVEL > 1:
                     while True:
                         read_out = sub.stdout.read(
-                            jube2.conf.VERBOSE_STDOUT_READ_CHUNK_SIZE)
+                            jube2.conf.VERBOSE_STDOUT_READ_CHUNK_SIZE).decode()
                         if (not read_out):
                             break
                         stdout.write(read_out)

@@ -315,11 +315,11 @@ def script_evaluation(cmd, script_type):
         cmd = "perl -e \"print " + cmd + "\""
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
-        return sub.communicate()[0]
+        return sub.communicate()[0].decode()
     elif script_type == "shell":
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
-        return sub.communicate()[0]
+        return sub.communicate()[0].decode()
 
 
 def eval_bool(cmd):
