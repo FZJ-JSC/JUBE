@@ -796,12 +796,25 @@ def _get_args_parser():
             for names, arg in subparser_config["arguments"].items():
                 subparser[name].add_argument(*names, **arg)
 
+    # create help key word overview
+    help_keys = sorted(jube2.help.HELP)
+    max_word_length = max(map(len, help_keys)) + 4
+    # calculate max number of keyword columns
+    max_columns = jube2.conf.DEFAULT_WIDTH // max_word_length
+    # fill keyword list to match number of columns
+    help_keys += [""] * (len(help_keys) % max_columns)
+    help_keys = list(zip(*[iter(help_keys)] * max_columns))
+    # create overview
+    help_overview = jube2.util.text_table(help_keys, separator="   ",
+                                          align_right=False)
+
     # help subparser
     subparser["help"] = \
-        subparsers.add_parser('help', help='command help',
-                              description="available commands or " +
-                              "info elements: " +
-                              ", ".join(sorted(jube2.help.HELP)))
+        subparsers.add_parser(
+            'help', help='command help',
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            description="available commands or info elements: \n" +
+            help_overview)
     subparser["help"].add_argument('command', nargs='?',
                                    help="command or info element")
     subparser["help"].set_defaults(func=command_help)
