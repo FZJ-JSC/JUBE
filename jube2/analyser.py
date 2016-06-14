@@ -267,6 +267,32 @@ class Analyser(object):
                             result[stepname][root_workpackage.id].update(
                                 new_result_dict)
 
+                # Set default pattern values if available and necessary
+                new_result_dict = result[stepname][root_workpackage.id]
+                for pattern in local_patternset.pattern_storage:
+                    if (pattern.default_value is not None) and \
+                            (pattern.name not in new_result_dict):
+                        default = pattern.default_value
+                        # Convert default value
+                        if pattern.content_type == "int":
+                            if default == "nan":
+                                default = float("nan")
+                            else:
+                                default = int(float(default))
+                        elif pattern.content_type == "float":
+                            default = float(default)
+                        new_result_dict[pattern.name] = default
+                        new_result_dict[pattern.name + "_cnt"] = 0
+                        new_result_dict[pattern.name + "_last"] = default
+                        if pattern.content_type in ["int", "float"]:
+                            new_result_dict.update(
+                                {pattern.name + "_sum": default,
+                                 pattern.name + "_min": default,
+                                 pattern.name + "_max": default,
+                                 pattern.name + "_avg": default,
+                                 pattern.name + "_sum2": default**2,
+                                 pattern.name + "_std": 0})
+
                 # Evaluate derived pattern
                 if len(result[stepname][root_workpackage.id]) > 0:
                     new_result_dict = self._eval_derived_pattern(
@@ -288,7 +314,6 @@ class Analyser(object):
 
         # Get jube patternset
         jube_pattern = jube2.pattern.get_jube_pattern()
-
         # calculate derived pattern
         patternset.derived_pattern_substitution(
             [parameterset, resultset, jube_pattern.pattern_storage])
@@ -377,7 +402,10 @@ class Analyser(object):
             for match in match_list:
                 try:
                     if pattern.content_type == "int":
-                        new_match_list.append(int(float(match)))
+                        if match == "nan":
+                            new_match_list.append(float("nan"))
+                        else:
+                            new_match_list.append(int(float(match)))
                     elif pattern.content_type == "float":
                         new_match_list.append(float(match))
                     else:

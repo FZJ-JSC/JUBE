@@ -165,7 +165,7 @@ Glossary
 
       .. code-block:: xml
 
-         <pattern name="..." unit="..." mode="..." type="...">...</pattern>
+         <pattern name="..." default="..." unit="..." mode="..." type="...">...</pattern>
 
       * ``unit`` is optional, will be used in the result table
       * ``mode`` is optional, allowed modes:
@@ -174,11 +174,14 @@ Glossary
         * ``text``: simple text and variable concatenation
         * ``perl``: snippet evaluation (using *Perl*)
         * ``python``: snippet evaluation (using *Python*)
+        * ``shell``: snippet evaluation (using *Shell*)
 
       * ``type`` is optional, specify datatype (for sort operation)
 
         * default: ``string``
         * allowed: ``int``, ``float`` or ``string``
+
+      * ``default`` is optional: Specify default value if pattern can't be found or if it can't be evaluated
 
    statistical_values
       If there are multiple pattern matches within one file, multiple files or
@@ -523,7 +526,7 @@ Glossary
      .. code-block:: xml
 
         <table name="..." style="..." sort="..." separator="..." transpose="..." filter="...">
-          <column colw="..." format="..." title="..." null_value="...">...</column>
+          <column colw="..." format="..." title="...">...</column>
           ...
         </table>
 
@@ -535,7 +538,6 @@ Glossary
      * ``colw`` is optional: column width
      * ``title`` is optional: column title
      * ``format`` can contain a C like format string: e.g. format=".2f"
-     * ``null_value`` is optional: NULL value representation (default: empty string)
      * ``transpose`` is optional (default: ``false``)
      * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
@@ -545,7 +547,7 @@ Glossary
      .. code-block:: xml
 
         <syslog name="..." address="..." host="..." port="..." sort="..." format="..." filter="...">
-          <key format="..." title="..." null_value="...">...</key>
+          <key format="..." title="...">...</key>
           ...
         </syslog>
 
@@ -557,7 +559,6 @@ Glossary
      * ``<key>`` must contain an single parameter- or patternname
      * ``title`` is optional: alternative key title
      * ``format`` can contain a C like format string: e.g. format=".2f"
-     * ``null_value`` is optional: NULL value representation (default: empty string)
      * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    parameter_space

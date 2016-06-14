@@ -24,6 +24,8 @@ from __future__ import (print_function,
 import jube2.parameter
 import xml.etree.ElementTree as ET
 
+LOGGER = jube2.log.get_logger(__name__)
+
 
 class Patternset(object):
 
@@ -166,11 +168,13 @@ class Pattern(jube2.parameter.StaticParameter):
     or to represent a derived pattern."""
 
     def __init__(self, name, value, pattern_mode="pattern",
-                 content_type="string", unit=""):
+                 content_type="string", unit="", default=None):
         self._derived = pattern_mode != "pattern"
 
         if not self._derived:
             pattern_mode = "text"
+
+        self._default = default
 
         # Unicode conversion
         value = "" + value
@@ -192,6 +196,11 @@ class Pattern(jube2.parameter.StaticParameter):
         return self._type
 
     @property
+    def default_value(self):
+        """Return pattern default value"""
+        return self._default
+
+    @property
     def unit(self):
         """Return unit"""
         return self._unit
@@ -205,9 +214,22 @@ class Pattern(jube2.parameter.StaticParameter):
         Return the new pattern and a boolean value which represent a change
         of value
         """
-        param, changed = \
-            jube2.parameter.StaticParameter.substitute_and_evaluate(
-                self, parametersets, final_sub, no_templates)
+        try:
+            param, changed = \
+                jube2.parameter.StaticParameter.substitute_and_evaluate(
+                    self, parametersets, final_sub, no_templates)
+        except RuntimeError as re:
+            LOGGER.debug(str(re))
+            if self._default is not None:
+                value = self._default
+            elif self._type in ["int", "float"]:
+                value = "nan"
+            else:
+                value = ""
+            pattern = Pattern(
+                self._name, value, "text", self._type, self._unit)
+            pattern.based_on = self
+            return pattern, True
 
         if changed:
             # Convert parameter to pattern
@@ -227,7 +249,8 @@ class Pattern(jube2.parameter.StaticParameter):
         pattern_etree = ET.Element('pattern')
         pattern_etree.attrib["name"] = self._name
         pattern_etree.attrib["type"] = self._type
-
+        if self._default is not None:
+            pattern_etree.attrib["default"] = self._default
         if not self._derived:
             pattern_etree.attrib["mode"] = "pattern"
         else:

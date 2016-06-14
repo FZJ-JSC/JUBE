@@ -136,6 +136,7 @@
         <xs:attribute name="type" type="contentType" use="optional" />
         <xs:attribute name="mode" type="xs:string" use="optional" />
         <xs:attribute name="tag" type="xs:string" use="optional" />
+        <xs:attribute name="default" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent> 
   </xs:complexType>
@@ -244,7 +245,6 @@
       <xs:extension base="stringTagType">
         <xs:attribute name="format" type="xs:string" use="optional" />
         <xs:attribute name="title" type="xs:string" use="optional" />
-        <xs:attribute name="null_value" type="xs:string" use="optional" />
       </xs:extension> 
     </xs:complexContent>
   </xs:complexType>

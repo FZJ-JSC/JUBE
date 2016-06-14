@@ -294,7 +294,10 @@ def convert_type(value_type, value, stop=True):
     result_value = None
     try:
         if value_type == "int":
-            result_value = int(float(value))
+            if value == "nan":
+                result_value = float("nan")
+            else:
+                result_value = int(float(value))
         elif value_type == "float":
             result_value = float(value)
         else:
@@ -304,12 +307,7 @@ def convert_type(value_type, value, stop=True):
             raise ValueError(("\"{0}\" can't be represented as a \"{1}\"")
                              .format(value, value_type))
         else:
-            if value_type == "int":
-                result_value = int()
-            elif value_type == "float":
-                result_value = float()
-            LOGGER.warning(("\"{0}\" can't be represented as a \"{1}\"")
-                           .format(value, value_type))
+            result_value = value
     return result_value
 
 

@@ -119,6 +119,7 @@ attlist.pattern &=
   attribute type { "int" | "string" | "float" }?,
   attribute mode { text }?,
   attribute unit { text }?,
+  attribute default { text }?,
   attribute tag { text }?
 step = element step { attlist.step, (use | do | \include)* }
 attlist.step &=
@@ -186,13 +187,11 @@ attlist.column &=
   attribute colw { text }?,
   attribute format { text }?,
   attribute title { text }?,
-  attribute null_value { text }?,
   attribute tag { text }?
 key = element key { attlist.key, text }
 attlist.key &=
   attribute format { text }?,
   attribute title { text }?,
-  attribute null_value { text }?,
   attribute tag { text }?
 file = element file { attlist.file, text }
 attlist.file &=

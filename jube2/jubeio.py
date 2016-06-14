@@ -436,6 +436,8 @@ class XMLParser(object):
                         value = pattern_etree.text
                         if value is not None:
                             value = value.strip()
+                        else:
+                            value = ""
                         value = jube2.util.convert_type(pattern_type, value)
                         analyse_result[analyser_name][step_name][
                             wp_id][pattern_name] = value
@@ -948,12 +950,10 @@ class XMLParser(object):
             if colw is not None:
                 colw = int(colw)
             title = element.get("title")
-            null_value = element.get("null_value", "").strip()
             format_string = element.get("format")
             if format_string is not None:
                 format_string = format_string.strip()
-            table.add_column(
-                column_name, colw, format_string, title, null_value)
+            table.add_column(column_name, colw, format_string, title)
         return table
 
     @staticmethod
@@ -995,11 +995,10 @@ class XMLParser(object):
             if key_name == "":
                 raise ValueError("Empty <key> not allowed")
             title = element.get("title")
-            null_value = element.get("null_value", "").strip()
             format_string = element.get("format")
             if format_string is not None:
                 format_string = format_string.strip()
-            syslog_result.add_key(key_name, format_string, title, null_value)
+            syslog_result.add_key(key_name, format_string, title)
         return syslog_result
 
     @staticmethod
@@ -1222,12 +1221,16 @@ class XMLParser(object):
                     pattern_mode, name))
             content_type = pattern.get("type", default="string").strip()
             unit = pattern.get("unit", "").strip()
+            default = pattern.get("default")
+            if default is not None:
+                default = default.strip()
             if pattern.text is None:
                 value = ""
             else:
                 value = pattern.text.strip()
             patternlist.append(jube2.pattern.Pattern(name, value, pattern_mode,
-                                                     content_type, unit))
+                                                     content_type, unit,
+                                                     default))
         return patternlist
 
     def _extract_filesets(self, etree):
