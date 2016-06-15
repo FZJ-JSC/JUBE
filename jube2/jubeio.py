@@ -1283,24 +1283,28 @@ class XMLParser(object):
                     raise ValueError("Empty filelist in <{0}> found."
                                      .format(etree_file.tag))
                 files = etree_file.text.strip().split(separator)
-                if alt_name is None:
-                    # Use the original filenames
-                    names = [os.path.basename(path.strip()) for path in files]
-                else:
+                if alt_name is not None:
                     # Use the new alternativ filenames
                     names = [name.strip() for name in
                              alt_name.split(jube2.conf.DEFAULT_SEPARATOR)]
-                if len(names) != len(files):
-                    raise ValueError("Namelist and filelist must have same " +
-                                     "length in <{0}>".format(etree_file.tag))
+                    if len(names) != len(files):
+                        raise ValueError("Namelist and filelist must have " +
+                                         "same length in <{0}>".\
+                                         format(etree_file.tag))
+                else:
+                    names=None
                 for i, file_path in enumerate(files):
                     path = os.path.join(directory, file_path.strip())
+                    if names is not None:
+                        name = names[i]
+                    else:
+                        name = None
                     if etree_file.tag == "copy":
                         file_obj = jube2.fileset.Copy(
-                            path, names[i], is_internal_ref)
+                            path, name, is_internal_ref)
                     elif etree_file.tag == "link":
                         file_obj = jube2.fileset.Link(
-                            path, names[i], is_internal_ref)
+                            path, name, is_internal_ref)
                     if file_path_ref is not None:
                         file_obj.file_path_ref = \
                             os.path.expandvars(os.path.expanduser(

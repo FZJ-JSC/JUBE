@@ -75,7 +75,7 @@ class File(object):
 
     """Generic file access"""
 
-    def __init__(self, path, name, is_internal_ref=False):
+    def __init__(self, path, name=None, is_internal_ref=False):
         self._path = path
         self._name = name
         self._file_path_ref = ""
@@ -127,18 +127,25 @@ class Link(File):
             path = jube2.util.substitution(path, environment)
         else:
             path = os.path.expandvars(path)
-        name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             path = os.path.join(work_dir, path)
         else:
             path = os.path.join(self._file_path_ref, path)
             path = os.path.join(file_path_ref, path)
             path = os.path.normpath(path)
+        if self._name is None:
+            name = os.path.basename(path)
+        else:
+            name = jube2.util.substitution(self._name, parameter_dict)
         if (not os.path.exists(path)) and (not jube2.conf.DEBUG_MODE):
             raise RuntimeError("'{0}' not found".format(path))
         if alt_work_dir is not None:
             work_dir = alt_work_dir
-        target_path = os.path.relpath(path, work_dir)
+        if os.path.isabs(path):
+            target_path = path
+        else:
+            target_path = os.path.relpath(path, 
+                os.path.join(work_dir, os.path.dirname(name)))
         link_path = os.path.join(work_dir, name)
         LOGGER.debug("  link \"{0}\" <- \"{1}\"".format(path, name))
         if not jube2.conf.DEBUG_MODE and not os.path.exists(link_path):
@@ -148,7 +155,8 @@ class Link(File):
         """Return etree object representation"""
         link_etree = ET.Element("link")
         link_etree.text = self._path
-        link_etree.attrib["name"] = self._name
+        if self._name is not None:
+            link_etree.attrib["name"] = self._name
         if self._is_internal_ref:
             link_etree.attrib["rel_path_ref"] = "internal"
         if self._file_path_ref != "":
@@ -171,13 +179,16 @@ class Copy(File):
             pathname = jube2.util.substitution(pathname, environment)
         else:
             pathname = os.path.expandvars(pathname)
-        name = jube2.util.substitution(self._name, parameter_dict)
         if self._is_internal_ref:
             pathname = os.path.join(work_dir, pathname)
         else:
             pathname = os.path.join(self._file_path_ref, pathname)
             pathname = os.path.join(file_path_ref, pathname)
             pathname = os.path.normpath(pathname)
+        if self._name is None:
+            name = os.path.basename(pathname)
+        else:
+            name = jube2.util.substitution(self._name, parameter_dict)
         if alt_work_dir is not None:
             work_dir = alt_work_dir
         pathes = glob.glob(pathname)
@@ -201,7 +212,8 @@ class Copy(File):
         """Return etree object representation"""
         copy_etree = ET.Element("copy")
         copy_etree.text = self._path
-        copy_etree.attrib["name"] = self._name
+        if self._name is not None:
+            copy_etree.attrib["name"] = self._name
         if self._is_internal_ref:
             copy_etree.attrib["rel_path_ref"] = "internal"
         if self._file_path_ref != "":
