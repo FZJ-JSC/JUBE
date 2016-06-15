@@ -41,7 +41,8 @@ class Step(object):
     """
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
-                 shared_name=None, export=False, max_wps="0"):
+                 shared_name=None, export=False, max_wps="0",
+                 active="true"):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -51,6 +52,7 @@ class Step(object):
         self._shared_name = shared_name
         self._export = export
         self._max_wps = max_wps
+        self._active = active
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -63,6 +65,8 @@ class Step(object):
             step_etree.attrib["work_dir"] = self._alt_work_dir
         if self._shared_name is not None:
             step_etree.attrib["shared"] = self._shared_name
+        if self._active != "true":
+            step_etree.attrib["active"] = self._active
         if self._export:
             step_etree.attrib["export"] = "true"
         if self._max_wps != "0":
@@ -95,6 +99,11 @@ class Step(object):
     def name(self):
         """Return step name"""
         return self._name
+
+    @property
+    def active(self):
+        """Return active state"""
+        return self._active
 
     @property
     def export(self):
@@ -279,7 +288,11 @@ class Step(object):
                     workpackage.history.update_parameterset(
                         workpackage.parameterset)
 
-                    created_workpackages.append(workpackage)
+                    if workpackage.active:
+                        created_workpackages.append(workpackage)
+                    else:
+                        jube2.workpackage.Workpackage.\
+                            reduce_workpackage_id_counter()
 
                 for workpackage in created_workpackages:
                     workpackage.iteration_siblings.update(

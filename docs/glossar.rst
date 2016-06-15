@@ -413,7 +413,7 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="..." iterations="...">
+        <step name="..." depend="..." work_dir="..." shared="..." active="..." export="..." max_async="..." iterations="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -434,6 +434,11 @@ Glossary
 
        * the user had to handle **uniqueness of this directory** by his own
        * no automatic parent/children link creation
+
+     * ``active`` is optional
+
+       * can be set to ``true`` or ``false`` or any *Python* parsable bool expression to enable or disable the single command
+       * :term:`parameter <parameter_tag>` are allowed inside this attribute
 
      * ``shared`` is optional and can be used to create a shared folder which can be accessed by all workpackages based on this step
 

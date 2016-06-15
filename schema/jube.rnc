@@ -128,6 +128,7 @@ attlist.step &=
   attribute max_async { text }?,
   attribute depend { text }?,
   attribute work_dir { text }?,
+  attribute active { text }?,
   attribute export { "true" | "false" | "True" | "False" }?,
   attribute shared { text }?,
   attribute tag { text }?

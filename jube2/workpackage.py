@@ -119,6 +119,23 @@ class Workpackage(object):
         return self._env
 
     @property
+    def active(self):
+        """Check active state"""
+        active = self._step.active
+
+        # Add internal jube parameter
+        parameterset = self.add_jube_parameter(self._history.copy())
+        # Collect parameter for substitution
+        parameter = \
+            dict([[par.name, par.value] for par in
+                  parameterset.constant_parameter_dict.values()])
+
+        # Parameter substitution
+        active = jube2.util.substitution(active, parameter)
+        # Evaluate active state
+        return jube2.util.eval_bool(active)
+
+    @property
     def done(self):
         """Workpackage done?"""
         done_file = os.path.join(self.workpackage_dir,
@@ -539,3 +556,7 @@ class Workpackage(object):
         # --- Write information file to mark end of work ---
         if continue_op:
             self.done = True
+
+    @staticmethod
+    def reduce_workpackage_id_counter():
+        Workpackage.id_counter = Workpackage.id_counter - 1
