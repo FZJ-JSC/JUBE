@@ -27,6 +27,7 @@ Contents:
    introduction
    tutorial
    advanced
+   faq
    commandline
    release_notes
    devel

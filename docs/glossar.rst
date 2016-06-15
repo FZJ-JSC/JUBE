@@ -276,8 +276,9 @@ Glossary
 
       * Scripting modes allowed:
 
-        * ``mode="python"``: allow python snippets (using ``eval <cmd>``)
-        * ``mode="perl"``: allow perl snippets (using ``perl -e "print <cmd>"``)
+        * ``mode="python"``: allow *Python* snippets (using ``eval <cmd>``)
+        * ``mode="perl"``: allow *Perl* snippets (using ``perl -e "print <cmd>"``)
+        * ``mode="shell"``: allow *Shell* snippets
 
       * Templates can be created, using scripting e.g.: ``",".join([str(2**i) for i in range(3)])``
 
@@ -526,7 +527,7 @@ Glossary
      .. code-block:: xml
 
         <table name="..." style="..." sort="..." separator="..." transpose="..." filter="...">
-          <column colw="..." format="..." title="...">...</column>
+          <column>...</column>
           ...
         </table>
 
@@ -535,11 +536,20 @@ Glossary
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
      * ``<column>`` must contain an single parameter- or patternname
+     * ``transpose`` is optional (default: ``false``)
+     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
+
+   column_tag
+     A line within a ASCII result table. The <column>-tag can contain the name of a pattern or
+     the name of a parameter.
+
+     .. code-block:: xml
+
+        <column colw="..." format="..." title="...">...</column>
+
      * ``colw`` is optional: column width
      * ``title`` is optional: column title
      * ``format`` can contain a C like format string: e.g. format=".2f"
-     * ``transpose`` is optional (default: ``false``)
-     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    syslog_tag
      A syslog result type
@@ -547,7 +557,7 @@ Glossary
      .. code-block:: xml
 
         <syslog name="..." address="..." host="..." port="..." sort="..." format="..." filter="...">
-          <key format="..." title="...">...</key>
+          <key>...</key>
           ...
         </syslog>
 
@@ -557,9 +567,17 @@ Glossary
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
      * ``<key>`` must contain an single parameter- or patternname
+     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
+
+   key_tag
+     A syslog result key. ``<key>`` must contain an single parameter- or patternname.
+
+     .. code-block:: xml
+
+        <key format="..." title="...">...</key>
+
      * ``title`` is optional: alternative key title
      * ``format`` can contain a C like format string: e.g. format=".2f"
-     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    parameter_space
      The parameter space for a specific benchmark run is the bundle of all possible parameter combinations.
@@ -655,31 +673,31 @@ Glossary
              ...
            </selection>
            <!-- global sets -->
-           <parameterset>...</parameterset>
-           <substitutionset>...</substitutionset>
-           <fileset>...</fileset>
-           <patternset>...</patternset>
+           <parameterset name="">...</parameterset>
+           <substitutionset name="">...</substitutionset>
+           <fileset name="">...</fileset>
+           <patternset name="">...</patternset>
            ...
-           <benchmark>
+           <benchmark name="" outpath="">
              <!-- optional benchmark comment -->
              <comment>...</comment>
              <!-- local benchmark parametersets -->
-             <parameterset>...</parameterset>
+             <parameterset name="">...</parameterset>
              ...
              <!-- files, which should be used -->
-             <fileset>...</fileset>
+             <fileset name="">...</fileset>
              ...
              <!-- substitution rules -->
-             <substituteset>...</substituteset>
+             <substituteset name="">...</substituteset>
              ...
              <!-- pattern -->
-             <patternset>...</patternset>
+             <patternset name="">...</patternset>
              ...
              <!-- commands -->
-             <step>...</step>
+             <step name="">...</step>
              ...
              <!-- analyse -->
-             <analyser>...</analyser>
+             <analyser name="">...</analyser>
              ...
              <!-- result -->
              <result>...</result>

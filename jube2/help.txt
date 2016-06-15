@@ -67,6 +67,18 @@ benchmark_tag
 
      * the path will be relative to input file location
 
+column_tag
+   A line within a ASCII result table. The <column>-tag can contain
+   the name of a pattern or the name of a parameter.
+
+      <column colw="..." format="..." title="...">...</column>
+
+   * "colw" is optional: column width
+
+   * "title" is optional: column title
+
+   * "format" can contain a C like format string: e.g. format=".2f"
+
 comment
    Add or manipulate the comment string.
 
@@ -247,31 +259,31 @@ general_structure
           ...
         </selection>
         <!-- global sets -->
-        <parameterset>...</parameterset>
-        <substitutionset>...</substitutionset>
-        <fileset>...</fileset>
-        <patternset>...</patternset>
+        <parameterset name="">...</parameterset>
+        <substitutionset name="">...</substitutionset>
+        <fileset name="">...</fileset>
+        <patternset name="">...</patternset>
         ...
-        <benchmark>
+        <benchmark name="" outpath="">
           <!-- optional benchmark comment -->
           <comment>...</comment>
           <!-- local benchmark parametersets -->
-          <parameterset>...</parameterset>
+          <parameterset name="">...</parameterset>
           ...
           <!-- files, which should be used -->
-          <fileset>...</fileset>
+          <fileset name="">...</fileset>
           ...
           <!-- substitution rules -->
-          <substituteset>...</substituteset>
+          <substituteset name="">...</substituteset>
           ...
           <!-- pattern -->
-          <patternset>...</patternset>
+          <patternset name="">...</patternset>
           ...
           <!-- commands -->
-          <step>...</step>
+          <step name="">...</step>
           ...
           <!-- analyse -->
-          <analyser>...</analyser>
+          <analyser name="">...</analyser>
           ...
           <!-- result -->
           <result>...</result>
@@ -387,6 +399,16 @@ jube_variables
 
      * "$jube_wp_envlist": list of all exported parameter names
 
+key_tag
+   A syslog result key. "<key>" must contain an single parameter- or
+   patternname.
+
+      <key format="..." title="...">...</key>
+
+   * "title" is optional: alternative key title
+
+   * "format" can contain a C like format string: e.g. format=".2f"
+
 link_tag
    A link can be used to create a symbolic link from your sandbox work
    directory to a file or directory inside your normal filesystem.
@@ -477,10 +499,12 @@ parameter_tag
 
    * Scripting modes allowed:
 
-     * "mode="python"": allow python snippets (using "eval <cmd>")
+     * "mode="python"": allow *Python* snippets (using "eval <cmd>")
 
-     * "mode="perl"": allow perl snippets (using "perl -e "print
+     * "mode="perl"": allow *Perl* snippets (using "perl -e "print
        <cmd>"")
+
+     * "mode="shell"": allow *Shell* snippets
 
    * Templates can be created, using scripting e.g.:
      "",".join([str(2**i) for i in range(3)])"
@@ -542,7 +566,7 @@ pattern_tag
    A pattern is used to parse your output files and create your result
    data.
 
-      <pattern name="..." unit="..." mode="..." type="...">...</pattern>
+      <pattern name="..." default="..." unit="..." mode="..." type="...">...</pattern>
 
    * "unit" is optional, will be used in the result table
 
@@ -556,11 +580,16 @@ pattern_tag
 
      * "python": snippet evaluation (using *Python*)
 
+     * "shell": snippet evaluation (using *Shell*)
+
    * "type" is optional, specify datatype (for sort operation)
 
      * default: "string"
 
      * allowed: "int", "float" or "string"
+
+   * "default" is optional: Specify default value if pattern can't
+     be found or if it can't be evaluated
 
 patternset_tag
    A patternset is a container to store a bundle of patterns.
@@ -800,7 +829,7 @@ syslog_tag
    A syslog result type
 
       <syslog name="..." address="..." host="..." port="..." sort="..." format="..." filter="...">
-        <key format="..." title="..." null_value="...">...</key>
+        <key>...</key>
         ...
       </syslog>
 
@@ -817,13 +846,6 @@ syslog_tag
 
    * "<key>" must contain an single parameter- or patternname
 
-   * "title" is optional: alternative key title
-
-   * "format" can contain a C like format string: e.g. format=".2f"
-
-   * "null_value" is optional: NULL value representation (default:
-     empty string)
-
    * "filter" is optional, it can contain a bool expression to show
      only specific result entries
 
@@ -831,7 +853,7 @@ table_tag
    A simple ASCII based table ouput.
 
       <table name="..." style="..." sort="..." separator="..." transpose="..." filter="...">
-        <column colw="..." format="..." title="..." null_value="...">...</column>
+        <column>...</column>
         ...
       </table>
 
@@ -845,15 +867,6 @@ table_tag
      will be used for sorting
 
    * "<column>" must contain an single parameter- or patternname
-
-   * "colw" is optional: column width
-
-   * "title" is optional: column title
-
-   * "format" can contain a C like format string: e.g. format=".2f"
-
-   * "null_value" is optional: NULL value representation (default:
-     empty string)
 
    * "transpose" is optional (default: "false")
 
