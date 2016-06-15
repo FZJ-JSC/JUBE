@@ -1289,10 +1289,10 @@ class XMLParser(object):
                              alt_name.split(jube2.conf.DEFAULT_SEPARATOR)]
                     if len(names) != len(files):
                         raise ValueError("Namelist and filelist must have " +
-                                         "same length in <{0}>".\
+                                         "same length in <{0}>".
                                          format(etree_file.tag))
                 else:
-                    names=None
+                    names = None
                 for i, file_path in enumerate(files):
                     path = os.path.join(directory, file_path.strip())
                     if names is not None:

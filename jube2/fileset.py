@@ -144,8 +144,8 @@ class Link(File):
         if os.path.isabs(path):
             target_path = path
         else:
-            target_path = os.path.relpath(path, 
-                os.path.join(work_dir, os.path.dirname(name)))
+            target_path = os.path.relpath(
+                path, os.path.join(work_dir, os.path.dirname(name)))
         link_path = os.path.join(work_dir, name)
         LOGGER.debug("  link \"{0}\" <- \"{1}\"".format(path, name))
         if not jube2.conf.DEBUG_MODE and not os.path.exists(link_path):
