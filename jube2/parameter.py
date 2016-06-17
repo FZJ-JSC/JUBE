@@ -111,7 +111,9 @@ class Parameterset(object):
         """Return dictionary representation of all constant parameters"""
         return dict([(parameter.name, parameter)
                      for parameter in self._parameters.values()
-                     if not parameter.is_template])
+                     if (not parameter.is_template) and
+                        (parameter.mode not in
+                         jube2.conf.ALLOWED_SCRIPTTYPES)])
 
     @property
     def template_parameter_dict(self):
@@ -212,10 +214,11 @@ class Parameterset(object):
         additional_parameterset will be used for substitution but will not be
         added to the set. final_sub marks the last substitution process."""
         set_changed = True
-        max_count = jube2.conf.MAX_RECURSIVE_SUB
-        while set_changed and (not self.has_templates) and (max_count > 0):
+        count = 0
+        while set_changed and (not self.has_templates) and \
+                (count < jube2.conf.MAX_RECURSIVE_SUB):
             set_changed = False
-            max_count -= 1
+            count += 1
 
             # Create dependencies
             depend_dict = dict()
@@ -232,16 +235,14 @@ class Parameterset(object):
                                  jube2.util.resolve_depend(depend_dict)]
 
             # Do substition and evaluation if possible
-            for par in substitution_list:
-                if par.can_substitute_and_evaluate(self):
-                    parametersets = [self]
-                    if additional_parametersets is not None:
-                        parametersets += additional_parametersets
-                    new_par, param_changed = \
-                        par.substitute_and_evaluate(parametersets)
-                    set_changed = set_changed or param_changed
-                    if param_changed:
-                        self.add_parameter(new_par)
+            set_changed = self.__substitute_parameters_in_list(
+                substitution_list, additional_parametersets)
+
+            # Run forced evaluation if there were no further changes
+            if not set_changed:
+                set_changed = self.__substitute_parameters_in_list(
+                    substitution_list, additional_parametersets,
+                    force_evaluation=True)
 
         if final_sub:
             parameter = [par for par in self]
@@ -257,6 +258,27 @@ class Parameterset(object):
                     if param_changed:
                         self.add_parameter(new_par)
 
+    def __substitute_parameters_in_list(self, parameter_list,
+                                        additional_parametersets=None,
+                                        force_evaluation=False):
+        """Substitute all parameter inside the given parameter_list.
+        Parameters from additional_parameterset will be used for substitution
+        but will not be added to the set. force_evaluation will force
+        script parameter evaluation"""
+        set_changed = False
+        for par in parameter_list:
+            if par.can_substitute_and_evaluate(self):
+                parametersets = [self]
+                if additional_parametersets is not None:
+                    parametersets += additional_parametersets
+                new_par, param_changed = \
+                    par.substitute_and_evaluate(
+                        parametersets, force_evaluation=force_evaluation)
+                if param_changed:
+                    self.add_parameter(new_par)
+                set_changed = set_changed or param_changed
+        return set_changed
+
 
 class Parameter(object):
 
@@ -265,7 +287,7 @@ class Parameter(object):
 
     # This regex can be used to find variables inside parameter values
     parameter_regex = \
-        re.compile(r"(?<!\$)(?:\$\$)*\$(?!\$)(\{)?(.+?)(?(1)\}|(?=\W|$))")
+        re.compile(r"(?<!\$)(?:\$\$)*\$(?!\$)(\{)?(\w+?)(?(1)\}|(?=\W|$))")
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", export=False):
@@ -384,7 +406,7 @@ class Parameter(object):
         return self._type
 
     def is_equivalent(self, parameter):
-        """Checks whether the given and the current Parament based on
+        """Checks whether the given and the current Parameter based on
         equivalent templates or equivalent scripts."""
         if self._lvl == parameter.lvl:
             result = self.value == parameter.value
@@ -452,7 +474,8 @@ class StaticParameter(Parameter):
         return (parameter.name in self.__depending_parameter)
 
     def substitute_and_evaluate(self, parametersets=None,
-                                final_sub=False, no_templates=False):
+                                final_sub=False, no_templates=False,
+                                force_evaluation=False):
         """Substitute all variables inside the parameter value by using the
         parameters inside the given parameterset.
         final_sub marks the last substitution.
@@ -484,7 +507,8 @@ class StaticParameter(Parameter):
         # Parameter is a script
         mode = self._mode
         if ((not re.search(Parameter.parameter_regex, value)) or
-                final_sub) and (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
+                force_evaluation or final_sub) and \
+                (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
             try:
                 # Run additional substitution to remove $$ before running
                 # script evaluation to allow usage of environment variables
@@ -501,7 +525,7 @@ class StaticParameter(Parameter):
                 raise RuntimeError(("Can not evaluate \"{0}\" for " +
                                     "parameter \"{1}\": {2}").format(
                     value, self.name, str(exception)))
-        changed = value != self._value
+        changed = (value != self._value) or (mode != self._mode)
 
         if changed:
             param = Parameter.create_parameter(name=self._name,

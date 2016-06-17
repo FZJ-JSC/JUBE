@@ -301,8 +301,11 @@ Get benchmark specific information
 ``-s STEP [STEP ...]``, ``--step STEP [STEP ...]``
    show step specific information
 
-``-p``, ``--parametrization``
+``-c``, ``--csv-parametrization``
    display only parametrization of given step using *csv* format
+
+``-p``, ``--parametrization``
+   display only parametrization of given step
 
 ``DIRECTORY``
    show directory specific information

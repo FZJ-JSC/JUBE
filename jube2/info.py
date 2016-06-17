@@ -177,12 +177,16 @@ def print_benchmark_info(benchmark):
     print(jube2.util.text_line())
 
 
-def print_step_info(benchmark, step_name, parametrization_only=False):
+def print_step_info(benchmark, step_name, parametrization_only=False,
+                    parametrization_only_csv=False):
     """Print information concerning a single step in a specific benchmark"""
     if step_name not in benchmark.workpackages:
         print("Step \"{0}\" not found in benchmark \"{1}\"."
               .format(step_name, benchmark.name))
         return
+
+    if parametrization_only_csv:
+        parametrization_only = True
 
     if not parametrization_only:
         print(jube2.util.text_boxed("{0} Step: {1}".format(benchmark.name,
@@ -275,9 +279,10 @@ def print_step_info(benchmark, step_name, parametrization_only=False):
                 table_data.append(list())
                 for name in table_data[0]:
                     table_data[-1].append(parameter_dict[name])
-        print(jube2.util.text_table(entries=table_data, use_header_line=True,
+        print(jube2.util.text_table(table_data, use_header_line=True,
                                     indent=1, align_right=True,
-                                    auto_linebreak=False, pretty=False))
+                                    auto_linebreak=False,
+                                    pretty=not parametrization_only_csv))
 
     if not parametrization_only:
         if len(error_dict) > 0:

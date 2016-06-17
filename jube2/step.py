@@ -218,8 +218,13 @@ class Step(object):
                     local_parameterset.copy().add_parameterset(
                         history_parameterset)
             else:
+                incompatible_names = \
+                        local_parameterset.get_incompatible_parameter(
+                            history_parameterset)
                 LOGGER.debug("Incompatible parameterset combination found " +
-                             "between current and parent steps.")
+                             "between current and parent steps. \nParameter " +
+                             "'{0}' is/are already defined different.".format(
+                                ",".join(incompatible_names)))
                 return new_workpackages
 
         # Get jube internal parametersets

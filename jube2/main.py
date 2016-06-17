@@ -136,7 +136,8 @@ def info(args):
                 for step_name in args.step:
                     jube2.info.print_step_info(
                         benchmark, step_name,
-                        parametrization_only=args.parametrization)
+                        parametrization_only=args.parametrization,
+                        parametrization_only_csv=args.csv_parametrization)
 
 
 def update_check(args):
@@ -693,6 +694,9 @@ def _get_args_parser():
             ("-s", "--step"):
                 {"help": "show information for given step", "nargs": "+"},
             ("-p", "--parametrization"):
+                {"help": "display only parametrization of given step",
+                 "action": "store_true"},
+            ("-c", "--csv-parametrization"):
                 {"help": "display only parametrization of given step " +
                  "using csv format", "action": "store_true"}
         }
