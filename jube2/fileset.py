@@ -84,6 +84,40 @@ class File(object):
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
                file_path_ref="", environment=None):
         """Create file access"""
+        pathname = jube2.util.substitution(self._path, parameter_dict)
+        pathname = os.path.expanduser(pathname)
+        if environment is not None:
+            pathname = jube2.util.substitution(pathname, environment)
+        else:
+            pathname = os.path.expandvars(pathname)
+        if self._is_internal_ref:
+            pathname = os.path.join(work_dir, pathname)
+        else:
+            pathname = os.path.join(self._file_path_ref, pathname)
+            pathname = os.path.join(file_path_ref, pathname)
+            pathname = os.path.normpath(pathname)
+        if self._name is None:
+            name = os.path.basename(pathname)
+        else:
+            name = jube2.util.substitution(self._name, parameter_dict)
+        if alt_work_dir is not None:
+            work_dir = alt_work_dir
+        # Shell expansion
+        pathes = glob.glob(pathname)
+        if (len(pathes) == 0) and (not jube2.conf.DEBUG_MODE):
+            raise RuntimeError("no files found using \"{0}\""
+                               .format(pathname))
+        for path in pathes:
+            # When using shell extensions, alternative filenames are not
+            # allowed for multiple matches.
+            if (len(pathes) > 1) or ((pathname != path) and
+                                     (name == os.path.basename(pathname))):
+                name = os.path.basename(path)
+            new_file_path = os.path.join(work_dir, name)
+            self.create_action(path, name, new_file_path)
+
+    def create_action(self, path, name, new_file_path):
+        """File access type specific creation"""
         raise NotImplementedError()
 
     def etree_repr(self):
@@ -118,38 +152,16 @@ class Link(File):
 
     """A link to a given path. Which can be used inside steps."""
 
-    def create(self, work_dir, parameter_dict, alt_work_dir=None,
-               file_path_ref="", environment=None):
+    def create_action(self, path, name, new_file_path):
         """Create link to file in work_dir"""
-        path = jube2.util.substitution(self._path, parameter_dict)
-        path = os.path.expanduser(path)
-        if environment is not None:
-            path = jube2.util.substitution(path, environment)
-        else:
-            path = os.path.expandvars(path)
-        if self._is_internal_ref:
-            path = os.path.join(work_dir, path)
-        else:
-            path = os.path.join(self._file_path_ref, path)
-            path = os.path.join(file_path_ref, path)
-            path = os.path.normpath(path)
-        if self._name is None:
-            name = os.path.basename(path)
-        else:
-            name = jube2.util.substitution(self._name, parameter_dict)
-        if (not os.path.exists(path)) and (not jube2.conf.DEBUG_MODE):
-            raise RuntimeError("'{0}' not found".format(path))
-        if alt_work_dir is not None:
-            work_dir = alt_work_dir
+        # Manipulate target_path if a new relative name path was selected
         if os.path.isabs(path):
             target_path = path
         else:
-            target_path = os.path.relpath(
-                path, os.path.join(work_dir, os.path.dirname(name)))
-        link_path = os.path.join(work_dir, name)
-        LOGGER.debug("  link \"{0}\" <- \"{1}\"".format(path, name))
-        if not jube2.conf.DEBUG_MODE and not os.path.exists(link_path):
-            os.symlink(target_path, link_path)
+            target_path = os.path.relpath(path, os.path.dirname(new_file_path))
+        LOGGER.debug("  link \"{0}\" <- \"{1}\"".format(target_path, name))
+        if not jube2.conf.DEBUG_MODE and not os.path.exists(new_file_path):
+            os.symlink(target_path, new_file_path)
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -170,43 +182,14 @@ class Copy(File):
     inside steps.
     """
 
-    def create(self, work_dir, parameter_dict, alt_work_dir=None,
-               file_path_ref=".", environment=None):
+    def create_action(self, path, name, new_file_path):
         """Copy file/directory to work_dir"""
-        pathname = jube2.util.substitution(self._path, parameter_dict)
-        pathname = os.path.expanduser(pathname)
-        if environment is not None:
-            pathname = jube2.util.substitution(pathname, environment)
-        else:
-            pathname = os.path.expandvars(pathname)
-        if self._is_internal_ref:
-            pathname = os.path.join(work_dir, pathname)
-        else:
-            pathname = os.path.join(self._file_path_ref, pathname)
-            pathname = os.path.join(file_path_ref, pathname)
-            pathname = os.path.normpath(pathname)
-        if self._name is None:
-            name = os.path.basename(pathname)
-        else:
-            name = jube2.util.substitution(self._name, parameter_dict)
-        if alt_work_dir is not None:
-            work_dir = alt_work_dir
-        pathes = glob.glob(pathname)
-        if (len(pathes) == 0) and (not jube2.conf.DEBUG_MODE):
-            raise RuntimeError("no files found using \"{0}\"".format(pathname))
-        for path in pathes:
-            # When using shell extensions, alternative filenames are not
-            # allowed for multiple matches.
-            if (len(pathes) > 1) or ((pathname != path) and
-                                     (name == os.path.basename(pathname))):
-                name = os.path.basename(path)
-            file_path = os.path.join(work_dir, name)
-            LOGGER.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
-            if not jube2.conf.DEBUG_MODE and not os.path.exists(file_path):
-                if os.path.isdir(path):
-                    shutil.copytree(path, file_path, symlinks=True)
-                else:
-                    shutil.copy2(path, file_path)
+        LOGGER.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
+        if not jube2.conf.DEBUG_MODE and not os.path.exists(new_file_path):
+            if os.path.isdir(path):
+                shutil.copytree(path, new_file_path, symlinks=True)
+            else:
+                shutil.copy2(path, new_file_path)
 
     def etree_repr(self):
         """Return etree object representation"""
