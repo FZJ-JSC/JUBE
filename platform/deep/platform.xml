@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
-    <!-- Default DEEP Sets -->
-    <parameterset name="compileset">
-        <parameter name="make">gmake</parameter>
-        <parameter name="cc">gcc</parameter>
-        <parameter name="cflags"></parameter>
-        <parameter name="mpi_cc">mpicc</parameter>
-        <parameter name="mpi_cxx">mpic++</parameter>
-        <parameter name="mpi_f90">mpif90</parameter>
-        <parameter name="mpi_f77">mpif77</parameter>
-    </parameterset>
-
-    <substituteset name="compilesub">
-        <sub source="#MPI_CC#" dest="$mpi_cc" />
-    </substituteset>
-
+    <!-- Default DEEP sets -->
     <parameterset name="executeset">
         <parameter name="starter">mpiexec</parameter>
         <parameter name="args_starter">-n $tasks</parameter>
@@ -30,21 +16,21 @@
     <substituteset name="executesub">
         <iofile in="${submit_script}.in" out="$submit_script" />
         <sub source="#ENV#" dest="$env" />
-        <sub source="#NOTIFY_EMAIL#" dest="" />
+        <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
         <sub source="#NODELIST#" dest="nodes=$nodes:ppn=$taskspernode" />
         <sub source="#QUEUE#" dest="$queue" />
         <sub source="#JOBPOLICY#" dest="NACCESSPOLICY:SINGLEJOB" />
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
-        <sub source="#PREPROCESS#" dest="" />
-        <sub source="#POSTPROCESS#" dest="" />
+        <sub source="#PREPROCESS#" dest="$preprocess" />
+        <sub source="#POSTPROCESS#" dest="$postprocess" />
         <sub source="#STARTER#" dest="$starter" />
         <sub source="#ARGS_STARTER#" dest="$args_starter" />
-        <sub source="#MEASUREMENT#" dest="" />
+        <sub source="#MEASUREMENT#" dest="$measurment" />
         <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
-        <sub source="#EXECUTABLE#" dest="" />
-        <sub source="#ARGS_EXECUTABLE#" dest="" />
+        <sub source="#EXECUTABLE#" dest="$executable" />
+        <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />
     </substituteset>
 
@@ -59,10 +45,15 @@
         <parameter name="errlogfile">job.err</parameter>
         <parameter name="queue">common</parameter>
         <parameter name="env"></parameter>
+        <parameter name="mail"></parameter>
+        <parameter name="executable"></parameter>
+        <parameter name="args_exec"></parameter>
         <parameter name="tasks" mode="python" type="int">
           $nodes * $taskspernode
         </parameter>
-        <parameter name="modules"></parameter>
+        <parameter name="preprocess"></parameter>
+        <parameter name="postprocess"></parameter>
+        <parameter name="measurment"></parameter>
     </parameterset>
 
     <fileset name="jobfiles">
