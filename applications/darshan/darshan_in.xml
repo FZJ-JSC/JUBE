@@ -53,30 +53,30 @@
   </darshanstep>
 
   <patternset name="darshan_pattern">
-    <pattern mode="pattern" name="runtime" type="int">
+    <pattern mode="pattern" name="runtime" type="int" unit="s">
       runtime: ${jube_pat_int}</pattern>
 
-    <pattern mode="pattern" name="posix_other" type="float">
+    <pattern mode="pattern" name="posix_other" type="float" unit="%">
       POSIX: ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="posix_read" type="float">
+    <pattern mode="pattern" name="posix_read" type="float" unit="%">
       POSIX: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="posix_write" type="float">
+    <pattern mode="pattern" name="posix_write" type="float" unit="%">
       POSIX: (?:${jube_pat_nfp} ){2}${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="posix_meta" type="float">
+    <pattern mode="pattern" name="posix_meta" type="float" unit="%">
       POSIX: (?:${jube_pat_nfp} ){3}${jube_pat_fp}
     </pattern>
 
-    <pattern mode="pattern" name="mpi_other" type="float">
+    <pattern mode="pattern" name="mpi_other" type="float" unit="%">
       MPI-IO: ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="mpi_read" type="float">
+    <pattern mode="pattern" name="mpi_read" type="float" unit="%">
       MPI-IO: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="mpi_write" type="float">
+    <pattern mode="pattern" name="mpi_write" type="float" unit="%">
       MPI-IO: (?:${jube_pat_nfp} ){2}${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="mpi_meta" type="float">
+    <pattern mode="pattern" name="mpi_meta" type="float" unit="%">
       MPI-IO: (?:${jube_pat_nfp} ){3}${jube_pat_fp}
     </pattern>
 
-    <pattern mode="pattern" name="io_time" type="float">
+    <pattern mode="pattern" name="io_time" type="float" unit="s">
       io_time: ${jube_pat_fp}</pattern>
 
     <pattern mode="pattern" name="read_calls" type="int">
@@ -98,13 +98,13 @@
     </pattern>
 
 
-    <pattern mode="pattern" name="pos_ac_size1" type="int">
+    <pattern mode="pattern" name="pos_ac_size1" type="int" unit="Byte">
       POSIX access size: ${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="pos_ac_size2" type="int">
+    <pattern mode="pattern" name="pos_ac_size2" type="int" unit="Byte">
       POSIX access size: ${jube_pat_nint} ${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="pos_ac_size3" type="int">
+    <pattern mode="pattern" name="pos_ac_size3" type="int" unit="Byte">
       POSIX access size: (?:${jube_pat_nint} ){2}${jube_pat_int}</pattern>
-    <pattern mode="pattern" name="pos_ac_size4" type="int">
+    <pattern mode="pattern" name="pos_ac_size4" type="int" unit="Byte">
       POSIX access size: (?:${jube_pat_nint} ){3}${jube_pat_int}</pattern>
 
     <pattern mode="pattern" name="pos_ac_cnt1" type="int">
@@ -117,54 +117,54 @@
       POSIX count: (?:${jube_pat_nint} ){3}${jube_pat_int}
     </pattern>
 
-    <pattern mode="pattern" name="pos_avg_io_ac_size" type="float">
+    <pattern mode="pattern" name="pos_avg_io_ac_size" type="float" unit="Byte">
       POSIX avg_io_ac_size: ${jube_pat_fp}</pattern>
 
-    <pattern mode="pattern" name="ind_read_time" type="float">
+    <pattern mode="pattern" name="ind_read_time" type="float" unit="s">
       cumul_avg_io_time: ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="ind_write_time" type="float">
+    <pattern mode="pattern" name="ind_write_time" type="float" unit="s">
       cumul_avg_io_time: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="ind_meta_time" type="float">
+    <pattern mode="pattern" name="ind_meta_time" type="float" unit="s">
       cumul_avg_io_time: (?:${jube_pat_nfp} ){2}${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="sh_read_time" type="float">
+    <pattern mode="pattern" name="sh_read_time" type="float" unit="s">
       cumul_avg_io_time: (?:${jube_pat_nfp} ){3}${jube_pat_fp}
     </pattern>
-    <pattern mode="pattern" name="sh_write_time" type="float">
+    <pattern mode="pattern" name="sh_write_time" type="float" unit="s">
       cumul_avg_io_time: (?:${jube_pat_nfp} ){4}${jube_pat_fp}
     </pattern>
-    <pattern mode="pattern" name="sh_meta_time" type="float">
+    <pattern mode="pattern" name="sh_meta_time" type="float" unit="s">
       cumul_avg_io_time: (?:${jube_pat_nfp} ){5}${jube_pat_fp}
     </pattern>
 
-    <pattern mode="pattern" name="ind_read_amount" type="float">
+    <pattern mode="pattern" name="ind_read_amount" type="float" unit="MB">
       avg_amout_io: ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="ind_write_amount" type="float">
+    <pattern mode="pattern" name="ind_write_amount" type="float" unit="MB">
       avg_amout_io: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="ind_meta_amount" type="string">
+    <pattern mode="pattern" name="ind_meta_amount" type="string" unit="MB">
       avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_wrd}</pattern>
-    <pattern mode="pattern" name="sh_read_amount" type="float">
+    <pattern mode="pattern" name="sh_read_amount" type="float" unit="MB">
       avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_nwrd} ${jube_pat_fp}
     </pattern>
-    <pattern mode="pattern" name="sh_write_amount" type="float">
+    <pattern mode="pattern" name="sh_write_amount" type="float" unit="MB">
       avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_nwrd} ${jube_pat_nfp} ${jube_pat_fp}
     </pattern>
-    <pattern mode="pattern" name="sh_meta_amount" type="string">
+    <pattern mode="pattern" name="sh_meta_amount" type="string" unit="MB">
       avg_amout_io: (?:${jube_pat_nfp} ){2}${jube_pat_nwrd} (?:${jube_pat_nfp} ){2}${jube_pat_wrd}
     </pattern>
 
 
-    <pattern mode="pattern" name="ind_read_bw" type="float">
+    <pattern mode="pattern" name="ind_read_bw" type="float" unit="MB/s">
       Independent Bandwidth: ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="ind_write_bw" type="float">
+    <pattern mode="pattern" name="ind_write_bw" type="float" unit="MB/s">
       Independent Bandwidth: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="sh_read_bw" type="float">
+    <pattern mode="pattern" name="sh_read_bw" type="float" unit="MB/s">
       Shared Bandwidth: ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="sh_write_bw" type="float">
+    <pattern mode="pattern" name="sh_write_bw" type="float" unit="MB/s">
       Shared Bandwidth: ${jube_pat_nfp} ${jube_pat_fp}</pattern>
 
-    <pattern mode="pattern" name="total_mb_read" type="float">
+    <pattern mode="pattern" name="total_mb_read" type="float" unit="MB">
       Total MB read: ${jube_pat_fp}</pattern>
-    <pattern mode="pattern" name="total_mb_written" type="float">
+    <pattern mode="pattern" name="total_mb_written" type="float" unit="MB">
       Total MB written: ${jube_pat_fp}</pattern>
 
     <!-- test calculation
