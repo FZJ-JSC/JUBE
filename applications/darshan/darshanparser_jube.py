@@ -509,7 +509,7 @@ def access_size(counters, data, out_file, length=4):
 
     avg_io_ac_size = np.inner(cnt_sum_sort[:, 0], cnt_sum_sort[:, 1]) / \
                      np.sum(cnt_sum_sort[:, 1])
-    out_file.write('avg_io_ac_size: {0}\n'.format(avg_io_ac_size))
+    out_file.write('{0} avg_io_ac_size: {1}\n'.format('POSIX', avg_io_ac_size))
     out_file.write('\n')
 ##############################################################################
 #darshan3:counter namen geaendert, in 3 Methoden geteilt, paatern in darshan.jube geaendert
