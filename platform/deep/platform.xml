@@ -18,7 +18,7 @@
         <sub source="#ENV#" dest="$env" />
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
-        <sub source="#NODELIST#" dest="nodes=$nodes:ppn=$taskspernode" />
+        <sub source="#NODELIST#" dest="nodes=$nodes:$nodetype:ppn=$taskspernode" />
         <sub source="#QUEUE#" dest="$queue" />
         <sub source="#JOBPOLICY#" dest="NACCESSPOLICY:SINGLEJOB" />
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
@@ -43,6 +43,7 @@
         <parameter name="threadspertask">1</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
+        <parmaeter name="nodetype"></parmaeter>
         <parameter name="queue">common</parameter>
         <parameter name="env"></parameter>
         <parameter name="mail"></parameter>
