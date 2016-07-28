@@ -333,7 +333,14 @@ def eval_bool(cmd):
     elif cmd.lower() == "false":
         return False
     else:
-        return bool(eval(cmd))
+        try:
+            return bool(eval(cmd))
+        except SyntaxError as se:
+            raise ValueError(("\"{0}\" couldn't be evaluated and handled as " +
+                              "boolean value. Check if all parameter were " +
+                              "correctly replaced and the syntax of the " +
+                              "expression is well formed ({1}).")
+                             .format(cmd, str(se)))
 
 
 def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
