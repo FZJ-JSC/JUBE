@@ -21,6 +21,32 @@
 Release notes
 =============
 
+Version 2.1.2
+~~~~~~~~~~~~~
+Release: 2016-07-29
+
+* The internal parameter handling is much faster now, especially if a large number of parameter is used within the same step.
+* Fix critical bug when storing environment variables. Environment variables wasn't read correctly inside a step if this step was only executed after
+  a ``jube continue`` run.
+* Fix bug inside a ``<sub>`` if it contains any linebreak
+* Quotes are added automatically inside the ``$jube_wp_envstr`` variable to support spaces in the environment variable argument list
+* Combining ``-u`` and ``tags`` in a ``jube result`` run will not filter the result branches anymore
+* Allow lowercase ``false`` in bool expressions (e.g. the ``active`` option)
+* Fix bug when using *JUBE* in a *Python3.x* environment
+* The ``jube help`` output was restructed to display separate key columns instead of a keyword list
+* ``<pattern>`` can now contain a ``default=...`` attribute which set their default value if the pattern can't be found or if it can't be evaluated
+* ``null_value=...`` was removed from the ``<column>`` and ``<key>``-tag because the new default attribute matches its behaviour
+* Added first *JUBE* FAQ entries to the documentation: :doc:`faq`
+* New ``active``-attribute inside a ``<step>``-tag. The attribute enables or disables the corresponding step (and all following steps). It can contain any 
+  bool expression and available parameter.
+* Fix bug in ``<link>`` handling if an alternative link name is used which points to a sub directory
+* Added new option ``-c / --csv-parametrization`` to ``jube info`` command to show a workpackage specfic parametrisation
+  by using the CSV format (similar to the existing ``-p`` option)
+* Allow Shell expansion in ``<link>`` tags. ``<link>`` now also support the ``*``
+* Restructure internal ``<copy>`` and ``<link>`` handling
+* All example platform files were updated an simplified
+
+
 Version 2.1.1
 ~~~~~~~~~~~~~
 Release: 2016-04-14

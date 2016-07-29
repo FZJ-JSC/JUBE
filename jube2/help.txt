@@ -734,7 +734,7 @@ step_tag
    A step give a list of *Shell* operations and a corresponding
    parameter environment.
 
-      <step name="..." depend="..." work_dir="..." shared="..." export="..." max_async="..." iterations="...">
+      <step name="..." depend="..." work_dir="..." shared="..." active="..." export="..." max_async="..." iterations="...">
         <use from="">...</use>
         ...
         <do></do>
@@ -773,6 +773,13 @@ step_tag
        his own
 
      * no automatic parent/children link creation
+
+   * "active" is optional
+
+     * can be set to "true" or "false" or any *Python* parsable bool
+       expression to enable or disable the single command
+
+     * *parameter* are allowed inside this attribute
 
    * "shared" is optional and can be used to create a shared folder
      which can be accessed by all workpackages based on this step
