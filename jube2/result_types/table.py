@@ -47,6 +47,7 @@ class Table(KeyValuesResult):
             else:
                 KeyValuesResult.KeyValuesData.__init__(self, name_or_other)
             self._style = style
+            self._separator = separator
             # Ignore separator if pretty style is used
             if self._style == "pretty":
                 self._separator = None
