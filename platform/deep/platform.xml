@@ -26,7 +26,7 @@
         <sub source="#POSTPROCESS#" dest="$postprocess" />
         <sub source="#STARTER#" dest="$starter" />
         <sub source="#ARGS_STARTER#" dest="$args_starter" />
-        <sub source="#MEASUREMENT#" dest="$measurment" />
+        <sub source="#MEASUREMENT#" dest="$measurement" />
         <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
         <sub source="#EXECUTABLE#" dest="$executable" />
@@ -54,7 +54,7 @@
         </parameter>
         <parameter name="preprocess"></parameter>
         <parameter name="postprocess"></parameter>
-        <parameter name="measurment"></parameter>
+        <parameter name="measurement"></parameter>
     </parameterset>
 
     <fileset name="jobfiles">

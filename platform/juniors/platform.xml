@@ -20,7 +20,7 @@
     <sub source="#PREPROCESS#" dest="$preprocess" />
     <sub source="#STARTER#" dest="$starter" />
     <sub source="#ARGS_STARTER#" dest="$args_starter" />
-    <sub source="#MEASUREMENT#" dest="$measurment" />
+    <sub source="#MEASUREMENT#" dest="$measurement" />
     <sub source="#EXECUTABLE#" dest="$executable" />
     <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
     <sub source="#POSTPROCESS#" dest="$postprocess" />
@@ -44,7 +44,7 @@
     <parameter name="errlogfile">job.err</parameter>
     <parameter name="preprocess">ssh $contactnode mkdir -p ${testdir}</parameter>
     <parameter name="postprocess">ssh $contactnode rm -rf ${testdir}</parameter>
-    <parameter name="measurment"></parameter>
+    <parameter name="measurement"></parameter>
   </parameterset>
 
   <substituteset name="chainsub"></substituteset>
