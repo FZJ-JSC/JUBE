@@ -413,7 +413,7 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." depend="..." work_dir="..." shared="..." active="..." export="..." max_async="..." iterations="...">
+        <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -435,6 +435,7 @@ Glossary
        * the user had to handle **uniqueness of this directory** by his own
        * no automatic parent/children link creation
 
+     * ``suffix`` is optional and can contain a string (parameters are allowed) which will be attached to the default workpackage directory name
      * ``active`` is optional
 
        * can be set to ``true`` or ``false`` or any *Python* parsable bool expression to enable or disable the single command
@@ -729,6 +730,7 @@ Glossary
 
         * ``$jube_benchmark_name``: current benchmark name
         * ``$jube_benchmark_id``: current benchmark id
+        * ``$jube_benchmark_padid``: current benchmark id with preceding zeros
         * ``$jube_benchmark_home``: original input file location
         * ``$jube_benchmark_start``: benchmark starting time
 
@@ -740,6 +742,7 @@ Glossary
       * Workpackage:
 
         * ``$jube_wp_id``: current workpackage id
+        * ``$jube_wp_padid``: current workpackage id with preceding zeros
         * ``$jube_wp_iteration``: current iteration number (default: 0)
         * ``$jube_wp_parent_<parent_name>_id``: workpackage id of selected parent step
         * ``$jube_wp_relpath``: relative path to workpackage work directory (relative towards configuration file)

@@ -763,6 +763,7 @@ class XMLParser(object):
         export = etree_step.get("export", "false").strip().lower() == "true"
         max_wps = etree_step.get("max_async", "0").strip()
         active = etree_step.get("active", "true").strip()
+        suffix = etree_step.get("suffix", "").strip()
         shared_name = etree_step.get("shared")
         if shared_name is not None:
             shared_name = shared_name.strip()
@@ -773,7 +774,7 @@ class XMLParser(object):
                      tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
         step = jube2.step.Step(name, depend, iterations, alt_work_dir,
-                               shared_name, export, max_wps, active)
+                               shared_name, export, max_wps, active, suffix)
         for element in etree_step:
             XMLParser._check_tag(element, valid_tags)
             if element.tag == "do":

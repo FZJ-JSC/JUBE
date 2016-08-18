@@ -206,6 +206,14 @@ class Benchmark(object):
             jube2.parameter.Parameter.
             create_parameter("jube_benchmark_id",
                              str(self._id), parameter_type="int"))
+
+        # benchmark id with padding
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_benchmark_padid",
+                             jube2.util.id_dir("", self._id),
+                             parameter_type="string"))
+
         # benchmark name
         parameterset.add_parameter(
             jube2.parameter.Parameter.

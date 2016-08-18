@@ -114,6 +114,15 @@ class Workpackage(object):
         return object.__hash__(self)
 
     @property
+    def parameter_dict(self):
+        """get all available parameter inside a dict"""
+        # Add internal jube parameter
+        parameterset = self.add_jube_parameter(self._history.copy())
+        # Collect parameter for substitution
+        return dict([[par.name, par.value] for par in
+                     parameterset.constant_parameter_dict.values()])
+
+    @property
     def env(self):
         """Return workpackage environment"""
         return self._env
@@ -122,14 +131,8 @@ class Workpackage(object):
     def active(self):
         """Check active state"""
         active = self._step.active
-
-        # Add internal jube parameter
-        parameterset = self.add_jube_parameter(self._history.copy())
         # Collect parameter for substitution
-        parameter = \
-            dict([[par.name, par.value] for par in
-                  parameterset.constant_parameter_dict.values()])
-
+        parameter = self.parameter_dict
         # Parameter substitution
         active = jube2.util.substitution(active, parameter)
         # Evaluate active state
@@ -257,14 +260,15 @@ class Workpackage(object):
         """Return Step data"""
         return self._step
 
-    def add_jube_parameter(self, parameterset):
+    def add_jube_parameter(self, parameterset, ignore_pathes=False):
         """Add jube internal parameter to given parameterset"""
         parameterset.add_parameterset(self._benchmark.get_jube_parameterset())
         parameterset.add_parameterset(self._step.get_jube_parameterset())
-        parameterset.add_parameterset(self.get_jube_parameterset())
+        parameterset.add_parameterset(self.get_jube_parameterset(
+            ignore_pathes=ignore_pathes))
         return parameterset
 
-    def get_jube_parameterset(self, substitute=True):
+    def get_jube_parameterset(self, substitute=True, ignore_pathes=False):
         """Return parameterset which contains workpackage related
         information"""
         parameterset = jube2.parameter.Parameterset()
@@ -273,29 +277,38 @@ class Workpackage(object):
             jube2.parameter.Parameter.
             create_parameter("jube_wp_id", str(self._id),
                              parameter_type="int"))
+
+        # workpackage id with padding
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_padid", jube2.util.id_dir("", self._id),
+                             parameter_type="string"))
+
         # workpackage iteration
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_wp_iteration",
                              str(self._iteration), parameter_type="int"))
 
-        # workpackage relative folder path
-        if self._step.alt_work_dir is None:
-            path = os.path.relpath(
-                self.work_dir, self._benchmark.file_path_ref)
-        else:
-            path = self._step.alt_work_dir
-        parameterset.add_parameter(
-            jube2.parameter.Parameter.
-            create_parameter("jube_wp_relpath", path))
+        # only add pathes if allowed
+        if not ignore_pathes:
+            # workpackage relative folder path
+            if self._step.alt_work_dir is None:
+                path = os.path.relpath(
+                    self.work_dir, self._benchmark.file_path_ref)
+            else:
+                path = self._step.alt_work_dir
+            parameterset.add_parameter(
+                jube2.parameter.Parameter.
+                create_parameter("jube_wp_relpath", path))
 
-        # workpackage absolute folder path
-        if self._step.alt_work_dir is None:
-            path = os.path.normpath(os.path.join(os.getenv("PWD"),
-                                                 self.work_dir))
-        parameterset.add_parameter(
-            jube2.parameter.Parameter.
-            create_parameter("jube_wp_abspath", path))
+            # workpackage absolute folder path
+            if self._step.alt_work_dir is None:
+                path = os.path.normpath(os.path.join(os.getenv("PWD"),
+                                                     self.work_dir))
+            parameterset.add_parameter(
+                jube2.parameter.Parameter.
+                create_parameter("jube_wp_abspath", path))
 
         # parent workpackage id
         for parent in self._parents:
@@ -332,6 +345,11 @@ class Workpackage(object):
     def create_workpackage_dir(self):
         """Create work directory"""
         if not os.path.exists(self.workpackage_dir):
+            if "$" in self.workpackage_dir:
+                raise RuntimeError(("'{0}' couldn't be evaluated and used " +
+                                    "as a workpackage directory name. " +
+                                    "Please check the suffix setting.")
+                                   .format(self.workpackage_dir))
             os.mkdir(self.workpackage_dir)
             os.mkdir(self.work_dir)
 
@@ -368,9 +386,21 @@ class Workpackage(object):
     @property
     def workpackage_dir(self):
         """Return workpackage directory"""
-        return "{path}_{step_name}".format(
+        suffix = self.step.suffix
+        if suffix != "":
+            # Add internal jube parameter, ignore any path settings
+            parameterset = self.add_jube_parameter(self._history.copy(),
+                                                   ignore_pathes=True)
+            # Collect parameter for substitution
+            parameter = dict([[par.name, par.value] for par in
+                              parameterset.constant_parameter_dict.values()])
+            # Parameter substitution
+            suffix = jube2.util.substitution(suffix, parameter)
+            suffix = "_" + os.path.expandvars(os.path.expanduser(suffix))
+        return "{path}_{step_name}{suffix}".format(
             path=jube2.util.id_dir(self._benchmark.bench_dir, self._id),
-            step_name=self._step.name)
+            step_name=self._step.name,
+            suffix=suffix)
 
     @property
     def work_dir(self):
@@ -403,14 +433,11 @@ class Workpackage(object):
                 if parent.step.export:
                     self._env.update(parent.env)
 
+        # --- Collect parameter for substitution ---
+        parameter = self.parameter_dict
+
         # --- Add internal jube parameter ---
         parameterset = self.add_jube_parameter(self._history.copy())
-
-        # --- Collect parameter for substitution ---
-        parameter = \
-            dict([[par.name, par.value] for par in
-                  parameterset.constant_parameter_dict.values()])
-
         # --- Collect export parameter ---
         if not started_before:
             self._env.update(

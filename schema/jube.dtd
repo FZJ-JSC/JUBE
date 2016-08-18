@@ -86,6 +86,7 @@
                         depend CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
                         active CDATA #IMPLIED
+                        suffix CDATA #IMPLIED
                         work_dir CDATA #IMPLIED
                         shared CDATA #IMPLIED
                         tag CDATA #IMPLIED>

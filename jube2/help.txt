@@ -365,6 +365,9 @@ jube_variables
 
      * "$jube_benchmark_id": current benchmark id
 
+     * "$jube_benchmark_padid": current benchmark id with preceding
+       zeros
+
      * "$jube_benchmark_home": original input file location
 
      * "$jube_benchmark_start": benchmark starting time
@@ -379,6 +382,8 @@ jube_variables
    * Workpackage:
 
      * "$jube_wp_id": current workpackage id
+
+     * "$jube_wp_padid": current workpackage id with preceding zeros
 
      * "$jube_wp_iteration": current iteration number (default: 0)
 
@@ -734,7 +739,7 @@ step_tag
    A step give a list of *Shell* operations and a corresponding
    parameter environment.
 
-      <step name="..." depend="..." work_dir="..." shared="..." active="..." export="..." max_async="..." iterations="...">
+      <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="...">
         <use from="">...</use>
         ...
         <do></do>
@@ -773,6 +778,10 @@ step_tag
        his own
 
      * no automatic parent/children link creation
+
+   * "suffix" is optional and can contain a string (parameters are
+     allowed) which will be attached to the default workpackage
+     directory name
 
    * "active" is optional
 

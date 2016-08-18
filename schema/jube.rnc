@@ -129,6 +129,7 @@ attlist.step &=
   attribute depend { text }?,
   attribute work_dir { text }?,
   attribute active { text }?,
+  attribute active { suffix }?,
   attribute export { "true" | "false" | "True" | "False" }?,
   attribute shared { text }?,
   attribute tag { text }?

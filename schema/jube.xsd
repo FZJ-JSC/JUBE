@@ -168,6 +168,7 @@
     <xs:attribute name="depend" type="xs:string" use="optional" />
     <xs:attribute name="work_dir" type="xs:string" use="optional" />
     <xs:attribute name="active" type="xs:string" use="optional" />
+    <xs:attribute name="suffix" type="xs:string" use="optional" />
     <xs:attribute name="export" type="booleanType" use="optional" />
     <xs:attribute name="shared" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />

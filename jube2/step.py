@@ -42,7 +42,7 @@ class Step(object):
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
-                 active="true"):
+                 active="true", suffix=""):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -53,6 +53,7 @@ class Step(object):
         self._export = export
         self._max_wps = max_wps
         self._active = active
+        self._suffix = suffix
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -67,6 +68,8 @@ class Step(object):
             step_etree.attrib["shared"] = self._shared_name
         if self._active != "true":
             step_etree.attrib["active"] = self._active
+        if self._suffix != "":
+            step_etree.attrib["suffix"] = self._suffix
         if self._export:
             step_etree.attrib["export"] = "true"
         if self._max_wps != "0":
@@ -219,12 +222,12 @@ class Step(object):
                         history_parameterset)
             else:
                 incompatible_names = \
-                        local_parameterset.get_incompatible_parameter(
-                            history_parameterset)
+                    local_parameterset.get_incompatible_parameter(
+                        history_parameterset)
                 LOGGER.debug("Incompatible parameterset combination found " +
                              "between current and parent steps. \nParameter " +
                              "'{0}' is/are already defined different.".format(
-                                ",".join(incompatible_names)))
+                                 ",".join(incompatible_names)))
                 return new_workpackages
 
         # Get jube internal parametersets
@@ -316,6 +319,11 @@ class Step(object):
     def use(self):
         """Return parameters and substitutions"""
         return self._use
+
+    @property
+    def suffix(self):
+        """Return directory suffix"""
+        return self._suffix
 
     @property
     def operations(self):
@@ -455,7 +463,8 @@ class Operation(object):
                         stdout_handle = stdout
                     sub = subprocess.Popen(
                         [shell, "-c",
-                         "{0} && env > {1}".format(do, abs_info_file_path)],
+                         "{0} && env > \"{1}\"".format(do,
+                                                       abs_info_file_path)],
                         cwd=work_dir, stdout=stdout_handle,
                         stderr=stderr, shell=False,
                         env=env)

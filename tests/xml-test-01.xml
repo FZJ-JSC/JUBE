@@ -112,7 +112,7 @@
       <do>make</do>
     </step>
 
-    <step name="execute" depend="compile" shared="shared">
+    <step name="execute" depend="compile" shared="shared" suffix="p${jube_wp_parent_compile_id}">
       <use>executeset</use>
       <do>echo $$TEST_PATH</do>
       <do>compile/$execname $nodes</do>
