@@ -10,7 +10,6 @@
 #SBATCH --output=#STDOUTLOGFILE#
 #SBATCH --error=#STDERRLOGFILE#
 #SBATCH --partition=#QUEUE#
-#ENDPBS
 
 #ENV#
 
