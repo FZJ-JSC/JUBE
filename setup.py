@@ -72,7 +72,7 @@ config = {'name': 'JUBE',
                            ['docs/JUBE.pdf']),
                           (SHARE_PATH, ['LICENSE','RELEASE_NOTES'])] +
                          rel_path("examples", SHARE_PATH) +
-                         rel_path("schema", SHARE_PATH) +
+                         rel_path("contrib", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),
           'scripts': ['bin/jube', 'bin/jube-autorun'],
           'long_description': (
