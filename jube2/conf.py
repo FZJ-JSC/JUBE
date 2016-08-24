@@ -29,6 +29,7 @@ VERBOSE_LEVEL = 0
 UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"
 UPDATE_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/download.php"
 STANDARD_SHELL = "/bin/sh"
+EXIT_ON_ERROR = False
 
 # input/output
 DEFAULT_SEPARATOR = ","
@@ -43,6 +44,7 @@ PREPROCESS_MAX_ITERATION = 10
 
 # filenames
 WORKPACKAGE_DONE_FILENAME = "done"
+WORKPACKAGE_ERROR_FILENAME = "error"
 CONFIGURATION_FILENAME = "configuration.xml"
 WORKPACKAGES_FILENAME = "workpackages.xml"
 ANALYSE_FILENAME = "analyse.xml"

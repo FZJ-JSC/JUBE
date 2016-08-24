@@ -125,9 +125,11 @@ def print_benchmark_info(benchmark):
     print("Last change: {0}".format(time_change))
 
     # Create step overview
-    step_info = [("step name", "depends", "#work", "#done", "last finished")]
+    step_info = [("step name", "depends", "#work", "#error", "#done",
+                  "last finished")]
     for step_name, workpackages in benchmark.workpackages.items():
         cnt_done = 0
+        cnt_error = 0
         last_finish = time.localtime(0)
         depends = jube2.conf.DEFAULT_SEPARATOR.join(
             benchmark.steps[step_name].depend)
@@ -147,6 +149,8 @@ def print_benchmark_info(benchmark):
                 except ValueError:
                     done_time = time.localtime(os.path.getmtime(done_file))
                 last_finish = max(last_finish, done_time)
+            if workpackage.error:
+                cnt_error += 1
 
         if last_finish > time.localtime(0):
             last_finish_str = time.strftime("%Y-%m-%d %H:%M:%S", last_finish)
@@ -162,7 +166,7 @@ def print_benchmark_info(benchmark):
         else:
             cnt = str(len(workpackages))
 
-        step_info.append((step_name, depends, cnt,
+        step_info.append((step_name, depends, cnt, str(cnt_error),
                           str(cnt_done), last_finish_str))
 
     print(
@@ -202,7 +206,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
         else:
             error_file_names.add("stderr")
 
-    wp_info = [("id", "started?", "done?", "work_dir")]
+    wp_info = [("id", "started?", "error?", "done?", "work_dir")]
     error_dict = dict()
     parameter_list = list()
     useable_parameter = None
@@ -221,6 +225,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
         id_str = str(workpackage.id)
         started_str = str(workpackage.started).lower()
+        error_str = str(workpackage.error).lower()
         done_str = str(workpackage.done).lower()
         work_dir = workpackage.work_dir
         if step.alt_work_dir is not None:
@@ -244,7 +249,8 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
         # Store info data
         wp_info.append(
-            (id_str, started_str, done_str, os.path.abspath(work_dir)))
+            (id_str, started_str, error_str, done_str,
+             os.path.abspath(work_dir)))
 
     if not parametrization_only:
         print("Workpackages:")
@@ -289,7 +295,10 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
             print("!!! Errors found !!!:")
         for error_file in error_dict:
             print(">>> {0}:".format(error_file))
-            print("{0}\n".format(error_dict[error_file]))
+            try:
+                print("{0}\n".format(error_dict[error_file]))
+            except UnicodeDecodeError:
+                print("\n")
 
 
 def print_benchmark_status(benchmark):

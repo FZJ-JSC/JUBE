@@ -74,7 +74,7 @@ Run a new benchmark.
    jube run [-h] [--only-bench ONLY_BENCH [ONLY_BENCH ...]]
             [--not-bench NOT_BENCH [NOT_BENCH ...]] [-t TAG [TAG ...]]
             [--hide-animation] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
-            [-a] [-r] [-m COMMENT] [--id ID [ID ...]] FILE [FILE ...]
+            [-a] [-r] [-e] [-m COMMENT] [--id ID [ID ...]] FILE [FILE ...]
 
 ``-h``, ``--help``
    show command help information
@@ -99,6 +99,9 @@ Run a new benchmark.
 
 ``-r``, ``--result``
    run result after finishing run command (this will also start analyse)
+
+``-e``, ``--exit``
+   run will exit if there is an error
 
 ``-m COMMENT``, ``--comment COMMENT``
    overwrite benchmark specific comment
@@ -135,7 +138,7 @@ Continue an existing benchmark.
 
 .. code-block:: none
 
-   jube continue [-h] [-i ID [ID ...]] [--hide-animation] [-a] [-r] [DIRECTORY]
+   jube continue [-h] [-i ID [ID ...]] [--hide-animation] [-a] [-r] [-e] [DIRECTORY]
 
 ``-h``, ``--help``
    show command help information
@@ -151,6 +154,9 @@ Continue an existing benchmark.
 
 ``-r``, ``--result``
    run result after finishing run command (this will also start analyse)
+
+``-e``, ``--exit``
+   run will exit if there is an error
 
 ``DIRECTORY``
    directory which contain benchmarks, default: ``.``

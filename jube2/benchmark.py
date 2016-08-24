@@ -160,11 +160,14 @@ class Benchmark(object):
             result_dict[stepname] = {"all": 0,
                                      "open": 0,
                                      "wait": 0,
+                                     "error": 0,
                                      "done": 0}
             for workpackage in self._workpackages[stepname]:
                 result_dict[stepname]["all"] += 1
                 if workpackage.done:
                     result_dict[stepname]["done"] += 1
+                elif workpackage.error:
+                    result_dict[stepname]["error"] += 1
                 elif workpackage.started:
                     result_dict[stepname]["wait"] += 1
                 else:
@@ -177,12 +180,14 @@ class Benchmark(object):
         result_dict = {"all": 0,
                        "open": 0,
                        "wait": 0,
+                       "error": 0,
                        "done": 0}
 
         for status in self.workpackage_status.values():
             result_dict["all"] += status["all"]
             result_dict["open"] += status["open"]
             result_dict["wait"] += status["wait"]
+            result_dict["error"] += status["error"]
             result_dict["done"] += status["done"]
 
         return result_dict
@@ -546,10 +551,10 @@ class Benchmark(object):
         LOGGER.info(infostr)
 
         if not jube2.conf.HIDE_ANIMATIONS:
-            print("\nRunning workpackages (#=done, 0=wait):")
+            print("\nRunning workpackages (#=done, 0=wait, E=error):")
             status = self.benchmark_status
             jube2.util.print_loading_bar(status["done"], status["all"],
-                                         status["wait"])
+                                         status["wait"], status["error"])
 
         # Handle all workpackages in given order
         while not self._work_stat.empty():
@@ -570,7 +575,7 @@ class Benchmark(object):
             if not jube2.conf.HIDE_ANIMATIONS:
                 status = self.benchmark_status
                 jube2.util.print_loading_bar(status["done"], status["all"],
-                                             status["wait"])
+                                             status["wait"], status["error"])
             workpackage.queued = False
 
             for mode in ("only_started", "all"):
@@ -585,9 +590,10 @@ class Benchmark(object):
                             self._work_stat.put(child)
         print("\n")
 
-        status_data = [("stepname", "all", "open", "wait", "done")]
+        status_data = [("stepname", "all", "open", "wait", "error", "done")]
         status_data += [(stepname, str(_status["all"]), str(_status["open"]),
-                         str(_status["wait"]), str(_status["done"]))
+                         str(_status["wait"]), str(_status["error"]),
+                         str(_status["done"]))
                         for stepname, _status in
                         self.workpackage_status.items()]
         LOGGER.info(jube2.util.text_table(status_data, use_header_line=True,

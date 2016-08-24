@@ -165,6 +165,25 @@ class Workpackage(object):
                 os.remove(done_file)
 
     @property
+    def error(self):
+        """Workpackage error?"""
+        error_file = os.path.join(self.workpackage_dir,
+                                  jube2.conf.WORKPACKAGE_ERROR_FILENAME)
+        return os.path.exists(error_file)
+
+    def set_error(self, set_error, msg=""):
+        """Set/reset Workpackage error"""
+        error_file = os.path.join(self.workpackage_dir,
+                                  jube2.conf.WORKPACKAGE_ERROR_FILENAME)
+        if set_error:
+            fout = open(error_file, "w")
+            fout.write(msg)
+            fout.close()
+        else:
+            if os.path.exists(error_file):
+                os.remove(error_file)
+
+    @property
     def queued(self):
         """Workpackage queued?"""
         return self._queued
@@ -410,8 +429,8 @@ class Workpackage(object):
     def run(self):
         """Run step and use current parameter space"""
 
-        # Workpackage already done?
-        if self.done:
+        # Workpackage already done or error?
+        if self.done or self.error:
             return
 
         stepstr = ("{0} ( iter:{2} | id:{1} | parents:{3} )"
@@ -505,84 +524,95 @@ class Workpackage(object):
                 self._benchmark.substitutesets[name].substitute(
                     parameter_dict=parameter, work_dir=work_dir)
 
-        # --- Run operations ---
-        continue_op = True
-        for operation_number, operation in enumerate(self._step.operations):
-            # Do nothing, if the next operation is already finished. Otherwise
-            # a removed async_file will result in a new pending operation, if
-            # there are two async-operations in a row.
-            if not self.operation_done(operation_number + 1):
-                # shared operation
-                if operation.shared:
+        try:
+            # --- Run operations ---
+            continue_op = True
+            for operation_number, operation in \
+                    enumerate(self._step.operations):
+                # Do nothing, if the next operation is already finished.
+                # Otherwise a removed async_file will result in a new
+                # pending operation, if there are two async-operations in
+                # a row.
+                if not self.operation_done(operation_number + 1):
+                    # shared operation
+                    if operation.shared:
+                        # wait for all other workpackages and check if shared
+                        # operation already finished
+                        shared_done = False
+                        for workpackage in \
+                                self._benchmark.workpackages[self._step.name]:
+                            if operation_number > 0:
+                                continue_op = continue_op and \
+                                    (workpackage.operation_done(
+                                        operation_number - 1) or
+                                     workpackage.done)
+                            shared_done = shared_done or \
+                                workpackage.operation_done(
+                                    operation_number + 1) or workpackage.done
 
-                    # wait for all other workpackages and check if shared
-                    # operation already finished
-                    shared_done = False
-                    for workpackage in \
-                            self._benchmark.workpackages[self._step.name]:
-                        if operation_number > 0:
-                            continue_op = continue_op and \
-                                (workpackage.operation_done(
-                                    operation_number - 1) or
-                                 workpackage.done)
-                        shared_done = shared_done or \
-                            workpackage.operation_done(
-                                operation_number + 1) or workpackage.done
+                        # All older workpackages in tree must be done
+                        for step_name in self._step.get_depend_history(
+                                self._benchmark):
+                            for workpackage in self._benchmark.workpackages[
+                                    step_name]:
+                                continue_op = continue_op and workpackage.done
 
-                    # All older workpackages in tree must be done
-                    for step_name in self._step.get_depend_history(
-                            self._benchmark):
-                        for workpackage in self._benchmark.workpackages[
-                                step_name]:
-                            continue_op = continue_op and workpackage.done
+                        if continue_op and not shared_done:
+                            # remove workpackage specific parameter
+                            shared_parameter = dict(parameter)
+                            for jube_parameter in self.get_jube_parameterset()\
+                                    .all_parameter_names:
+                                if jube_parameter in shared_parameter:
+                                    del shared_parameter[jube_parameter]
 
-                    if continue_op and not shared_done:
-                        # remove workpackage specific parameter
-                        shared_parameter = dict(parameter)
-                        for jube_parameter in self.get_jube_parameterset()\
-                                .all_parameter_names:
-                            if jube_parameter in shared_parameter:
-                                del shared_parameter[jube_parameter]
+                            # work_dir = shared_dir
+                            shared_dir = \
+                                self._step.shared_folder_path(
+                                    self._benchmark.bench_dir,
+                                    shared_parameter)
 
-                        # work_dir = shared_dir
-                        shared_dir = \
-                            self._step.shared_folder_path(
-                                self._benchmark.bench_dir, shared_parameter)
+                            LOGGER.debug("====== {0} - shared ======"
+                                         .format(self._step.name))
 
-                        LOGGER.debug("====== {0} - shared ======"
-                                     .format(self._step.name))
+                            continue_op = operation.execute(
+                                parameter_dict=shared_parameter,
+                                work_dir=shared_dir,
+                                environment=self._env,
+                                only_check_pending=self.operation_done(
+                                    operation_number))
 
+                            # update all workpackages
+                            for workpackage in self._benchmark.workpackages[
+                                    self._step.name]:
+                                if not workpackage.started:
+                                    workpackage.create_workpackage_dir()
+                                workpackage.operation_done(
+                                    operation_number, True)
+                                # requeue other workpackages
+                                if not workpackage.queued and continue_op:
+                                    self._benchmark.work_stat.put(workpackage)
+                            if continue_op:
+                                LOGGER.debug(stepstr)
+                    else:
                         continue_op = operation.execute(
-                            parameter_dict=shared_parameter,
-                            work_dir=shared_dir,
+                            parameter_dict=parameter, work_dir=work_dir,
                             environment=self._env,
                             only_check_pending=self.operation_done(
                                 operation_number))
+                        self.operation_done(operation_number, True)
+                if not continue_op:
+                    break
 
-                        # update all workpackages
-                        for workpackage in self._benchmark.workpackages[
-                                self._step.name]:
-                            if not workpackage.started:
-                                workpackage.create_workpackage_dir()
-                            workpackage.operation_done(operation_number, True)
-                            # requeue other workpackages
-                            if not workpackage.queued and continue_op:
-                                self._benchmark.work_stat.put(workpackage)
-                        if continue_op:
-                            LOGGER.debug(stepstr)
-                else:
-                    continue_op = operation.execute(
-                        parameter_dict=parameter, work_dir=work_dir,
-                        environment=self._env,
-                        only_check_pending=self.operation_done(
-                            operation_number))
-                    self.operation_done(operation_number, True)
-            if not continue_op:
-                break
-
-        # --- Write information file to mark end of work ---
-        if continue_op:
-            self.done = True
+            # --- Write information file to mark end of work ---
+            if continue_op:
+                self.done = True
+        except RuntimeError as re:
+            self.set_error(True, str(re))
+            if jube2.conf.EXIT_ON_ERROR:
+                raise(RuntimeError(str(re)))
+            else:
+                LOGGER.debug(
+                    "{0}\n{1}\n{2}".format(40 * "-", str(re), 40 * "-"))
 
     @staticmethod
     def reduce_workpackage_id_counter():

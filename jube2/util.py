@@ -343,31 +343,43 @@ def eval_bool(cmd):
                              .format(cmd, str(se)))
 
 
-def print_loading_bar(current_cnt, all_cnt, second_cnt=0):
+def print_loading_bar(current_cnt, all_cnt, second_cnt=0, third_cnt=0):
     """Show a simple loading animation"""
     width = jube2.conf.DEFAULT_WIDTH - 10
     if all_cnt > 0:
         done_cnt = (current_cnt * width) // all_cnt
         medium_cnt = (second_cnt * width) // all_cnt
+        medium2_cnt = (third_cnt * width) // all_cnt
     else:
         done_cnt = 0
         medium_cnt = 0
+        medium2_cnt = 0
 
     # shrink medium_cnt if there was some rounding issue
-    if (medium_cnt > 0) and (width < medium_cnt + done_cnt):
-        medium_cnt = width - done_cnt
+    if (medium_cnt > 0) and (width < medium_cnt + medium2_cnt + done_cnt):
+        medium_cnt = max(0, width - done_cnt - medium2_cnt)
+
+    # shrink medium2_cnt if there was some rounding issue
+    if (medium2_cnt > 0) and (width < medium_cnt + medium2_cnt + done_cnt):
+        medium2_cnt = max(0, width - done_cnt - medium_cnt)
 
     # fill up medium_cnt if there was some rounding issue
-    if (current_cnt + second_cnt == all_cnt) and \
-            (medium_cnt + done_cnt < width):
-        medium_cnt += width - (medium_cnt + done_cnt)
+    if (current_cnt + second_cnt + third_cnt == all_cnt) and \
+            (medium_cnt + medium2_cnt + done_cnt < width):
+        if (medium_cnt > 0):
+            medium_cnt += width - (medium_cnt + medium2_cnt + done_cnt)
+        elif (medium2_cnt > 0):
+            medium2_cnt += width - (medium_cnt + medium2_cnt + done_cnt)
+        else:
+            done_cnt += width - (medium_cnt + medium2_cnt + done_cnt)
 
-    todo_cnt = width - done_cnt - medium_cnt
+    todo_cnt = width - done_cnt - medium_cnt - medium2_cnt
 
-    bar_str = "\r{0}{1}{2} ({3:3d}/{4:3d})".format("#" * done_cnt,
-                                                   "0" * medium_cnt,
-                                                   "." * todo_cnt,
-                                                   current_cnt, all_cnt)
+    bar_str = "\r{0}{1}{2}{3} ({4:3d}/{5:3d})".format("#" * done_cnt,
+                                                      "0" * medium_cnt,
+                                                      "E" * medium2_cnt,
+                                                      "." * todo_cnt,
+                                                      current_cnt, all_cnt)
     sys.stdout.write(bar_str)
     sys.stdout.flush()
 

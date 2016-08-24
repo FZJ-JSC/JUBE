@@ -312,6 +312,7 @@ def run_new_benchmark(args):
     """Start a new benchmark run"""
 
     jube2.conf.HIDE_ANIMATIONS = args.hide_animation
+    jube2.conf.EXIT_ON_ERROR = args.error
 
     id_cnt = 0
 
@@ -390,6 +391,9 @@ def jube2jube2(args):
 
 def _continue_benchmark(benchmark_folder, args):
     """Continue existing benchmark"""
+
+    jube2.conf.EXIT_ON_ERROR = args.error
+
     benchmark = _load_existing_benchmark(args, benchmark_folder)
 
     if benchmark is None:
@@ -594,6 +598,8 @@ def _get_args_parser():
             ("-i", "--id"):
                 {"type": int, "help": "use specific benchmark id",
                  "nargs": "+"},
+            ("-e", "--error"):
+                {"action": "store_true", "help": "exit on error"},
             ("--hide-animation",):
                 {"action": "store_true", "help": "hide animations"},
             ("--include-path",):
@@ -620,6 +626,8 @@ def _get_args_parser():
                  "nargs": "+"},
             ("--hide-animation",):
                 {"action": "store_true", "help": "hide animations"},
+            ("-e", "--error"):
+                {"action": "store_true", "help": "exit on error"},
             ("-a", "--analyse"):
                 {"action": "store_true", "help": "run analyse"},
             ("-r", "--result"):
