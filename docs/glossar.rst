@@ -270,7 +270,7 @@ Glossary
       * use of another parameter:
 
         * inside the parameter definition, a parameter can be reused: ``... $nameofparameter ...``
-        * the parameter will be replaced multiply times (to handle complex parameter structures; max: 5 times)
+        * the parameter will be replaced multiple times (to handle complex parameter structures; max: 5 times)
         * the substitution will be run before the execution step starts with the current :term:`parameter space <parameter_space>`. Only parameters reachable
           in this step will be usable for substitution!
 
@@ -492,7 +492,7 @@ Glossary
           <use from="">...</use>
           ...
           <analyse step="...">
-            <file>...</file>
+            <file use="">...</file>
           </analyse>
           ...
         </analyser>
@@ -504,6 +504,11 @@ Glossary
      * any name must be unique, it is not allowed to reuse a set
      * the step-attribute contains an existing stepname
      * each file using each workpackage will be scanned seperatly
+     * the ``use`` argument inside the ``<file>`` tag is optional and can be used to specify a file specific patternset;
+
+       * the global ``<use>`` and this local use will be combined and evaluated at the same time
+       * a ``from```subargument is not possible in this local ``use``
+
      * ``reduce`` is optional (default: ``true`` )
 
        * ``true`` : Combine result lines if iteration-option is used
