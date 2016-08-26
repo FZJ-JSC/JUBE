@@ -245,6 +245,10 @@ class Step(object):
                     additional_parametersets=[jube_parameterset])
                 # Maybe new templates were created
                 if parameterset.has_templates:
+                    LOGGER.debug("Expand parameter templates:\n{0}".format(
+                        "\n".join("    \"{0}\": {1}".format(i, j.value)
+                                  for i, j in parameterset.
+                                  template_parameter_dict.items())))
                     new_parametersets += \
                         [new_parameterset for new_parameterset in
                          parameterset.expand_templates()]
