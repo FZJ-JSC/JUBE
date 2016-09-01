@@ -156,12 +156,12 @@ This benchmark will produce the follwing output:
    A simple hello world
    ######################################################################
 
-   Running workpackages (#=done, 0=wait):
+   Running workpackages (#=done, 0=wait, E=error):
    ############################################################ (  1/  1)
 
-      stepname | all | open | wait | done
-     ----------+-----+------+------+-----
-     say_hello |   1 |    0 |    0 |    1
+      stepname | all | open | wait | error | done
+     ----------+-----+------+------+-------+-----
+     say_hello |   1 |    0 |    0 |     0 |    1
 
    >>>> Benchmark information and further useful commands:
    >>>>       id: 0
@@ -243,6 +243,12 @@ stdout output as well as the log output at the same time.
 Since the parsing step is done before creating the benchmark directory, there will be a
 ``jube-parse.log`` inside your current working directory, which contains the parser log information.
 
+Errors within a ``<do>`` command will create a log entry and stop further execution of the corresponding parameter
+combination. Other parameter combinations will still be executed by default. *JUBE* can also stop automatically any
+further execution by using the ``-e`` option::
+
+   >>> jube run -e <input-file>
+
 There is also a debugging mode integrated in *JUBE*::
 
    >>> jube --debug <command> [other-args]
@@ -269,9 +275,9 @@ all possible parameter combinations. In this example the step ``say_hello`` will
 
 .. code-block:: none
 
-    stepname | all | open | wait | done
-   ----------+-----+------+------+-----
-   say_hello |   6 |    0 |    0 |    6
+    stepname | all | open | wait | error | done
+   ----------+-----+------+------+-------+-----
+   say_hello |   6 |    0 |    0 |     0 |    6
 
 
 Every parameter combination will run in its own sandbox directory.
@@ -312,10 +318,10 @@ three ``second_step`` runs each pointing to different ``first_step``-directories
 
 .. code-block:: none
 
-      stepname | all | open | wait | done
-   ------------+-----+------+------+-----
-    first_step |   3 |    0 |    0 |    3
-   second_step |   3 |    0 |    0 |    3
+      stepname | all | open | wait | error | done
+   ------------+-----+------+------+-------+-----
+    first_step |   3 |    0 |    0 |     0 |    3
+   second_step |   3 |    0 |    0 |     0 |    3
 
 .. index:: substitution, loading files, external files, files
 
@@ -374,7 +380,7 @@ The resulting directory-tree will be:
       +- 000000_say_hello  # the workpackage ($number = 1)
          |
          +- done           # workpackage finished marker
-         +- work           # user sanbox folder
+         +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands
             +- stdout      # standard output of used shell commands (Number: 1)

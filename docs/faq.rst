@@ -83,11 +83,13 @@ directories e.g. by using the :term:`jube_variables`.
 
 .. code-block:: xml
 
-   <step name="a_step" work_dir="path_to_dir/${jube_benchmark_id}/${jube_wp_id}_${jube_step_name}">
+   <step name="a_step" work_dir="path_to_dir/${jube_benchmark_padid}/${jube_wp_padid}_${jube_step_name}">
       ...
    </step>
 
-JUBE does not create any symbolic links inside the changed work dirctories. If you want to access files, out of
+Using the ``*_padid`` variables will help to create a sorted directory structure.
+
+*JUBE* does not create any symbolic links inside the changed work dirctories. If you want to access files, out of
 a dependend step, you can use a ``<fileset>`` and the ``rel_path_ref``-attribute.
 
 .. code-block:: xml
@@ -103,3 +105,34 @@ dependend files.
 To access files out of a alternative working directory in a following step and if you created this working directory by
 using the :term:`jube_variables`, you can use ``jube_wp_parent_<parent_name>_id`` to get the id of the parent step to
 use it within a path definition.
+
+.. index:: XML character handling
+
+XML character handling
+~~~~~~~~~~~~~~~~~~~~~~
+
+The *JUBE* input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
+
+Linebreaks are not allowed inside a tag-option (e.g. ``<sub ... dest="...\n...">`` is not possible). Inside a tag
+multiple lines are now problem (e.g. inside of ``<parameter>...</parameter>``). Often multiple lines are also needed
+inside a ``<sub>``. Linebreaks are possible for the ``dest=""`` part, by switching to the alternative ``<sub>`` syntax:
+
+.. code-block:: xml
+
+   <sub source="...">
+   ...
+   </sub>
+
+Whitespaces will only be removed in the beginning and in the end of the whole string. So indentation of a multiline string
+can create some problems.
+
+Some characters are not allowed inside a *XML* script or at least not inside a tag-option. Here some of the typcial replacments:
+
+* ``<`` : ``&lt;``
+* ``>`` : ``&gt;``
+* ``&`` : ``&amp;``
+* ``"`` : ``&quot;``
+* ``'`` : ``&apos;``
+
+
+

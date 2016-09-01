@@ -211,17 +211,17 @@ You will see this Output after running the benchmark:
 
 .. code-block:: none
 
-   stepname | all | open | wait | done
-   ---------+-----+------+------+-----
-     submit |   3 |    0 |    3 |    0
+   stepname | all | open | wait | error | done
+   ---------+-----+------+------+-------+-----
+     submit |   3 |    0 |    3 |     0 |    0
 
 and this output after running the ``continue`` command (after the jobs where executed):
 
 .. code-block:: none
 
-   stepname | all | open | wait | done
-   ---------+-----+------+------+-----
-     submit |   3 |    0 |    0 |    3
+   stepname | all | open | wait | error | done
+   ---------+-----+------+------+-------+-----
+     submit |   3 |    0 |    0 |     0 |    3
 
 You have to run ``continue`` multiple times if not all ``done_file`` were written when running ``continue`` for the first time.
 
