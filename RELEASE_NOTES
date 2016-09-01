@@ -3,6 +3,37 @@ Release notes
 *************
 
 
+Version 2.1.3
+=============
+
+Release: 2016-09-01
+
+* Fix broken CSV table output style
+
+* Fix "jube_wp_..." parameter handling bug, if these parameter are
+  used inside another script parameter
+
+* Added new optional argument "suffix="..."" to the "<step>" tag
+
+     * Parameter are allowed inside this argument string.
+
+     * The evaluated string will be attached to the default
+       workpackage directory name to allow users to find specific
+       directories in an easier way (e.g. "000001_stepname_suffix" ).
+
+* The *XML* schema files can now be found inside the "contrib"
+  folder
+
+* Added new advanced error handling
+
+     * JUBE will not stop any more if an error occurs inside a "run"
+       or "continue". The error will be marked and the corresponding
+       workpackage will not be touched anymore.
+
+     * There is also a "-e"/"--exit" option to overwrite this
+       behaviour to directly exit if there is an error.
+
+
 Version 2.1.2
 =============
 
