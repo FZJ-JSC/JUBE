@@ -506,6 +506,7 @@ class StaticParameter(Parameter):
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
         mode = self._mode
+        pre_script_value = value
         if ((not re.search(Parameter.parameter_regex, value)) or
                 force_evaluation or final_sub) and \
                 (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
@@ -522,9 +523,13 @@ class StaticParameter(Parameter):
                 # Select new parameter mode
                 mode = "text"
             except Exception as exception:
-                raise RuntimeError(("Can not evaluate \"{0}\" for " +
-                                    "parameter \"{1}\": {2}").format(
-                    value, self.name, str(exception)))
+                # Ignore the forced evaluation if there was an error
+                if force_evaluation:
+                    value = pre_script_value
+                else:
+                    raise RuntimeError(("Can not evaluate \"{0}\" for " +
+                                        "parameter \"{1}\": {2}").format(
+                        value, self.name, str(exception)))
         changed = (value != self._value) or (mode != self._mode)
 
         if changed:
