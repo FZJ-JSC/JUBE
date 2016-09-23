@@ -107,6 +107,10 @@ def command_help(args):
     subparser = _get_args_parser()[1]
     if args.command is None:
         subparser["help"].print_help()
+    elif args.command.lower() == "all":
+        for key in sorted(jube2.help.HELP.keys()):
+            print("{0}:".format(key))
+            print(jube2.help.HELP[key])
     else:
         if args.command in jube2.help.HELP:
             if args.command in subparser:
@@ -809,7 +813,7 @@ def _get_args_parser():
                 subparser[name].add_argument(*names, **arg)
 
     # create help key word overview
-    help_keys = sorted(jube2.help.HELP)
+    help_keys = sorted(list(jube2.help.HELP) + ["ALL"])
     max_word_length = max(map(len, help_keys)) + 4
     # calculate max number of keyword columns
     max_columns = jube2.conf.DEFAULT_WIDTH // max_word_length
