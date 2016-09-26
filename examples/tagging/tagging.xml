@@ -5,7 +5,7 @@
 
     <!-- Configuration -->
     <parameterset name="param_set">
-      <parameter name="hello_str" tag="eng, xd, !jo">Hello</parameter>
+      <parameter name="hello_str" tag="eng">Hello</parameter>
       <parameter name="hello_str" tag="deu">Hallo</parameter>
       <parameter name="world_str" tag="!deu">World</parameter>
     </parameterset>
