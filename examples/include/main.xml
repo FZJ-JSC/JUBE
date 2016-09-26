@@ -11,7 +11,8 @@
     <!-- Operation -->
     <step name="say_hello">
       <use>param_set</use> <!-- use existing parameterset -->
-      <use from="include_data.xml">param_set2</use> <!-- out of an external file -->
+      <use from="include_data.xml">param_set2</use> <!--out of an external file -->
+      <do>echo $jube_benchmark_home</do>
       <do>echo $foo</do> <!-- shell command -->
       <include from="include_data.xml" path="dos/do" /> <!-- include all available tag -->
     </step>    

@@ -9,9 +9,13 @@
     </parameterset>
     
     <!-- Operation -->
-    <step name="say_hello">
-      <use>hello_parameter</use> <!-- use existing parameterset -->
-      <do>echo $hello_str</do> <!-- shell command -->
+    <step name="say_hello" work_dir="$jube_benchmark_home/$jube_benchmark_name/$jube_benchmark_id/simulation" max_async="1" iterations="5">
+      <use>hello_parameter</use> 
+      <do>echo $jube_wp_iteration $hello_str</do>
+      <do done_file="next">if [ ! -f ./end ]; then ${jube_benchmark_home}/./sleep.sh; fi;</do> 
+      <!--<do active="$jube_wp_iteration == 2">touch end</do>-->
+      <do>if [ ! -f ./end ]; then rm next; echo $jube_wp_iteration $hello_str; fi;</do> 
+      <!--if [ -f ./hello_world ]; then echo "hallo"; else echo "bla"; fi;-->
     </step>    
   </benchmark>
 </jube>

@@ -43,7 +43,7 @@
         <parameter name="threadspertask">1</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
-        <parmaeter name="nodetype"></parmaeter>
+        <parameter name="nodetype"></parameter>
         <parameter name="queue">common</parameter>
         <parameter name="env"></parameter>
         <parameter name="mail"></parameter>
