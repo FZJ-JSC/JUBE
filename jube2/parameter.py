@@ -507,8 +507,17 @@ class StaticParameter(Parameter):
         # Parameter is a script
         mode = self._mode
         pre_script_value = value
+        # Script evaluation is allowed if:
+        # all parameter were already replaced OR
+        #     last substitution before workpackage creation (force run) OR
+        #     last substitution after workpackage creation (final run)
+        # AND no jube_wp_ parameter inside the value (otherwise force run will
+        #     execute these parameternames to early)
+        # AND parameter must be a scripting parameter
         if ((not re.search(Parameter.parameter_regex, value)) or
                 force_evaluation or final_sub) and \
+                (not any(parname.startswith("jube_wp_")
+                         for parname in self.__depending_parameter)) and \
                 (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
             try:
                 # Run additional substitution to remove $$ before running
