@@ -650,14 +650,11 @@ remove
    The given benchmark will be removed.
 
    If no benchmark id is given, last benchmark found in directory will
-   be removed.
+   be removed. If benchmark directory is missing, current directory
+   will be used.
 
    Only the *JUBE* internal directory structure will be deleted.
    External files and directories will stay unchanged.
-
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
 
 result
    Create a result table.
