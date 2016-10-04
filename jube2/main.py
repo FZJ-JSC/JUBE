@@ -137,7 +137,11 @@ def info(args):
             if args.step is None:
                 jube2.info.print_benchmark_info(benchmark)
             else:
-                for step_name in args.step:
+                if args.step:
+                    steps = args.step
+                else:
+                    steps = benchmark.steps.keys()
+                for step_name in steps:
                     jube2.info.print_step_info(
                         benchmark, step_name,
                         parametrization_only=args.parametrization,
@@ -704,7 +708,7 @@ def _get_args_parser():
                 {"help": "use benchmarks given by id",
                  "nargs": "+"},
             ("-s", "--step"):
-                {"help": "show information for given step", "nargs": "+"},
+                {"help": "show information for given step", "nargs": "*"},
             ("-p", "--parametrization"):
                 {"help": "display only parametrization of given step",
                  "action": "store_true"},
