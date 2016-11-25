@@ -272,11 +272,19 @@ def search_for_benchmarks(args):
     found_benchmarks = list()
     if not os.path.isdir(args.dir):
         raise OSError("Not a directory: \"{0}\"".format(args.dir))
+    all_benchmarks = [
+        os.path.join(args.dir, directory)
+        for directory in os.listdir(args.dir)
+        if os.path.isdir(os.path.join(args.dir, directory))]
+    all_benchmarks.sort()
     if (args.id is not None) and ("all" not in args.id):
         for benchmark_id in args.id:
             if benchmark_id == "last":
                 benchmark_id = jube2.util.get_current_id(args.dir)
             # Search for existing benchmark
+            benchmark_id = int(benchmark_id)
+            if benchmark_id < 0:
+                benchmark_id = os.path.basename(all_benchmarks[benchmark_id])
             benchmark_folder = jube2.util.id_dir(args.dir, int(benchmark_id))
             if not os.path.isdir(benchmark_folder):
                 raise OSError("Benchmark directory not found: \"{0}\""
@@ -292,10 +300,7 @@ def search_for_benchmarks(args):
     else:
         if (args.id is not None) and ("all" in args.id):
             # Add all available benchmark folder
-            found_benchmarks = [
-                os.path.join(args.dir, directory)
-                for directory in os.listdir(args.dir)
-                if os.path.isdir(os.path.join(args.dir, directory))]
+            found_benchmarks = all_benchmarks
         else:
             # Get highest benchmark id
             benchmark_id = jube2.util.get_current_id(args.dir)
@@ -364,6 +369,11 @@ def run_new_benchmark(args):
             bench = benchmarks[bench_name]
             # Set user defined id
             if (args.id is not None) and (len(args.id) > id_cnt):
+                if args.id[id_cnt] < 0:
+                    LOGGER.warning("Negative ids are not allowed. Skipping id "
+                                   "'{}'.".format(args.id[id_cnt]))
+                    id_cnt += 1
+                    continue
                 bench.id = args.id[id_cnt]
                 id_cnt += 1
             bench.new_run()
