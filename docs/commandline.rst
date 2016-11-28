@@ -18,6 +18,9 @@
 
 .. index:: commandline
 
+.. |ID_DESCRIPTION| replace:: select benchmark id, negative ids count backwards
+   from the end, default: last found inside the benchmarks directory
+                              
 Command line documentation
 ==========================
 
@@ -107,7 +110,7 @@ Run a new benchmark.
    overwrite benchmark specific comment
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   use specific benchmark id
+   use specific benchmark id (must be >= 0)
 
 ``FILE [FILE ...]``
    input *XML* file
@@ -144,7 +147,7 @@ Continue an existing benchmark.
    show command help information
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   select benchmark id, default: last found inside the benchmarks directory
+   |ID_DESCRIPTION|
 
 ``--hide-animation``
    hide the progress bar animation (if you want to use *JUBE* inside a scripting environment)
@@ -179,7 +182,7 @@ Run the analyse procedure.
    show command help information
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   select benchmark id, default: last found inside the benchmarks directory
+   |ID_DESCRIPTION|
 
 ``-u UPDATE_FILE``, ``--update UPDATE_FILE``
    use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
@@ -253,7 +256,7 @@ Add or manipulate the benchmark comment.
    show command help information
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   select benchmark id, default: last found inside the benchmarks directory
+   |ID_DESCRIPTION|
 
 ``-a``, ``--append``
    append new comment instead of overwrite existing one
@@ -279,7 +282,7 @@ Remove an existing benchmark
    show command help information
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   select benchmark id, default: last found inside the benchmarks directory
+   |ID_DESCRIPTION|
 
 ``-f``, ``--force``
    do not prompt
@@ -331,7 +334,7 @@ Show logs for benchmark
    show command help information
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   select benchmark id, default: last found inside the benchmarks directory
+   |ID_DESCRIPTION|
 
 ``-c COMMAND [COMMAND ...]``, ``--command COMMAND [COMMAND ...]``
    show only logs for specified commands
@@ -354,7 +357,7 @@ Show benchmark status RUNNING or FINISHED.
    show command help information
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   select benchmark id, default: last found inside the benchmarks directory
+   |ID_DESCRIPTION|
 
 ``DIRECTORY``
    directory which contain benchmarks, default: .
