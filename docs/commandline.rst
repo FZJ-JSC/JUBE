@@ -20,7 +20,7 @@
 
 .. |ID_DESCRIPTION| replace:: select benchmark id, negative ids count backwards
    from the end, default: last found inside the benchmarks directory
-                              
+
 Command line documentation
 ==========================
 
@@ -36,7 +36,7 @@ to get a list of all available commands.
 Because of the *shell* parsing mechanism take care if you write your optional arguments after the command name before the positional
 arguments. You **must** use ``--`` to split the ending of an optional (if the optional argument takes multiple input elements) and the start of the positional argument.
 
-.. index:: general commandline options 
+.. index:: general commandline options
 
 general
 ~~~~~~~
@@ -219,10 +219,10 @@ Run the result creation.
 
 ``-a``, ``--analyse``
    run analyse before running result command
-   
+
 ``-r``, ``--reverse``
    reverse benchmark output order when multiple benchmarks are given
-   
+
 ``-n``, ``--num``
    show only last N benchmarks
 
