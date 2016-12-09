@@ -666,7 +666,10 @@ class Benchmark(object):
                 tag_etree = ET.SubElement(selection_etree, "tag")
                 tag_etree.text = tag
 
-        benchmarks_etree.append(self.etree_repr(new_cwd=self.bench_dir))
+        benchmark_etree = self.etree_repr(new_cwd=self.bench_dir)
+        benchmark_etree.attrib["outpath"] = ".."
+
+        benchmarks_etree.append(benchmark_etree)
         xml = jube2.util.element_tree_tostring(benchmarks_etree,
                                                encoding="UTF-8")
         # Using dom for pretty-print
