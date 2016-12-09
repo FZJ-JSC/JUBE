@@ -28,6 +28,7 @@ import jube2.info
 import jube2.help
 import jube2.jubetojube2
 import jube2.log
+import jube2.completion
 
 import sys
 import os
@@ -203,6 +204,11 @@ def show_log_single(args, benchmark_folder):
     if not_matching:
         jube2.log.log_print("Could not find logs: {0}".format(
             ",".join(not_matching)))
+
+
+def complete(args):
+    """Handle shell completion"""
+    jube2.completion.complete_function_bash(args)
 
 
 def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
@@ -579,26 +585,8 @@ def _manipulate_comment(benchmark_folder, args):
                      jube2.conf.CONFIGURATION_FILENAME), outpath="..")
 
 
-def _get_args_parser():
-    """Create argument parser"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-V", "--version", help="show version",
-                        action="version",
-                        version="JUBE, version {0}".format(
-                            jube2.conf.JUBE_VERSION))
-    parser.add_argument("-v", "--verbose",
-                        help="enable verbose console output (use -vv to " +
-                             "show stdout during execution and -vvv to " +
-                             "show log and stdout)",
-                        action="count", default=0)
-    parser.add_argument("--debug", action="store_true",
-                        help='use debugging mode')
-    parser.add_argument("--force", action="store_true",
-                        help='skip version check')
-    parser.add_argument("--devel", action="store_true",
-                        help='show development related information')
-    subparsers = parser.add_subparsers(dest="subparser", help='subparsers')
-
+def gen_subparser_conf():
+    """Generate dict with subparser information"""
     subparser_configuration = dict()
 
     # run subparser
@@ -813,6 +801,44 @@ def _get_args_parser():
                  "nargs": "+"}
         }
     }
+
+    # completion subparser
+    subparser_configuration["complete"] = {
+        "help": "generate shell completion "
+                'usage: eval "$(jube complete)"',
+        "func": complete,
+        "arguments": {
+            ('--command-name', "-c"):
+                {"nargs": 1,
+                 "help": "name of command to be completed",
+                 "default": [os.path.basename(sys.argv[0])]},
+        }
+    }
+
+    return subparser_configuration
+
+
+def _get_args_parser():
+    """Create argument parser"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-V", "--version", help="show version",
+                        action="version",
+                        version="JUBE, version {0}".format(
+                            jube2.conf.JUBE_VERSION))
+    parser.add_argument("-v", "--verbose",
+                        help="enable verbose console output (use -vv to " +
+                             "show stdout during execution and -vvv to " +
+                             "show log and stdout)",
+                        action="count", default=0)
+    parser.add_argument("--debug", action="store_true",
+                        help='use debugging mode')
+    parser.add_argument("--force", action="store_true",
+                        help='skip version check')
+    parser.add_argument("--devel", action="store_true",
+                        help='show development related information')
+    subparsers = parser.add_subparsers(dest="subparser", help='subparsers')
+
+    subparser_configuration = gen_subparser_conf()
 
     # create subparser out of subparser configuration
     subparser = dict()
