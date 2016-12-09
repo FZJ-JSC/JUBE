@@ -284,7 +284,8 @@ def search_for_benchmarks(args):
             # Search for existing benchmark
             benchmark_id = int(benchmark_id)
             if benchmark_id < 0:
-                benchmark_id = int(os.path.basename(all_benchmarks[benchmark_id]))
+                benchmark_id = int(
+                    os.path.basename(all_benchmarks[benchmark_id]))
             benchmark_folder = jube2.util.id_dir(args.dir, benchmark_id)
             if not os.path.isdir(benchmark_folder):
                 raise OSError("Benchmark directory not found: \"{0}\""
@@ -575,7 +576,7 @@ def _manipulate_comment(benchmark_folder, args):
     benchmark.comment = re.sub(r"\s+", " ", comment)
     benchmark.write_benchmark_configuration(
         os.path.join(benchmark_folder,
-                     jube2.conf.CONFIGURATION_FILENAME))
+                     jube2.conf.CONFIGURATION_FILENAME), outpath="..")
 
 
 def _get_args_parser():

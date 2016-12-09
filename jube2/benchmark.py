@@ -381,7 +381,8 @@ class Benchmark(object):
                     (os.access(self.bench_dir, os.W_OK))):
                 self.write_benchmark_configuration(
                     os.path.join(self.bench_dir,
-                                 jube2.conf.CONFIGURATION_FILENAME))
+                                 jube2.conf.CONFIGURATION_FILENAME),
+                    outpath="..")
 
     def write_analyse_data(self, filename):
         """All analyse data will be written to given file
@@ -647,12 +648,13 @@ class Benchmark(object):
             os.chmod(self.bench_dir,
                      os.stat(self.bench_dir).st_mode | stat.S_ISGID)
         self.write_benchmark_configuration(
-            os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME))
+            os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME),
+            outpath="..")
         jube2.util.update_timestamps(os.path.join(self.bench_dir,
                                                   jube2.conf.TIMESTAMPS_INFO),
                                      "start", "change")
 
-    def write_benchmark_configuration(self, filename):
+    def write_benchmark_configuration(self, filename, outpath=None):
         """The current benchmark configuration will be written to given file
         using xml representation"""
         # Create root-tag and append single benchmark
@@ -667,7 +669,8 @@ class Benchmark(object):
                 tag_etree.text = tag
 
         benchmark_etree = self.etree_repr(new_cwd=self.bench_dir)
-        benchmark_etree.attrib["outpath"] = ".."
+        if outpath is not None:
+            benchmark_etree.attrib["outpath"] = outpath
 
         benchmarks_etree.append(benchmark_etree)
         xml = jube2.util.element_tree_tostring(benchmarks_etree,
