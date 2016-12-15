@@ -557,3 +557,23 @@ def consistency_check(benchmark):
     for step_name in benchmark.steps:
         if step_name not in order:
             raise ValueError("Can't resolve dependencies.")
+
+
+class CompType(object):
+    """Allow comparison of different datatypes"""
+
+    def __init__(self, value):
+        self.__value = value
+
+    @property
+    def value(self):
+        return self.__value
+
+    def __lt__(self, other):
+        if self.value is None or other.value is None:
+            return False
+        else:
+            try:
+                return self.value < other.value
+            except TypeError:
+                return False

@@ -224,8 +224,13 @@ class KeyValuesResult(Result):
         # Sort the resultset
         if len(self._sort_names) > 0:
             LOGGER.debug("sort using: {0}".format(",".join(self._sort_names)))
-            sort_data = sorted(sort_data,
-                               key=operator.itemgetter(*self._sort_names))
+            # Use CompType for sorting to allow comparison of None values
+            sort_data = \
+                sorted(sort_data,
+                       key=lambda x:
+                       [jube2.util.CompType(i)
+                        for i in [operator.itemgetter(sort_name)(x)
+                                  for sort_name in self._sort_names]])
 
         # Create table data
         table_data = list()
@@ -235,7 +240,7 @@ class KeyValuesResult(Result):
             for key in self._keys:
                 if key.name in dataset:
                     # Cnt number of final entries to avoid complete empty
-                    # result entires
+                    # result entries
                     cnt += 1
                     # Set null value
                     if dataset[key.name] is None:
