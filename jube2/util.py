@@ -201,7 +201,10 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                         textwrap.wrap(line, jube2.conf.MAX_TABLE_CELL_WIDTH)
                 wraps.append(lines)
             else:
-                wraps.append(text.splitlines())
+                if pretty:
+                    wraps.append(text.splitlines())
+                else:
+                    wraps.append([text.replace("\n", " ")])
 
         grow = True
         height = 0
