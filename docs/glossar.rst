@@ -308,7 +308,7 @@ Glossary
 
      .. code-block:: xml
 
-        <link directory="..." name="..." rel_path_ref="..." separator="...">...</link>
+        <link directory="..." name="..." rel_path_ref="..." separator="..." active="...">...</link>
 
      * ``directory`` is optional, it can be used if you want to link several files inside the same directory
      * ``name`` is optional, it can be used to rename the file inside your work directory
@@ -317,6 +317,11 @@ Glossary
        * ``external`` or ``internal`` can be chosen, default: external
        * ``external``: rel.-pathes based on position of xml-file
        * ``internal``: rel.-pathes based on current work directory (e.g. to link files of another step)
+
+     * ``active`` is optional
+
+       * can be set to ``true`` or ``false`` or any *Python* parsable bool expression to enable or disable the single command
+       * :term:`parameter <parameter_tag>` are allowed inside this attribute
 
      * each link-tag can contain a list of filenames (or directories), separated by ``,``, the default separator can be changed
        by using the ``separator`` attribute
@@ -330,7 +335,7 @@ Glossary
 
      .. code-block:: xml
 
-        <copy directory="..." name="..." rel_path_ref="..." separator="...">...</copy>
+        <copy directory="..." name="..." rel_path_ref="..." separator="..." active="...">...</copy>
 
      * ``directory`` is optional, it can be used if you want to copy several files inside the same directory
      * ``name`` is optional, it can be used to rename the file inside your work directory
@@ -339,6 +344,11 @@ Glossary
        * ``external`` or ``internal`` can be chosen, default: external
        * ``external``: rel.-pathes based on position of xml-file
        * ``internal``: rel.-pathes based on current work directory (e.g. to link files of another step)
+
+     * ``active`` is optional
+
+       * can be set to ``true`` or ``false`` or any *Python* parsable bool expression to enable or disable the single command
+       * :term:`parameter <parameter_tag>` are allowed inside this attribute
 
      * each copy-tag can contain a list of filenames (or directories), separated by ``,``, the default separator can be changed
        by using the ``separator`` attribute
@@ -353,16 +363,20 @@ Glossary
 
    prepare_tag
      The prepare can contain any *Shell* command you want. It will be executed like a normal :term:`<do> <do_tag>` inside the
-     step where the coresspoding fileset is used. The only difference towards the normal do is, that it will be executed
+     step where the corresponding fileset is used. The only difference towards the normal do is, that it will be executed
      **before** the substitution will be executed.
 
      .. code-block:: xml
 
-        <prepare stdout="..." stderr="..." work_dir="...">...</prepare>
+        <prepare stdout="..." stderr="..." work_dir="..." active="...">...</prepare>
 
      * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
      * ``work_dir`` is optional, it can be used to change the work directory of this single command (relativly seen towards
        the original work directory)
+     * ``active`` is optional
+
+       * can be set to ``true`` or ``false`` or any *Python* parsable bool expression to enable or disable the single command
+       * :term:`parameter <parameter_tag>` are allowed inside this attribute
 
    substituteset_tag
      A substituteset is a container to store a bundle of :term:`sub <sub_tag>` commands.

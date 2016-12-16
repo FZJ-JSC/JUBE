@@ -1273,6 +1273,7 @@ class XMLParser(object):
                 separator = etree_file.get(
                     "separator", jube2.conf.DEFAULT_SEPARATOR)
                 directory = etree_file.get("directory", default="").strip()
+                active = etree_file.get("active", "true").strip()
                 file_path_ref = etree_file.get("file_path_ref")
                 alt_name = etree_file.get("name")
                 # Check if the filepath is relativly seen to working dir or the
@@ -1302,10 +1303,10 @@ class XMLParser(object):
                         name = None
                     if etree_file.tag == "copy":
                         file_obj = jube2.fileset.Copy(
-                            path, name, is_internal_ref)
+                            path, name, is_internal_ref, active)
                     elif etree_file.tag == "link":
                         file_obj = jube2.fileset.Link(
-                            path, name, is_internal_ref)
+                            path, name, is_internal_ref, active)
                     if file_path_ref is not None:
                         file_obj.file_path_ref = \
                             os.path.expandvars(os.path.expanduser(
@@ -1325,9 +1326,11 @@ class XMLParser(object):
                 alt_work_dir = etree_file.get("work_dir")
                 if alt_work_dir is not None:
                     alt_work_dir = alt_work_dir.strip()
+                active = etree_file.get("active", "true").strip()
+
                 prepare_obj = jube2.fileset.Prepare(cmd, stdout_filename,
                                                     stderr_filename,
-                                                    alt_work_dir)
+                                                    alt_work_dir, active)
                 filelist.append(prepare_obj)
         return filelist
 

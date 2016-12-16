@@ -53,6 +53,7 @@
 <!ATTLIST link          directory CDATA #IMPLIED
                         name CDATA #IMPLIED
                         separator CDATA #IMPLIED
+                        active CDATA #IMPLIED
                         rel_path_ref (internal|external) #IMPLIED
                         file_path_ref CDATA #IMPLIED
                         tag CDATA #IMPLIED>
@@ -60,12 +61,14 @@
 <!ATTLIST copy          directory CDATA #IMPLIED
                         name CDATA #IMPLIED
                         separator CDATA #IMPLIED
+                        active CDATA #IMPLIED
                         rel_path_ref (internal|external) #IMPLIED
                         file_path_ref CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT prepare (#PCDATA)>
 <!ATTLIST prepare       stdout CDATA #IMPLIED
                         stderr CDATA #IMPLIED
+                        active CDATA #IMPLIED
                         work_dir CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT patternset ((pattern|include)*)>

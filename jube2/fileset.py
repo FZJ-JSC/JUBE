@@ -75,15 +75,20 @@ class File(object):
 
     """Generic file access"""
 
-    def __init__(self, path, name=None, is_internal_ref=False):
+    def __init__(self, path, name=None, is_internal_ref=False, active="true"):
         self._path = path
         self._name = name
         self._file_path_ref = ""
+        self._active = active
         self._is_internal_ref = is_internal_ref
 
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
                file_path_ref="", environment=None):
         """Create file access"""
+        active = jube2.util.eval_bool(jube2.util.substitution(
+            self._active, parameter_dict))
+        if not active:
+            return
         pathname = jube2.util.substitution(self._path, parameter_dict)
         pathname = os.path.expanduser(pathname)
         if environment is not None:
@@ -169,6 +174,8 @@ class Link(File):
         link_etree.text = self._path
         if self._name is not None:
             link_etree.attrib["name"] = self._name
+        if self._active != "true":
+            link_etree.attrib["active"] = self._active
         if self._is_internal_ref:
             link_etree.attrib["rel_path_ref"] = "internal"
         if self._file_path_ref != "":
@@ -197,6 +204,8 @@ class Copy(File):
         copy_etree.text = self._path
         if self._name is not None:
             copy_etree.attrib["name"] = self._name
+        if self._active != "true":
+            copy_etree.attrib["active"] = self._active
         if self._is_internal_ref:
             copy_etree.attrib["rel_path_ref"] = "internal"
         if self._file_path_ref != "":
@@ -209,11 +218,12 @@ class Prepare(jube2.step.Operation):
     """Prepare the workpackage work directory"""
 
     def __init__(self, cmd, stdout_filename=None, stderr_filename=None,
-                 work_dir=None):
+                 work_dir=None, active="true"):
         jube2.step.Operation.__init__(self,
                                       do=cmd,
                                       stdout_filename=stdout_filename,
                                       stderr_filename=stderr_filename,
+                                      active=active,
                                       work_dir=work_dir)
 
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
@@ -231,6 +241,8 @@ class Prepare(jube2.step.Operation):
             do_etree.attrib["stdout"] = self._stdout_filename
         if self._stderr_filename is not None:
             do_etree.attrib["stderr"] = self._stderr_filename
+        if self._active != "true":
+            do_etree.attrib["active"] = self._active
         if self._work_dir is not None:
             do_etree.attrib["work_dir"] = self._work_dir
         return do_etree

@@ -101,6 +101,7 @@
           use="optional" />
         <xs:attribute name="file_path_ref" type="xs:string"
           use="optional" />
+        <xs:attribute name="active" type="xs:string" use="optional" />
         <xs:attribute name="separator" type="xs:string" use="optional"/>  
         <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
@@ -112,6 +113,7 @@
       <xs:extension base="xs:string">
         <xs:attribute name="stdout" type="xs:string" use="optional" />
         <xs:attribute name="stderr" type="xs:string" use="optional" />
+        <xs:attribute name="active" type="xs:string" use="optional" />
         <xs:attribute name="work_dir" type="xs:string" use="optional" />
         <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>

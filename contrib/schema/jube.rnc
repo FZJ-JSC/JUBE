@@ -89,6 +89,7 @@ prepare = element prepare { attlist.prepare, text }
 attlist.prepare &=
   attribute stdout { text }?,
   attribute stderr { text }?,
+  attribute active { text }?,
   attribute work_dir { text }?,
   attribute tag { text }?
 link = element link { attlist.link, text }
@@ -98,6 +99,7 @@ attlist.link &=
   attribute rel_path_ref { "internal" | "external" }?,
   attribute file_path_ref { text }?,
   attribute separator { text }?,
+  attribute active { text }?,
   attribute tag { text }?
 copy = element copy { attlist.copy, text }
 attlist.copy &=
@@ -106,6 +108,7 @@ attlist.copy &=
   attribute rel_path_ref { "internal" | "external" }?,
   attribute file_path_ref { text }?,
   attribute separator { text }?,
+  attribute active { text }?,
   attribute tag { text }?
 patternset =
   element patternset { attlist.patternset, (pattern | \include)* }
