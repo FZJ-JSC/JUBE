@@ -36,16 +36,17 @@ Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher versi
 You also can use **Python 2.6** to run *JUBE*. In this case you had to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
 your *Python* module library on your own.
 
-To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package
+To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in three different ways:
 
 * You can use the **installation tool** to copy all files to the right position (preferred)::
 
    >>> python setup.py install --user
 
-  This will install the *JUBE* package and the binary to your ``$HOME/.local`` directory (also a user
-  specific ``--prefix`` option is available).
+  This will install the *JUBE* package and the binary to your ``$HOME/.local`` directory. Instead of ``--user`` also a user
+  specific ``--prefix`` option is available. Here you might have to set the ``PYTHONPATH`` environment variable first
+  (this will be mentioned during the install process).
 
-* You can also add **parent folder path** of the *JUBE* package-folder to the ``PYTHONPATH`` environment variable::
+* You can add the **parent folder path** of the *JUBE* package-folder (``jube2`` directory) to the ``PYTHONPATH`` environment variable::
 
    >>> export PYTHONPATH=<parent folder path>:$PYTHONPATH
 
@@ -81,6 +82,9 @@ shell environment variables are available which can be used to set system specif
   The group must exist and the *JUBE* user must be part of this group.
   The given group will be the owner of new benchmark runs. By default (without setting the environment variable)
   all file and directory permissions are definied by the normal *UNIX* rules.
+
+*BASH* autocompletion can be enabled by using the ``eval "$(jube complete)"`` command. You can store the command in your bash profile
+settings if needed.
 
 .. index:: hello world
 

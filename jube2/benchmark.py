@@ -230,13 +230,20 @@ class Benchmark(object):
             create_parameter("jube_benchmark_home",
                              os.path.abspath(self._file_path_ref)))
 
+        # benchmark rundir
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_benchmark_rundir",
+                             os.path.abspath(self.bench_dir)))
+
         timestamps = jube2.util.read_timestamps(
             os.path.join(self.bench_dir, jube2.conf.TIMESTAMPS_INFO))
 
         # benchmark start
         parameterset.add_parameter(
             jube2.parameter.Parameter.create_parameter(
-                "jube_benchmark_start", timestamps.get("start", "")))
+                "jube_benchmark_start",
+                timestamps.get("start", "").replace(" ", "T")))
 
         return parameterset
 

@@ -737,6 +737,7 @@ Glossary
         * ``$jube_benchmark_id``: current benchmark id
         * ``$jube_benchmark_padid``: current benchmark id with preceding zeros
         * ``$jube_benchmark_home``: original input file location
+        * ``$jube_benchmark_rundir``: main benchmark specific execution directory
         * ``$jube_benchmark_start``: benchmark starting time
 
       * Step:

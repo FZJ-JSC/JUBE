@@ -378,6 +378,9 @@ jube_variables
 
      * "$jube_benchmark_home": original input file location
 
+     * "$jube_benchmark_rundir": main benchmark specific execution
+       directory
+
      * "$jube_benchmark_start": benchmark starting time
 
    * Step:
@@ -650,11 +653,14 @@ remove
    The given benchmark will be removed.
 
    If no benchmark id is given, last benchmark found in directory will
-   be removed. If benchmark directory is missing, current directory
-   will be used.
+   be removed.
 
    Only the *JUBE* internal directory structure will be deleted.
    External files and directories will stay unchanged.
+
+   If no benchmark id is given, last benchmark found in directory will
+   be used. If benchmark directory is missing, current directory will
+   be used.
 
 result
    Create a result table.

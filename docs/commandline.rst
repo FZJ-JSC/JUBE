@@ -36,6 +36,8 @@ to get a list of all available commands.
 Because of the *shell* parsing mechanism take care if you write your optional arguments after the command name before the positional
 arguments. You **must** use ``--`` to split the ending of an optional (if the optional argument takes multiple input elements) and the start of the positional argument.
 
+When using *BASH* you can use the ``jube complete`` mechanism to enable a command line autocompletion.
+
 .. index:: general commandline options
 
 general
@@ -361,6 +363,23 @@ Show benchmark status RUNNING or FINISHED.
 
 ``DIRECTORY``
    directory which contain benchmarks, default: .
+
+.. index:: complete
+
+complete
+~~~~~~~~
+
+Generate shell completion. Usage: ``eval "$(jube complete)"``
+
+.. code-block:: none
+
+   jube complete [-h] [--command-name COMMAND_NAME]
+
+``-h``, ``--help``
+   show command help information
+
+``--command-name COMMAND_NAME``, ``-c COMMAND_NAME``
+   name of command to be complete, default: programname which was used to run the ``complete`` command
 
 .. index:: help
 

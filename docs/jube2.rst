@@ -75,6 +75,14 @@ jube2.jubetojube2
     :undoc-members:
     :show-inheritance:
 
+jube2.completion
+----------------
+
+.. automodule:: jube2.completion
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 jube2.log
 ---------
 
