@@ -318,15 +318,20 @@ def script_evaluation(cmd, script_type):
     """cmd will be evaluated with given script language"""
     if script_type == "python":
         return str(eval(cmd))
-    elif script_type == "perl":
-        cmd = "perl -e \"print " + cmd + "\""
+    elif script_type in ["perl", "shell"]:
+        if script_type == "perl":
+            cmd = "perl -e \"print " + cmd + "\""
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
-        return sub.communicate()[0].decode()
-    elif script_type == "shell":
-        sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, shell=True)
-        return sub.communicate()[0].decode()
+        stdout, stderr = sub.communicate()
+        stdout = stdout.decode()
+        stderr = stderr.decode()
+        # Check command execution error code
+        errorcode = sub.wait()
+        if errorcode != 0:
+            raise RuntimeError(stderr)
+        else:
+            return stdout
 
 
 def eval_bool(cmd):

@@ -221,7 +221,7 @@ class Pattern(jube2.parameter.StaticParameter):
                     self, parametersets, final_sub, no_templates,
                     force_evaluation)
         except RuntimeError as re:
-            LOGGER.debug(str(re))
+            LOGGER.debug(str(re).replace("parameter", "pattern"))
             if self._default is not None:
                 value = self._default
             elif self._type in ["int", "float"]:
