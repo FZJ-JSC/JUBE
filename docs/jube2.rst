@@ -156,7 +156,7 @@ jube2.util
     :show-inheritance:
 
 jube2.util.util
----------------
+~~~~~~~~~~~~~~~
 
 .. automodule:: jube2.util.util
     :members:
@@ -164,7 +164,7 @@ jube2.util.util
     :show-inheritance:
 
 jube2.util.output
------------------
+~~~~~~~~~~~~~~~~~
 
 .. automodule:: jube2.util.output
     :members:
