@@ -45,6 +45,18 @@ You can install the files to your $HOME/.local directory by using:
 $HOME/.local/bin must be inside your $PATH environment variable to use 
 JUBE in an easy way.
 
+Instead you can also specify a self defined path prefix:
+
+>>> python setup.py install --prefix=<some_path>
+
+You might be asked during the installation to add your path (and some subfolders)
+to the $PYTHONPATH environment variable (this should be stored in your profile
+settings):
+
+>>> export PYTHONPATH=<needed_path>:$PYTHONPATH
+
+In addition it is usefull to also set the $PATH variable again.
+
 To check the installation you can run:
 
 >>> jube --version
