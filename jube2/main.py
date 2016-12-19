@@ -22,7 +22,8 @@ from __future__ import (print_function,
                         division)
 
 import jube2.jubeio
-import jube2.util
+import jube2.util.util
+import jube2.util.output
 import jube2.conf
 import jube2.info
 import jube2.help
@@ -286,13 +287,13 @@ def search_for_benchmarks(args):
     if (args.id is not None) and ("all" not in args.id):
         for benchmark_id in args.id:
             if benchmark_id == "last":
-                benchmark_id = jube2.util.get_current_id(args.dir)
+                benchmark_id = jube2.util.util.get_current_id(args.dir)
             # Search for existing benchmark
             benchmark_id = int(benchmark_id)
             if benchmark_id < 0:
                 benchmark_id = int(
                     os.path.basename(all_benchmarks[benchmark_id]))
-            benchmark_folder = jube2.util.id_dir(args.dir, benchmark_id)
+            benchmark_folder = jube2.util.util.id_dir(args.dir, benchmark_id)
             if not os.path.isdir(benchmark_folder):
                 raise OSError("Benchmark directory not found: \"{0}\""
                               .format(benchmark_folder))
@@ -310,9 +311,9 @@ def search_for_benchmarks(args):
             found_benchmarks = all_benchmarks
         else:
             # Get highest benchmark id
-            benchmark_id = jube2.util.get_current_id(args.dir)
+            benchmark_id = jube2.util.util.get_current_id(args.dir)
             # Restart existing benchmark
-            benchmark_folder = jube2.util.id_dir(args.dir, benchmark_id)
+            benchmark_folder = jube2.util.util.id_dir(args.dir, benchmark_id)
             if os.path.isdir(benchmark_folder):
                 found_benchmarks.append(benchmark_folder)
             else:
@@ -465,8 +466,9 @@ def _analyse_benchmark(benchmark_folder, args):
     jube2.log.change_logfile_name(os.path.join(
         benchmark_folder, jube2.conf.LOGFILE_ANALYSE_NAME))
 
-    LOGGER.info(jube2.util.text_boxed(("Analyse benchmark \"{0}\" id: {1}")
-                                      .format(benchmark.name, benchmark.id)))
+    LOGGER.info(jube2.util.output.text_boxed(
+        ("Analyse benchmark \"{0}\" id: {1}").format(benchmark.name,
+                                                     benchmark.id)))
     benchmark.analyse()
     if os.path.isfile(
             os.path.join(benchmark_folder, jube2.conf.ANALYSE_FILENAME)):
@@ -475,7 +477,7 @@ def _analyse_benchmark(benchmark_folder, args):
     else:
         LOGGER.info(">>> Analyse data storage \"{0}\" not created!".format(
             os.path.join(benchmark_folder, jube2.conf.ANALYSE_FILENAME)))
-    LOGGER.info(jube2.util.text_line())
+    LOGGER.info(jube2.util.output.text_line())
 
     # Reset logging
     jube2.log.only_console_log()
@@ -862,8 +864,8 @@ def _get_args_parser():
     help_keys += [""] * (len(help_keys) % max_columns)
     help_keys = list(zip(*[iter(help_keys)] * max_columns))
     # create overview
-    help_overview = jube2.util.text_table(help_keys, separator="   ",
-                                          align_right=False)
+    help_overview = jube2.util.output.text_table(help_keys, separator="   ",
+                                                 align_right=False)
 
     # help subparser
     subparser["help"] = \
@@ -896,7 +898,7 @@ def main(command=None):
 
     # Set new umask if JUBE_GROUP_NAME is used
     current_mask = os.umask(0)
-    if (jube2.util.check_and_get_group_id() is not None) and \
+    if (jube2.util.util.check_and_get_group_id() is not None) and \
             (current_mask > 2):
         current_mask = 2
     os.umask(current_mask)

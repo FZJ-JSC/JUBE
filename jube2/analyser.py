@@ -28,7 +28,8 @@ import re
 import glob
 import math
 import jube2.pattern
-import jube2.util
+import jube2.util.util
+import jube2.util.output
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -186,18 +187,20 @@ class Analyser(object):
         # Print debug info
         debugstr = "  available pattern:\n"
         debugstr += \
-            jube2.util.text_table([("pattern", "value")] +
-                                  sorted([(par.name, par.value) for par in
-                                          patternset.pattern_storage]),
-                                  use_header_line=True, indent=9,
-                                  align_right=False)
+            jube2.util.output.text_table(
+                [("pattern", "value")] +
+                sorted([(par.name, par.value) for par in
+                        patternset.pattern_storage]),
+                use_header_line=True, indent=9,
+                align_right=False)
         debugstr += "\n  available derived pattern:\n"
         debugstr += \
-            jube2.util.text_table([("pattern", "value")] +
-                                  sorted([(par.name, par.value) for par in
-                                          patternset.derived_pattern_storage]),
-                                  use_header_line=True, indent=9,
-                                  align_right=False)
+            jube2.util.output.text_table(
+                [("pattern", "value")] +
+                sorted([(par.name, par.value) for par in
+                        patternset.derived_pattern_storage]),
+                use_header_line=True, indent=9,
+                align_right=False)
         LOGGER.debug(debugstr)
 
         for stepname in self._analyse:
@@ -240,8 +243,8 @@ class Analyser(object):
                     for file_obj in self._analyse[stepname]:
                         if step.alt_work_dir is not None:
                             file_path = step.alt_work_dir
-                            file_path = jube2.util.substitution(file_path,
-                                                                parameter)
+                            file_path = jube2.util.util.substitution(
+                                file_path, parameter)
                             file_path = \
                                 os.path.expandvars(
                                     os.path.expanduser(file_path))
@@ -251,7 +254,8 @@ class Analyser(object):
                             file_path = workpackage.work_dir
 
                         filename = \
-                            jube2.util.substitution(file_obj.path, parameter)
+                            jube2.util.util.substitution(file_obj.path,
+                                                         parameter)
                         filename = \
                             os.path.expandvars(os.path.expanduser(filename))
 
@@ -323,8 +327,8 @@ class Analyser(object):
         for par in patternset.derived_pattern_storage:
             if par.mode not in jube2.conf.ALLOWED_SCRIPTTYPES:
                 new_result_dict[par.name] = \
-                    jube2.util.convert_type(par.content_type,
-                                            par.value, stop=False)
+                    jube2.util.util.convert_type(par.content_type,
+                                                 par.value, stop=False)
         return new_result_dict
 
     def _analyse_file(self, file_path, patternset, parameterset,
@@ -466,7 +470,7 @@ class Analyser(object):
 
         info_str = "      file \"{0}\" scanned pattern found:\n".format(
             os.path.basename(file_path))
-        info_str += jube2.util.text_table(
+        info_str += jube2.util.output.text_table(
             [(_name, ", ".join(["{0}:{1}".format(key, con)
                                 for key, con in value.items()]))
              for _name, value in match_dict.items()],

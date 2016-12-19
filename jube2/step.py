@@ -26,7 +26,7 @@ import os
 import re
 import time
 import xml.etree.ElementTree as ET
-import jube2.util
+import jube2.util.util
 import jube2.conf
 import jube2.log
 
@@ -135,7 +135,7 @@ class Step(object):
             parameter_dict = dict()
         for use in self._use:
             for name in use:
-                name = jube2.util.substitution(name, parameter_dict)
+                name = jube2.util.util.substitution(name, parameter_dict)
                 if (name in available_sets) and (name not in set_names):
                     set_names.append(name)
         return set_names
@@ -144,8 +144,8 @@ class Step(object):
         """Return shared folder name"""
         if self._shared_name is not None:
             if parameter_dict is not None:
-                shared_name = jube2.util.substitution(self._shared_name,
-                                                      parameter_dict)
+                shared_name = jube2.util.util.substitution(self._shared_name,
+                                                           parameter_dict)
             else:
                 shared_name = self._shared_name
             return os.path.join(benchdir,
@@ -293,7 +293,7 @@ class Step(object):
                     # --- Check parameter type ---
                     for parameter in workpackage.parameterset:
                         if not parameter.is_template:
-                            jube2.util.convert_type(
+                            jube2.util.util.convert_type(
                                 parameter.parameter_type, parameter.value)
 
                     # Update workpackage history parameterset
@@ -393,8 +393,8 @@ class Operation(object):
         True => operation finished
         False => operation pending
         """
-        active = jube2.util.substitution(self._active, parameter_dict)
-        if not jube2.util.eval_bool(active):
+        active = jube2.util.util.substitution(self._active, parameter_dict)
+        if not jube2.util.util.eval_bool(active):
             return True
 
         if environment is not None:
@@ -404,7 +404,7 @@ class Operation(object):
 
         if not only_check_pending:
             # Inline substitution
-            do = jube2.util.substitution(self._do, parameter_dict)
+            do = jube2.util.util.substitution(self._do, parameter_dict)
 
             # Remove leading and trailing ; because otherwise ;; will cause
             # trouble when adding ; env
@@ -413,7 +413,7 @@ class Operation(object):
             if (not jube2.conf.DEBUG_MODE) and (do.strip() != ""):
                 # Change stdout
                 if self._stdout_filename is not None:
-                    stdout_filename = jube2.util.substitution(
+                    stdout_filename = jube2.util.util.substitution(
                         self._stdout_filename, parameter_dict)
                     stdout_filename = \
                         os.path.expandvars(os.path.expanduser(stdout_filename))
@@ -424,7 +424,7 @@ class Operation(object):
 
                 # Change stderr
                 if self._stderr_filename is not None:
-                    stderr_filename = jube2.util.substitution(
+                    stderr_filename = jube2.util.util.substitution(
                         self._stderr_filename, parameter_dict)
                     stderr_filename = \
                         os.path.expandvars(os.path.expanduser(stderr_filename))
@@ -435,7 +435,7 @@ class Operation(object):
 
         # Use operation specific work directory
         if self._work_dir is not None:
-            new_work_dir = jube2.util.substitution(
+            new_work_dir = jube2.util.util.substitution(
                 self._work_dir, parameter_dict)
             new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
             work_dir = os.path.join(work_dir, new_work_dir)
@@ -532,7 +532,7 @@ class Operation(object):
                                 os.path.abspath(work_dir)))
 
         if self._async_filename is not None:
-            async_filename = jube2.util.substitution(
+            async_filename = jube2.util.util.substitution(
                 self._async_filename, parameter_dict)
             async_filename = \
                 os.path.expandvars(os.path.expanduser(async_filename))

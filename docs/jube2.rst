@@ -155,6 +155,22 @@ jube2.util
     :undoc-members:
     :show-inheritance:
 
+jube2.util.util
+---------------
+
+.. automodule:: jube2.util.util
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+jube2.util.output
+-----------------
+
+.. automodule:: jube2.util.output
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 jube2.workpackage
 -----------------
 

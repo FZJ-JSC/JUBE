@@ -21,7 +21,8 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2.util
+import jube2.util.util
+import jube2.util.output
 import jube2.conf
 import jube2.jubeio
 import os
@@ -51,7 +52,7 @@ def print_benchmarks_info(path):
 
                 # Read timestamps from timestamps file
                 timestamps = \
-                    jube2.util.read_timestamps(
+                    jube2.util.util.read_timestamps(
                         os.path.join(dir_path, jube2.conf.TIMESTAMPS_INFO))
                 if "start" in timestamps:
                     time_start = timestamps["start"]
@@ -79,9 +80,10 @@ def print_benchmarks_info(path):
     benchmark_info = [("id", "name", "started", "last change",
                        "comment", "tags")] + benchmark_info
     if len(benchmark_info) > 1:
-        infostr = (jube2.util.text_boxed("Benchmarks found in \"{0}\":".
-                                         format(path)) + "\n" +
-                   jube2.util.text_table(benchmark_info, use_header_line=True))
+        infostr = (jube2.util.output.text_boxed("Benchmarks found in \"{0}\":".
+                                                format(path)) + "\n" +
+                   jube2.util.output.text_table(benchmark_info,
+                                                use_header_line=True))
         print(infostr)
     else:
         print("No Benchmarks found in \"{0}\"".format(path))
@@ -90,12 +92,12 @@ def print_benchmarks_info(path):
 def print_benchmark_info(benchmark):
     """Print information concerning a single benchmark"""
     infostr = \
-        jube2.util.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
-                              .format(benchmark.name,
-                                      benchmark.id,
-                                      jube2.conf.DEFAULT_SEPARATOR.join(
-                                          benchmark.tags),
-                                      benchmark.comment))
+        jube2.util.output.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
+                                     .format(benchmark.name,
+                                             benchmark.id,
+                                             jube2.conf.DEFAULT_SEPARATOR.join(
+                                                 benchmark.tags),
+                                             benchmark.comment))
     print(infostr)
     continue_possible = False
 
@@ -103,7 +105,7 @@ def print_benchmark_info(benchmark):
           .format(os.path.abspath(benchmark.bench_dir)))
 
     # Read timestamps from timestamps file
-    timestamps = jube2.util.read_timestamps(
+    timestamps = jube2.util.util.read_timestamps(
         os.path.join(benchmark.bench_dir, jube2.conf.TIMESTAMPS_INFO))
 
     if "start" in timestamps:
@@ -170,15 +172,15 @@ def print_benchmark_info(benchmark):
                           str(cnt_done), last_finish_str))
 
     print(
-        "\n" + jube2.util.text_table(step_info, use_header_line=True,
-                                     indent=1))
+        "\n" + jube2.util.output.text_table(step_info, use_header_line=True,
+                                            indent=1))
 
     if continue_possible:
         print("\n--- Benchmark not finished! ---\n")
     else:
         print("\n--- Benchmark finished ---\n")
 
-    print(jube2.util.text_line())
+    print(jube2.util.output.text_line())
 
 
 def print_step_info(benchmark, step_name, parametrization_only=False,
@@ -193,8 +195,8 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
         parametrization_only = True
 
     if not parametrization_only:
-        print(jube2.util.text_boxed("{0} Step: {1}".format(benchmark.name,
-                                                           step_name)))
+        print(jube2.util.output.text_boxed(
+            "{0} Step: {1}".format(benchmark.name, step_name)))
 
     step = benchmark.steps[step_name]
 
@@ -229,7 +231,8 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
         done_str = str(workpackage.done).lower()
         work_dir = workpackage.work_dir
         if step.alt_work_dir is not None:
-            work_dir = jube2.util.substitution(step.alt_work_dir, parameter)
+            work_dir = jube2.util.util.substitution(step.alt_work_dir,
+                                                    parameter)
 
         # collect parameterization
         parameter_list.append(dict())
@@ -254,8 +257,8 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
     if not parametrization_only:
         print("Workpackages:")
-        print(jube2.util.text_table(wp_info, use_header_line=True, indent=1,
-                                    auto_linebreak=False))
+        print(jube2.util.output.text_table(wp_info, use_header_line=True,
+                                           indent=1, auto_linebreak=False))
 
     if (useable_parameter is not None) and (not parametrization_only):
         print("Available parameter:")
@@ -285,10 +288,9 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
                 table_data.append(list())
                 for name in table_data[0]:
                     table_data[-1].append(parameter_dict[name])
-        print(jube2.util.text_table(table_data, use_header_line=True,
-                                    indent=1, align_right=True,
-                                    auto_linebreak=False,
-                                    pretty=not parametrization_only_csv))
+        print(jube2.util.output.text_table(
+            table_data, use_header_line=True, indent=1, align_right=True,
+            auto_linebreak=False, pretty=not parametrization_only_csv))
 
     if not parametrization_only:
         if len(error_dict) > 0:

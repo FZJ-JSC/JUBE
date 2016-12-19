@@ -24,7 +24,7 @@ from __future__ import (print_function,
 import itertools
 import xml.etree.ElementTree as ET
 import copy
-import jube2.util
+import jube2.util.util
 import jube2.conf
 import jube2.log
 import re
@@ -232,7 +232,7 @@ class Parameterset(object):
 
             # Resolve dependencies
             substitution_list = [self._parameters[name] for name in
-                                 jube2.util.resolve_depend(depend_dict)]
+                                 jube2.util.util.resolve_depend(depend_dict)]
 
             # Do substition and evaluation if possible
             set_changed = self.__substitute_parameters_in_list(
@@ -499,7 +499,7 @@ class StaticParameter(Parameter):
                 parameter_dict.update(
                     dict([(name, param.value) for name, param in
                           parameterset.constant_parameter_dict.items()]))
-        value = jube2.util.substitution(value, parameter_dict)
+        value = jube2.util.util.substitution(value, parameter_dict)
         # Fix jube_wp_envstr if needed
         if self._name == "jube_wp_envstr":
             value = StaticParameter.fix_export_string(value)
@@ -523,9 +523,9 @@ class StaticParameter(Parameter):
                 # Run additional substitution to remove $$ before running
                 # script evaluation to allow usage of environment variables
                 if not final_sub:
-                    value = jube2.util.substitution(value, parameter_dict)
+                    value = jube2.util.util.substitution(value, parameter_dict)
                 # Run script evaluation
-                value = jube2.util.script_evaluation(value, self._mode)
+                value = jube2.util.util.script_evaluation(value, self._mode)
                 # Insert new $$ if needed
                 if not final_sub:
                     value = re.sub(r"\$", "$$", value)

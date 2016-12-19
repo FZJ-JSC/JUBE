@@ -31,7 +31,8 @@ import os
 import re
 import tarfile
 import glob
-import jube2.util
+import jube2.util.util
+import jube2.util.output
 
 GLOBAL_PARAMETERSET_NAME = "jube_convert_parameter"
 
@@ -174,8 +175,8 @@ class JubeXMLConverter(object):
         # be broken if there is a special char inside the input file.
         # In such cases the encode will stop, using an UnicodeEncodeError
         try:
-            xml = jube2.util.element_tree_tostring(tree.getroot(),
-                                                   encoding="UTF-8")
+            xml = jube2.util.output.element_tree_tostring(tree.getroot(),
+                                                          encoding="UTF-8")
             xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
             raise ValueError("Your terminal only allow '{0}' encoding. {1}"
@@ -209,8 +210,8 @@ class JubeXMLConverter(object):
         platform_tree = ET.parse(self._platform_xml_file)
         platform_root = platform_tree.getroot()
 
-        for platform in jube2.util.get_tree_elements(platform_root,
-                                                     'platform'):
+        for platform in jube2.util.util.get_tree_elements(platform_root,
+                                                          'platform'):
             parameterset_name = platform.get('name')
             parameter_dict = platform.find('params')
             self._convert_and_add_parameter(parameterset_name, parameter_dict)
@@ -218,8 +219,8 @@ class JubeXMLConverter(object):
     def write_platformfile(self, output="platform_converted.xml"):
         """Write out converted platform.xml"""
         tree = ET.ElementTree(self._root_platform_element)
-        xml = jube2.util.element_tree_tostring(tree.getroot(),
-                                               encoding="UTF-8")
+        xml = jube2.util.output.element_tree_tostring(tree.getroot(),
+                                                      encoding="UTF-8")
         # Using dom for pretty-print
         dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(output, "wb")
@@ -269,7 +270,7 @@ class JubeXMLConverter(object):
         if tag != "compile":
             return
 
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             prefix_name = item.get('cname')
             if prefix_name != jube_step.cname:
                 continue
@@ -339,7 +340,7 @@ class JubeXMLConverter(object):
         if jube_step.name == "execution":
             tag = "execute"
 
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             prefix_name = item.get('cname')
             if prefix_name != jube_step.cname:
                 continue
@@ -382,7 +383,7 @@ class JubeXMLConverter(object):
 # in only those expressions which are relevant for the underlying step
 #         self._calc_parameterset_name = ""
         self._calc_parameterset_node = None
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             self._global_counter = 0
             for substitute in item.findall('substitute'):
 
@@ -460,7 +461,8 @@ class JubeXMLConverter(object):
         self._main_comment()
         self._main_element.append(self._global_parameterset)
 
-        for benchmark in jube2.util.get_tree_elements(main_root, 'benchmark'):
+        for benchmark in jube2.util.util.get_tree_elements(main_root,
+                                                           'benchmark'):
             benchmark_name = benchmark.get('name')
 
 #           Gather attributes of all tags in main file
@@ -600,7 +602,7 @@ class JubeXMLConverter(object):
         if jube_step.name == "execution":
             tag = "execute"
 
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             for command in item.findall('command'):
                 prefix_name = item.get('cname')
                 if prefix_name == jube_step.cname:
@@ -609,7 +611,7 @@ class JubeXMLConverter(object):
                 else:
                     continue
 
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             for lastcommand in item.findall('lastcommand'):
                 prefix_name = item.get('cname')
                 if prefix_name == jube_step.cname:
@@ -638,7 +640,7 @@ class JubeXMLConverter(object):
         if jube_step.name == "execution":
             tag = "execute"
 
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             self._global_counter = 0
             for environment in item.findall('environment'):
 
@@ -668,8 +670,8 @@ class JubeXMLConverter(object):
     def write_main_file(self, output="benchmarks_jube2.xml"):
         """Write file resulting from convertion"""
         tree = ET.ElementTree(self._main_element)
-        xml = jube2.util.element_tree_tostring(tree.getroot(),
-                                               encoding="UTF-8")
+        xml = jube2.util.output.element_tree_tostring(tree.getroot(),
+                                                      encoding="UTF-8")
         # Using dom for pretty-print
         dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(output, "wb")
@@ -766,7 +768,7 @@ class _JubeAnalyser(object):
 
         tag = "analyzer"
 
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             for analyse in item.findall('analyse'):
                 prefix_name = analyse.get('cname')
                 if prefix_name == self._cname:
@@ -895,8 +897,8 @@ class _JubeAnalyser(object):
         """Create main root for analyse.xml"""
         tree = ET.parse(self._main_dir + "/" + filename)
         try:
-            xml = jube2.util.element_tree_tostring(tree.getroot(),
-                                                   encoding="UTF-8")
+            xml = jube2.util.output.element_tree_tostring(tree.getroot(),
+                                                          encoding="UTF-8")
             xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
             raise ValueError("Your terminal only allow '{0}' encoding. {1}"
@@ -913,7 +915,7 @@ class _JubeAnalyser(object):
 
 #       search also in analyse.xml for patterns
         self._pattern_file_list.append("analyse.xml")
-        for item in jube2.util.get_tree_elements(xml_root, tag):
+        for item in jube2.util.util.get_tree_elements(xml_root, tag):
             for pattern in item.findall('includepattern'):
                 prefix_name = item.get('cname')
                 if prefix_name == self._cname:

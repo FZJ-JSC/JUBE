@@ -29,7 +29,8 @@ import pprint
 import shutil
 import itertools
 import jube2.parameter
-import jube2.util
+import jube2.util.util
+import jube2.util.output
 import jube2.conf
 import jube2.log
 
@@ -58,7 +59,7 @@ class Benchmark(object):
         for result in self._results.values():
             result.benchmark = self
         self._workpackages = dict()
-        self._work_stat = jube2.util.WorkStat()
+        self._work_stat = jube2.util.util.WorkStat()
         self._comment = comment
         self._id = -1
         self._file_path_ref = file_path_ref
@@ -216,7 +217,7 @@ class Benchmark(object):
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_benchmark_padid",
-                             jube2.util.id_dir("", self._id),
+                             jube2.util.util.id_dir("", self._id),
                              parameter_type="string"))
 
         # benchmark name
@@ -236,7 +237,7 @@ class Benchmark(object):
             create_parameter("jube_benchmark_rundir",
                              os.path.abspath(self.bench_dir)))
 
-        timestamps = jube2.util.read_timestamps(
+        timestamps = jube2.util.util.read_timestamps(
             os.path.join(self.bench_dir, jube2.conf.TIMESTAMPS_INFO))
 
         # benchmark start
@@ -289,7 +290,7 @@ class Benchmark(object):
         """Create initial workpackages of current benchmark and create graph
         structure."""
         self._workpackages = dict()
-        self._work_stat = jube2.util.WorkStat()
+        self._work_stat = jube2.util.util.WorkStat()
 
         # Create workpackage storage
         for step_name in self._steps:
@@ -337,7 +338,7 @@ class Benchmark(object):
                     result_dir = result.result_dir
                     result_dir = os.path.expanduser(result_dir)
                     result_dir = os.path.expandvars(result_dir)
-                    result_dir = jube2.util.id_dir(
+                    result_dir = jube2.util.util.id_dir(
                         os.path.join(self.file_path_ref, result_dir), self.id)
                 if (not os.path.exists(result_dir)) and \
                    (not jube2.conf.DEBUG_MODE):
@@ -401,7 +402,8 @@ class Benchmark(object):
             analyser_etree.attrib["name"] = analyser_name
             for etree in self._analyser[analyser_name].analyse_etree_repr():
                 analyser_etree.append(etree)
-        xml = jube2.util.element_tree_tostring(analyse_etree, encoding="UTF-8")
+        xml = jube2.util.output.element_tree_tostring(
+            analyse_etree, encoding="UTF-8")
         # Using dom for pretty-print
         dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(filename, "wb")
@@ -524,7 +526,7 @@ class Benchmark(object):
         """Create workpackage structure and run benchmark"""
         # Check benchmark consistency
         LOGGER.debug("Start consistency check")
-        jube2.util.consistency_check(self)
+        jube2.util.util.consistency_check(self)
 
         # Create benchmark directory
         LOGGER.debug("Create benchmark directory")
@@ -555,14 +557,14 @@ class Benchmark(object):
         if jube2.conf.DEBUG_MODE:
             title += " ---DEBUG_MODE---"
         title += "\n\n{0}".format(self._comment)
-        infostr = jube2.util.text_boxed(title)
+        infostr = jube2.util.output.text_boxed(title)
         LOGGER.info(infostr)
 
         if not jube2.conf.HIDE_ANIMATIONS:
             print("\nRunning workpackages (#=done, 0=wait, E=error):")
             status = self.benchmark_status
-            jube2.util.print_loading_bar(status["done"], status["all"],
-                                         status["wait"], status["error"])
+            jube2.util.output.print_loading_bar(
+                status["done"], status["all"], status["wait"], status["error"])
 
         # Handle all workpackages in given order
         while not self._work_stat.empty():
@@ -582,8 +584,9 @@ class Benchmark(object):
 
             if not jube2.conf.HIDE_ANIMATIONS:
                 status = self.benchmark_status
-                jube2.util.print_loading_bar(status["done"], status["all"],
-                                             status["wait"], status["error"])
+                jube2.util.output.print_loading_bar(
+                    status["done"], status["all"], status["wait"],
+                    status["error"])
             workpackage.queued = False
 
             for mode in ("only_started", "all"):
@@ -604,8 +607,8 @@ class Benchmark(object):
                          str(_status["done"]))
                         for stepname, _status in
                         self.workpackage_status.items()]
-        LOGGER.info(jube2.util.text_table(status_data, use_header_line=True,
-                                          indent=2))
+        LOGGER.info(jube2.util.output.text_table(
+            status_data, use_header_line=True, indent=2))
 
         LOGGER.info("\n>>>> Benchmark information and " +
                     "further useful commands:")
@@ -629,12 +632,12 @@ class Benchmark(object):
                      "--id {1}").format(self._outpath, self._id))
         LOGGER.info((">>>>      log: jube log {0} " +
                      "--id {1}").format(self._outpath, self._id))
-        LOGGER.info(jube2.util.text_line() + "\n")
+        LOGGER.info(jube2.util.output.text_line() + "\n")
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""
         # Get group_id if available (given by JUBE_GROUP_NAME)
-        group_id = jube2.util.check_and_get_group_id()
+        group_id = jube2.util.util.check_and_get_group_id()
         # Check if outpath exists
         if not (os.path.exists(self._outpath) and
                 os.path.isdir(self._outpath)):
@@ -643,7 +646,7 @@ class Benchmark(object):
                 os.chown(self._outpath, os.getuid(), group_id)
         # Generate unique ID in outpath
         if self._id < 0:
-            self._id = jube2.util.get_current_id(self._outpath) + 1
+            self._id = jube2.util.util.get_current_id(self._outpath) + 1
         if os.path.exists(self.bench_dir):
             raise RuntimeError("Benchmark directory \"{0}\" already exist"
                                .format(self.bench_dir))
@@ -657,9 +660,8 @@ class Benchmark(object):
         self.write_benchmark_configuration(
             os.path.join(self.bench_dir, jube2.conf.CONFIGURATION_FILENAME),
             outpath="..")
-        jube2.util.update_timestamps(os.path.join(self.bench_dir,
-                                                  jube2.conf.TIMESTAMPS_INFO),
-                                     "start", "change")
+        jube2.util.util.update_timestamps(os.path.join(
+            self.bench_dir, jube2.conf.TIMESTAMPS_INFO), "start", "change")
 
     def write_benchmark_configuration(self, filename, outpath=None):
         """The current benchmark configuration will be written to given file
@@ -680,8 +682,8 @@ class Benchmark(object):
             benchmark_etree.attrib["outpath"] = outpath
 
         benchmarks_etree.append(benchmark_etree)
-        xml = jube2.util.element_tree_tostring(benchmarks_etree,
-                                               encoding="UTF-8")
+        xml = jube2.util.output.element_tree_tostring(
+            benchmarks_etree, encoding="UTF-8")
         # Using dom for pretty-print
         dom = DOM.parseString(xml.encode('UTF-8'))
         fout = open(filename, "wb")
@@ -702,8 +704,8 @@ class Benchmark(object):
         for workpackages in self._workpackages.values():
             for workpackage in workpackages:
                 workpackages_etree.append(workpackage.etree_repr())
-        xml = jube2.util.element_tree_tostring(workpackages_etree,
-                                               encoding="UTF-8")
+        xml = jube2.util.output.element_tree_tostring(
+            workpackages_etree, encoding="UTF-8")
         # Using dom for pretty-print
         dom = DOM.parseString(xml.encode("UTF-8"))
         fout = open(filename, "wb")
@@ -718,4 +720,4 @@ class Benchmark(object):
     @property
     def bench_dir(self):
         """Return benchmark directory"""
-        return jube2.util.id_dir(self._outpath, self._id)
+        return jube2.util.util.id_dir(self._outpath, self._id)

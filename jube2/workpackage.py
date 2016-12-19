@@ -22,7 +22,8 @@ from __future__ import (print_function,
                         division)
 
 import xml.etree.ElementTree as ET
-import jube2.util
+import jube2.util.util
+import jube2.util.output
 import jube2.conf
 import jube2.log
 import jube2.parameter
@@ -134,9 +135,9 @@ class Workpackage(object):
         # Collect parameter for substitution
         parameter = self.parameter_dict
         # Parameter substitution
-        active = jube2.util.substitution(active, parameter)
+        active = jube2.util.util.substitution(active, parameter)
         # Evaluate active state
-        return jube2.util.eval_bool(active)
+        return jube2.util.util.eval_bool(active)
 
     @property
     def done(self):
@@ -157,7 +158,7 @@ class Workpackage(object):
             done_file = done_file + "_DEBUG"
         if set_done:
             fout = open(done_file, "w")
-            fout.write(jube2.util.now_str())
+            fout.write(jube2.util.util.now_str())
             fout.close()
             self._remove_operation_info_files()
         else:
@@ -214,7 +215,7 @@ class Workpackage(object):
                 done_file = done_file + "_DEBUG"
             elif ((set_done and not os.path.exists(done_file)) or
                   (not set_done and os.path.exists(done_file))):
-                jube2.util.update_timestamps(
+                jube2.util.util.update_timestamps(
                     os.path.join(self._benchmark.bench_dir,
                                  jube2.conf.TIMESTAMPS_INFO),
                     "change")
@@ -300,7 +301,8 @@ class Workpackage(object):
         # workpackage id with padding
         parameterset.add_parameter(
             jube2.parameter.Parameter.
-            create_parameter("jube_wp_padid", jube2.util.id_dir("", self._id),
+            create_parameter("jube_wp_padid",
+                             jube2.util.util.id_dir("", self._id),
                              parameter_type="string"))
 
         # workpackage iteration
@@ -392,8 +394,8 @@ class Workpackage(object):
             # Create shared folder link
             if parameter_dict is not None:
                 shared_name = \
-                    jube2.util.substitution(self._step.shared_link_name,
-                                            parameter_dict)
+                    jube2.util.util.substitution(self._step.shared_link_name,
+                                                 parameter_dict)
             else:
                 shared_name = self._step.shared_link_name
             link_path = os.path.join(self.work_dir, shared_name)
@@ -414,10 +416,10 @@ class Workpackage(object):
             parameter = dict([[par.name, par.value] for par in
                               parameterset.constant_parameter_dict.values()])
             # Parameter substitution
-            suffix = jube2.util.substitution(suffix, parameter)
+            suffix = jube2.util.util.substitution(suffix, parameter)
             suffix = "_" + os.path.expandvars(os.path.expanduser(suffix))
         return "{path}_{step_name}{suffix}".format(
-            path=jube2.util.id_dir(self._benchmark.bench_dir, self._id),
+            path=jube2.util.util.id_dir(self._benchmark.bench_dir, self._id),
             step_name=self._step.name,
             suffix=suffix)
 
@@ -469,7 +471,8 @@ class Workpackage(object):
         # --- Create alternativ working dir ---
         alt_work_dir = self._step.alt_work_dir
         if alt_work_dir is not None:
-            alt_work_dir = jube2.util.substitution(alt_work_dir, parameter)
+            alt_work_dir = jube2.util.util.substitution(
+                alt_work_dir, parameter)
             alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
             alt_work_dir = os.path.join(self._benchmark.file_path_ref,
                                         alt_work_dir)
@@ -482,7 +485,7 @@ class Workpackage(object):
             if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
                 os.makedirs(alt_work_dir)
                 # Get group_id if available (given by JUBE_GROUP_NAME)
-                group_id = jube2.util.check_and_get_group_id()
+                group_id = jube2.util.util.check_and_get_group_id()
                 if group_id is not None:
                     os.chown(alt_work_dir, os.getuid(), group_id)
                     os.chmod(alt_work_dir,
@@ -490,11 +493,11 @@ class Workpackage(object):
 
         # Print debug info
         debugstr = "  available parameter:\n"
-        debugstr += jube2.util.text_table([("parameter", "value")] +
-                                          sorted([(name, par) for name, par in
-                                                  parameter.items()]),
-                                          use_header_line=True, indent=9,
-                                          align_right=False)
+        debugstr += jube2.util.output.text_table(
+            [("parameter", "value")] + sorted([(name, par) for name, par in
+                                               parameter.items()]),
+            use_header_line=True, indent=9,
+            align_right=False)
         LOGGER.debug(debugstr)
 
         # --- Copy files to working dir or create links ---

@@ -24,7 +24,7 @@ from __future__ import (print_function,
 import os
 import shutil
 import xml.etree.ElementTree as ET
-import jube2.util
+import jube2.util.util
 import jube2.conf
 import jube2.step
 import jube2.log
@@ -85,14 +85,14 @@ class File(object):
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
                file_path_ref="", environment=None):
         """Create file access"""
-        active = jube2.util.eval_bool(jube2.util.substitution(
+        active = jube2.util.util.eval_bool(jube2.util.util.substitution(
             self._active, parameter_dict))
         if not active:
             return
-        pathname = jube2.util.substitution(self._path, parameter_dict)
+        pathname = jube2.util.util.substitution(self._path, parameter_dict)
         pathname = os.path.expanduser(pathname)
         if environment is not None:
-            pathname = jube2.util.substitution(pathname, environment)
+            pathname = jube2.util.util.substitution(pathname, environment)
         else:
             pathname = os.path.expandvars(pathname)
         if self._is_internal_ref:
@@ -104,7 +104,7 @@ class File(object):
         if self._name is None:
             name = os.path.basename(pathname)
         else:
-            name = jube2.util.substitution(self._name, parameter_dict)
+            name = jube2.util.util.substitution(self._name, parameter_dict)
         if alt_work_dir is not None:
             work_dir = alt_work_dir
         # Shell expansion

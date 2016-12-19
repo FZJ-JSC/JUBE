@@ -25,7 +25,7 @@ from jube2.result_types.keyvaluesresult import KeyValuesResult
 from jube2.result import Result
 import xml.etree.ElementTree as ET
 import jube2.log
-import jube2.util
+import jube2.util.output
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -97,7 +97,7 @@ class Table(KeyValuesResult):
                 output = "{0}:\n".format(self.name)
             else:
                 output = ""
-            output += jube2.util.text_table(
+            output += jube2.util.output.text_table(
                 data, use_header_line=True, auto_linebreak=False, colw=colw,
                 indent=0, pretty=(self._style == "pretty"),
                 separator=self._separator, transpose=self._transpose)

@@ -21,7 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2.util
+import jube2.util.util
 import xml.etree.ElementTree as ET
 import re
 import jube2.log
@@ -127,8 +127,8 @@ class Result(object):
                     parameter_dict = dict()
                     for par in parameterset:
                         parameter_dict[par.name] = \
-                            jube2.util.convert_type(par.parameter_type,
-                                                    par.value, stop=False)
+                            jube2.util.util.convert_type(par.parameter_type,
+                                                         par.value, stop=False)
 
                     analyse_dict = analyse[stepname][wp_id]
 
@@ -141,9 +141,9 @@ class Result(object):
 
                     # If res_filter is set, only show matching result lines
                     if self._res_filter is not None:
-                        res_filter = jube2.util.substitution(self._res_filter,
-                                                             analyse_dict)
-                        if not jube2.util.eval_bool(res_filter):
+                        res_filter = jube2.util.util.substitution(
+                            self._res_filter, analyse_dict)
+                        if not jube2.util.util.eval_bool(res_filter):
                             continue
 
                     yield analyse_dict
