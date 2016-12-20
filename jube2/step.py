@@ -439,6 +439,9 @@ class Operation(object):
                 self._work_dir, parameter_dict)
             new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
             work_dir = os.path.join(work_dir, new_work_dir)
+            # Create directory if it does not exist
+            if not jube2.conf.DEBUG_MODE and not os.path.exists(work_dir):
+                os.makedirs(work_dir)
 
         if not only_check_pending:
 
