@@ -1276,7 +1276,13 @@ class XMLParser(object):
             if etree_file.tag in ["copy", "link"]:
                 separator = etree_file.get(
                     "separator", jube2.conf.DEFAULT_SEPARATOR)
-                directory = etree_file.get("directory", default="").strip()
+                source_dir = etree_file.get("directory", default="").strip()
+                # New source_dir attribute overwrites deprecated directory
+                # attribute
+                source_dir_new = etree_file.get("source_dir")
+                target_dir = etree_file.get("target_dir", default="").strip()
+                if source_dir_new is not None:
+                    source_dir = source_dir_new.strip()
                 active = etree_file.get("active", "true").strip()
                 file_path_ref = etree_file.get("file_path_ref")
                 alt_name = etree_file.get("name")
@@ -1300,17 +1306,19 @@ class XMLParser(object):
                 else:
                     names = None
                 for i, file_path in enumerate(files):
-                    path = os.path.join(directory, file_path.strip())
+                    path = file_path.strip()
                     if names is not None:
                         name = names[i]
                     else:
                         name = None
                     if etree_file.tag == "copy":
                         file_obj = jube2.fileset.Copy(
-                            path, name, is_internal_ref, active)
+                            path, name, is_internal_ref, active, source_dir,
+                            target_dir)
                     elif etree_file.tag == "link":
                         file_obj = jube2.fileset.Link(
-                            path, name, is_internal_ref, active)
+                            path, name, is_internal_ref, active, source_dir,
+                            target_dir)
                     if file_path_ref is not None:
                         file_obj.file_path_ref = \
                             os.path.expandvars(os.path.expanduser(

@@ -95,6 +95,8 @@ attlist.prepare &=
 link = element link { attlist.link, text }
 attlist.link &=
   attribute directory { text }?,
+  attribute source_dir { text }?,
+  attribute target_dir { text }?,
   attribute name { text }?,
   attribute rel_path_ref { "internal" | "external" }?,
   attribute file_path_ref { text }?,
@@ -104,6 +106,8 @@ attlist.link &=
 copy = element copy { attlist.copy, text }
 attlist.copy &=
   attribute directory { text }?,
+  attribute source_dir { text }?,
+  attribute target_dir { text }?,
   attribute name { text }?,
   attribute rel_path_ref { "internal" | "external" }?,
   attribute file_path_ref { text }?,

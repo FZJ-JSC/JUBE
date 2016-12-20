@@ -308,10 +308,11 @@ Glossary
 
      .. code-block:: xml
 
-        <link directory="..." name="..." rel_path_ref="..." separator="..." active="...">...</link>
+        <link source_dir="..." target_dir="..." name="..." rel_path_ref="..." separator="..." active="...">...</link>
 
-     * ``directory`` is optional, it can be used if you want to link several files inside the same directory
-     * ``name`` is optional, it can be used to rename the file inside your work directory
+     * ``source_dir`` is optional, will be used as a prefix for the source filenames
+     * ``target_dir`` is optional, will be used as a prefix for the target filenames
+     * ``name`` is optional, it can be used to rename the file inside your work directory (will be ignored if you use shell extensions in your pathname)
      * ``rel_path_ref`` is optional
 
        * ``external`` or ``internal`` can be chosen, default: external
@@ -335,10 +336,11 @@ Glossary
 
      .. code-block:: xml
 
-        <copy directory="..." name="..." rel_path_ref="..." separator="..." active="...">...</copy>
+        <copy source_dir="..." target_dir="..." name="..." rel_path_ref="..." separator="..." active="...">...</copy>
 
-     * ``directory`` is optional, it can be used if you want to copy several files inside the same directory
-     * ``name`` is optional, it can be used to rename the file inside your work directory
+     * ``source_dir`` is optional, will be used as a prefix for the source filenames
+     * ``target_dir`` is optional, will be used as a prefix for the target filenames
+     * ``name`` is optional, it can be used to rename the file inside your work directory (will be ignored if you use shell extensions in your pathname)
      * ``rel_path_ref`` is optional
 
        * ``external`` or ``internal`` can be chosen, default: external

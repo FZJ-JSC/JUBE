@@ -97,7 +97,7 @@
 
     <fileset name="sources" init_with="platform_test.xml">
       <prepare>export TEST_PATH="src"</prepare>
-      <link directory="$$TEST_PATH">bench_test.c</link>
+      <link source_dir="$$TEST_PATH">bench_test.c</link>
     </fileset>
 
     <substituteset name="compilesub" init_with="platform_test.xml">

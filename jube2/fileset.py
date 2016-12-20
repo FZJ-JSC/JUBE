@@ -75,8 +75,11 @@ class File(object):
 
     """Generic file access"""
 
-    def __init__(self, path, name=None, is_internal_ref=False, active="true"):
+    def __init__(self, path, name=None, is_internal_ref=False, active="true",
+                 source_dir="", target_dir=""):
         self._path = path
+        self._source_dir = source_dir
+        self._target_dir = target_dir
         self._name = name
         self._file_path_ref = ""
         self._active = active
@@ -85,16 +88,31 @@ class File(object):
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
                file_path_ref="", environment=None):
         """Create file access"""
+        # Check active status
         active = jube2.util.util.eval_bool(jube2.util.util.substitution(
             self._active, parameter_dict))
         if not active:
             return
         pathname = jube2.util.util.substitution(self._path, parameter_dict)
         pathname = os.path.expanduser(pathname)
+        source_dir = jube2.util.util.substitution(self._source_dir,
+                                                  parameter_dict)
+        source_dir = os.path.expanduser(source_dir)
+        target_dir = jube2.util.util.substitution(self._target_dir,
+                                                  parameter_dict)
+        target_dir = os.path.expanduser(target_dir)
         if environment is not None:
             pathname = jube2.util.util.substitution(pathname, environment)
+            source_dir = jube2.util.util.substitution(source_dir, environment)
+            target_dir = jube2.util.util.substitution(target_dir, environment)
         else:
             pathname = os.path.expandvars(pathname)
+            source_dir = os.path.expandvars(source_dir)
+            target_dir = os.path.expandvars(target_dir)
+
+        # Add source prefix directory if needed
+        pathname = os.path.join(source_dir, pathname)
+
         if self._is_internal_ref:
             pathname = os.path.join(work_dir, pathname)
         else:
@@ -105,6 +123,12 @@ class File(object):
             name = os.path.basename(pathname)
         else:
             name = jube2.util.util.substitution(self._name, parameter_dict)
+            name = os.path.expanduser(name)
+            if environment is not None:
+                name = jube2.util.util.substitution(name, environment)
+            else:
+                name = os.path.expandvars(name)
+
         if alt_work_dir is not None:
             work_dir = alt_work_dir
         # Shell expansion
@@ -118,7 +142,18 @@ class File(object):
             if (len(pathes) > 1) or ((pathname != path) and
                                      (name == os.path.basename(pathname))):
                 name = os.path.basename(path)
+
+            # Add target prefix directory if needed
+            name = os.path.join(target_dir, name)
+
             new_file_path = os.path.join(work_dir, name)
+
+            # Create target_dir if needed
+            if (len(os.path.dirname(new_file_path)) > 0 and
+                    not os.path.exists(os.path.dirname(new_file_path)) and
+                    not jube2.conf.DEBUG_MODE):
+                os.makedirs(os.path.dirname(new_file_path))
+
             self.create_action(path, name, new_file_path)
 
     def create_action(self, path, name, new_file_path):
@@ -176,6 +211,10 @@ class Link(File):
             link_etree.attrib["name"] = self._name
         if self._active != "true":
             link_etree.attrib["active"] = self._active
+        if self._source_dir != "":
+            link_etree.attrib["source_dir"] = self._source_dir
+        if self._target_dir != "":
+            link_etree.attrib["target_dir"] = self._target_dir
         if self._is_internal_ref:
             link_etree.attrib["rel_path_ref"] = "internal"
         if self._file_path_ref != "":
@@ -206,6 +245,10 @@ class Copy(File):
             copy_etree.attrib["name"] = self._name
         if self._active != "true":
             copy_etree.attrib["active"] = self._active
+        if self._source_dir != "":
+            copy_etree.attrib["source_dir"] = self._source_dir
+        if self._target_dir != "":
+            copy_etree.attrib["target_dir"] = self._target_dir
         if self._is_internal_ref:
             copy_etree.attrib["rel_path_ref"] = "internal"
         if self._file_path_ref != "":

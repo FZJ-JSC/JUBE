@@ -51,6 +51,8 @@
                         tag CDATA #IMPLIED>  
 <!ELEMENT link (#PCDATA)>
 <!ATTLIST link          directory CDATA #IMPLIED
+                        source_dir CDATA #IMPLIED
+                        target_dir CDATA #IMPLIED
                         name CDATA #IMPLIED
                         separator CDATA #IMPLIED
                         active CDATA #IMPLIED
@@ -59,6 +61,8 @@
                         tag CDATA #IMPLIED>
 <!ELEMENT copy (#PCDATA)>
 <!ATTLIST copy          directory CDATA #IMPLIED
+                        source_dir CDATA #IMPLIED
+                        target_dir CDATA #IMPLIED
                         name CDATA #IMPLIED
                         separator CDATA #IMPLIED
                         active CDATA #IMPLIED

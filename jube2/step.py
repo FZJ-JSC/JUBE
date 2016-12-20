@@ -434,7 +434,7 @@ class Operation(object):
                 stderr = open(stderr_path, "a")
 
         # Use operation specific work directory
-        if self._work_dir is not None:
+        if self._work_dir is not None and len(self._work_dir) > 0:
             new_work_dir = jube2.util.util.substitution(
                 self._work_dir, parameter_dict)
             new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
