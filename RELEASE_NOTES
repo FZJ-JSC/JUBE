@@ -3,6 +3,44 @@ Release notes
 *************
 
 
+Version 2.1.4
+=============
+
+Release: 2016-12-20
+
+* "--id" indices on the commandlien can now be negative to count
+  from the end
+
+* *JUBE* now allows a basic auto completion mechanism if using
+  *BASH*. To activate: "eval "$(jube complete)""
+
+* Fix result sorting bug in Python3
+
+* New "jube_benchmark_rundir" variable which holds the top level
+  *JUBE* directory (the absolute "outpath" directory)
+
+* Fix CSV output format, if parameter contain linebreaks.
+
+* "active" attribute can now be used in "<prepare>",``<copy>`` and
+  "<link>"
+
+* New FAQ entry concerning multiple file analysis: *Frequently Asked
+  Questions*
+
+* "<parameter>" using "mode="shell"" or "mode="perl"" will now stop
+  program execution if an error occurs (similar to "mode="python"")
+
+* "<do>" specfic "work_dir" is now created automatically if needed
+
+* "directory" attribute in "<link>" and "<copy>" was renamed to
+  "source_dir" (old attribute name is still possible)
+
+     * "source_dir" now allows parameter substitution
+
+* New attribute "target_dir" in "<link>" and "<copy>" to specify the
+  target directory path prefix
+
+
 Version 2.1.3
 =============
 

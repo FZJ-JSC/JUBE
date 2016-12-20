@@ -171,7 +171,7 @@ If you want to use a file dependent patternset you can move the use to an ``<fil
    </analyser>
 
 This avoids the generation of uncorrect result entries. A ``from=...`` option isn't available in this case. Instead you
-can copy the patternset first to your local file by using the ``init_with```attribute.
+can copy the patternset first to your local file by using the ``init_with`` attribute.
 
 Due to the independet result_entries, you will end up with the following result table if you mix the extracted pattern:
 
