@@ -25,7 +25,7 @@ Version 2.1.4
 ~~~~~~~~~~~~~
 Release: 2016-12-20
 
-* ``--id`` indices on the commandlien can now be negative to count from the end
+* ``--id`` indices on the commandline can now be negative to count from the end of the available benchmarks
 * *JUBE* now allows a basic auto completion mechanism if using *BASH*. To activate: ``eval "$(jube complete)"``
 * Fix result sorting bug in Python3
 * New ``jube_benchmark_rundir`` variable which holds the top level *JUBE* directory (the absolute ``outpath`` directory)
