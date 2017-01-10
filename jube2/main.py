@@ -587,6 +587,33 @@ def _manipulate_comment(benchmark_folder, args):
                      jube2.conf.CONFIGURATION_FILENAME), outpath="..")
 
 
+def gen_parser_conf():
+    """Generate dict with parser information"""
+    config = (
+        (("-V", "--version"),
+         {"help": "show version",
+          "action": "version",
+          "version": "JUBE, version {0}".format(
+              jube2.conf.JUBE_VERSION)}),
+        (("-v", "--verbose"),
+         {"help": "enable verbose console output (use -vv to " +
+                  "show stdout during execution and -vvv to " +
+                  "show log and stdout)",
+          "action": "count",
+          "default": 0}),
+        (("--debug",),
+         {"action": "store_true",
+          "help": 'use debugging mode'}),
+        (("--force",),
+         {"action": "store_true",
+          "help": 'skip version check'}),
+        (("--devel",),
+         {"action": "store_true",
+          "help": 'show development related information'})
+    )
+
+    return config
+
 def gen_subparser_conf():
     """Generate dict with subparser information"""
     subparser_configuration = dict()
@@ -823,21 +850,10 @@ def gen_subparser_conf():
 def _get_args_parser():
     """Create argument parser"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("-V", "--version", help="show version",
-                        action="version",
-                        version="JUBE, version {0}".format(
-                            jube2.conf.JUBE_VERSION))
-    parser.add_argument("-v", "--verbose",
-                        help="enable verbose console output (use -vv to " +
-                             "show stdout during execution and -vvv to " +
-                             "show log and stdout)",
-                        action="count", default=0)
-    parser.add_argument("--debug", action="store_true",
-                        help='use debugging mode')
-    parser.add_argument("--force", action="store_true",
-                        help='skip version check')
-    parser.add_argument("--devel", action="store_true",
-                        help='show development related information')
+
+    for args, kwargs in gen_parser_conf():
+        parser.add_argument(*args, **kwargs)
+
     subparsers = parser.add_subparsers(dest="subparser", help='subparsers')
 
     subparser_configuration = gen_subparser_conf()
