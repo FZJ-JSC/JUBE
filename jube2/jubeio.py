@@ -1158,11 +1158,22 @@ class XMLParser(object):
                     ("parameter-mode \"{0}\" not allowed in " +
                      "<parameter name=\"{1}\">").format(parameter_mode,
                                                         name))
-            if param.text is None:
-                value = ""
+            value_etree = param.find("value")
+            if value_etree is not None:
+                if value_etree.text is None:
+                    value = ""
+                else:
+                    value = value_etree.text.strip()
             else:
-                value = param.text.strip()
-            selected_value = param.get("selection")
+                if param.text is None:
+                    value = ""
+                else:
+                    value = param.text.strip()
+            selection_etree = param.find("selection")
+            if selection_etree is not None:
+                selected_value = selection_etree.text
+            else:
+                selected_value = param.get("selection")
             if selected_value is not None:
                 selected_value = selected_value.strip()
             parameter = \

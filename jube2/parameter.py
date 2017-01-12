@@ -405,10 +405,13 @@ class Parameter(object):
         """Return parametertype"""
         return self._type
 
-    def is_equivalent(self, parameter):
+    def is_equivalent(self, parameter, first_check=True):
         """Checks whether the given and the current Parameter based on
-        equivalent templates or equivalent scripts."""
-        if self._lvl == parameter.lvl:
+        equivalent templates and (if expanded) contain the same value.
+        """
+        if (self._lvl > 0 and parameter.lvl > 0 and first_check):
+            result = self.value == parameter.value
+        elif (self._lvl == 0 and parameter.lvl == 0):
             result = self.value == parameter.value
         else:
             result = True
@@ -423,7 +426,8 @@ class Parameter(object):
                 other_based_on = parameter.based_on
             else:
                 other_based_on = parameter
-            result = result and self_based_on.is_equivalent(other_based_on)
+            result = result and self_based_on.is_equivalent(other_based_on,
+                                                            False)
         return result
 
     def etree_repr(self, use_current_selection=False):
@@ -433,10 +437,16 @@ class Parameter(object):
 
         parameter_etree.attrib["type"] = self._type
         parameter_etree.attrib["separator"] = self._separator
-        parameter_etree.text = self.based_on_value
-        if use_current_selection and (parameter_etree.text != self.value):
+        based_on = self.based_on_value
+        if use_current_selection:
+            content_etree = ET.SubElement(parameter_etree, "value")
+            content_etree.text = based_on
+        else:
+            parameter_etree.text = based_on
+        if use_current_selection and (based_on != self.value):
             parameter_etree.attrib["mode"] = self.based_on_mode
-            parameter_etree.attrib["selection"] = self.value
+            selection_etree = ET.SubElement(parameter_etree, "selection")
+            selection_etree.text = self.value
         else:
             parameter_etree.attrib["mode"] = self._mode
         if self._export:

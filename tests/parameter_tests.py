@@ -108,8 +108,8 @@ class TestParameter(unittest.TestCase):
 
         static_par = list(self.para_temp.expand())[2]
         etree = static_par.etree_repr(use_current_selection=True)
-        self.assertEqual(etree.text, "2,3,4")
-        self.assertEqual(etree.get("selection"), "4")
+        self.assertEqual(etree.find("value").text, "2,3,4")
+        self.assertEqual(etree.find("selection").text, "4")
 
         # Export check
         self.assertTrue(self.para_export.export)

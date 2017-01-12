@@ -30,7 +30,7 @@ Release: 2016-12-20
 * Fix result sorting bug in Python3
 * New ``jube_benchmark_rundir`` variable which holds the top level *JUBE* directory (the absolute ``outpath`` directory)
 * Fix CSV output format, if parameter contain linebreaks.
-* ``active`` attribute can now be used in ``<prepare>``,``<copy>`` and ``<link>``
+* ``active`` attribute can now be used in ``<prepare>``, ``<copy>`` and ``<link>``
 * New FAQ entry concerning multiple file analysis: :doc:`faq`
 * ``<parameter>`` using ``mode="shell"`` or ``mode="perl"`` will now stop program execution if an error occurs
   (similar to ``mode="python"``)
