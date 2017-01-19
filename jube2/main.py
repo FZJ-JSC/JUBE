@@ -614,6 +614,7 @@ def gen_parser_conf():
 
     return config
 
+
 def gen_subparser_conf():
     """Generate dict with subparser information"""
     subparser_configuration = dict()

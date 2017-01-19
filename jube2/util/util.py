@@ -178,13 +178,20 @@ def script_evaluation(cmd, script_type):
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
         stdout, stderr = sub.communicate()
-        stdout = stdout.decode()
-        stderr = stderr.decode()
         # Check command execution error code
         errorcode = sub.wait()
         if errorcode != 0:
             raise RuntimeError(stderr)
         else:
+            if len(stderr.strip()) > 0:
+                try:
+                    LOGGER.debug((" The command \"{0}\" was executed with a "
+                                  "successful error code,\n  but the "
+                                  "following error message was produced "
+                                  "during its execution: {1}")
+                                 .format(cmd, stderr))
+                except UnicodeDecodeError:
+                    pass
             return stdout
 
 

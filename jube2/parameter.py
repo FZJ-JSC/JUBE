@@ -535,6 +535,7 @@ class StaticParameter(Parameter):
                 if not final_sub:
                     value = jube2.util.util.substitution(value, parameter_dict)
                 # Run script evaluation
+                LOGGER.debug("Evaluate parameter: {0}".format(self._name))
                 value = jube2.util.util.script_evaluation(value, self._mode)
                 # Insert new $$ if needed
                 if not final_sub:
@@ -546,9 +547,15 @@ class StaticParameter(Parameter):
                 if force_evaluation:
                     value = pre_script_value
                 else:
-                    raise RuntimeError(("Can not evaluate \"{0}\" for " +
-                                        "parameter \"{1}\": {2}").format(
-                        value, self.name, str(exception)))
+                    try:
+                        raise RuntimeError(("Can not evaluate \"{0}\" for " +
+                                            "parameter \"{1}\": {2}").format(
+                            value, self.name, str(exception)))
+                    except UnicodeDecodeError:
+                        raise RuntimeError(("Can not evaluate \"{0}\" for " +
+                                            "parameter \"{1}\"").format(
+                            value, self.name))
+
         changed = (value != self._value) or (mode != self._mode)
 
         if changed:
