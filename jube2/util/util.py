@@ -27,6 +27,7 @@ except ImportError:
     import Queue as queue
 import re
 import string
+import operator
 import os.path
 import subprocess
 import jube2.log
@@ -375,15 +376,25 @@ class CompType(object):
     def __init__(self, value):
         self.__value = value
 
+    def __repr__(self):
+        return str(self.__value)
+
     @property
     def value(self):
         return self.__value
 
-    def __lt__(self, other):
+    def _special_comp(self, other, comp_func):
+        """Allow comparision of different datatypes"""
         if self.value is None or other.value is None:
             return False
         else:
             try:
-                return self.value < other.value
+                return comp_func(self.value, other.value)
             except TypeError:
                 return False
+
+    def __lt__(self, other):
+        return self._special_comp(other, operator.lt)
+
+    def __eq__(self, other):
+        return self._special_comp(other, operator.eq)
