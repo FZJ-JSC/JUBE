@@ -230,9 +230,8 @@ class KeyValuesResult(Result):
             sort_data = \
                 sorted(sort_data,
                        key=lambda x:
-                       [jube2.util.util.CompType(i)
-                        for i in [x[sort_name]
-                                  for sort_name in self._sort_names]])
+                       [jube2.util.util.CompType(x[sort_name])
+                        for sort_name in self._sort_names])
 
         # Create table data
         table_data = list()
