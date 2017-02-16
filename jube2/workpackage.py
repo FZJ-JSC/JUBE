@@ -120,8 +120,16 @@ class Workpackage(object):
         # Add internal jube parameter
         parameterset = self.add_jube_parameter(self._history.copy())
         # Collect parameter for substitution
-        return dict([[par.name, par.value] for par in
-                     parameterset.constant_parameter_dict.values()])
+        parameter = dict([[par.name, par.value] for par in
+                          parameterset.constant_parameter_dict.values()])
+        # Overwrite path information in parameter dict if needed
+        alt_work_dir = self.alt_work_dir(parameter)
+        if alt_work_dir is not None:
+            parameter["jube_wp_relpath"] = os.path.relpath(
+                alt_work_dir, self._benchmark.file_path_ref)
+            parameter["jube_wp_abspath"] = os.path.abspath(alt_work_dir)
+
+        return parameter
 
     @property
     def env(self):
@@ -428,6 +436,21 @@ class Workpackage(object):
         """Return working directory (user space)"""
         return os.path.join(self.workpackage_dir, "work")
 
+    def alt_work_dir(self, parameter_dict=None):
+        """Return location of alternative working_dir"""
+        if self._step.alt_work_dir is not None:
+            if parameter_dict is None:
+                parameter_dict = self.parameter_dict
+            alt_work_dir = self._step.alt_work_dir
+            alt_work_dir = jube2.util.util.substitution(alt_work_dir,
+                                                        parameter_dict)
+            alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
+            alt_work_dir = os.path.join(self._benchmark.file_path_ref,
+                                        alt_work_dir)
+            return alt_work_dir
+        else:
+            return None
+
     def run(self):
         """Run step and use current parameter space"""
 
@@ -469,17 +492,8 @@ class Workpackage(object):
         self.create_shared_folder_link(parameter)
 
         # --- Create alternativ working dir ---
-        alt_work_dir = self._step.alt_work_dir
+        alt_work_dir = self.alt_work_dir(parameter)
         if alt_work_dir is not None:
-            alt_work_dir = jube2.util.util.substitution(
-                alt_work_dir, parameter)
-            alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
-            alt_work_dir = os.path.join(self._benchmark.file_path_ref,
-                                        alt_work_dir)
-            # update jube_wp_abspath
-            parameter["jube_wp_relpath"] = os.path.relpath(
-                alt_work_dir, self._benchmark.file_path_ref)
-            parameter["jube_wp_abspath"] = os.path.abspath(alt_work_dir)
             LOGGER.debug("  switch to alternativ work dir: \"{0}\""
                          .format(alt_work_dir))
             if not jube2.conf.DEBUG_MODE and not os.path.exists(alt_work_dir):
@@ -532,11 +546,15 @@ class Workpackage(object):
             continue_op = True
             for operation_number, operation in \
                     enumerate(self._step.operations):
+                # Check if the operation is activated
+                active = operation.active(parameter)
+                if not active:
+                    self.operation_done(operation_number, True)
                 # Do nothing, if the next operation is already finished.
                 # Otherwise a removed async_file will result in a new
                 # pending operation, if there are two async-operations in
-                # a row.
-                if not self.operation_done(operation_number + 1):
+                # a row
+                elif not self.operation_done(operation_number + 1):
                     # shared operation
                     if operation.shared:
                         # wait for all other workpackages and check if shared
@@ -544,14 +562,21 @@ class Workpackage(object):
                         shared_done = False
                         for workpackage in \
                                 self._benchmark.workpackages[self._step.name]:
+                            # All workpackages must reach the same position in
+                            # the program
                             if operation_number > 0:
                                 continue_op = continue_op and \
                                     (workpackage.operation_done(
                                         operation_number - 1) or
                                      workpackage.done)
+                            # Check if another workpackage already finalized
+                            # the operation, only if the operation was active
+                            # for this particular workpackage
                             shared_done = shared_done or \
-                                workpackage.operation_done(
+                                ((workpackage.operation_done(
                                     operation_number + 1) or workpackage.done
+                                  ) and
+                                 operation.active(workpackage.parameter_dict))
 
                         # All older workpackages in tree must be done
                         for step_name in self._step.get_depend_history(
@@ -587,13 +612,19 @@ class Workpackage(object):
                             # update all workpackages
                             for workpackage in self._benchmark.workpackages[
                                     self._step.name]:
-                                if not workpackage.started:
-                                    workpackage.create_workpackage_dir()
-                                workpackage.operation_done(
-                                    operation_number, True)
-                                # requeue other workpackages
-                                if not workpackage.queued and continue_op:
-                                    self._benchmark.work_stat.put(workpackage)
+                                # if the operation wasn't active in the shared
+                                # operation it must not be triggered to
+                                # restart
+                                if operation.active(
+                                        workpackage.parameter_dict):
+                                    if not workpackage.started:
+                                        workpackage.create_workpackage_dir()
+                                    workpackage.operation_done(
+                                        operation_number, True)
+                                    # requeue other workpackages
+                                    if not workpackage.queued and continue_op:
+                                        self._benchmark.work_stat.put(
+                                            workpackage)
                             if continue_op:
                                 LOGGER.debug(stepstr)
                     else:

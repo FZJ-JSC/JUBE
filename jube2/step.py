@@ -383,6 +383,12 @@ class Operation(object):
         """Shared operation?"""
         return self._shared
 
+    def active(self, parameter_dict):
+        """Return active status of the current operation depending on the
+        given parameter_dict"""
+        active_str = jube2.util.util.substitution(self._active, parameter_dict)
+        return jube2.util.util.eval_bool(active_str)
+
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
                 environment=None):
         """Execute the operation. work_dir must be set to the given context
@@ -393,8 +399,7 @@ class Operation(object):
         True => operation finished
         False => operation pending
         """
-        active = jube2.util.util.substitution(self._active, parameter_dict)
-        if not jube2.util.util.eval_bool(active):
+        if not self.active(parameter_dict):
             return True
 
         if environment is not None:

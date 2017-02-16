@@ -457,11 +457,6 @@ class Benchmark(object):
                               " for step {1}").format(possible_combination,
                                                       dependent_step.name))
 
-        # Store workpackage information
-        if len(all_new_workpackages) > 0:
-            self.write_workpackage_information(
-                os.path.join(self.bench_dir,
-                             jube2.conf.WORKPACKAGES_FILENAME))
         LOGGER.debug("  {0} new workpackages created".format(
             len(all_new_workpackages)))
         return all_new_workpackages
@@ -571,11 +566,6 @@ class Benchmark(object):
             workpackage = self._work_stat.get()
             if not workpackage.done:
                 workpackage.run()
-                if workpackage.done:
-                    # Store workpackage information
-                    self.write_workpackage_information(
-                        os.path.join(self.bench_dir,
-                                     jube2.conf.WORKPACKAGES_FILENAME))
             self._create_new_workpackages_for_workpackage(workpackage)
 
             # Update queues (move waiting workpackages to work queue
@@ -599,6 +589,10 @@ class Benchmark(object):
                            (mode == "all" and (not child.queued)):
                             child.queued = True
                             self._work_stat.put(child)
+        # Store workpackage information
+        self.write_workpackage_information(
+            os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
+
         print("\n")
 
         status_data = [("stepname", "all", "open", "wait", "error", "done")]
@@ -615,10 +609,6 @@ class Benchmark(object):
         LOGGER.info(">>>>       id: {0}".format(self._id))
         LOGGER.info(">>>>   handle: {0}".format(self._outpath))
         LOGGER.info(">>>>      dir: {0}".format(self.bench_dir))
-
-        # Store workpackage information
-        self.write_workpackage_information(
-            os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
         status = self.benchmark_status
         if status["all"] != status["done"]:

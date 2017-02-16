@@ -1153,7 +1153,8 @@ class XMLParser(object):
             parameter_mode = param.get("mode", default="text").strip()
             export_str = param.get("export", default="false").strip()
             export = export_str.lower() == "true"
-            if parameter_mode not in ["text"] + jube2.conf.ALLOWED_SCRIPTTYPES:
+            if parameter_mode not in \
+                    set(["text"]).union(jube2.conf.ALLOWED_SCRIPTTYPES):
                 raise ValueError(
                     ("parameter-mode \"{0}\" not allowed in " +
                      "<parameter name=\"{1}\">").format(parameter_mode,
@@ -1231,8 +1232,9 @@ class XMLParser(object):
                                   "contains a not allowed " +
                                   "character").format(name))
             pattern_mode = pattern.get("mode", default="pattern").strip()
-            if pattern_mode not in ["pattern", "text"] + \
-                    jube2.conf.ALLOWED_SCRIPTTYPES:
+            if pattern_mode not in \
+                    set(["pattern", "text"]).union(
+                        jube2.conf.ALLOWED_SCRIPTTYPES):
                 raise ValueError(("pattern-mdoe \"{0}\" not allowed in " +
                                   "<pattern name=\"{1}\">").format(
                     pattern_mode, name))
