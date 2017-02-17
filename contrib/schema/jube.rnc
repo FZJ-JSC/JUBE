@@ -132,6 +132,7 @@ step = element step { attlist.step, (use | do | \include)* }
 attlist.step &=
   attribute name { text },
   attribute iterations { text }?,
+  attribute cycles { text }?,
   attribute max_async { text }?,
   attribute depend { text }?,
   attribute work_dir { text }?,
@@ -158,6 +159,7 @@ attlist.use &=
 do = element do { attlist.do, any }
 attlist.do &=
   attribute done_file { text }?,
+  attribute break_file { text }?,
   attribute active { text }?,
   attribute shared { "true" | "false" | "True" | "False" }?,
   attribute stdout { text }?,

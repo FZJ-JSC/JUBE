@@ -176,6 +176,7 @@
     <xs:attribute name="export" type="booleanType" use="optional" />
     <xs:attribute name="shared" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
+    <xs:attribute name="cycles" type="xs:integer" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="analyserType">
@@ -282,8 +283,8 @@
   <xs:complexType name="doType">
     <xs:complexContent>
       <xs:extension base="stringTagType">
-        <xs:attribute name="done_file" type="xs:string"
-          use="optional" />
+        <xs:attribute name="done_file" type="xs:string" use="optional" />
+        <xs:attribute name="break_file" type="xs:string" use="optional" />
         <xs:attribute name="stdout" type="xs:string" use="optional" />
         <xs:attribute name="stderr" type="xs:string" use="optional" />
         <xs:attribute name="active" type="xs:string" use="optional" />

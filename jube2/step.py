@@ -42,7 +42,7 @@ class Step(object):
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
-                 active="true", suffix=""):
+                 active="true", suffix="", cycles=1):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -54,6 +54,7 @@ class Step(object):
         self._max_wps = max_wps
         self._active = active
         self._suffix = suffix
+        self._cycles = cycles
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -76,6 +77,8 @@ class Step(object):
             step_etree.attrib["max_async"] = self._max_wps
         if self._iterations > 1:
             step_etree.attrib["iterations"] = str(self._iterations)
+        if self._cycles > 1:
+            step_etree.attrib["cycles"] = str(self._cycles)
         for use in self._use:
             use_etree = ET.SubElement(step_etree, "use")
             use_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(use)
@@ -117,6 +120,11 @@ class Step(object):
     def iterations(self):
         """Return iterations"""
         return self._iterations
+
+    @property
+    def cycles(self):
+        """Return number of cycles"""
+        return self._cycles
 
     @property
     def shared_link_name(self):
@@ -167,6 +175,12 @@ class Step(object):
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_step_iterations", str(self._iterations),
+                             parameter_type="int"))
+
+        # cycles
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_step_cycles", str(self._cycles),
                              parameter_type="int"))
 
         return parameterset
@@ -276,7 +290,8 @@ class Step(object):
                         step=self,
                         parameterset=workpackage_parameterset.copy(),
                         history=parameterset.copy(),
-                        iteration=iteration_base * self.iterations + iteration)
+                        iteration=iteration_base * self.iterations + iteration,
+                        cycle=0)
 
                     # --- Link parent workpackages ---
                     for parent in parents:
@@ -359,9 +374,10 @@ class Operation(object):
 
     def __init__(self, do, async_filename=None, stdout_filename=None,
                  stderr_filename=None, active="true", shared=False,
-                 work_dir=None):
+                 work_dir=None, break_filename=None):
         self._do = do
         self._async_filename = async_filename
+        self._break_filename = break_filename
         self._stdout_filename = stdout_filename
         self._stderr_filename = stderr_filename
         self._active = active
@@ -539,6 +555,22 @@ class Operation(object):
                                 do,
                                 os.path.abspath(work_dir)))
 
+        continue_op = True
+        continue_cycle = True
+
+        # Check if further execution was skipped
+        if self._break_filename is not None:
+            break_filename = jube2.util.util.substitution(
+                self._break_filename, parameter_dict)
+            break_filename = \
+                os.path.expandvars(os.path.expanduser(break_filename))
+            if os.path.exists(os.path.join(work_dir, break_filename)):
+                LOGGER.debug(("\"{0}\" was found, workpackage execution and "
+                              " further loop continuation was stopped.")
+                             .format(break_filename))
+                continue_cycle = False
+
+        # Waiting to continue
         if self._async_filename is not None:
             async_filename = jube2.util.util.substitution(
                 self._async_filename, parameter_dict)
@@ -549,14 +581,10 @@ class Operation(object):
                              .format(async_filename))
                 if jube2.conf.DEBUG_MODE:
                     LOGGER.debug("  skip waiting")
-                    return True
                 else:
-                    return False
-            else:
-                return True
-        else:
-            # Operation finished successfully
-            return True
+                    continue_op = False
+
+        return continue_op, continue_cycle
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -564,6 +592,8 @@ class Operation(object):
         do_etree.text = self._do
         if self._async_filename is not None:
             do_etree.attrib["done_file"] = self._async_filename
+        if self._break_filename is not None:
+            do_etree.attrib["break_file"] = self._break_filename
         if self._stdout_filename is not None:
             do_etree.attrib["stdout"] = self._stdout_filename
         if self._stderr_filename is not None:

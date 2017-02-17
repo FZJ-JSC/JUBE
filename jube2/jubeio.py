@@ -466,14 +466,14 @@ class XMLParser(object):
             XMLParser._check_tag(element, ["workpackage"])
             # Read XML-data
             (workpackage_id, step_name, parameterset, parents,
-             iteration_siblings, iteration, set_env, unset_env) = \
+             iteration_siblings, iteration, cycle, set_env, unset_env) = \
                 XMLParser._extract_workpackage_data(element)
             # Search for step
             step = benchmark.steps[step_name]
             tmp[workpackage_id] = \
                 jube2.workpackage.Workpackage(benchmark, step, parameterset,
                                               jube2.parameter.Parameterset(),
-                                              workpackage_id, iteration)
+                                              workpackage_id, iteration, cycle)
             max_id = max(max_id, workpackage_id)
             parents_tmp[workpackage_id] = parents
             iteration_siblings_tmp[workpackage_id] = iteration_siblings
@@ -548,6 +548,7 @@ class XMLParser(object):
             workpackage_etree, "id"))
         step_etree = workpackage_etree.find("step")
         iteration = int(step_etree.get("iteration", "0").strip())
+        cycle = int(step_etree.get("cycle", "0").strip())
         step_name = step_etree.text.strip()
         parameterset_etree = workpackage_etree.find("parameterset")
         if parameterset_etree is not None:
@@ -588,7 +589,7 @@ class XMLParser(object):
                 elif env_etree.tag == "nonenv":
                     unset_env.append(env_name)
         return (workpackage_id, step_name, parameterset, parents,
-                iteration_siblings, iteration, set_env, unset_env)
+                iteration_siblings, iteration, cycle, set_env, unset_env)
 
     @staticmethod
     def _extract_selection(selection_etree):
@@ -768,6 +769,7 @@ class XMLParser(object):
         max_wps = etree_step.get("max_async", "0").strip()
         active = etree_step.get("active", "true").strip()
         suffix = etree_step.get("suffix", "").strip()
+        cycles = int(etree_step.get("cycles", "1").strip())
         shared_name = etree_step.get("shared")
         if shared_name is not None:
             shared_name = shared_name.strip()
@@ -778,13 +780,17 @@ class XMLParser(object):
                      tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
         step = jube2.step.Step(name, depend, iterations, alt_work_dir,
-                               shared_name, export, max_wps, active, suffix)
+                               shared_name, export, max_wps, active, suffix,
+                               cycles)
         for element in etree_step:
             XMLParser._check_tag(element, valid_tags)
             if element.tag == "do":
                 async_filename = element.get("done_file")
                 if async_filename is not None:
                     async_filename = async_filename.strip()
+                break_filename = element.get("break_file")
+                if break_filename is not None:
+                    break_filename = break_filename.strip()
                 stdout_filename = element.get("stdout")
                 if stdout_filename is not None:
                     stdout_filename = stdout_filename.strip()
@@ -817,7 +823,8 @@ class XMLParser(object):
                                                  stderr_filename,
                                                  active,
                                                  shared,
-                                                 alt_work_dir)
+                                                 alt_work_dir,
+                                                 break_filename)
                 step.add_operation(operation)
             elif element.tag == "use":
                 step.add_uses(XMLParser._extract_use(element))

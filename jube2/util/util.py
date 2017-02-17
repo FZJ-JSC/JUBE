@@ -53,12 +53,8 @@ class WorkStat(object):
         """Add some workpackage to queue"""
 
         # Substitute max_wps if needed
-        parameterset = \
-            workpackage.add_jube_parameter(workpackage.parameterset.copy())
-        parameter = \
-            dict([[par.name, par.value] for par in
-                  parameterset.constant_parameter_dict.values()])
-        max_wps = int(substitution(workpackage.step.max_wps, parameter))
+        max_wps = int(substitution(workpackage.step.max_wps,
+                                   workpackage.parameter_dict))
 
         if (max_wps == 0) or \
            (workpackage.started) or \

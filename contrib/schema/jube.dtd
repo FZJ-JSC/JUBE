@@ -89,6 +89,7 @@
 <!ELEMENT step ((use|do|include)*)>
 <!ATTLIST step          name CDATA #REQUIRED
                         iterations CDATA #IMPLIED
+                        cycles CDATA #IMPLIED
                         max_async CDATA #IMPLIED
                         depend CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
@@ -109,6 +110,7 @@
                         tag CDATA #IMPLIED>
 <!ELEMENT do ANY>
 <!ATTLIST do            done_file CDATA #IMPLIED
+                        break_file CDATA #IMPLIED
                         active CDATA #IMPLIED
                         shared (true|false|True|False) #IMPLIED
                         stdout CDATA #IMPLIED
