@@ -508,12 +508,16 @@ class Operation(object):
                 if jube2.conf.VERBOSE_LEVEL > 1:
                     while True:
                         read_out = sub.stdout.read(
-                            jube2.conf.VERBOSE_STDOUT_READ_CHUNK_SIZE).decode()
+                            jube2.conf.VERBOSE_STDOUT_READ_CHUNK_SIZE)
                         if (not read_out):
                             break
-                        stdout.write(read_out)
-                        print(read_out, end="")
-                        time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
+                        else:
+                            try:
+                                print(read_out.decode(), end="")
+                            except UnicodeDecodeError:
+                                pass
+                            stdout.write(read_out)
+                            time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
                     sub.communicate()
 
                 returncode = sub.wait()
