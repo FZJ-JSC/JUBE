@@ -159,9 +159,9 @@ class JubeXMLConverter(object):
             if os.path.isfile(self._platform_xml_file):
                 return True
             else:
-                message = self._platform_xml_file + " doesn't exist"
+                message = self._platform_xml_file + " does not exist"
                 sys.exit(message)
-        message = filename + " doesn't exist"
+        message = filename + " does not exist"
         sys.exit(message)
         return False
 
@@ -179,7 +179,7 @@ class JubeXMLConverter(object):
                                                           encoding="UTF-8")
             xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
-            raise ValueError("Your terminal only allow '{0}' encoding. {1}"
+            raise ValueError("Your terminal only allows '{0}' encoding. {1}"
                              .format(sys.getfilesystemencoding(), str(uee)))
 
         return tree.getroot()
@@ -447,7 +447,7 @@ class JubeXMLConverter(object):
         give a value for $shared_dir given in the corresponding execution
         step (just grep for "$shared_dir").
         Please note that the commands in the "do" tags come straight from jube
-        1 files. If you copy files to other places etc. jube 2 can't recognize
+        1 files. If you copy files to other places etc. jube 2 cannot recognize
         it and you need to adapt the commands."""
 
         comment = ET.Comment(text)
@@ -692,7 +692,7 @@ class JubeXMLConverter(object):
         self.write_platformfile(self._main_dir + "platform_jube2.xml")
         self.write_main_file(self._main_dir + "benchmarks_jube2.xml")
 
-        message = """            Don't forget to have a look at
+        message = """            Do not forget to have a look at
             benchmarks_jube2.xml and platform_jube2.xml
             and check whether you get what you  expect.
             In particular, notice the comments in
@@ -901,7 +901,7 @@ class _JubeAnalyser(object):
                                                           encoding="UTF-8")
             xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
-            raise ValueError("Your terminal only allow '{0}' encoding. {1}"
+            raise ValueError("Your terminal only allows '{0}' encoding. {1}"
                              .format(sys.getfilesystemencoding(), str(uee)))
 
         return tree.getroot()
@@ -1005,7 +1005,7 @@ class _JubeStep(object):
 
         if self._last_command is not None:
             comment = ET.Comment(
-                "$shared_dir in the line above isn't set yet.")
+                "$shared_dir in the line above is not set yet.")
             step.append(comment)
             step.set("shared", "$shared_dir")
         for item in self._use_list:

@@ -152,7 +152,7 @@ copy_tag
    * you can copy all files inside a directory by using
      "directory/*"
 
-     * this can't be mixed using "name"
+     * this cannot be mixed using "name"
 
    * in the execution step the given files or directories will be
      copied
@@ -235,7 +235,7 @@ do_tag
 
      * cmd will run once (synchronize all workpackages)
 
-     * "$jube_wp_..." - parameter can't be used inside the shared
+     * "$jube_wp_..." - parameter cannot be used inside the shared
        command
 
 fileset_tag
@@ -555,7 +555,7 @@ parameterset_tag
          ...
       </parameterset>
 
-   * parameterset-name must be unique (can't be reuse inside
+   * parameterset-name must be unique (cannot be reused inside
      substitutionsets or filesets)
 
    * "init_with" is optional
@@ -589,7 +589,7 @@ parameterset_tag
             <parameter name="test3">bar</parameter>
           </parameterset>
 
-     * These two sets aren't compatible:
+     * These two sets are not compatible:
 
           <parameterset name="set1">
             <parameter name="test">1,2,4</parameter>
@@ -626,8 +626,8 @@ pattern_tag
 
      * allowed: "int", "float" or "string"
 
-   * "default" is optional: Specify default value if pattern can't
-     be found or if it can't be evaluated
+   * "default" is optional: Specify default value if pattern cannot
+     be found or if it cannot be evaluated
 
 patternset_tag
    A patternset is a container to store a bundle of patterns.
@@ -891,7 +891,7 @@ syslog_tag
 
    * Syslog deamon can be given by a "host" and "port" combination
      (default "port": 541) or by a socket "address" e.g.: "/dev/log"
-     (mixing of host and address isn't allowed)
+     (mixing of host and address is not allowed)
 
    * "format" is optional: can contain a log format written in a
      pythonic way (default: "jube[%(process)s]: %(message)s")
@@ -944,10 +944,10 @@ tagging
 
         jube run <filename> --tag a b
 
-     * "<tags>" which doesn't contain one of these names will be
+     * "<tags>" which does not contain one of these names will be
        hidden inside the include file
 
-     * <tags> which doesn't contain any tag-attribute will stay
+     * <tags> which does not contain any tag-attribute will stay
        inside the include file
 
    * "not" tags are more important than normal tags: "tag="a,!b,c""

@@ -181,7 +181,7 @@ Glossary
         * default: ``string``
         * allowed: ``int``, ``float`` or ``string``
 
-      * ``default`` is optional: Specify default value if pattern can't be found or if it can't be evaluated
+      * ``default`` is optional: Specify default value if pattern cannot be found or if it cannot be evaluated
 
    statistical_values
       If there are multiple pattern matches within one file, multiple files or
@@ -212,7 +212,7 @@ Glossary
             ...
          </parameterset>
 
-      * parameterset-name must be unique (can't be reuse inside substitutionsets or filesets)
+      * parameterset-name must be unique (cannot be reused inside substitutionsets or filesets)
       * ``init_with`` is optional
 
         * if the given filepath can be found inside of the ``JUBE_INCLUDE_PATH`` and if it contains a parameterset
@@ -238,7 +238,7 @@ Glossary
                <parameter name="test3">bar</parameter>
              </parameterset>
 
-        * These two sets aren't compatible:
+        * These two sets are not compatible:
 
           .. code-block:: xml
 
@@ -359,7 +359,7 @@ Glossary
 
      * you can copy all files inside a directory by using ``directory/*``
 
-       * this can't be mixed using ``name``
+       * this cannot be mixed using ``name``
 
      * in the execution step the given files or directories will be copied
 
@@ -497,7 +497,7 @@ Glossary
        * can be used inside a step using a shared folder
        * cmd will be **executed inside the shared folder**
        * cmd will run once (synchronize all workpackages)
-       * ``$jube_wp_...`` - parameter can't be used inside the shared command
+       * ``$jube_wp_...`` - parameter cannot be used inside the shared command
 
    analyser_tag
      The analyser describe the steps and files which should be scanned using a set of pattern.
@@ -589,7 +589,7 @@ Glossary
         </syslog>
 
      * Syslog deamon can be given by a ``host`` and ``port`` combination (default ``port``: 541) or
-       by a socket ``address`` e.g.: ``/dev/log`` (mixing of host and address isn't allowed)
+       by a socket ``address`` e.g.: ``/dev/log`` (mixing of host and address is not allowed)
      * ``format`` is optional: can contain a log format written in a pythonic way (default: ``jube[%(process)s]: %(message)s``)
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
@@ -640,8 +640,8 @@ Glossary
 
           jube run <filename> --tag a b
 
-        * ``<tags>`` which doesn't contain one of these names will be hidden inside the include file
-        * <tags> which doesn't contain any tag-attribute will stay inside the include file
+        * ``<tags>`` which does not contain one of these names will be hidden inside the include file
+        * <tags> which does not contain any tag-attribute will stay inside the include file
 
       * "not" tags are more important than normal tags: ``tag="a,!b,c"`` and running with ``a b`` will hide the ``<tag>`` because
         the ``!b`` is more important than the ``a``

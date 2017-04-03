@@ -388,7 +388,7 @@ class Workpackage(object):
         """Create work directory"""
         if not os.path.exists(self.workpackage_dir):
             if "$" in self.workpackage_dir:
-                raise RuntimeError(("'{0}' couldn't be evaluated and used " +
+                raise RuntimeError(("'{0}' could not be evaluated and used " +
                                     "as a workpackage directory name. " +
                                     "Please check the suffix setting.")
                                    .format(self.workpackage_dir))

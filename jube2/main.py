@@ -166,10 +166,10 @@ def update_check(args):
                 version, jube2.conf.JUBE_VERSION,
                 jube2.conf.UPDATE_URL))
     except IOError as ioe:
-        raise IOError("Can not connect to {0}: {1}".format(
+        raise IOError("Cannot connect to {0}: {1}".format(
             jube2.conf.UPDATE_VERSION_URL, str(ioe)))
     except ValueError as verr:
-        raise ValueError("Can not read version string from {0}: {1}".format(
+        raise ValueError("Cannot read version string from {0}: {1}".format(
             jube2.conf.UPDATE_VERSION_URL, str(verr)))
 
 

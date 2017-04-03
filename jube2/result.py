@@ -92,7 +92,7 @@ class Result(object):
         """Add an addtional analyser name"""
         for use_name in use_names:
             if use_name in self._use:
-                raise ValueError(("Can't use element \"{0}\" two times")
+                raise ValueError(("Element \"{0}\" can only be used once")
                                  .format(use_name))
             self._use.add(use_name)
 

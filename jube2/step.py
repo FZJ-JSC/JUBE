@@ -97,7 +97,7 @@ class Step(object):
         """Add use"""
         for use_name in use_names:
             if any([use_name in use_list for use_list in self._use]):
-                raise ValueError(("Can't use element \"{0}\" two times")
+                raise ValueError(("Element \"{0}\" can only be used once")
                                  .format(use_name))
         self._use.append(use_names)
 
@@ -220,7 +220,7 @@ class Step(object):
                     incompatible_names = \
                         local_parameterset.get_incompatible_parameter(
                             benchmark.parametersets[parameterset_name])
-                    raise ValueError(("Can't use parameterset '{0}' in " +
+                    raise ValueError(("Cannot use parameterset '{0}' in " +
                                       "step '{1}'.\nParameter '{2}' is/are " +
                                       "already defined by a different " +
                                       "parameterset.")

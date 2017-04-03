@@ -109,7 +109,7 @@ the benchmarkname which can be used to identify the benchmark (e.g. when there a
 benchmarks inside a single input file, or when different benchmarks use the same run directory).
 
 The ``outpath`` describes the benchmark run directory (relative to the position of the input file).
-This directory will be managed by *JUBE* and will be automatically created if it doesn't exist.
+This directory will be managed by *JUBE* and will be automatically created if it does not exist.
 The directory name and position are very important, because they are the main interface to communicate
 with your benchmark, after it was submitted.
 
@@ -142,7 +142,7 @@ or ::
    ${parametername}
 
 The brackets must be used if you want variable concatenation. ``$hello_strtest`` will not be replaced,
-``${hello_str}test`` will be replaced. If a parameter doesn't exist or isn't available the variable will not
+``${hello_str}test`` will be replaced. If a parameter does not exist or isn't available the variable will not
 be replaced! If you want to use ``$`` inside your command, you have to write ``$$`` to mask the symbol. Parameter
 substitution will be done before the normal shell substitution!
 
@@ -286,7 +286,7 @@ all possible parameter combinations. In this example the step ``say_hello`` will
 
 Every parameter combination will run in its own sandbox directory.
 
-Another new keyword is the ``type`` attribute. The parameter type isn't used inside the substitution process, but
+Another new keyword is the ``type`` attribute. The parameter type is not used inside the substitution process, but
 for sorting operations inside the ``result`` creation. The default type is ``string``.
 Possible basic types are ``string``, ``int`` and ``float``.
 
@@ -363,7 +363,7 @@ use parameters inside the substitution.
 There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
 ``<sub>`` you must also add the corresponding ``<parameterset>`` inside the ``<step>`` where you use the ``<substituteset>``!
 
-In the ``sub_step`` we use all available sets. The use order isn't relevant. The normal execution process will be:
+In the ``sub_step`` we use all available sets. The use order is not relevant. The normal execution process will be:
 
 #. Parameter space expansion
 #. Copy/link files

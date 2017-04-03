@@ -51,7 +51,7 @@ class Analyser(object):
             """Add an addtional patternset name"""
             for use_name in use_names:
                 if use_name in self._use:
-                    raise ValueError(("Can't use element \"{0}\" two times")
+                    raise ValueError(("Element \"{0}\" can only be used once")
                                      .format(use_name))
                 self._use.add(use_name)
 
@@ -130,7 +130,7 @@ class Analyser(object):
         """Add an addtional patternset name"""
         for use_name in use_names:
             if use_name in self._use:
-                raise ValueError(("Can't use element \"{0}\" two times")
+                raise ValueError(("Element \"{0}\" can only be used once")
                                  .format(use_name))
             self._use.add(use_name)
 
@@ -163,7 +163,7 @@ class Analyser(object):
             if not patternset.is_compatible(self._benchmark.patternsets[use]):
                 incompatible_names = patternset.get_incompatible_pattern(
                     self._benchmark.patternsets[use])
-                raise RuntimeError(("Can't use patternset \"{0}\" " +
+                raise RuntimeError(("Cannot use patternset \"{0}\" " +
                                     "in analyser \"{1}\", because there are " +
                                     "incompatible pattern name combinations: "
                                     "{2}")
@@ -415,7 +415,7 @@ class Analyser(object):
                     else:
                         new_match_list.append(match)
                 except ValueError:
-                    LOGGER.warning(("\"{0}\" can't be represented " +
+                    LOGGER.warning(("\"{0}\" cannot be represented " +
                                     "as a \"{1}\"")
                                    .format(match, pattern.content_type))
             match_list = new_match_list

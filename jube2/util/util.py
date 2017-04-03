@@ -158,7 +158,7 @@ def convert_type(value_type, value, stop=True):
             result_value = value
     except ValueError:
         if stop:
-            raise ValueError(("\"{0}\" can't be represented as a \"{1}\"")
+            raise ValueError(("\"{0}\" cannot be represented as a \"{1}\"")
                              .format(value, value_type))
         else:
             result_value = value
@@ -202,11 +202,11 @@ def eval_bool(cmd):
         try:
             return bool(eval(cmd))
         except SyntaxError as se:
-            raise ValueError(("\"{0}\" couldn't be evaluated and handled as " +
-                              "boolean value. Check if all parameter were " +
-                              "correctly replaced and the syntax of the " +
-                              "expression is well formed ({1}).")
-                             .format(cmd, str(se)))
+            raise ValueError(
+                ("\"{0}\" could not be evaluated and handled as boolean "
+                 "value. Check if all parameter were correctly replaced and "
+                 "the syntax of the expression is well formed ({1}).").format(
+                     cmd, str(se)))
 
 
 def get_tree_element(node, tag_path=None, attribute_dict=None):
@@ -363,7 +363,7 @@ def consistency_check(benchmark):
     order = resolve_depend(depend_dict)
     for step_name in benchmark.steps:
         if step_name not in order:
-            raise ValueError("Can't resolve dependencies.")
+            raise ValueError("Cannot resolve dependencies.")
 
 
 class CompType(object):

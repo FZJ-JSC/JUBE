@@ -195,7 +195,7 @@ The submit command is a normal *Shell* command so there are no special *JUBE* ta
 
 There are two new attributes:
 
-  * ``done_file`` inside the ``<do>`` allows you to set a filename/path to a file which should be used by the jobfile to mark the end of execution. *JUBE* doesn't know when the job ends.
+  * ``done_file`` inside the ``<do>`` allows you to set a filename/path to a file which should be used by the jobfile to mark the end of execution. *JUBE* does not know when the job ends.
     Normally it will return when the *Shell* command was finished. When using a jobsystem we had to wait until the jobfile was executed. If *JUBE* found a
     ``<do>`` containing a ``done_file`` attribute *JUBE* will return directly and will not continue automatically until the ``done_file`` exists. If you want to check the current status
     of your running steps and continue the benchmark process if possible you can type::
@@ -524,8 +524,8 @@ Convert option
 
 For the *JUBE* version 1 file conversion *JUBE* seeks in specific directories for the files which need to be converted.
 For instance, the default directory for ``platform.xml`` is relative to the *JUBE* version 1 benchmark directory, i.e. jube seeks in
-``../../..platform/`` for this file. If it can't be found *JUBE* tries to find it in the current directory.
+``../../..platform/`` for this file. If it cannot be found *JUBE* tries to find it in the current directory.
 
-Generally, if the conversion fails because files can't be found it is recommend to copy them to the current directory.
+Generally, if the conversion fails because files cannot be found it is recommend to copy them to the current directory.
 jube creates two files, namely ``benchmarks_jube2.xml`` and ``platform_jube2.xml``. Have a look in ``benchmarks_jube2.xml``
 and take note of the given comments.

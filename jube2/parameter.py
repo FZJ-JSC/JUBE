@@ -87,7 +87,7 @@ class Parameterset(object):
         return self
 
     def update_parameterset(self, parameterset):
-        """Overwrite existing parameters. Don't add new parameters"""
+        """Overwrite existing parameters. Do not add new parameters"""
         for parameter in parameterset:
             if parameter in self:
                 self._parameters[parameter.name] = parameter.copy()
@@ -548,11 +548,11 @@ class StaticParameter(Parameter):
                     value = pre_script_value
                 else:
                     try:
-                        raise RuntimeError(("Can not evaluate \"{0}\" for " +
+                        raise RuntimeError(("Cannot evaluate \"{0}\" for " +
                                             "parameter \"{1}\": {2}").format(
                             value, self.name, str(exception)))
                     except UnicodeDecodeError:
-                        raise RuntimeError(("Can not evaluate \"{0}\" for " +
+                        raise RuntimeError(("Cannot evaluate \"{0}\" for " +
                                             "parameter \"{1}\"").format(
                             value, self.name))
 

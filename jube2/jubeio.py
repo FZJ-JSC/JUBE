@@ -101,7 +101,7 @@ class XMLParser(object):
                                                           encoding="UTF-8")
             xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
-            raise ValueError("Your terminal only allow '{0}' encoding. {1}"
+            raise ValueError("Your terminal only allows '{0}' encoding. {1}"
                              .format(sys.getfilesystemencoding(), str(uee)))
 
         # Check input file version
@@ -198,7 +198,7 @@ class XMLParser(object):
                                                 tag_path="include")
         if node is not None:
             raise ValueError(("Remaining include element found, which " +
-                              "wasn't replaced (e.g. due to a missing " +
+                              "was not replaced (e.g. due to a missing " +
                               "include-path):\n" +
                               "<include from=\"{0}\" ... />")
                              .format(node.attrib["from"]))
@@ -1064,10 +1064,9 @@ class XMLParser(object):
                     new_search_name = search_name
                 if (new_filename == filename) and \
                         (new_search_name == search_name):
-                    raise ValueError(("Can't init <{0} name=\"{1}\"> by itself"
-                                      " inside \"{2}\"").format(set_type,
-                                                                search_name,
-                                                                file_path))
+                    raise ValueError(("Cannot init <{0} name=\"{1}\"> by "
+                                      "itself inside \"{2}\"").format(
+                                          set_type, search_name, file_path))
                 result_set = self._extract_extern_set(new_filename,
                                                       set_type, name,
                                                       new_search_name)
@@ -1152,7 +1151,7 @@ class XMLParser(object):
                     "Empty \"name\" attribute in <parameter> found.")
             if not re.match(r"^[^\d\W]\w*$", name, re.UNICODE):
                 raise ValueError(("name=\"{0}\" in <parameter> " +
-                                  "contains a not allowed " +
+                                  "contains a disallowed " +
                                   "character").format(name))
             separator = param.get("separator",
                                   default=jube2.conf.DEFAULT_SEPARATOR)
@@ -1236,7 +1235,7 @@ class XMLParser(object):
                     "Empty \"name\" attribute in <pattern> found.")
             if not re.match(r"^[^\d\W]\w*$", name, re.UNICODE):
                 raise ValueError(("name=\"{0}\" in <pattern> " +
-                                  "contains a not allowed " +
+                                  "contains a disallowed " +
                                   "character").format(name))
             pattern_mode = pattern.get("mode", default="pattern").strip()
             if pattern_mode not in \

@@ -170,7 +170,7 @@ If you want to use a file dependent patternset you can move the use to an ``<fil
       </analyse>
    </analyser>
 
-This avoids the generation of uncorrect result entries. A ``from=...`` option isn't available in this case. Instead you
+This avoids the generation of uncorrect result entries. A ``from=...`` option is not available in this case. Instead you
 can copy the patternset first to your local file by using the ``init_with`` attribute.
 
 Due to the independet result_entries, you will end up with the following result table if you mix the extracted pattern:
@@ -187,7 +187,7 @@ Due to the independet result_entries, you will end up with the following result 
                  |               |           13
 
 The different ``<analyse>`` were not combined. So you end up with independet result lines for each workpackage. *JUBE*
-doesn't see possible step dependencies in this point the user has to set the dependcies manually:
+does not see possible step dependencies in this point the user has to set the dependcies manually:
 
 .. code-block:: xml
 
