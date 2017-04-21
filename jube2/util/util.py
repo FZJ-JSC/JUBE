@@ -394,3 +394,11 @@ class CompType(object):
 
     def __eq__(self, other):
         return self._special_comp(other, operator.eq)
+
+
+def safe_split(text, separator):
+    """Like split for non-empty separator, list with text otherwise."""
+    if separator:
+        return text.split(separator)
+    else:
+        return [text]

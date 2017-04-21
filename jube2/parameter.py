@@ -321,7 +321,8 @@ class Parameter(object):
         if no_templates:
             values = [value]
         else:
-            values = [val.strip() for val in value.split(sep)]
+            values = [val.strip() for val in
+                      jube2.util.util.safe_split(value, sep)]
 
         if len(values) == 1 or \
            (parameter_mode in jube2.conf.ALLOWED_SCRIPTTYPES):

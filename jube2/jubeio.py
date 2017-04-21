@@ -1313,7 +1313,8 @@ class XMLParser(object):
                 if etree_file.text is None:
                     raise ValueError("Empty filelist in <{0}> found."
                                      .format(etree_file.tag))
-                files = etree_file.text.strip().split(separator)
+                files = jube2.util.util.safe_split(etree_file.text.strip(),
+                                                   separator)
                 if alt_name is not None:
                     # Use the new alternativ filenames
                     names = [name.strip() for name in
