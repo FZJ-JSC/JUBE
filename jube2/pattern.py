@@ -276,10 +276,11 @@ def get_jube_pattern():
     patternset.add_pattern(Pattern("jube_pat_nint", r"(?:[+-]?\d+)"))
     # Pattern for floating point number
     patternset.add_pattern(
-        Pattern("jube_pat_fp", r"([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)"))
+        Pattern("jube_pat_fp", r"([+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))"))
     # Pattern for floating point number, no ()
     patternset.add_pattern(
-        Pattern("jube_pat_nfp", r"(?:[+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)"))
+        Pattern("jube_pat_nfp",
+                r"(?:[+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))"))
     # Pattern for word (all noblank characters)
     patternset.add_pattern(Pattern("jube_pat_wrd", r"(\S+)"))
     # Pattern for word (all noblank characters), no ()

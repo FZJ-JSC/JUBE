@@ -96,9 +96,9 @@ class TestPattern(unittest.TestCase):
         self.assertEqual(self.jube_pattern["jube_pat_nint"].value,
                          "(?:[+-]?\d+)")
         self.assertEqual(self.jube_pattern["jube_pat_fp"].value,
-                         "([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)")
+                         "([+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))")
         self.assertEqual(self.jube_pattern["jube_pat_nfp"].value,
-                         "(?:[+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)")
+                         "(?:[+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))")
         self.assertEqual(self.jube_pattern["jube_pat_wrd"].value, "(\S+)")
         self.assertEqual(self.jube_pattern["jube_pat_nwrd"].value, "(?:\S+)")
         self.assertEqual(self.jube_pattern["jube_pat_bl"].value, "(?:\s+)")
