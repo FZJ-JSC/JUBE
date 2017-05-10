@@ -22,6 +22,8 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+import re
+
 import unittest
 import jube2.pattern
 
@@ -90,18 +92,64 @@ class TestPattern(unittest.TestCase):
         etree = self.calculate_pattern.etree_repr()
         self.assertEqual(etree.get("mode"), "python")
 
-    def test_jube_Pattern(self):
+    def test_jube_pattern(self):
         """Test JUBE internal pattern"""
-        self.assertEqual(self.jube_pattern["jube_pat_int"].value, "([+-]?\d+)")
-        self.assertEqual(self.jube_pattern["jube_pat_nint"].value,
-                         "(?:[+-]?\d+)")
-        self.assertEqual(self.jube_pattern["jube_pat_fp"].value,
-                         "([+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))")
-        self.assertEqual(self.jube_pattern["jube_pat_nfp"].value,
-                         "(?:[+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))")
-        self.assertEqual(self.jube_pattern["jube_pat_wrd"].value, "(\S+)")
-        self.assertEqual(self.jube_pattern["jube_pat_nwrd"].value, "(?:\S+)")
-        self.assertEqual(self.jube_pattern["jube_pat_bl"].value, "(?:\s+)")
+        patterns = {
+            name: self.jube_pattern[name].value for name in (
+                "jube_pat_int", "jube_pat_nint", "jube_pat_fp", "jube_pat_nfp",
+                "jube_pat_wrd", "jube_pat_nwrd", "jube_pat_bl")
+        }
+
+        for pattern, mystr, result in TEST_PATTERNS_EQUAL:
+            findall = re.findall(pattern.format(**patterns), mystr)
+            # If there is no match, set it to None
+            if len(findall) == 0:
+                findall = [None]
+            match = findall[0]
+            self.assertEqual(
+                match, result, "'{pattern}' on '{mystr}' matches '{match}' "
+                "and not '{result}'".format(**locals()))
+
+
+TEST_PATTERNS_FULL = [
+    # Simple patterns with full match
+    (pat, mystr, mystr) for pat, mystr in (
+        (r"^{jube_pat_int}$", "1"),
+        (r"^{jube_pat_int}$", "123"),
+        (r"^{jube_pat_int}$", "+123"),
+        (r"^{jube_pat_int}$", "-123"),
+        (r"^{jube_pat_fp}$", "1"),
+        (r"^{jube_pat_fp}$", "12"),
+        (r"^{jube_pat_fp}$", ".1"),
+        (r"^{jube_pat_fp}$", ".12"),
+        (r"^{jube_pat_fp}$", "1."),
+        (r"^{jube_pat_fp}$", "12."),
+        (r"^{jube_pat_fp}$", "12.34"),
+        (r"^{jube_pat_fp}$", "+12.34"),
+        (r"^{jube_pat_fp}$", "-12.34"),
+        (r"^{jube_pat_fp}$", "-12.34e1"),
+        (r"^{jube_pat_fp}$", "-12.34E-5"),
+        (r"^{jube_pat_fp}$", "-12.34E+56"),
+        (r"^{jube_pat_wrd}$", "jube"),
+        (r"^{jube_pat_wrd}$", "jube2"),
+        (r"^{jube_pat_bl}$", "  "),
+    )
+]
+
+TEST_PATTERNS_EQUAL = TEST_PATTERNS_FULL + [
+    # Simple patterns that do not match
+    (r"^{jube_pat_int}$", "1.2", None),
+    (r"^{jube_pat_fp}$", "12x3", None),
+    (r"^{jube_pat_fp}$", "+-12.34", None),
+    (r"^{jube_pat_fp}$", "-12.34e", None),
+    (r"^{jube_pat_wrd}$", "jube 2", None),
+    # More complex patterns
+    (r"^{jube_pat_int} {jube_pat_nint} {jube_pat_int}$", "1 2 3", ("1", "3")),
+    (r"^{jube_pat_fp} {jube_pat_nfp} {jube_pat_fp}$", "1 2 3", ("1", "3")),
+    (r"^{jube_pat_wrd} {jube_pat_nwrd} {jube_pat_wrd}$", "1 2 3", ("1", "3")),
+    (r"^{jube_pat_wrd}{jube_pat_bl}{jube_pat_wrd}$", "jube 2", ("jube", "2")),
+]
+
 
 if __name__ == "__main__":
     unittest.main()
