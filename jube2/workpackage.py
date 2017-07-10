@@ -62,6 +62,8 @@ class Workpackage(object):
         self._queued = False
         self._env = dict(os.environ)
         self._cycle = cycle
+        self._workpackage_dir_caching_enabled = False
+        self._workpackage_dir_cache = None
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -142,6 +144,11 @@ class Workpackage(object):
     def cycle(self):
         """Return current loop cycle"""
         return self._cycle
+
+    def allow_workpackage_dir_caching(self):
+        """Enable workpackage dir cache"""
+        self._workpackage_dir_caching_enabled = True
+        self._workpackage_dir_cache = None
 
     @property
     def active(self):
@@ -428,21 +435,31 @@ class Workpackage(object):
     @property
     def workpackage_dir(self):
         """Return workpackage directory"""
-        suffix = self.step.suffix
-        if suffix != "":
-            # Add internal jube parameter, ignore any path settings
-            parameterset = self.add_jube_parameter(self._history.copy(),
-                                                   ignore_pathes=True)
-            # Collect parameter for substitution
-            parameter = dict([[par.name, par.value] for par in
-                              parameterset.constant_parameter_dict.values()])
-            # Parameter substitution
-            suffix = jube2.util.util.substitution(suffix, parameter)
-            suffix = "_" + os.path.expandvars(os.path.expanduser(suffix))
-        return "{path}_{step_name}{suffix}".format(
-            path=jube2.util.util.id_dir(self._benchmark.bench_dir, self._id),
-            step_name=self._step.name,
-            suffix=suffix)
+        if not self._workpackage_dir_caching_enabled or \
+                self._workpackage_dir_cache is None:
+            suffix = self.step.suffix
+            if suffix != "":
+                # Add internal jube parameter, ignore any path settings
+                parameterset = self.add_jube_parameter(self._history.copy(),
+                                                       ignore_pathes=True)
+                # Collect parameter for substitution
+                parameter = \
+                    dict([[par.name, par.value] for par in
+                          parameterset.constant_parameter_dict.values()])
+                # Parameter substitution
+                suffix = jube2.util.util.substitution(suffix, parameter)
+                suffix = "_" + os.path.expandvars(os.path.expanduser(suffix))
+            path = "{path}_{step_name}{suffix}".format(
+                path=jube2.util.util.id_dir(
+                    self._benchmark.bench_dir, self._id),
+                step_name=self._step.name,
+                suffix=suffix)
+        if self._workpackage_dir_caching_enabled:
+            if self._workpackage_dir_cache is None:
+                self._workpackage_dir_cache = path
+            return self._workpackage_dir_cache
+        else:
+            return path
 
     @property
     def work_dir(self):

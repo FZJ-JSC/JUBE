@@ -478,6 +478,7 @@ class XMLParser(object):
             parents_tmp[workpackage_id] = parents
             iteration_siblings_tmp[workpackage_id] = iteration_siblings
             tmp[workpackage_id].env.update(set_env)
+            tmp[workpackage_id].allow_workpackage_dir_caching()
             for env_name in unset_env:
                 if env_name in tmp[workpackage_id].env:
                     del tmp[workpackage_id].env[env_name]

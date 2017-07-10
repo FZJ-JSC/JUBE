@@ -126,14 +126,16 @@ def substitution(text, substitution_dict):
     str_substitution_dict = dict([(k, str(v)) for k, v in
                                   substitution_dict.items()])
     # Preserve non evaluated parameter before starting substitution
-    local_substitution_dict = dict([(k, re.sub(r"\$", "$$", v)) for k, v in
+    local_substitution_dict = dict([(k, re.sub(r"\$", "$$", v)
+                                     if "$" in v else v) for k, v in
                                     str_substitution_dict.items()])
     # Run multiple times to allow recursive parameter substitution
     while changed and count < jube2.conf.MAX_RECURSIVE_SUB:
         count += 1
         orig_text = text
         # Save double $$
-        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text)
+        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text) \
+            if "$" in text else text
         tmp = string.Template(text)
         new_text = tmp.safe_substitute(local_substitution_dict)
         changed = new_text != orig_text

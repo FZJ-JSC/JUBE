@@ -468,8 +468,8 @@ class StaticParameter(Parameter):
         Parameter.__init__(self, name, value, separator, parameter_type,
                            parameter_mode, export)
         self.__depending_parameter = \
-            [other_par[1] for other_par in
-             re.findall(Parameter.parameter_regex, self._value)]
+            set([other_par[1] for other_par in
+                 re.findall(Parameter.parameter_regex, self._value)])
 
     def can_substitute_and_evaluate(self, parameterset):
         """A parameter can be substituted and evaluated if there are no
@@ -495,7 +495,7 @@ class StaticParameter(Parameter):
         of value
         """
         value = self._value
-        if not final_sub:
+        if not final_sub and "$" in value:
             # Replace a even number of $ by $$$$, because they will be
             # substituted to $$. Even number will stay the same, odd number
             # will shrink in every turn
@@ -539,7 +539,7 @@ class StaticParameter(Parameter):
                 LOGGER.debug("Evaluate parameter: {0}".format(self._name))
                 value = jube2.util.util.script_evaluation(value, self._mode)
                 # Insert new $$ if needed
-                if not final_sub:
+                if not final_sub and "$" in value:
                     value = re.sub(r"\$", "$$", value)
                 # Select new parameter mode
                 mode = "text"

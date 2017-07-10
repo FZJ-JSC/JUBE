@@ -315,6 +315,9 @@ class Step(object):
                     workpackage.history.update_parameterset(
                         workpackage.parameterset)
 
+                    # --- Enable workpackage dir cache ---
+                    workpackage.allow_workpackage_dir_caching()
+
                     if workpackage.active:
                         created_workpackages.append(workpackage)
                     else:

@@ -759,7 +759,7 @@ Glossary
       * Step:
 
         * ``$jube_step_name``: current step name
-        * ``$jube_step_iteratuions``: number of step iterations (default: 1)
+        * ``$jube_step_iterations``: number of step iterations (default: 1)
 
       * Workpackage:
 
