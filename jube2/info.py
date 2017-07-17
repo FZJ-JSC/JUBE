@@ -215,7 +215,6 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
     for workpackage in benchmark.workpackages[step_name]:
 
         # Parameter substitution to use alt_work_dir
-        workpackage.add_jube_parameter(workpackage.parameterset)
         parameter = \
             dict([[par.name, par.value] for par in
                   workpackage.parameterset.constant_parameter_dict.values()])
@@ -237,7 +236,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
         # collect parameterization
         parameter_list.append(dict())
         parameter_list[-1]["id"] = str(workpackage.id)
-        for parameter in workpackage.history:
+        for parameter in workpackage.parameterset:
             parameter_list[-1][parameter.name] = parameter.value
 
         # Read error-files

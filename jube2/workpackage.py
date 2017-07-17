@@ -42,7 +42,7 @@ class Workpackage(object):
     # class based counter for unique id creation
     id_counter = 0
 
-    def __init__(self, benchmark, step, parameterset, history,
+    def __init__(self, benchmark, step, local_parameter_names, parameterset,
                  workpackage_id=None, iteration=0, cycle=0):
         # set id
         if workpackage_id is None:
@@ -53,8 +53,8 @@ class Workpackage(object):
 
         self._benchmark = benchmark
         self._step = step
+        self._local_parameter_names = local_parameter_names
         self._parameterset = parameterset
-        self._history = history
         self._iteration = iteration
         self._parents = list()
         self._children = list()
@@ -73,9 +73,9 @@ class Workpackage(object):
         step_etree.attrib["iteration"] = str(self._iteration)
         step_etree.attrib["cycle"] = str(self._cycle)
         step_etree.text = self._step.name
-        if len(self._parameterset) > 0:
+        if len(self._local_parameter_names) > 0:
             workpackage_etree.append(
-                self._parameterset.etree_repr(use_current_selection=True))
+                self.local_parameterset.etree_repr(use_current_selection=True))
         if len(self._parents) > 0:
             parents_etree = ET.SubElement(workpackage_etree, "parents")
             parents_etree.text = ",".join(
@@ -107,7 +107,7 @@ class Workpackage(object):
                 format(self._id, self._step.name,
                        [parent.id for parent in self._parents],
                        [child.id for child in self._children],
-                       self._parameterset))
+                       self.local_parameterset))
 
     def __eq__(self, other):
         if isinstance(other, Workpackage):
@@ -121,18 +121,9 @@ class Workpackage(object):
     @property
     def parameter_dict(self):
         """get all available parameter inside a dict"""
-        # Add internal jube parameter
-        parameterset = self.add_jube_parameter(self._history.copy())
         # Collect parameter for substitution
         parameter = dict([[par.name, par.value] for par in
-                          parameterset.constant_parameter_dict.values()])
-        # Overwrite path information in parameter dict if needed
-        alt_work_dir = self.alt_work_dir(parameter)
-        if alt_work_dir is not None:
-            parameter["jube_wp_relpath"] = os.path.relpath(
-                alt_work_dir, self._benchmark.file_path_ref)
-            parameter["jube_wp_abspath"] = os.path.abspath(alt_work_dir)
-
+                          self._parameterset.constant_parameter_dict.values()])
         return parameter
 
     @property
@@ -268,9 +259,12 @@ class Workpackage(object):
         self._children.append(workpackage)
 
     @property
-    def history(self):
-        """Return history Parameterset"""
-        return self._history
+    def local_parameterset(self):
+        """Return local parameterset"""
+        parameterset = jube2.parameter.Parameterset()
+        for name in self._local_parameter_names:
+            parameterset.add_parameter(self._parameterset[name])
+        return parameterset
 
     @property
     def id(self):
@@ -302,15 +296,32 @@ class Workpackage(object):
         """Return Step data"""
         return self._step
 
-    def add_jube_parameter(self, parameterset, ignore_pathes=False):
-        """Add jube internal parameter to given parameterset"""
-        parameterset.add_parameterset(self._benchmark.get_jube_parameterset())
-        parameterset.add_parameterset(self._step.get_jube_parameterset())
-        parameterset.add_parameterset(self.get_jube_parameterset(
-            ignore_pathes=ignore_pathes))
+    def get_jube_cycle_parameterset(self):
+        """Return parameterset which contains cycle related
+        information"""
+        parameterset = jube2.parameter.Parameterset()
+
+        # worpackage cycle
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_cycle",
+                             str(self._cycle), parameter_type="int",
+                             update_mode=jube2.parameter.JUBE_MODE))
+
         return parameterset
 
-    def get_jube_parameterset(self, substitute=True, ignore_pathes=False):
+    def create_relpath(self, value):
+        """Create relative path representation"""
+        return os.path.relpath(
+            os.path.join(self._benchmark.file_path_ref, value),
+            self._benchmark.file_path_ref)
+
+    def create_abspath(self, value):
+        """Create absolute path representation"""
+        return os.path.abspath(
+            os.path.join(self._benchmark.file_path_ref, value))
+
+    def get_jube_parameterset(self, ignore_pathes=False):
         """Return parameterset which contains workpackage related
         information"""
         parameterset = jube2.parameter.Parameterset()
@@ -318,46 +329,49 @@ class Workpackage(object):
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_wp_id", str(self._id),
-                             parameter_type="int"))
+                             parameter_type="int",
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         # workpackage id with padding
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_wp_padid",
                              jube2.util.util.id_dir("", self._id),
-                             parameter_type="string"))
+                             parameter_type="string",
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         # workpackage iteration
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_wp_iteration",
-                             str(self._iteration), parameter_type="int"))
+                             str(self._iteration), parameter_type="int",
+                             update_mode=jube2.parameter.JUBE_MODE))
 
-        # worpackage cycle
-        parameterset.add_parameter(
-            jube2.parameter.Parameter.
-            create_parameter("jube_wp_cycle",
-                             str(self._cycle), parameter_type="int"))
+        parameterset.add_parameterset(self.get_jube_cycle_parameterset())
 
         # only add pathes if allowed
         if not ignore_pathes:
             # workpackage relative folder path
             if self._step.alt_work_dir is None:
-                path = os.path.relpath(
-                    self.work_dir, self._benchmark.file_path_ref)
+                path = self.work_dir
             else:
                 path = self._step.alt_work_dir
             parameterset.add_parameter(
                 jube2.parameter.Parameter.
-                create_parameter("jube_wp_relpath", path))
+                create_parameter("jube_wp_relpath", path,
+                                 update_mode=jube2.parameter.JUBE_MODE,
+                                 eval_helper=self.create_relpath))
 
             # workpackage absolute folder path
             if self._step.alt_work_dir is None:
-                path = os.path.normpath(os.path.join(os.getenv("PWD"),
-                                                     self.work_dir))
+                path = self.work_dir
+            else:
+                path = self._step.alt_work_dir
             parameterset.add_parameter(
                 jube2.parameter.Parameter.
-                create_parameter("jube_wp_abspath", path))
+                create_parameter("jube_wp_abspath", path,
+                                 update_mode=jube2.parameter.JUBE_MODE,
+                                 eval_helper=self.create_abspath))
 
         # parent workpackage id
         for parent in self._parents:
@@ -365,21 +379,20 @@ class Workpackage(object):
                 jube2.parameter.Parameter.
                 create_parameter(("jube_wp_parent_{0}_id")
                                  .format(parent.step.name),
-                                 str(parent.id), parameter_type="int"))
+                                 str(parent.id), parameter_type="int",
+                                 update_mode=jube2.parameter.JUBE_MODE))
 
         # environment export string
         env_str = ""
         parameter_names = [parameter.name for parameter in
-                           self._history.export_parameter_dict.values()]
+                           self._parameterset.export_parameter_dict.values()]
         parameter_names.sort(key=str.lower)
         for name in parameter_names:
             env_str += "export {0}=${1}\n".format(name, name)
-        env_par = jube2.parameter.Parameter.create_parameter("jube_wp_envstr",
-                                                             env_str)
-        if substitute:
-            env_par = env_par.substitute_and_evaluate(
-                [self._history], final_sub=True,
-                no_templates=True)[0]
+        env_par = jube2.parameter.Parameter.create_parameter(
+            "jube_wp_envstr", env_str, no_templates=True,
+            update_mode=jube2.parameter.JUBE_MODE,
+            eval_helper=jube2.parameter.StaticParameter.fix_export_string)
         parameterset.add_parameter(env_par)
 
         # environment export list
@@ -387,7 +400,7 @@ class Workpackage(object):
             jube2.parameter.Parameter.create_parameter(
                 "jube_wp_envlist",
                 ",".join([name for name in parameter_names]),
-                no_templates=True))
+                no_templates=True, update_mode=jube2.parameter.JUBE_MODE))
 
         return parameterset
 
@@ -439,13 +452,10 @@ class Workpackage(object):
                 self._workpackage_dir_cache is None:
             suffix = self.step.suffix
             if suffix != "":
-                # Add internal jube parameter, ignore any path settings
-                parameterset = self.add_jube_parameter(self._history.copy(),
-                                                       ignore_pathes=True)
                 # Collect parameter for substitution
                 parameter = \
                     dict([[par.name, par.value] for par in
-                          parameterset.constant_parameter_dict.values()])
+                          self._parameterset.constant_parameter_dict.values()])
                 # Parameter substitution
                 suffix = jube2.util.util.substitution(suffix, parameter)
                 suffix = "_" + os.path.expandvars(os.path.expanduser(suffix))
@@ -612,16 +622,19 @@ class Workpackage(object):
                     if parent.step.export:
                         self._env.update(parent.env)
 
+            # --- Update JUBE parameter for new cycle ---
+            if self._cycle > 0:
+                self.parameterset.update_parameterset(
+                    self.get_jube_cycle_parameterset())
+
             # --- Collect parameter for substitution ---
             parameter = self.parameter_dict
 
             if not started_before:
-                # --- Add internal jube parameter ---
-                parameterset = self.add_jube_parameter(self._history.copy())
                 # --- Collect export parameter ---
                 self._env.update(
                     dict([[par.name, par.value] for par in
-                          parameterset.export_parameter_dict.values()]))
+                          self._parameterset.export_parameter_dict.values()]))
 
             # --- Create shared folder connection ---
             if self._cycle == 0:
@@ -687,25 +700,26 @@ class Workpackage(object):
                 # continue_cycle = false -> loop cycle was interrupted
                 continue_op, continue_cycle = \
                     self._run_operations(parameter, work_dir)
+
+                # --- Check cycle limit ---
+                if self._cycle + 1 >= self._step.cycles:
+                    continue_cycle = False
+
+                if continue_op and continue_cycle:
+                    # --- Prepare additional cycle if needed ---
+                    self._cycle += 1
+                    self._remove_operation_info_files()
+                elif continue_op:
+                    # --- Write information file to mark end of work ---
+                    self.done = True
             except RuntimeError as re:
                 self.set_error(True, str(re))
+                continue_cycle = False
                 if jube2.conf.EXIT_ON_ERROR:
                     raise(RuntimeError(str(re)))
                 else:
                     LOGGER.debug(
                         "{0}\n{1}\n{2}".format(40 * "-", str(re), 40 * "-"))
-
-            # --- Check cycle limit ---
-            if self._cycle + 1 >= self._step.cycles:
-                continue_cycle = False
-
-            if continue_op and continue_cycle:
-                # --- Prepare additional cycle if needed ---
-                self._cycle += 1
-                self._remove_operation_info_files()
-            elif continue_op:
-                # --- Write information file to mark end of work ---
-                self.done = True
 
     @staticmethod
     def reduce_workpackage_id_counter():

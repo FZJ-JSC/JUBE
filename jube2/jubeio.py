@@ -470,15 +470,15 @@ class XMLParser(object):
                 XMLParser._extract_workpackage_data(element)
             # Search for step
             step = benchmark.steps[step_name]
+            parameter_names = [parameter.name for parameter in parameterset]
             tmp[workpackage_id] = \
-                jube2.workpackage.Workpackage(benchmark, step, parameterset,
-                                              jube2.parameter.Parameterset(),
-                                              workpackage_id, iteration, cycle)
+                jube2.workpackage.Workpackage(benchmark, step, parameter_names,
+                                              parameterset, workpackage_id,
+                                              iteration, cycle)
             max_id = max(max_id, workpackage_id)
             parents_tmp[workpackage_id] = parents
             iteration_siblings_tmp[workpackage_id] = iteration_siblings
             tmp[workpackage_id].env.update(set_env)
-            tmp[workpackage_id].allow_workpackage_dir_caching()
             for env_name in unset_env:
                 if env_name in tmp[workpackage_id].env:
                     del tmp[workpackage_id].env[env_name]
@@ -503,10 +503,10 @@ class XMLParser(object):
         done_list = list()
         while not work_list.empty():
             workpackage = work_list.get_nowait()
+            history = jube2.parameter.Parameterset()
             if workpackage.id in parents_tmp:
                 for parent_id in parents_tmp[workpackage.id]:
-                    workpackage.history.add_parameterset(
-                        tmp[parent_id].history)
+                    history.add_parameterset(tmp[parent_id].parameterset)
             done_list.append(workpackage)
             for child in workpackage.children:
                 all_done = True
@@ -514,8 +514,31 @@ class XMLParser(object):
                     all_done = all_done and (parent in done_list)
                 if all_done and (child not in done_list):
                     work_list.put(child)
-            # Add personal parameterset to personal history
-            workpackage.history.add_parameterset(workpackage.parameterset)
+            history.add_parameterset(workpackage.parameterset)
+            workpackage.parameterset.add_parameterset(history)
+
+        # Add JUBE parameter
+        for workpackage in tmp.values():
+            # JUBE benchmark parameter
+            workpackage.parameterset.add_parameterset(
+                benchmark.get_jube_parameterset())
+            # JUBE step parameter
+            workpackage.parameterset.add_parameterset(
+                workpackage.step.get_jube_parameterset())
+            # JUBE workpackage parameter (without pathes)
+            workpackage.parameterset.add_parameterset(
+                workpackage.get_jube_parameterset(ignore_pathes=True))
+            # JUBE workpackage parameter (with pathes)
+            workpackage.parameterset.add_parameterset(
+                workpackage.get_jube_parameterset())
+            # Enable work_dir caching
+            workpackage.allow_workpackage_dir_caching()
+            jube_parameter = workpackage.parameterset.get_updatable_parameter(
+                jube2.parameter.JUBE_MODE)
+            jube_parameter.parameter_substitution(
+                additional_parametersets=[workpackage.parameterset],
+                final_sub=True)
+            workpackage.parameterset.update_parameterset(jube_parameter)
 
         # Store workpackage data
         work_stat = jube2.util.util.WorkStat()
@@ -1158,6 +1181,13 @@ class XMLParser(object):
                                   default=jube2.conf.DEFAULT_SEPARATOR)
             parameter_type = param.get("type", default="string").strip()
             parameter_mode = param.get("mode", default="text").strip()
+            parameter_update_mode = param.get("update_mode",
+                                              default="never").strip()
+            if parameter_update_mode not in jube2.parameter.UPDATE_MODES:
+                raise ValueError(
+                    ("update_mode=\"{0}\" in " +
+                     "<parameter name=\"{1}\"> does not exist")
+                    .format(parameter_update_mode, name))
             export_str = param.get("export", default="false").strip()
             export = export_str.lower() == "true"
             if parameter_mode not in \
@@ -1180,17 +1210,17 @@ class XMLParser(object):
             selection_etree = param.find("selection")
             if selection_etree is not None:
                 selected_value = selection_etree.text
+                idx = int(selection_etree.get("idx", "0"))
             else:
                 selected_value = param.get("selection")
+                idx = 0
             if selected_value is not None:
                 selected_value = selected_value.strip()
             parameter = \
-                jube2.parameter.Parameter.create_parameter(name, value,
-                                                           separator,
-                                                           parameter_type,
-                                                           selected_value,
-                                                           parameter_mode,
-                                                           export)
+                jube2.parameter.Parameter.create_parameter(
+                    name, value, separator, parameter_type, selected_value,
+                    parameter_mode, export, update_mode=parameter_update_mode,
+                    idx=idx)
             parameters.append(parameter)
         return parameters
 

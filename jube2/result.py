@@ -120,12 +120,8 @@ class Result(object):
                             workpackage = wp_tmp
                             break
 
-                    # Read workpackage history parameterset
-                    parameterset = workpackage.add_jube_parameter(
-                        workpackage.history.copy())
-
                     parameter_dict = dict()
-                    for par in parameterset:
+                    for par in workpackage.parameterset:
                         parameter_dict[par.name] = \
                             jube2.util.util.convert_type(par.parameter_type,
                                                          par.value, stop=False)

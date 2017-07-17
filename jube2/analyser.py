@@ -231,14 +231,10 @@ class Analyser(object):
                     if not workpackage.started:
                         continue
 
-                    # Get parameterset of current workpackage
-                    parameterset = \
-                        workpackage.add_jube_parameter(
-                            workpackage.history.copy())
-
                     parameter = \
                         dict([[par.name, par.value] for par in
-                              parameterset.constant_parameter_dict.values()])
+                              workpackage.parameterset.
+                              constant_parameter_dict.values()])
 
                     for file_obj in self._analyse[stepname]:
                         if step.alt_work_dir is not None:
@@ -266,7 +262,8 @@ class Analyser(object):
 
                             new_result_dict, match_dict = \
                                 self._analyse_file(path, local_patternset,
-                                                   parameterset, match_dict,
+                                                   workpackage.parameterset,
+                                                   match_dict,
                                                    file_obj.use)
                             result[stepname][root_workpackage.id].update(
                                 new_result_dict)
@@ -300,7 +297,7 @@ class Analyser(object):
                 # Evaluate derived pattern
                 if len(result[stepname][root_workpackage.id]) > 0:
                     new_result_dict = self._eval_derived_pattern(
-                        local_patternset, parameterset,
+                        local_patternset, root_workpackage.parameterset,
                         result[stepname][root_workpackage.id])
                     result[stepname][root_workpackage.id].update(
                         new_result_dict)

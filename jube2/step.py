@@ -169,30 +169,46 @@ class Step(object):
         # step name
         parameterset.add_parameter(
             jube2.parameter.Parameter.
-            create_parameter("jube_step_name", self._name))
+            create_parameter("jube_step_name", self._name,
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         # iterations
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_step_iterations", str(self._iterations),
-                             parameter_type="int"))
+                             parameter_type="int",
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         # cycles
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_step_cycles", str(self._cycles),
-                             parameter_type="int"))
+                             parameter_type="int",
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         return parameterset
 
-    def create_workpackages(self, benchmark, local_parameterset,
-                            history_parameterset, used_sets=None,
-                            iteration_base=0, parents=None):
+    def create_workpackages(self, benchmark, global_parameterset,
+                            local_parameterset=None, used_sets=None,
+                            iteration_base=0, parents=None,
+                            incompatible_parameters=None):
         """Create workpackages for current step using given
         benchmark context"""
-
         if used_sets is None:
             used_sets = set()
+
+        update_parameters = jube2.parameter.Parameterset()
+
+        if local_parameterset is None:
+            local_parameterset = jube2.parameter.Parameterset()
+            global_parameterset.add_parameterset(
+                benchmark.get_jube_parameterset())
+            global_parameterset.add_parameterset(self.get_jube_parameterset())
+            update_parameters.add_parameterset(
+                global_parameterset.get_updatable_parameter(
+                    jube2.parameter.STEP_MODE))
+            for parameter in update_parameters:
+                incompatible_parameters.discard(parameter.name)
 
         if parents is None:
             parents = list()
@@ -202,7 +218,7 @@ class Step(object):
         # Create parameter dictionary for substitution
         parameter_dict = \
             dict([[par.name, par.value] for par in
-                  history_parameterset.constant_parameter_dict.values()])
+                  global_parameterset.constant_parameter_dict.values()])
 
         # Filter for parametersets in uses
         parameterset_names = \
@@ -229,34 +245,38 @@ class Step(object):
                 local_parameterset.add_parameterset(
                     benchmark.parametersets[parameterset_name])
 
-            # Combine local and history parameterset
-            if local_parameterset.is_compatible(history_parameterset):
-                history_parameterset = \
+            # Combine local and history parameterset, update parameters
+            # if necessary
+            if local_parameterset.is_compatible(
+                    global_parameterset, update_mode=jube2.parameter.USE_MODE):
+                update_parameters.add_parameterset(
+                    local_parameterset.get_updatable_parameter(
+                        jube2.parameter.USE_MODE))
+                for parameter in update_parameters:
+                    incompatible_parameters.discard(parameter.name)
+                global_parameterset = \
                     local_parameterset.copy().add_parameterset(
-                        history_parameterset)
+                        global_parameterset)
+                global_parameterset.update_parameterset(update_parameters)
             else:
                 incompatible_names = \
                     local_parameterset.get_incompatible_parameter(
-                        history_parameterset)
+                        global_parameterset,
+                        update_mode=jube2.parameter.USE_MODE)
                 LOGGER.debug("Incompatible parameterset combination found " +
                              "between current and parent steps. \nParameter " +
                              "'{0}' is/are already defined different.".format(
                                  ",".join(incompatible_names)))
                 return new_workpackages
 
-        # Get jube internal parametersets
-        jube_parameterset = benchmark.get_jube_parameterset()
-        jube_parameterset.add_parameterset(self.get_jube_parameterset())
-
         # Expand templates
-        parametersets = [history_parameterset]
+        parametersets = [global_parameterset]
         change = True
         while change:
             change = False
             new_parametersets = list()
             for parameterset in parametersets:
-                parameterset.parameter_substitution(
-                    additional_parametersets=[jube_parameterset])
+                parameterset.parameter_substitution()
                 # Maybe new templates were created
                 if parameterset.has_templates:
                     LOGGER.debug("Expand parameter templates:\n{0}".format(
@@ -277,19 +297,24 @@ class Step(object):
             workpackage_parameterset.update_parameterset(parameterset)
             if new_sets_found:
                 new_workpackages += \
-                    self.create_workpackages(benchmark,
+                    self.create_workpackages(benchmark, parameterset,
                                              workpackage_parameterset,
-                                             parameterset, used_sets,
-                                             iteration_base, parents)
+                                             used_sets, iteration_base,
+                                             parents,
+                                             incompatible_parameters.copy())
             else:
+                # Check if all incompatible_parameters were updated
+                if len(incompatible_parameters) > 0:
+                    return new_workpackages
                 # Create new workpackage
                 created_workpackages = list()
                 for iteration in range(self.iterations):
                     workpackage = jube2.workpackage.Workpackage(
                         benchmark=benchmark,
                         step=self,
-                        parameterset=workpackage_parameterset.copy(),
-                        history=parameterset.copy(),
+                        parameterset=parameterset.copy(),
+                        local_parameter_names=[
+                            par.name for par in workpackage_parameterset],
                         iteration=iteration_base * self.iterations + iteration,
                         cycle=0)
 
@@ -297,12 +322,15 @@ class Step(object):
                     for parent in parents:
                         workpackage.add_parent(parent)
 
+                    # --- Add workpackage JUBE parameterset two times
+                    # to allow path settings to include other jube_wp variables
+                    workpackage.parameterset.add_parameterset(
+                        workpackage.get_jube_parameterset(ignore_pathes=True))
+                    workpackage.parameterset.add_parameterset(
+                        workpackage.get_jube_parameterset())
+
                     # --- Final parameter substitution ---
                     workpackage.parameterset.parameter_substitution(
-                        additional_parametersets=[
-                            jube_parameterset,
-                            workpackage.get_jube_parameterset(
-                                substitute=False)],
                         final_sub=True)
 
                     # --- Check parameter type ---
@@ -310,10 +338,6 @@ class Step(object):
                         if not parameter.is_template:
                             jube2.util.util.convert_type(
                                 parameter.parameter_type, parameter.value)
-
-                    # Update workpackage history parameterset
-                    workpackage.history.update_parameterset(
-                        workpackage.parameterset)
 
                     # --- Enable workpackage dir cache ---
                     workpackage.allow_workpackage_dir_caching()
@@ -532,7 +556,7 @@ class Operation(object):
                 env = Operation.read_process_environment(work_dir)
 
                 # Read and store new environment
-                if environment is not None:
+                if (environment is not None) and (returncode == 0):
                     environment.clear()
                     environment.update(env)
 

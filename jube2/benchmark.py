@@ -210,32 +210,37 @@ class Benchmark(object):
         # benchmark id
         parameterset.add_parameter(
             jube2.parameter.Parameter.
-            create_parameter("jube_benchmark_id",
-                             str(self._id), parameter_type="int"))
+            create_parameter(
+                "jube_benchmark_id", str(self._id), parameter_type="int",
+                update_mode=jube2.parameter.JUBE_MODE))
 
         # benchmark id with padding
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_benchmark_padid",
                              jube2.util.util.id_dir("", self._id),
-                             parameter_type="string"))
+                             parameter_type="string",
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         # benchmark name
         parameterset.add_parameter(
             jube2.parameter.Parameter.
-            create_parameter("jube_benchmark_name", self._name))
+            create_parameter("jube_benchmark_name", self._name,
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         # benchmark home
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_benchmark_home",
-                             os.path.abspath(self._file_path_ref)))
+                             os.path.abspath(self._file_path_ref),
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         # benchmark rundir
         parameterset.add_parameter(
             jube2.parameter.Parameter.
             create_parameter("jube_benchmark_rundir",
-                             os.path.abspath(self.bench_dir)))
+                             os.path.abspath(self.bench_dir),
+                             update_mode=jube2.parameter.JUBE_MODE))
 
         timestamps = jube2.util.util.read_timestamps(
             os.path.join(self.bench_dir, jube2.conf.TIMESTAMPS_INFO))
@@ -244,7 +249,8 @@ class Benchmark(object):
         parameterset.add_parameter(
             jube2.parameter.Parameter.create_parameter(
                 "jube_benchmark_start",
-                timestamps.get("start", "").replace(" ", "T")))
+                timestamps.get("start", "").replace(" ", "T"),
+                update_mode=jube2.parameter.JUBE_MODE))
 
         return parameterset
 
@@ -467,21 +473,17 @@ class Benchmark(object):
         if parent_workpackages is None:
             parent_workpackages = list()
         # Combine and check parent parametersets
-        history_parameterset = jube2.parameter.Parameterset()
-        compatible = True
+        parameterset = jube2.parameter.Parameterset()
+        incompatible_parameter_names = set()
         for parent_workpackage in parent_workpackages:
-            # Check weather parameter combination is possible
-            compatible = history_parameterset.is_compatible(
-                parent_workpackage.history)
-            if compatible:
-                history_parameterset.add_parameterset(
-                    parent_workpackage.history)
-            else:
-                break
-
-        # Only compatible parameter combination allowed
-        if not compatible:
-            return list()
+            # Check weather parameter combination is possible or not.
+            # JUBE Parameter can be ignored
+            incompatible_parameter_names = incompatible_parameter_names.union(
+                parameterset.get_incompatible_parameter(
+                    parent_workpackage.parameterset,
+                    update_mode=jube2.parameter.JUBE_MODE))
+            parameterset.add_parameterset(
+                parent_workpackage.parameterset)
 
         # Sort parent workpackges after total iteration number and name
         sorted_parents = list(parent_workpackages)
@@ -496,22 +498,24 @@ class Benchmark(object):
                 iteration_base = \
                     parent.step.iterations * iteration_base + parent.iteration
 
-        # Create empty local parameterset
-        local_parameterset = jube2.parameter.Parameterset()
+        parameterset.remove_jube_parameter()
 
         # Create new workpackages
         new_workpackages = step.create_workpackages(
-            self, local_parameterset, history_parameterset,
+            self, parameterset,
             iteration_base=iteration_base,
-            parents=parent_workpackages)
+            parents=parent_workpackages,
+            incompatible_parameters=incompatible_parameter_names)
 
-        if len(parent_workpackages) > 0:
+        # Update iteration sibling connections
+        if len(parent_workpackages) > 0 and len(new_workpackages) > 0:
             for sibling in parent_workpackages[0].iteration_siblings:
                 if sibling != parent_workpackages[0]:
                     for child in sibling.children:
                         for workpackage in new_workpackages:
-                            if workpackage.history.is_compatible(
-                                    child.history):
+                            if workpackage.parameterset.is_compatible(
+                                    child.parameterset,
+                                    update_mode=jube2.parameter.JUBE_MODE):
                                 workpackage.iteration_siblings.add(child)
                                 child.iteration_siblings.add(workpackage)
 
