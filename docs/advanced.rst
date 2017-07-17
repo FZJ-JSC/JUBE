@@ -516,16 +516,3 @@ Also complete sets can be marked as dependent towards a specific parameter by us
 out of an other file the correct set-name must be given within the ``from`` attribute, because these sets will be loaded in a pre-processing step before the
 corresponding parameter will be evaluated. Also sets out of different files can be combined within the same ``<use>`` by using the 
 ``file1:set1,file2:set2`` syntax. The sets' names must be unique.
-
-.. index:: convert
-
-Convert option
-~~~~~~~~~~~~~~
-
-For the *JUBE* version 1 file conversion *JUBE* seeks in specific directories for the files which need to be converted.
-For instance, the default directory for ``platform.xml`` is relative to the *JUBE* version 1 benchmark directory, i.e. jube seeks in
-``../../..platform/`` for this file. If it cannot be found *JUBE* tries to find it in the current directory.
-
-Generally, if the conversion fails because files cannot be found it is recommend to copy them to the current directory.
-jube creates two files, namely ``benchmarks_jube2.xml`` and ``platform_jube2.xml``. Have a look in ``benchmarks_jube2.xml``
-and take note of the given comments.

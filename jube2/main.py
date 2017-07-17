@@ -27,7 +27,6 @@ import jube2.util.output
 import jube2.conf
 import jube2.info
 import jube2.help
-import jube2.jubetojube2
 import jube2.log
 import jube2.completion
 
@@ -403,17 +402,6 @@ def run_new_benchmark(args):
 
         # Reset logging
         jube2.log.only_console_log()
-
-
-def jube2jube2(args):
-    """Convert jube XMLs to jube2 XMLs"""
-    main_dir = args.input_path
-    jube_main_file = args.main_xml_file
-    convertit = jube2.jubetojube2.JubeXMLConverter(jube_main_file, main_dir)
-    # convertit.convert_platformfile()
-    convertit.convert_xml()
-    convertit.write_platformfile(os.path.join(main_dir, "platform_jube2.xml"))
-
 
 def _continue_benchmark(benchmark_folder, args):
     """Continue existing benchmark"""
@@ -794,19 +782,6 @@ def gen_subparser_conf():
             ("-f", "--force"):
                 {"help": "force removing, never prompt",
                  "action": "store_true"}
-        }
-    }
-
-    # convert subparser
-    subparser_configuration["convert"] = {
-        "help": "Convert jube version 1 files to jube version 2 files",
-        "func": jube2jube2,
-        "arguments": {
-            ("-i", "--input_path"):
-                {"type": str, "default": "./",
-                 "help": "Location of jube XML files"},
-            ("main_xml_file",):
-                {"type": str, "help": "Main jube XML"}
         }
     }
 

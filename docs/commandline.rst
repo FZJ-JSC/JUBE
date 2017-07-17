@@ -117,23 +117,6 @@ Run a new benchmark.
 ``FILE [FILE ...]``
    input *XML* file
 
-.. index:: convert
-
-convert
-~~~~~~~
-
-Convert jube version 1 files to jube version 2 files.
-
-.. code-block:: none
-
-   jube convert [-h] [-i INPUT_PATH] main_xml_file
-
-``-h``, ``--help``
-   show command help information
-
-``-i INPUT_PATH main_xml_file``
-  select root directory of jube version 1 benchmark along with the corresponding main XML file
-
 .. index:: continue
 
 continue

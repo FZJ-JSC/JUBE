@@ -81,14 +81,6 @@ jube2.jubeio module
     :undoc-members:
     :show-inheritance:
 
-jube2.jubetojube2 module
-------------------------
-
-.. automodule:: jube2.jubetojube2
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 jube2.log module
 ----------------
 
