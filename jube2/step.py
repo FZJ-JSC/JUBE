@@ -322,10 +322,7 @@ class Step(object):
                     for parent in parents:
                         workpackage.add_parent(parent)
 
-                    # --- Add workpackage JUBE parameterset two times
-                    # to allow path settings to include other jube_wp variables
-                    workpackage.parameterset.add_parameterset(
-                        workpackage.get_jube_parameterset(ignore_pathes=True))
+                    # --- Add workpackage JUBE parameterset ---
                     workpackage.parameterset.add_parameterset(
                         workpackage.get_jube_parameterset())
 

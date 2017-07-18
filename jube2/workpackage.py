@@ -321,7 +321,7 @@ class Workpackage(object):
         return os.path.abspath(
             os.path.join(self._benchmark.file_path_ref, value))
 
-    def get_jube_parameterset(self, ignore_pathes=False):
+    def get_jube_parameterset(self):
         """Return parameterset which contains workpackage related
         information"""
         parameterset = jube2.parameter.Parameterset()
@@ -349,29 +349,25 @@ class Workpackage(object):
 
         parameterset.add_parameterset(self.get_jube_cycle_parameterset())
 
-        # only add pathes if allowed
-        if not ignore_pathes:
-            # workpackage relative folder path
-            if self._step.alt_work_dir is None:
-                path = self.work_dir
-            else:
-                path = self._step.alt_work_dir
-            parameterset.add_parameter(
-                jube2.parameter.Parameter.
-                create_parameter("jube_wp_relpath", path,
-                                 update_mode=jube2.parameter.JUBE_MODE,
-                                 eval_helper=self.create_relpath))
+        # pathes
+        if self._step.alt_work_dir is None:
+            path = self.work_dir
+        else:
+            path = self._step.alt_work_dir
 
-            # workpackage absolute folder path
-            if self._step.alt_work_dir is None:
-                path = self.work_dir
-            else:
-                path = self._step.alt_work_dir
-            parameterset.add_parameter(
-                jube2.parameter.Parameter.
-                create_parameter("jube_wp_abspath", path,
-                                 update_mode=jube2.parameter.JUBE_MODE,
-                                 eval_helper=self.create_abspath))
+        # workpackage relative folder path
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_relpath", path,
+                             update_mode=jube2.parameter.JUBE_MODE,
+                             eval_helper=self.create_relpath))
+
+        # workpackage absolute folder path
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_abspath", path,
+                             update_mode=jube2.parameter.JUBE_MODE,
+                             eval_helper=self.create_abspath))
 
         # parent workpackage id
         for parent in self._parents:

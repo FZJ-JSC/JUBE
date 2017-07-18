@@ -403,6 +403,7 @@ def run_new_benchmark(args):
         # Reset logging
         jube2.log.only_console_log()
 
+
 def _continue_benchmark(benchmark_folder, args):
     """Continue existing benchmark"""
 
@@ -912,6 +913,7 @@ def main(command=None):
     else:
         parser.print_usage()
     jube2.log.reset_logging()
+
 
 if __name__ == "__main__":
     main()

@@ -525,10 +525,7 @@ class XMLParser(object):
             # JUBE step parameter
             workpackage.parameterset.add_parameterset(
                 workpackage.step.get_jube_parameterset())
-            # JUBE workpackage parameter (without pathes)
-            workpackage.parameterset.add_parameterset(
-                workpackage.get_jube_parameterset(ignore_pathes=True))
-            # JUBE workpackage parameter (with pathes)
+            # JUBE workpackage parameter
             workpackage.parameterset.add_parameterset(
                 workpackage.get_jube_parameterset())
             # Enable work_dir caching
