@@ -449,7 +449,7 @@ def _analyse_benchmark(benchmark_folder, args):
         return
 
     # Update benchmark data
-    _update_analyse_and_result(args, benchmark, benchmark_folder)
+    _update_analyse_and_result(args, benchmark)
 
     # Change logfile
     jube2.log.change_logfile_name(os.path.join(
@@ -486,7 +486,7 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
         return result_list
 
     # Update benchmark data
-    _update_analyse_and_result(args, benchmark, benchmark_folder)
+    _update_analyse_and_result(args, benchmark)
 
     # Run benchmark analyse
     if args.analyse:
@@ -508,7 +508,7 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
     return result_list
 
 
-def _update_analyse_and_result(args, benchmark, benchmark_folder):
+def _update_analyse_and_result(args, benchmark):
     """Update analyse and result data in given benchmark by using the
     given update file"""
     if args.update is not None:

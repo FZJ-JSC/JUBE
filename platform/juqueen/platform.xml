@@ -43,7 +43,7 @@
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
         <parameter name="env" separator=";">$jube_wp_envstr</parameter>
-        <parameter name="notification">always</parameter>
+        <parameter name="notification">never</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
         <parameter name="timelimit">00:30:00</parameter>
