@@ -267,6 +267,24 @@ class Workpackage(object):
         return parameterset
 
     @property
+    def parent_history(self):
+        """Create a list of all parents in the history of this workpackage"""
+        history = list()
+        for parent in self._parents:
+            history += parent.parent_history
+        history += self._parents
+        return history
+
+    @property
+    def children_future(self):
+        """Create a list of all children in the future of this workpackage"""
+        future = list()
+        future += self._children
+        for child in self._children:
+            future += child.children_future
+        return future
+
+    @property
     def id(self):
         """Return workpackage id"""
         return self._id

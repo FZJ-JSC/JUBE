@@ -112,37 +112,71 @@ class Result(object):
                                 "Run analyse step first please.")
                                .format(analyser_name, self._benchmark.id))
                 continue
-            for stepname in analyse:
-                for wp_id in analyse[stepname]:
-                    workpackage = None
-                    for wp_tmp in self._benchmark.workpackages[stepname]:
-                        if wp_tmp.id == wp_id:
-                            workpackage = wp_tmp
-                            break
 
+            # Create workpackage chains
+            wp_chains = list()
+            all_wps = set()
+            for ids in [analyse[stepname].keys() for stepname in analyse]:
+                all_wps.update(set(map(int, ids)))
+            # Create copy of all wps to reduce this list while wps are sorted
+            # into the chains
+            all_wps_tmp = all_wps.copy()
+
+            while (len(all_wps_tmp) > 0):
+                next_id = all_wps_tmp.pop()
+                # Create new chain
+                wp_chains.append(list())
+                # Add all parents to the chain
+                for wp in self._benchmark.workpackage_by_id(next_id).\
+                        parent_history:
+                    if wp.id in all_wps:
+                        wp_chains[-1].append(wp.id)
+                        all_wps_tmp.discard(wp.id)
+                # Add wp itself to the cahin
+                wp_chains[-1].append(next_id)
+                steps_in_list = set()
+                # Add children to the chain, each step can only be added once)
+                for wp in self._benchmark.workpackage_by_id(next_id).\
+                        children_future:
+                    if wp.step.name not in steps_in_list:
+                        if wp.id in all_wps:
+                            steps_in_list.add(wp.step.name)
+                            wp_chains[-1].append(wp.id)
+                            all_wps_tmp.discard(wp.id)
+
+            # Create output datasets by combining analyse and parameter data
+            for chain in wp_chains:
+                analyse_dict = dict()
+                for wp_id in chain:
+                    workpackage = self._benchmark.workpackage_by_id(wp_id)
+                    # add analyse data
+                    analyse_dict.update(analyse[workpackage.step.name][wp_id])
+                    # add parameter
                     parameter_dict = dict()
                     for par in workpackage.parameterset:
-                        parameter_dict[par.name] = \
+                        value = \
                             jube2.util.util.convert_type(par.parameter_type,
                                                          par.value, stop=False)
-
-                    analyse_dict = analyse[stepname][wp_id]
-
+                        if (par.name + "_" + workpackage.step.name
+                                not in parameter_dict):
+                            parameter_dict[par.name + "_" +
+                                           workpackage.step.name] = value
+                        if wp_id == chain[-1]:
+                            parameter_dict[par.name] = value
                     analyse_dict.update(parameter_dict)
-
                     # Add jube additional information
                     analyse_dict.update({
                         "jube_res_analyser": analyser_name,
                     })
 
-                    # If res_filter is set, only show matching result lines
-                    if self._res_filter is not None:
-                        res_filter = jube2.util.util.substitution(
-                            self._res_filter, analyse_dict)
-                        if not jube2.util.util.eval_bool(res_filter):
-                            continue
+                # If res_filter is set, only show matching result lines
+                if self._res_filter is not None:
+                    res_filter = jube2.util.util.substitution(
+                        self._res_filter, analyse_dict)
+                    if not jube2.util.util.eval_bool(res_filter):
+                        continue
 
-                    yield analyse_dict
+                yield analyse_dict
 
     def _load_units(self, pattern_names):
         """Load units"""

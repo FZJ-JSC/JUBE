@@ -133,6 +133,14 @@ class Benchmark(object):
         """Return workpackages"""
         return self._workpackages
 
+    def workpackage_by_id(self, wp_id):
+        """Search and return a benchmark workpackage by its wp_id"""
+        for stepname in self._workpackages:
+            for workpackage in self._workpackages[stepname]:
+                if workpackage.id == wp_id:
+                    return workpackage
+        return None
+
     @property
     def work_stat(self):
         """Return work queue"""
