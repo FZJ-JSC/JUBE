@@ -879,7 +879,9 @@ class XMLParser(object):
             if element.tag == "analyse":
                 step_name = XMLParser._attribute_from_element(element,
                                                               "step").strip()
-
+                # If there are no files, just add a dummy element to the list
+                if len(element) == 0:
+                    analyser.add_analyse(step_name, None)
                 for file_etree in element:
                     if (file_etree.text is None) or \
                             (file_etree.text.strip() == ""):

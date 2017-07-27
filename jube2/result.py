@@ -144,23 +144,37 @@ class Result(object):
                             wp_chains[-1].append(wp.id)
                             all_wps_tmp.discard(wp.id)
 
+            # Add all parent WPs which might be missing in the chain, by
+            # using the last WP as a reference. This WPs does not provide any
+            # analyse data but, their parameter will be available
+            for i, chain in enumerate(wp_chains):
+                for wp in self._benchmark.workpackage_by_id(chain[-1]).\
+                        parent_history:
+                    if wp.id not in chain:
+                        wp_chains[i] = [wp.id] + chain
+
             # Create output datasets by combining analyse and parameter data
             for chain in wp_chains:
                 analyse_dict = dict()
                 for wp_id in chain:
                     workpackage = self._benchmark.workpackage_by_id(wp_id)
                     # add analyse data
-                    analyse_dict.update(analyse[workpackage.step.name][wp_id])
+                    if (wp_id in all_wps):
+                        analyse_dict.update(
+                            analyse[workpackage.step.name][wp_id])
                     # add parameter
                     parameter_dict = dict()
                     for par in workpackage.parameterset:
                         value = \
                             jube2.util.util.convert_type(par.parameter_type,
                                                          par.value, stop=False)
+                        # add suffix to the parameter name
                         if (par.name + "_" + workpackage.step.name
                                 not in parameter_dict):
                             parameter_dict[par.name + "_" +
                                            workpackage.step.name] = value
+                        # parmater without suffix si used for the last WP in
+                        # the chain
                         if wp_id == chain[-1]:
                             parameter_dict[par.name] = value
                     analyse_dict.update(parameter_dict)

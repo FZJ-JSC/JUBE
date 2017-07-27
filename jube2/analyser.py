@@ -123,7 +123,8 @@ class Analyser(object):
         """Add an addtional analyse file"""
         if step_name not in self._analyse:
             self._analyse[step_name] = list()
-        if analyse_file not in self._analyse[step_name]:
+        if (analyse_file not in self._analyse[step_name]) and \
+                (analyse_file is not None):
             self._analyse[step_name].append(analyse_file)
 
     def add_uses(self, use_names):
