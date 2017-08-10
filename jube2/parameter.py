@@ -330,7 +330,7 @@ class Parameter(object):
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", export=False,
-                 update_mode=NEVER_MODE, idx=0, eval_helper=None):
+                 update_mode=NEVER_MODE, idx=-1, eval_helper=None):
         self._name = name
         self._value = value
         if separator is None:
@@ -353,7 +353,7 @@ class Parameter(object):
     def create_parameter(name, value, separator=None, parameter_type="string",
                          selected_value=None, parameter_mode="text",
                          export=False, no_templates=False,
-                         update_mode=NEVER_MODE, idx=0, eval_helper=None):
+                         update_mode=NEVER_MODE, idx=-1, eval_helper=None):
         """Parameter constructor.
         Return a Static- or TemplateParameter based on the given data."""
         if separator is None:
@@ -531,7 +531,8 @@ class Parameter(object):
             parameter_etree.attrib["mode"] = self.based_on_mode
             selection_etree = ET.SubElement(parameter_etree, "selection")
             selection_etree.text = self.value
-            selection_etree.attrib["idx"] = str(self._idx)
+            if (self._idx != -1):
+                selection_etree.attrib["idx"] = str(self._idx)
         else:
             parameter_etree.attrib["mode"] = self._mode
         if self._export:
@@ -549,7 +550,7 @@ class StaticParameter(Parameter):
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", export=False,
-                 update_mode=NEVER_MODE, idx=0, eval_helper=None):
+                 update_mode=NEVER_MODE, idx=-1, eval_helper=None):
         Parameter.__init__(self, name, value, separator, parameter_type,
                            parameter_mode, export, update_mode, idx,
                            eval_helper)

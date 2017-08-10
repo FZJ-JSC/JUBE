@@ -1209,10 +1209,10 @@ class XMLParser(object):
             selection_etree = param.find("selection")
             if selection_etree is not None:
                 selected_value = selection_etree.text
-                idx = int(selection_etree.get("idx", "0"))
+                idx = int(selection_etree.get("idx", "-1"))
             else:
                 selected_value = param.get("selection")
-                idx = 0
+                idx = -1
             if selected_value is not None:
                 selected_value = selected_value.strip()
             parameter = \
