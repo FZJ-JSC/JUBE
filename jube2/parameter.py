@@ -342,7 +342,6 @@ class Parameter(object):
         self._based_on = None
         self._export = export
         self._idx = idx
-        self._update_modes = set()
         if update_mode in UPDATE_MODES:
             self._update_mode = update_mode
         else:
@@ -698,6 +697,7 @@ class TemplateParameter(Parameter):
                                            separator=self._separator,
                                            parameter_type=self._type,
                                            export=self._export,
+                                           update_mode=self._update_mode,
                                            idx=index)
             static_param.based_on = self
             yield static_param
