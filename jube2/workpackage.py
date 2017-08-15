@@ -212,6 +212,32 @@ class Workpackage(object):
         """Workpackage started?"""
         return os.path.exists(self.workpackage_dir)
 
+    def operation_done_but_pending(self, operation_number):
+        """Check if an operation was executed, but the result is still
+        pending (because it is a async do)"""
+        result = self.operation_done(operation_number)
+
+        operation = self._step.operations[operation_number]
+
+        if result and (operation.async_filename is not None):
+            parameter_dict = self.parameter_dict
+            if operation.active(parameter_dict):
+                work_dir = self.work_dir
+                alt_work_dir = self.alt_work_dir(parameter_dict)
+                if alt_work_dir is not None:
+                    work_dir = alt_work_dir
+                async_filename = jube2.util.util.substitution(
+                    operation.async_filename, parameter_dict)
+                async_filename = \
+                    os.path.expandvars(os.path.expanduser(async_filename))
+                result = not os.path.exists(os.path.join(work_dir,
+                                                         async_filename))
+            else:
+                result = False
+        else:
+            result = False
+        return result
+
     def operation_done(self, operation_number, set_done=None):
         """Mark/checks operation status"""
         done_file = os.path.join(self.workpackage_dir,
@@ -506,6 +532,7 @@ class Workpackage(object):
             return None
 
     def _run_operations(self, parameter, work_dir):
+        """Run all available operations"""
         continue_op = True
         continue_cycle = True
         for operation_number, operation in enumerate(self._step.operations):
@@ -529,8 +556,11 @@ class Workpackage(object):
                         # the program
                         if operation_number > 0:
                             continue_op = continue_op and \
-                                (workpackage.operation_done(
-                                    operation_number - 1) or
+                                ((workpackage.operation_done(
+                                    operation_number - 1) and
+                                  (not workpackage.operation_done_but_pending(
+                                      operation_number - 1))
+                                  ) or
                                  workpackage.done) and \
                                 workpackage.cycle == self._cycle
                         # Check if another workpackage already finalized

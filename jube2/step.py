@@ -419,6 +419,11 @@ class Operation(object):
         return self._stderr_filename
 
     @property
+    def async_filename(self):
+        """Get async filename"""
+        return self._async_filename
+
+    @property
     def shared(self):
         """Shared operation?"""
         return self._shared
