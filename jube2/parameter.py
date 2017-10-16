@@ -136,7 +136,7 @@ class Parameterset(object):
                      for parameter in self._parameters.values()
                      if (not parameter.is_template) and parameter.export])
 
-    def get_updatable_parameter(self, mode):
+    def get_updatable_parameter(self, mode, keep_index=False):
         """Returns a parameterset containing all updatable
         parameter for a specific mode, the root parameter is added"""
         parameterset = Parameterset()
@@ -146,7 +146,10 @@ class Parameterset(object):
                 (parameter.update_mode == CYCLE_MODE and mode == USE_MODE) or
                     (parameter.update_mode == CYCLE_MODE and
                      mode == STEP_MODE)):
-                parameterset.add_parameter(parameter.based_on_root.copy())
+                root_paramter = parameter.based_on_root.copy()
+                if keep_index:
+                    root_paramter.idx = parameter.idx
+                parameterset.add_parameter(root_paramter)
         return parameterset
 
     def is_compatible(self, parameterset,
@@ -378,7 +381,7 @@ class Parameter(object):
         else:
             result = TemplateParameter(name, values, separator, parameter_type,
                                        parameter_mode, export, update_mode,
-                                       eval_helper)
+                                       idx, eval_helper)
 
         if selected_value is not None:
             tmp = result
@@ -403,6 +406,11 @@ class Parameter(object):
     def idx(self):
         """Return template idx"""
         return self._idx
+
+    @idx.setter
+    def idx(self, new_idx):
+        """Sets a new parameteridx"""
+        self._idx = new_idx
 
     @property
     def update_mode(self):
@@ -690,7 +698,11 @@ class TemplateParameter(Parameter):
 
     def expand(self):
         """Expand Template and produce set of static parameter"""
-        for index in range(len(self._value)):
+        if (self._idx is None) or (self._idx == -1):
+            indices = range(len(self._value))
+        else:
+            indices = [self._idx]
+        for index in indices:
             value = self._value[index]
             static_param = StaticParameter(name=self._name,
                                            value=value,

@@ -186,6 +186,13 @@ class Step(object):
                              parameter_type="int",
                              update_mode=jube2.parameter.JUBE_MODE))
 
+        # default worpackage cycle, will be overwritten by specific worpackage
+        # cycle
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_cycle", "0", parameter_type="int",
+                             update_mode=jube2.parameter.JUBE_MODE))
+
         return parameterset
 
     def create_workpackages(self, benchmark, global_parameterset,

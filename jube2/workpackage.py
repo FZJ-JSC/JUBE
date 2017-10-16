@@ -671,6 +671,33 @@ class Workpackage(object):
                 self.parameterset.update_parameterset(
                     self.get_jube_cycle_parameterset())
 
+            # --- Update cycle parameter ---
+            if self._cycle > 0:
+                update_parameter = \
+                    self.parameterset.get_updatable_parameter(
+                        mode=jube2.parameter.CYCLE_MODE, keep_index=True)
+                fixed_parameterset = self.parameterset.copy()
+                for parameter in update_parameter:
+                    fixed_parameterset.delete_parameter(parameter)
+                change = True
+                while change:
+                    change = False
+                    update_parameter.parameter_substitution(
+                        [fixed_parameterset])
+                    if update_parameter.has_templates:
+                        update_parameter = list(
+                            update_parameter.expand_templates())[0]
+                        change = True
+                update_parameter.parameter_substitution(
+                    [fixed_parameterset], final_sub=True)
+                self.parameterset.update_parameterset(update_parameter)
+                debugstr = "  updated parameter:\n"
+                debugstr += jube2.util.output.text_table(
+                    [("parameter", "value")] + sorted(
+                        [(par.name, par.value) for par in update_parameter]),
+                    use_header_line=True, indent=9, align_right=False)
+                LOGGER.debug(debugstr)
+
             # --- Collect parameter for substitution ---
             parameter = self.parameter_dict
 
