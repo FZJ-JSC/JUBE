@@ -410,7 +410,13 @@ class XMLParser(object):
     def analyse_result_from_xml(self):
         """Read existing analyse out of xml-file"""
         LOGGER.debug("Parsing {0}".format(self._filename))
-        tree = ET.parse(self._filename).getroot()
+        try:
+            tree = ET.parse(self._filename).getroot()
+        except ET.ParseError as pe:
+            LOGGER.error(
+                "Parsing error while reading existing analysis: " +
+                "{0}".format(pe))
+            return None
         analyse_result = dict()
         analyser = jube2.util.util.get_tree_elements(tree, "analyzer")
         analyser += jube2.util.util.get_tree_elements(tree, "analyser")

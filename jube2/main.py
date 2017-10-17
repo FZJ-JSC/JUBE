@@ -257,9 +257,10 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
             benchmark_folder, jube2.conf.ANALYSE_FILENAME),
             force=args.force)
         analyse_result = parser.analyse_result_from_xml()
-        for analyser in benchmark.analyser.values():
-            if analyser.name in analyse_result:
-                analyser.analyse_result = analyse_result[analyser.name]
+        if analyse_result is not None:
+            for analyser in benchmark.analyser.values():
+                if analyser.name in analyse_result:
+                    analyser.analyse_result = analyse_result[analyser.name]
 
     jube2.log.only_console_log()
 
