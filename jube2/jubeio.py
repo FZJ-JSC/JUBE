@@ -54,7 +54,8 @@ class XMLParser(object):
 
     """JUBE XML input file parser"""
 
-    def __init__(self, filename, tags=None, include_path=None, force=False):
+    def __init__(self, filename, tags=None, include_path=None, force=False,
+                 strict=False):
         self._filename = filename
         if include_path is None:
             include_path = list()
@@ -63,6 +64,7 @@ class XMLParser(object):
             tags = set()
         self._tags = tags
         self._force = force
+        self._strict = strict
 
     @property
     def file_path_ref(self):
@@ -109,18 +111,28 @@ class XMLParser(object):
         if (version is not None) and (not self._force):
             version = version.strip()
             if StrictVersion(version) > StrictVersion(jube2.conf.JUBE_VERSION):
-                info_str = ("Benchmark file \"{0}\" was created using a " +
-                            "newer version of JUBE ({1}).\nCurrent JUBE " +
-                            "version ({2}) might not be compatible." +
-                            "\nContinue? (y/n):").format(
-                                self._filename, version,
-                                jube2.conf.JUBE_VERSION)
-                try:
-                    inp = raw_input(info_str)
-                except NameError:
-                    inp = input(info_str)
-                if not inp.startswith("y"):
-                    return None, list(), list()
+                if self._strict:
+                    error_str = ("Benchmark file \"{0}\" was created using " +
+                                 "a newer version of JUBE ({1}).\nCurrent " +
+                                 "JUBE version ({2}) might not be compatible" +
+                                 ". Due to strict mode, further execution " +
+                                 "was stopped.").format(
+                                     self._filename, version,
+                                     jube2.conf.JUBE_VERSION)
+                    raise ValueError(error_str)
+                else:
+                    info_str = ("Benchmark file \"{0}\" was created using a " +
+                                "newer version of JUBE ({1}).\nCurrent JUBE " +
+                                "version ({2}) might not be compatible." +
+                                "\nContinue? (y/n):").format(
+                                    self._filename, version,
+                                    jube2.conf.JUBE_VERSION)
+                    try:
+                        inp = raw_input(info_str)
+                    except NameError:
+                        inp = input(info_str)
+                    if not inp.startswith("y"):
+                        return None, list(), list()
 
         valid_tags = ["selection", "include-path", "parameterset", "benchmark",
                       "substituteset", "fileset", "include", "patternset"]

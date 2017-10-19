@@ -222,7 +222,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
     try:
         parser = jube2.jubeio.XMLParser(os.path.join(
             benchmark_folder, jube2.conf.CONFIGURATION_FILENAME),
-            force=args.force)
+            force=args.force, strict=args.strict)
         benchmarks = parser.benchmarks_from_xml()[0]
     except IOError as exeption:
         LOGGER.warning(str(exeption))
@@ -243,7 +243,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
         try:
             parser = jube2.jubeio.XMLParser(os.path.join(
                 benchmark_folder, jube2.conf.WORKPACKAGES_FILENAME),
-                force=args.force)
+                force=args.force, strict=args.strict)
             workpackages, work_stat = parser.workpackages_from_xml(benchmark)
         except IOError as exeption:
             LOGGER.warning(str(exeption))
@@ -255,7 +255,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
         # Read existing analyse data
         parser = jube2.jubeio.XMLParser(os.path.join(
             benchmark_folder, jube2.conf.ANALYSE_FILENAME),
-            force=args.force)
+            force=args.force, strict=args.strict)
         analyse_result = parser.analyse_result_from_xml()
         if analyse_result is not None:
             for analyser in benchmark.analyser.values():
@@ -353,7 +353,8 @@ def run_new_benchmark(args):
                               args.include_path if include_path != ""]
         else:
             include_pathes = None
-        parser = jube2.jubeio.XMLParser(path, tags, include_pathes, args.force)
+        parser = jube2.jubeio.XMLParser(path, tags, include_pathes, args.force,
+                                        args.strict)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
@@ -368,7 +369,7 @@ def run_new_benchmark(args):
             not_bench = args.not_bench
 
         # No specific -> do all
-        if len(only_bench) == 0:
+        if len(only_bench) == 0 and benchmarks is not None:
             only_bench = list(benchmarks)
 
         for bench_name in only_bench:
@@ -527,7 +528,7 @@ def _update_analyse_and_result(args, benchmark):
         else:
             include_pathes = None
         parser = jube2.jubeio.XMLParser(args.update, tags, include_pathes,
-                                        args.force)
+                                        args.force, args.strict)
         benchmarks = parser.benchmarks_from_xml()[0]
 
         # Update benchmark
@@ -597,6 +598,9 @@ def gen_parser_conf():
         (("--force",),
          {"action": "store_true",
           "help": 'skip version check'}),
+        (("--strict",),
+         {"action": "store_true",
+          "help": 'force need for correct version'}),
         (("--devel",),
          {"action": "store_true",
           "help": 'show development related information'})
