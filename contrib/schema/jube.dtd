@@ -30,6 +30,7 @@
                         type (int|string|float) #IMPLIED
                         mode CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
+                        update_mode (never|use|step|cycle) #IMPLIED
                         separator CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT substituteset ((iofile|sub|include)*)>

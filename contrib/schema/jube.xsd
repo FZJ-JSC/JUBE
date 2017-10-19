@@ -44,6 +44,8 @@
         <xs:attribute name="type" type="contentType" use="optional" />
         <xs:attribute name="mode" type="xs:string" use="optional" />
         <xs:attribute name="export" type="booleanType" use="optional" />
+        <xs:attribute name="update_mode" type="updateModeType"
+          use="optional" />
         <xs:attribute name="separator" type="xs:string"
           use="optional" />
         <xs:attribute name="tag" type="xs:string" use="optional" />
@@ -302,7 +304,16 @@
       <xs:enumeration value="False" />
     </xs:restriction>
   </xs:simpleType>
-  
+
+  <xs:simpleType name="updateModeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="never" />
+      <xs:enumeration value="use" />
+      <xs:enumeration value="step" />
+      <xs:enumeration value="cycle" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="outmodeType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="w" />
