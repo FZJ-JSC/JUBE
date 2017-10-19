@@ -311,6 +311,7 @@
       <xs:enumeration value="use" />
       <xs:enumeration value="step" />
       <xs:enumeration value="cycle" />
+      <xs:enumeration value="always" />
     </xs:restriction>
   </xs:simpleType>
 

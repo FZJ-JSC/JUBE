@@ -139,6 +139,9 @@ Some characters are not allowed inside a *XML* script or at least not inside a t
 Analyse multiple output files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+This FAQ entry is only relevant for *JUBE* versions prior version 2.2. Since version 2.2 *JUBE* automatically creates a combined
+result table.
+
 Within an ``<analyser>`` you can analyse multiple files. Each ``<analyser>`` ``<analyse>`` combination will create 
 independent result entries:
 

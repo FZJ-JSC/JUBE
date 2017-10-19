@@ -253,7 +253,7 @@ Glossary
 
       .. code-block:: xml
 
-         <parameter name="..." mode="..." type="..." separator="..." export="...">...</parameter>
+         <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="...">...</parameter>
 
       * a parameter can be seen as variable: Name is the name to use the variable, and the text between the tags
         will be the real content
@@ -277,6 +277,27 @@ Glossary
         * ``mode="shell"``: allow *Shell* snippets
 
       * Templates can be created, using scripting e.g.: ``",".join([str(2**i) for i in range(3)])``
+      * ``update_mode`` is optional (default: ``never``)
+
+         * can be set to ``never``, ``use``, ``step`` and ``cycle``
+         * depending on the setting the parameter will be reevaluated:
+
+            * ``never``: no reevaluation, even if the parameterset is used multiple times
+            * ``use``: reevaluation if the parameterset is explicitly used
+            * ``step``: reevaluation in each new step
+            * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+            * ``always``: reevaluation in each step and cycle
+
+   update_mode
+      The update mode is parameter attribute which can be used to control the reevaluation of the parameter content.
+
+      These update modes are available:
+
+         * ``never``: no reevaluation, even if the parameterset is used multiple times
+         * ``use``: reevaluation if the parameterset is explicitly used
+         * ``step``: reevaluation in each new step
+         * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+         * ``always``: reevaluation in each step and cycle
 
    fileset_tag
       A fileset is a container to store a bundle of links and copy commands.
@@ -425,7 +446,7 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="...">
+        <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="..." cycles="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -463,6 +484,7 @@ Glossary
        * the environment of the current step will be exported to an dependent step
 
      * ``iterations`` is optional. All workpackages within this step will be executed multiple times if the iterations value is used.
+     * ``cycles`` is optional. All ``<do>`` commands within the step will be executed ``cycles``-times
 
    do_tag
      A do contain a executable *Shell* operation.
@@ -471,6 +493,7 @@ Glossary
 
         <do stdout="..." stderr="..." active="...">...</do>
         <do done_file="...">...</do>
+        <do break_file="...">...</do>
         <do shared="true">...</do>
         <do work_dir="...">...</do>
 
@@ -486,7 +509,11 @@ Glossary
 
      * ``done_file``-filename is optional
 
-       * by using done_file the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.
+       * by using ``done_file`` the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.
+
+     * ``break_file``-filename is optional
+
+       * by using ``break_file`` the user can stop further cycle runs. the current step will be directly marked with finalized and further ``<do>``s will be ignored.
 
      * ``shared="true"``
 
@@ -756,6 +783,7 @@ Glossary
 
         * ``$jube_step_name``: current step name
         * ``$jube_step_iterations``: number of step iterations (default: 1)
+        * ``$jube_step_cycles``: number of step cycles (default: 1)
 
       * Workpackage:
 
@@ -771,3 +799,4 @@ Glossary
             export par2=$par2
 
         * ``$jube_wp_envlist``: list of all exported parameter names
+        * ``$jube_wp_cycle``: id of current step cycle (starts at 0)

@@ -44,6 +44,7 @@ class TestExamples(unittest.TestCase):
             ExampleChecker("parameterspace", "parameterspace.xml"),
             ExampleChecker("parameter_dependencies", "parameter_dependencies.xml"),
             ExampleChecker("scripting_parameter", "scripting_parameter.xml"),
+            ExampleChecker("scripting_pattern", "scripting_pattern.xml"),
             ExampleChecker("statistic", "statistic.xml"),
             ExampleChecker("include", "main.xml"),
             ExampleChecker("shared", "shared.xml"),
@@ -76,7 +77,7 @@ class ExampleChecker(object):
         """Run example"""
         success = True
         debug = "--debug" if self._debug else ""
-        jube2.main.main("{0} run {1}".format(debug, self._xml_file). split())
+        jube2.main.main("{0} run {1} -r".format(debug, self._xml_file). split())
         if self._check_function:
             success = self._check_function()
         if not self._debug:

@@ -90,7 +90,9 @@ Example validation tools:
 
        >>> xmllint --noout --valid --schema <schema file> <xml input file>
 
-.. index:: scripting, perl, python
+.. index:: scripting, perl, python, shell
+
+.. _scripting_parameter:
 
 Scripting parameter
 ~~~~~~~~~~~~~~~~~~~
@@ -107,7 +109,7 @@ The input file ``scripting_parameter.xml``:
 In this example we see four different parameters.
 
 * ``number`` is a normal template which will be expanded to three different :term:`workpackages <workpackage>`.
-* ``additional_number`` is a scripting parameter which creates a new template and bases on ``number``. The ``mode`` is set to the scripting language (``python`` and ``perl`` are allowed).
+* ``additional_number`` is a scripting parameter which creates a new template and bases on ``number``. The ``mode`` is set to the scripting language (``python``, ``perl`` and ``shell`` are allowed).
   The additional ``type`` is optional and declares the result type after evaluating the expression. The type is only used by the sort algorithm in the result step. It is not possible to
   create a template of different scripting parameters. Because of this second template we will get six different :term:`workpackages <workpackage>`.
 * ``number_mult`` is a small calculation. You can use any other existing parameters (which are used inside the same step).
@@ -140,6 +142,39 @@ For this example we will find the following output inside the ``run.log``-file:
 Implicit Perl or Python scripting inside the ``<do>`` or any other position is not possible.
 If you want to use some scripting expressions you have to create a new parameter.
 
+.. index:: scripting, pattern, perl, python, shell
+
+.. _scripting_pattern:
+
+Scripting pattern
+~~~~~~~~~~~~~~~~~
+
+Similar to the :ref:`scripting_parameter` also different patterns, or patterns and parameters can be combined.
+For this a scripting pattern can be created by using the ``mode=`` attribute in the same way as it is used for the :ref:`scripting_parameter`.
+
+All scripting patterns are evaluated at the end of the analyse part. Each scripting pattern is evaluated once. If there are multiple matches
+as described in the  :ref:`statistic_values` section, only the resulting statistical pattern is available (not each individual value). Scripting pattern
+do not create statistic values by themselves.
+
+In addition the ``default=`` attribute can be used to set a default pattern value, if the value can't be found during the analysis.
+
+The files used for this example can be found inside ``examples/scripting_pattern``.
+
+The input file ``scripting_pattern.xml``:
+
+.. literalinclude:: ../examples/scripting_pattern/scripting_pattern.xml
+   :language: xml
+
+It will create the following output:
+
+.. code-block:: none
+
+   value | value_pat | dep_pat | missing_pat | missing_dep_pat | missing_pat_def | missing_def_dep_pat
+   ------+-----------+---------+-------------+-----------------+-----------------+--------------------
+       0 |         0 |       0 |             |             nan |               0 |                   0
+       1 |         1 |       2 |             |             nan |               0 |                   0
+       2 |         2 |       4 |             |             nan |               0 |                   0
+
 .. index:: statistic values
 
 .. _statistic_values:
@@ -154,7 +189,7 @@ similar entries (e.g. if the benchmark uses some iteration feature).
 To use these values, the user had to specify the pattern name followed by ``_<statistic_option>``,
 e.g. ``pattern_name_last`` (the pattern_name itself will always be the first match).
 
-A example describing the reduce option can be found in ``examples/statistic``.
+An example for multiple matches and the statistic values can be found in ``examples/statistic``.
 
 The input file ``statistic.xml``:
 
@@ -515,4 +550,4 @@ to combine all dependent parameter combinations.
 Also complete sets can be marked as dependent towards a specific parameter by using this parameter in the ``<use>``-tag. When using parametersets
 out of an other file the correct set-name must be given within the ``from`` attribute, because these sets will be loaded in a pre-processing step before the
 corresponding parameter will be evaluated. Also sets out of different files can be combined within the same ``<use>`` by using the 
-``file1:set1,file2:set2`` syntax. The sets' names must be unique.
+``file1:set1,file2:set2`` syntax. The sets names must be unique.

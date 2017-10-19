@@ -35,8 +35,10 @@ JUBE_MODE = "jube"
 NEVER_MODE = "never"
 STEP_MODE = "step"
 CYCLE_MODE = "cycle"
+ALWAYS_MODE = "always"
 USE_MODE = "use"
-UPDATE_MODES = (JUBE_MODE, NEVER_MODE, STEP_MODE, CYCLE_MODE, USE_MODE)
+UPDATE_MODES = (JUBE_MODE, NEVER_MODE, STEP_MODE,
+                CYCLE_MODE, USE_MODE, ALWAYS_MODE)
 
 
 class Parameterset(object):
@@ -142,9 +144,11 @@ class Parameterset(object):
         parameterset = Parameterset()
         for parameter in self._parameters.values():
             if ((parameter.update_mode == mode) or
+                (parameter.update_mode == ALWAYS_MODE and
+                    mode == CYCLE_MODE) or
                 (parameter.update_mode == STEP_MODE and mode == USE_MODE) or
-                (parameter.update_mode == CYCLE_MODE and mode == USE_MODE) or
-                    (parameter.update_mode == CYCLE_MODE and
+                (parameter.update_mode == ALWAYS_MODE and mode == USE_MODE) or
+                    (parameter.update_mode == ALWAYS_MODE and
                      mode == STEP_MODE)):
                 root_paramter = parameter.based_on_root.copy()
                 if keep_index:
@@ -424,9 +428,11 @@ class Parameter(object):
             return False
         elif self._update_mode == NEVER_MODE:
             return False
-        elif (self._update_mode == CYCLE_MODE) and (mode == STEP_MODE):
+        elif (self._update_mode == ALWAYS_MODE) and (mode == CYCLE_MODE):
             return True
-        elif (self._update_mode == CYCLE_MODE) and (mode == USE_MODE):
+        elif (self._update_mode == ALWAYS_MODE) and (mode == STEP_MODE):
+            return True
+        elif (self._update_mode == ALWAYS_MODE) and (mode == USE_MODE):
             return True
         elif (self._update_mode == STEP_MODE) and (mode == USE_MODE):
             return True

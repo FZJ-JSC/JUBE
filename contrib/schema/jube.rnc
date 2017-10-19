@@ -59,7 +59,7 @@ attlist.parameter &=
   attribute type { "int" | "string" | "float" }?,
   attribute mode { text }?,
   attribute export { "true" | "false" | "True" | "False" }?,
-  attribute update_mode { "never" | "use" | "step" | "cycle" }?,
+  attribute update_mode { "never" | "use" | "step" | "cycle" | "always" }?,
   attribute separator { text }?,
   attribute tag { text }?
 substituteset =

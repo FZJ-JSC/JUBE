@@ -672,10 +672,10 @@ class Workpackage(object):
                     self.get_jube_cycle_parameterset())
 
             # --- Update cycle parameter ---
-            if self._cycle > 0:
-                update_parameter = \
-                    self.parameterset.get_updatable_parameter(
-                        mode=jube2.parameter.CYCLE_MODE, keep_index=True)
+            update_parameter = \
+                self.parameterset.get_updatable_parameter(
+                    mode=jube2.parameter.CYCLE_MODE, keep_index=True)
+            if len(update_parameter) > 0:
                 fixed_parameterset = self.parameterset.copy()
                 for parameter in update_parameter:
                     fixed_parameterset.delete_parameter(parameter)
