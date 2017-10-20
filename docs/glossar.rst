@@ -446,7 +446,8 @@ Glossary
 
      .. code-block:: xml
 
-        <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="..." cycles="...">
+        <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." 
+              export="..." max_async="..." iterations="..." cycles="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -570,6 +571,17 @@ Glossary
        named by the current benchmark id will be created. Default: benchmark_dir/result
      * only analyser are usable
      * using analyser ``<use>set1,set2</use>`` is the same as ``<use>set1</use><use>set2</use>``
+
+   types
+     :term:`Parameter <parameter_tag>` and :term:`Pattern <pattern_tag>` allow a type specification. This type is either used for
+     sorting within the result table and is also used to validate the parameter content. The types are not used to convert parameter values,
+     e.g. a floating value will stay unchanged when used in any other context even if the type int was specified.
+
+     allowed types are:
+
+     * ``string`` (this is also the default type)
+     * ``int``
+     * ``float``
 
    table_tag
      A simple ASCII based table ouput.

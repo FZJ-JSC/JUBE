@@ -49,6 +49,7 @@ class TestExamples(unittest.TestCase):
             ExampleChecker("include", "main.xml"),
             ExampleChecker("shared", "shared.xml"),
             ExampleChecker("hello_world", "hello_world.xml"),
+            ExampleChecker("iterations", "iterations.xml"),
         ]
 
         for checker in examples_tasks:

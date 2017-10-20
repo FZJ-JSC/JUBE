@@ -21,13 +21,21 @@
       <!-- A combination of a pattern and a parameter -->
       <pattern name="dep_pat" type="int" mode="python">$value_pat+$value</pattern>
       <!-- This pattern is not available -->
-      <pattern name="missing_pat" type="int">pattern_not_available: $jube_pat_int</pattern>
+      <pattern name="missing_pat" type="int">
+        pattern_not_available: $jube_pat_int
+      </pattern>
       <!-- The combination will fail (create NaN) -->
-      <pattern name="missing_dep_pat" type="int" mode="python">$missing_pat*$value</pattern>
+      <pattern name="missing_dep_pat" type="int" mode="python">
+        $missing_pat*$value
+      </pattern>
       <!-- Default value for missing pattern -->
-      <pattern name="missing_pat_def" type="int" default="0">pattern_not_available: $jube_pat_int</pattern>
+      <pattern name="missing_pat_def" type="int" default="0">
+        pattern_not_available: $jube_pat_int
+      </pattern>
       <!-- Combination of default value and parameter -->
-      <pattern name="missing_def_dep_pat" type="int" mode="python">$missing_pat_def*$value</pattern>
+      <pattern name="missing_def_dep_pat" type="int" mode="python">
+        $missing_pat_def*$value
+      </pattern>
     </patternset>
 
     <analyser name="analyse">

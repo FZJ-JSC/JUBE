@@ -205,7 +205,6 @@ class Step(object):
             used_sets = set()
 
         update_parameters = jube2.parameter.Parameterset()
-
         if local_parameterset is None:
             local_parameterset = jube2.parameter.Parameterset()
             global_parameterset.add_parameterset(
@@ -252,8 +251,7 @@ class Step(object):
                 local_parameterset.add_parameterset(
                     benchmark.parametersets[parameterset_name])
 
-            # Combine local and history parameterset, update parameters
-            # if necessary
+            # Combine local and history parameterset
             if local_parameterset.is_compatible(
                     global_parameterset, update_mode=jube2.parameter.USE_MODE):
                 update_parameters.add_parameterset(
@@ -264,7 +262,6 @@ class Step(object):
                 global_parameterset = \
                     local_parameterset.copy().add_parameterset(
                         global_parameterset)
-                global_parameterset.update_parameterset(update_parameters)
             else:
                 incompatible_names = \
                     local_parameterset.get_incompatible_parameter(
@@ -275,6 +272,9 @@ class Step(object):
                              "'{0}' is/are already defined different.".format(
                                  ",".join(incompatible_names)))
                 return new_workpackages
+
+        # update parameters
+        global_parameterset.update_parameterset(update_parameters)
 
         # Expand templates
         parametersets = [global_parameterset]

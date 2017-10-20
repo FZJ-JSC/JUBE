@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="iterations" outpath="bench_run">
+    <comment>A Iteration example</comment>
+
+    <!-- Configuration -->
+    <parameterset name="param_set">
+      <parameter name="foo" type="int">1,2,4</parameter>
+      <parameter name="bar" mode="text" update_mode="step">$foo iter:$jube_wp_iteration</parameter>
+    </parameterset>
+
+    <step name="first_step" iterations="2">
+      <use>param_set</use> <!-- use existing parameterset -->
+      <do>echo $bar</do> <!-- shell command -->
+    </step>
+
+    <step name="second_step" depend="first_step" iterations="2">
+      <do>echo $bar</do> <!-- shell command -->
+    </step>
+
+    <!-- analyse without reduce -->
+    <analyser name="analyse" reduce="false">
+      <analyse step="second_step" />
+    </analyser>
+
+    <!-- Analyse with reduce -->
+    <analyser name="analyse_no_reduce" reduce="true">
+      <analyse step="second_step" />
+    </analyser>
+
+    <result>
+      <use>analyse</use>
+      <use>analyse_no_reduce</use>
+      <table name="result" style="pretty">
+        <column>jube_res_analyser</column>
+        <column>jube_wp_id_first_step</column>
+        <column>jube_wp_id</column>
+        <column>jube_wp_iteration_first_step</column>
+        <column>jube_wp_iteration</column>
+        <column>foo</column>
+      </table>
+    </result>
+  </benchmark>
+</jube>

@@ -108,9 +108,6 @@ continue
    be used. If benchmark directory is missing, current directory will
    be used.
 
-convert
-   Convert jube version 1 files to jube version 2 files.
-
 copy_tag
    A copy can be used to copy a file or directory from your normal
    filesytem to your sandbox work directory.
@@ -201,6 +198,7 @@ do_tag
 
       <do stdout="..." stderr="..." active="...">...</do>
       <do done_file="...">...</do>
+      <do break_file="...">...</do>
       <do shared="true">...</do>
       <do work_dir="...">...</do>
 
@@ -223,9 +221,15 @@ do_tag
 
    * "done_file"-filename is optional
 
-     * by using done_file the user can mark async-steps. The
+     * by using "done_file" the user can mark async-steps. The
        operation will stop until the script will create the named file
        inside the work directory.
+
+   * "break_file"-filename is optional
+
+     * by using "break_file" the user can stop further cycle runs.
+       the current step will be directly marked with finalized and
+       further >>``<<<do>``s will be ignored.
 
    * "shared="true""
 
@@ -398,8 +402,10 @@ jube_variables
 
      * "$jube_step_name": current step name
 
-     * "$jube_step_iteratuions": number of step iterations (default:
+     * "$jube_step_iterations": number of step iterations (default:
        1)
+
+     * "$jube_step_cycles": number of step cycles (default: 1)
 
    * Workpackage:
 
@@ -425,6 +431,8 @@ jube_variables
           export par2=$par2
 
      * "$jube_wp_envlist": list of all exported parameter names
+
+     * "$jube_wp_cycle": id of current step cycle (starts at 0)
 
 key_tag
    A syslog result key. "<key>" must contain an single parameter- or
@@ -503,7 +511,7 @@ parameter_tag
    environment (also called *parameter space*) for the different steps
    of the benchmark.
 
-      <parameter name="..." mode="..." type="..." separator="..." export="...">...</parameter>
+      <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="...">...</parameter>
 
    * a parameter can be seen as variable: Name is the name to use
      the variable, and the text between the tags will be the real
@@ -546,6 +554,26 @@ parameter_tag
 
    * Templates can be created, using scripting e.g.:
      "",".join([str(2**i) for i in range(3)])"
+
+   * "update_mode" is optional (default: "never")
+
+        * can be set to "never", "use", "step" and "cycle"
+
+        * depending on the setting the parameter will be
+          reevaluated:
+
+             * "never": no reevaluation, even if the parameterset is
+               used multiple times
+
+             * "use": reevaluation if the parameterset is explicitly
+               used
+
+             * "step": reevaluation in each new step
+
+             * "cycle": reevaluation in each cycle (number of
+               workpackages will stay unchanged)
+
+             * "always": reevaluation in each step and cycle
 
 parameterset_tag
    A parameterset is a container to store a bundle of *parameters*.
@@ -779,7 +807,7 @@ step_tag
    A step give a list of *Shell* operations and a corresponding
    parameter environment.
 
-      <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="...">
+      <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="..." cycles="...">
         <use from="">...</use>
         ...
         <do></do>
@@ -846,6 +874,9 @@ step_tag
 
    * "iterations" is optional. All workpackages within this step
      will be executed multiple times if the iterations value is used.
+
+   * "cycles" is optional. All "<do>" commands within the step will
+     be executed "cycles"-times
 
 sub_tag
    A substition expression.
@@ -956,6 +987,24 @@ tagging
 
 update
    Check if a newer JUBE version is available.
+
+update_mode
+   The update mode is parameter attribute which can be used to control
+   the reevaluation of the parameter content.
+
+   These update modes are available:
+
+      * "never": no reevaluation, even if the parameterset is used
+        multiple times
+
+      * "use": reevaluation if the parameterset is explicitly used
+
+      * "step": reevaluation in each new step
+
+      * "cycle": reevaluation in each cycle (number of workpackages
+        will stay unchanged)
+
+      * "always": reevaluation in each step and cycle
 
 workpackage
    A workpackage is the combination of a *step* (which contains all
