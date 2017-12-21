@@ -514,7 +514,7 @@ Glossary
 
      * ``break_file``-filename is optional
 
-       * by using ``break_file`` the user can stop further cycle runs. the current step will be directly marked with finalized and further ``<do>``s will be ignored.
+       * by using ``break_file`` the user can stop further cycle runs. the current step will be directly marked with finalized and further ``<do>`` will be ignored.
 
      * ``shared="true"``
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="cycle" outpath="bench_run">
+    <comment>A cycle example</comment>
+
+    <step name="a_step" cycles="5">
+      <do break_file="done">echo $jube_wp_cycle</do>
+      <do active="$jube_wp_cycle==2">touch done</do>
+    </step>
+
+  </benchmark>
+</jube>

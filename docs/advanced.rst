@@ -633,4 +633,32 @@ before applying the statistical patterns.
              analyse |                     3 |         12 |                            1 |                 2 |   2
              analyse |                     4 |         15 |                            0 |                 1 |   4
 
+.. index:: cycle
+
+.. _step_cycle:
+
+Step cycle
+~~~~~~~~~~
+
+Instead of having a new workpackage you can also redo the ``<do>`` commands inside a step using the cycle-feature.
+
+The files used for this example can be found inside ``examples/cycle``.
+
+The input file ``cycle.xml``:
+
+.. literalinclude:: ../examples/cycle/cycle.xml
+   :language: xml
+
+The ``cycles`` attribute allows to repeat all ``<do>`` commands within a step multiple times. The ``break_file`` can be used to cancel the loop and all following commands in the current cycle (the command
+itself is still executed). In the given example the output will be:
+
+.. code-block:: none
+
+   0
+   1
+   2
+   3
+
+In contrast to the iterations, all executions for the cycle feature take place inside of the same folder.
+
 
