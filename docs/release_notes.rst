@@ -21,6 +21,21 @@
 Release notes
 =============
 
+Version 2.2.0
+~~~~~~~~~~~~~
+Release: 2017-12-21
+
+* New feature: step cycles. See :ref:`step_cycle`
+* New parameter ``update_mode``. See :ref:`parameter_update_mode`
+* Result creation by scanning multiple steps now automatically creates a combined output
+* Speed up of the *JUBE* internal management if a large number of work packages is used
+* *JUBE* 1 conversion tool is not available any more
+* New general commandline option ``--strict`` stops *JUBE* if there is a version mismatch
+* Broken analysis files will now be ignored
+* Fix combination of ``active`` and ``shared``
+* Fix sorting problem for multiple resutl columns
+* Fix parameter problem, if the continue command is used and the parameter holds a value having multiple lines
+
 Version 2.1.4
 ~~~~~~~~~~~~~
 Release: 2016-12-20

@@ -229,7 +229,7 @@ do_tag
 
      * by using "break_file" the user can stop further cycle runs.
        the current step will be directly marked with finalized and
-       further >>``<<<do>``s will be ignored.
+       further "<do>" will be ignored.
 
    * "shared="true""
 
@@ -807,7 +807,8 @@ step_tag
    A step give a list of *Shell* operations and a corresponding
    parameter environment.
 
-      <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." export="..." max_async="..." iterations="..." cycles="...">
+      <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..."
+            export="..." max_async="..." iterations="..." cycles="...">
         <use from="">...</use>
         ...
         <do></do>
@@ -984,6 +985,21 @@ tagging
    * "not" tags are more important than normal tags: "tag="a,!b,c""
      and running with "a b" will hide the "<tag>" because the "!b" is
      more important than the "a"
+
+types
+   *Parameter* and *Pattern* allow a type specification. This type is
+   either used for sorting within the result table and is also used to
+   validate the parameter content. The types are not used to convert
+   parameter values, e.g. a floating value will stay unchanged when
+   used in any other context even if the type int was specified.
+
+   allowed types are:
+
+   * "string" (this is also the default type)
+
+   * "int"
+
+   * "float"
 
 update
    Check if a newer JUBE version is available.
