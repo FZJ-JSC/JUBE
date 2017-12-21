@@ -551,3 +551,86 @@ Also complete sets can be marked as dependent towards a specific parameter by us
 out of an other file the correct set-name must be given within the ``from`` attribute, because these sets will be loaded in a pre-processing step before the
 corresponding parameter will be evaluated. Also sets out of different files can be combined within the same ``<use>`` by using the 
 ``file1:set1,file2:set2`` syntax. The sets names must be unique.
+
+.. index:: parameter update
+
+Parameter update
+~~~~~~~~~~~~~~~~
+
+Once a parameter is specified and evaluated the first time, its value will not change. Sometimes this behaviour can produce the wrong behaviour:
+
+.. code-block:: xml
+
+   <parameter name="foo">$jube_wp_id</parameter>
+
+In this example ``foo`` should hold the ``$jube_wp_id``. If you have to steps, where oen step depends on the other one ``foo`` will be available in both, but it will only be evaluated in
+the first one.
+
+There is a simple work-around to change the update behaviour of a parameter by using the attribute ``update_mode``:
+
+   * ``update_mode="never"`` No update (default behaviour)
+   * ``update_mode="use"`` Re-evaluate the parameter if the parameterset is explicitly used
+   * ``update_mode="step"`` Re-ealuate the parameter for each new step
+   * ``update_mode="cycle"`` Re-evaluate the parameter for each new cycleloop, but not at the begin of a new step
+   * ``update_mode="always"`` Combine step and cycle
+
+Within a cycle loop no new workpackages can be created. Templates will be reevaluated, but they can not increase the number of existing workpackages within a cycle.
+
+Within the result generation, the parameter value, which is presented in the result table is the value of the selected analysed step. If another parameter representation is needed as well,
+all other steps can be reached by using ``<parameter_name>_<step_name>``.
+
+
+.. index:: iteration
+
+.. _step_iteration:
+
+Step iteration
+~~~~~~~~~~~~~~
+
+Especially in the context of benchmarking an application should be executed multiple times to generate some meaningful statistical values.
+The handling of statistical values is described in :ref:`statistic_values`. This allows you to aggregate multiple result lines if your application 
+automatically support to run multiple times.
+
+In addition there is also an iteration feature within JUBE to run a specific step and its parametristation multiple times.
+
+The files used for this example can be found inside ``examples/iterations``.
+
+The input file ``iterations.xml``:
+
+.. literalinclude:: ../examples/iterations/iterations.xml
+   :language: xml
+
+In this example either step 1 as well as step 2 are executed 2 times for each parameter and dependcy configuration. Because of the given parameter step 1
+is executed 6 times in total (3 parameter combinations x 2). Step 2 is executed 12 times (6 from the depnedent step x 2). Each run will be executed in the normal way
+using its individual sandbox folder.
+
+``$jube_wp_iteration`` holds the individual iteration id. The ``update_mode`` is needed here to reevaluate the parameter ``bar`` in step 2.
+
+In the analyser ``reduce=true`` or ``reduce=false`` can be enabled, to allow you to see all individual results or to aggregate all results of the same parameter combination.
+for the given step. If ``reduce=true`` is enabled (the default behaviour) the output of the individual runs, which uses the same parametristation, are treated like a big continous file
+before applying the statistical patterns.
+
+.. code-block:: none
+
+   jube_res_analyser | jube_wp_id_first_step | jube_wp_id | jube_wp_iteration_first_step | jube_wp_iteration | foo
+   ------------------+-----------------------+------------+------------------------------+-------------------+----
+   analyse_no_reduce |                     0 |          6 |                            0 |                 0 |   1
+   analyse_no_reduce |                     0 |          7 |                            0 |                 1 |   1
+   analyse_no_reduce |                     1 |          8 |                            1 |                 2 |   1
+   analyse_no_reduce |                     1 |          9 |                            1 |                 3 |   1
+   analyse_no_reduce |                     2 |         10 |                            0 |                 0 |   2
+   analyse_no_reduce |                     2 |         11 |                            0 |                 1 |   2
+   analyse_no_reduce |                     3 |         12 |                            1 |                 2 |   2
+   analyse_no_reduce |                     3 |         13 |                            1 |                 3 |   2
+   analyse_no_reduce |                     4 |         14 |                            0 |                 0 |   4
+   analyse_no_reduce |                     4 |         15 |                            0 |                 1 |   4
+   analyse_no_reduce |                     5 |         16 |                            1 |                 2 |   4
+   analyse_no_reduce |                     5 |         17 |                            1 |                 3 |   4
+             analyse |                     5 |         16 |                            1 |                 2 |   4
+             analyse |                     0 |          7 |                            0 |                 1 |   1
+             analyse |                     1 |          8 |                            1 |                 2 |   1
+             analyse |                     2 |         10 |                            0 |                 0 |   2
+             analyse |                     3 |         12 |                            1 |                 2 |   2
+             analyse |                     4 |         15 |                            0 |                 1 |   4
+
+

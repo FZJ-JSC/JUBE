@@ -19,12 +19,12 @@
     </step>
 
     <!-- analyse without reduce -->
-    <analyser name="analyse" reduce="false">
+    <analyser name="analyse_no_reduce" reduce="false">
       <analyse step="second_step" />
     </analyser>
 
     <!-- Analyse with reduce -->
-    <analyser name="analyse_no_reduce" reduce="true">
+    <analyser name="analyse" reduce="true">
       <analyse step="second_step" />
     </analyser>
 
