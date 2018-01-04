@@ -565,7 +565,7 @@ Once a parameter is specified and evaluated the first time, its value will not c
 
    <parameter name="foo">$jube_wp_id</parameter>
 
-In this example ``foo`` should hold the ``$jube_wp_id``. If you have to steps, where oen step depends on the other one ``foo`` will be available in both, but it will only be evaluated in
+In this example ``foo`` should hold the ``$jube_wp_id``. If you have two steps, where one step depends on the other one ``foo`` will be available in both, but it will only be evaluated in
 the first one.
 
 There is a simple work-around to change the update behaviour of a parameter by using the attribute ``update_mode``:
