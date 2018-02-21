@@ -2,28 +2,60 @@
 <jube>
     <!-- Default DEEP sets -->
     <parameterset name="executeset">
-        <parameter name="starter">mpiexec</parameter>
-        <parameter name="args_starter">-n $tasks</parameter>
-        <parameter name="submit">qsub</parameter>
+        <!-- Jobscript handling -->
+        <parameter name="submit">sbatch</parameter>
         <parameter name="submit_script">submit.job</parameter>
+        <parameter name="done_file">ready</parameter>
+        <parameter name="starter">srun</parameter>
+        <parameter name="args_starter"></parameter>
+        <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
         <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
         <parameter name="chainjob_script">./deep-chainJobs.sh</parameter>
         <parameter name="chainjob_needs_submit">false</parameter>
-        <parameter name="done_file">ready</parameter>
+    </parameterset>
+
+    <parameterset name="systemParameter">
+        <!-- Default jobscript parameter  -->
+        <parameter name="nodes" type="int">1</parameter>
+        <parameter name="taskspernode" type="int">1</parameter>
+        <parameter name="threadspertask" type="int">1</parameter>
+        <parameter name="tasks" mode="python" type="int">
+            $nodes * $taskspernode
+        </parameter>
+        <parameter name="OMP_NUM_THREADS" type="int" export="true">
+            $threadspertask
+        </parameter>
+        <parameter name="queue">batch</parameter>
+        <parameter name="executable"></parameter>
+        <parameter name="args_exec"></parameter>
+        <parameter name="mail"></parameter>
+        <parameter name="env" separator=";">$jube_wp_envstr</parameter>
+        <parameter name="notification">ALL</parameter>
+        <parameter name="outlogfile">job.out</parameter>
+        <parameter name="errlogfile">job.err</parameter>
+        <parameter name="timelimit">00:30:00</parameter>
+        <parameter name="preprocess"></parameter>
+        <parameter name="postprocess"></parameter>
+        <parameter name="measurement"></parameter>
     </parameterset>
 
     <substituteset name="executesub">
+        <!-- Default jobscript substitution -->
         <iofile in="${submit_script}.in" out="$submit_script" />
         <sub source="#ENV#" dest="$env" />
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
-        <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
-        <sub source="#NODELIST#" dest="nodes=$nodes:$nodetype:ppn=$taskspernode" />
-        <sub source="#QUEUE#" dest="$queue" />
-        <sub source="#JOBPOLICY#" dest="NACCESSPOLICY:SINGLEJOB" />
+        <sub source="#NOTIFICATION_TYPE#" dest="$notification" />
+        <sub source="#BENCHNAME#"
+             dest="${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}" />
+        <sub source="#NODES#" dest="$nodes" />
+        <sub source="#TASKS#" dest="$tasks" />
+        <sub source="#NCPUS#" dest="$taskspernode" />
+        <sub source="#NTHREADS#" dest="$threadspertask" />
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#PREPROCESS#" dest="$preprocess" />
         <sub source="#POSTPROCESS#" dest="$postprocess" />
+        <sub source="#QUEUE#" dest="$queue" />
         <sub source="#STARTER#" dest="$starter" />
         <sub source="#ARGS_STARTER#" dest="$args_starter" />
         <sub source="#MEASUREMENT#" dest="$measurement" />
@@ -34,35 +66,17 @@
         <sub source="#FLAG#" dest="touch $done_file" />
     </substituteset>
 
-    <substituteset name="chainsub"></substituteset>
-
-    <parameterset name="systemParameter">
-        <parameter name="timelimit">00:30:00</parameter>
-        <parameter name="nodes">1</parameter>
-        <parameter name="taskspernode">1</parameter>
-        <parameter name="threadspertask">1</parameter>
-        <parameter name="outlogfile">job.out</parameter>
-        <parameter name="errlogfile">job.err</parameter>
-        <parameter name="nodetype"></parameter>
-        <parameter name="queue">common</parameter>
-        <parameter name="env"></parameter>
-        <parameter name="mail"></parameter>
-        <parameter name="executable"></parameter>
-        <parameter name="args_exec"></parameter>
-        <parameter name="tasks" mode="python" type="int">
-          $nodes * $taskspernode
-        </parameter>
-        <parameter name="preprocess"></parameter>
-        <parameter name="postprocess"></parameter>
-        <parameter name="measurement"></parameter>
-    </parameterset>
+    <substituteset name="chainsub">
+        <!-- Default chainjob substitution -->
+    </substituteset>
 
     <fileset name="jobfiles">
+        <!-- Default jobscript access -->
         <copy>${submit_script}.in</copy>
     </fileset>
 
     <fileset name="chainfiles">
+        <!-- Chainjob script access -->
         <copy>$chainjob_script</copy>
     </fileset>
-
 </jube>
