@@ -552,7 +552,10 @@ class Operation(object):
                                 print(read_out.decode(), end="")
                             except UnicodeDecodeError:
                                 pass
-                            stdout.write(read_out)
+                            try:
+                                stdout.write(read_out)
+                            except TypeError:
+                                stdout.write(read_out.decode())
                             time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
                     sub.communicate()
 
