@@ -1227,6 +1227,8 @@ class XMLParser(object):
             selection_etree = param.find("selection")
             if selection_etree is not None:
                 selected_value = selection_etree.text
+                if selected_value is None:
+                    selected_value = ""
                 idx = int(selection_etree.get("idx", "-1"))
             else:
                 selected_value = param.get("selection")
