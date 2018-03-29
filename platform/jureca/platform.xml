@@ -27,6 +27,7 @@
             $threadspertask
         </parameter>
         <parameter name="queue">batch</parameter>
+        <parameter name="gres"></parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
@@ -56,6 +57,7 @@
         <sub source="#PREPROCESS#" dest="$preprocess" />
         <sub source="#POSTPROCESS#" dest="$postprocess" />
         <sub source="#QUEUE#" dest="$queue" />
+        <sub source="#GRES#" dest="$gres" />
         <sub source="#STARTER#" dest="$starter" />
         <sub source="#ARGS_STARTER#" dest="$args_starter" />
         <sub source="#MEASUREMENT#" dest="$measurement" />

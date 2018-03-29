@@ -10,6 +10,7 @@
 #SBATCH --output=#STDOUTLOGFILE#
 #SBATCH --error=#STDERRLOGFILE#
 #SBATCH --partition=#QUEUE#
+#SBATCH --gres=#GRES#
 
 #ENV#
 
