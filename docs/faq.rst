@@ -114,7 +114,7 @@ XML character handling
 The *JUBE* input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
 
 Linebreaks are not allowed inside a tag-option (e.g. ``<sub ... dest="...\n...">`` is not possible). Inside a tag
-multiple lines are now problem (e.g. inside of ``<parameter>...</parameter>``). Often multiple lines are also needed
+multiple lines are no problem (e.g. inside of ``<parameter>...</parameter>``). Often multiple lines are also needed
 inside a ``<sub>``. Linebreaks are possible for the ``dest=""`` part, by switching to the alternative ``<sub>`` syntax:
 
 .. code-block:: xml

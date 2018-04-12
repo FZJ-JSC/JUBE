@@ -177,6 +177,7 @@ def script_evaluation(cmd, script_type):
         sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE, shell=True)
         stdout, stderr = sub.communicate()
+        stdout = stdout.decode()
         # Check command execution error code
         errorcode = sub.wait()
         if errorcode != 0:

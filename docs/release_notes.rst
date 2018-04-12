@@ -33,7 +33,7 @@ Release: 2017-12-21
 * New general commandline option ``--strict`` stops *JUBE* if there is a version mismatch
 * Broken analysis files will now be ignored
 * Fix combination of ``active`` and ``shared``
-* Fix sorting problem for multiple resutl columns
+* Fix sorting problem for multiple result columns
 * Fix parameter problem, if the continue command is used and the parameter holds a value having multiple lines
 
 Version 2.1.4
