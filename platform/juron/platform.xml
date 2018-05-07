@@ -36,6 +36,7 @@
         <parameter name="preprocess"></parameter>
         <parameter name="postprocess"></parameter>
         <parameter name="measurement"></parameter>
+        <parameter name="req"></parameter>
     </parameterset>
 
 
@@ -49,6 +50,7 @@
         <sub source="#NODES#" dest="$nodes" />
         <sub source="#TASKS#" dest="$tasks" />
         <sub source="#NCPUS#" dest="$taskspernode" />
+        <sub source="#REQ#" dest="$req" />
         <sub source="#NTHREADS#" dest="$threadspertask" />
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#PREPROCESS#" dest="$preprocess" />
