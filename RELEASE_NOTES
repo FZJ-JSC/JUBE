@@ -27,7 +27,7 @@ Release: 2017-12-21
 
 * Fix combination of "active" and "shared"
 
-* Fix sorting problem for multiple resutl columns
+* Fix sorting problem for multiple result columns
 
 * Fix parameter problem, if the continue command is used and the
   parameter holds a value having multiple lines
