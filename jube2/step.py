@@ -548,14 +548,11 @@ class Operation(object):
                         if (not read_out):
                             break
                         else:
-                            try:
-                                print(read_out.decode(), end="")
-                            except UnicodeDecodeError:
-                                pass
+                            print(read_out.decode(errors="ignore"), end="")
                             try:
                                 stdout.write(read_out)
                             except TypeError:
-                                stdout.write(read_out.decode())
+                                stdout.write(read_out.decode(errors="ignore"))
                             time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
                     sub.communicate()
 
