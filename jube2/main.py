@@ -142,6 +142,10 @@ def info(args):
                     steps = args.step
                 else:
                     steps = benchmark.steps.keys()
+                # Set default csv_parametrization value to allow empty -c
+                # option
+                if args.csv_parametrization is None:
+                    args.csv_parametrization = ","
                 for step_name in steps:
                     jube2.info.print_step_info(
                         benchmark, step_name,
@@ -737,7 +741,8 @@ def gen_subparser_conf():
                  "action": "store_true"},
             ("-c", "--csv-parametrization"):
                 {"help": "display only parametrization of given step " +
-                 "using csv format", "action": "store_true"}
+                 "using csv format", "nargs": "?", "default": False,
+                 "metavar": "SEPARATOR"}
         }
     }
 

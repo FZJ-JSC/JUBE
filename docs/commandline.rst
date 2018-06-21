@@ -298,8 +298,9 @@ Get benchmark specific information
 ``-s STEP [STEP ...]``, ``--step STEP [STEP ...]``
    show step specific information
 
-``-c``, ``--csv-parametrization``
-   display only parametrization of given step using *csv* format
+``-c [SEPARATOR]``, ``--csv-parametrization [SEPARATOR]``
+   display only parametrization of given step using *csv* format, *csv* 
+   separator is optional
 
 ``-p``, ``--parametrization``
    display only parametrization of given step

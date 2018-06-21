@@ -289,7 +289,9 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
                     table_data[-1].append(parameter_dict[name])
         print(jube2.util.output.text_table(
             table_data, use_header_line=True, indent=1, align_right=True,
-            auto_linebreak=False, pretty=not parametrization_only_csv))
+            auto_linebreak=False, pretty=not parametrization_only_csv,
+            separator=(parametrization_only_csv if (parametrization_only_csv)
+                       else None)))
 
     if not parametrization_only:
         if len(error_dict) > 0:
