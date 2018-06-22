@@ -1,5 +1,5 @@
 JUBE Benchmarking Environment
-Copyright (C) 2008-2016
+Copyright (C) 2008-2018
 Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 http://www.fz-juelich.de/jsc/jube
 
@@ -61,7 +61,7 @@ To check the installation you can run:
 
 >>> jube --version
 
-Without the --user argument, JUBE will be installed in the standard 
+Without the --user or --prefix argument, JUBE will be installed in the standard 
 system path for Python packages.
 
 ------------------------------------------------------------------------------

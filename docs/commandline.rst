@@ -287,7 +287,7 @@ Get benchmark specific information
 
 .. code-block:: none
 
-   jube info [-h] [-i ID [ID ...]] [-s STEP [STEP ...]] [-p] [DIRECTORY]
+   jube info [-h] [-i ID [ID ...]] [-s STEP [STEP ...]] [-p] [-c [SEPARATOR]] [DIRECTORY]
 
 ``-h``, ``--help``
    show command help information

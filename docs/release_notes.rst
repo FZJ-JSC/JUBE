@@ -21,6 +21,14 @@
 Release notes
 =============
 
+Version 2.2.1
+~~~~~~~~~~~~~
+Release: 2018-06-22
+
+* Allow separator selection when using the ``jube info ... -c`` option
+* Fix internal handling if a script parameter or a template is evaluated to an empty value
+* Fix for different Python3 parsing conflicts
+
 Version 2.2.0
 ~~~~~~~~~~~~~
 Release: 2017-12-21
