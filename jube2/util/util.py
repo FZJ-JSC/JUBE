@@ -122,13 +122,18 @@ def substitution(text, substitution_dict):
     """Substitute templates given by parameter_dict inside of text"""
     changed = True
     count = 0
-    # All values must be string values
-    str_substitution_dict = dict([(k, str(v)) for k, v in
-                                  substitution_dict.items()])
+    # All values must be string values (handle Python 2 separatly)
+    try:
+        str_substitution_dict = dict([(k, str(v).decode("utf-8")) for k, v in
+                                      substitution_dict.items()])
+    except AttributeError:
+        str_substitution_dict = dict([(k, str(v)) for k, v in
+                                      substitution_dict.items()])
     # Preserve non evaluated parameter before starting substitution
     local_substitution_dict = dict([(k, re.sub(r"\$", "$$", v)
                                      if "$" in v else v) for k, v in
                                     str_substitution_dict.items()])
+
     # Run multiple times to allow recursive parameter substitution
     while changed and count < jube2.conf.MAX_RECURSIVE_SUB:
         count += 1
