@@ -124,8 +124,9 @@ def substitution(text, substitution_dict):
     count = 0
     # All values must be string values (handle Python 2 separatly)
     try:
-        str_substitution_dict = dict([(k, str(v).decode("utf-8")) for k, v in
-                                      substitution_dict.items()])
+        str_substitution_dict = \
+            dict([(k, str(v).decode("utf-8", errors="ignore")) for k, v in
+                  substitution_dict.items()])
     except AttributeError:
         str_substitution_dict = dict([(k, str(v)) for k, v in
                                       substitution_dict.items()])
