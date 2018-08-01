@@ -371,7 +371,7 @@ class Parameter(object):
         value = "" + value
 
         # Check weather a new template should be created or not
-        if no_templates:
+        if no_templates or update_mode == JUBE_MODE:
             values = [value]
         else:
             values = [val.strip() for val in
