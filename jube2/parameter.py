@@ -670,7 +670,7 @@ class StaticParameter(Parameter):
                                                no_templates=no_templates,
                                                update_mode=self._update_mode,
                                                idx=self._idx,
-                                               eval_helper=self._eval_helper)
+                                               eval_helper=None)
             param.based_on = self
         else:
             param = self
