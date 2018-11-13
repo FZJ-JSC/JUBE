@@ -239,27 +239,46 @@ class XMLParser(object):
         return benchmarks, list(only_bench), list(not_bench)
 
     @staticmethod
+    def _convert_old_tag_format(input_string):
+        """Converts the old ,-based tag format into the new tag format"""
+
+        tags = set(map(lambda x: x.strip(), input_string.split(",")))
+        not_tags = set([tag for tag in tags if tag[0] == "!"])
+        tags = tags.difference(not_tags)
+
+        output_string = "+".join(not_tags)
+        if len(output_string) > 0 and len(tags) > 0:
+            output_string += "+"
+        if len(tags) > 0:
+            output_string += "(" + "|".join(tags) + ")"
+        return output_string
+
+    @staticmethod
     def _check_valid_tags(element, tags):
         """Check if element contains only valid tags"""
         if tags is None:
             tags = set()
         tag_tags_str = element.get("tag")
         if tag_tags_str is not None:
-            tag_tags = \
-                set([tag.strip() for tag in
-                     tag_tags_str.split(jube2.conf.DEFAULT_SEPARATOR)])
-            valid_tags = set()
-            invalid_tags = set()
-            # Switch tags between valid and invalid tagnames
-            for tag in tag_tags:
-                if (len(tag) > 1) and (tag[0] == "!"):
-                    invalid_tags.add(tag[1:])
-                elif (len(tag) > 0) and (tag[0] != "!"):
-                    valid_tags.add(tag)
-            return not (((len(valid_tags) > 0) and
-                         (len(valid_tags.intersection(tags)) == 0)) or
-                        ((len(invalid_tags) > 0) and
-                         (len(invalid_tags.intersection(tags)) > 0)))
+            # Check for old tag format
+            if "," in tag_tags_str:
+                tag_tags_str = XMLParser._convert_old_tag_format(tag_tags_str)
+            tag_tags_str = tag_tags_str.replace(' ', '')
+            tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
+                         if len(i) > 0]
+            tag_state = {}
+            for tag in tag_array:
+                tag_state.update({tag: str(tag in tags)})
+            for tag in tag_array:
+                tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + '(?=\W|$)',
+                                      tag_state[tag], tag_tags_str)
+            tag_tags_str = tag_tags_str.replace('|', ' or ')\
+                .replace('+', ' and ').replace('!', ' not ')
+            try:
+                return eval(tag_tags_str)
+            except SyntaxError:
+                raise ValueError("Tag string '{0}' not parseable."
+                                 .format(element.get("tag")))
         else:
             return True
 
