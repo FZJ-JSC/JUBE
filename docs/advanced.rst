@@ -344,18 +344,18 @@ When running this example::
 
    >>> jube run tagging.xml
 
-all ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden. ``!deu`` stands for ``not deu`` so this
-tag will not be hidden when running the command.
+all ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden if the tag results to ``false``. ``!deu`` stands for ``not deu``. 
+To connect the ``tags`` ``|`` can be used as the oprator OR and ``+`` for the operator AND. Also brackets are allowed.
 
-The result inside the ``stdout`` file will be
+The result (if no ``tag`` is set on the commandline) inside the ``stdout`` file will be
 
 .. code-block:: none
 
-   $hello_str World
+   Hallo $world_str
+   
+because ``!deu+eng`` and ``eng`` will be ``false`` and there is no other input available for ``$world_str``. ``deu|!eng`` will be ``true``.  
 
-because there was no alternative to select the ``$hello_str``.
-
-When running this example using a specific ``tag``::
+When running the same example using a specific ``tag``::
 
    >>> jube run tagging.xml --tag eng
 
@@ -365,8 +365,9 @@ the result inside the ``stdout`` file will be
 
    Hello World
 
-The ``tag`` attribute or the command line expression can also contain a list of different names. A hidden ``<tag>`` will
-be ignored completely! If there is no alternative this can produce a wrong execution behaviour!
+A ``tag`` which results to ``false`` will trigger to complety ignore the corresponding ``<tag>``! If there is no alternative this can produce a wrong execution behaviour!
+
+Also a list of tags, separated by spaces, can be provided on the commandline.
 
 The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (except the ``<jube>``).
 

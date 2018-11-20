@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
   <benchmark name="tagging" outpath="bench_run">
-    <comment>A simple tagging example</comment>
+    <comment>Tags as logical combination</comment>
 
     <!-- Configuration -->
     <parameterset name="param_set">
-      <parameter name="hello_str" tag="eng">Hello</parameter>
-      <parameter name="hello_str" tag="deu">Hallo</parameter>
-      <parameter name="world_str" tag="!deu">World</parameter>
+      <parameter name="hello_str" tag="!deu+eng">Hello</parameter>
+      <parameter name="hello_str" tag="deu|!eng">Hallo</parameter>
+      <parameter name="world_str" tag="eng">World</parameter>
     </parameterset>
     
     <!-- Operation -->
