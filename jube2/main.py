@@ -314,9 +314,8 @@ def search_for_benchmarks(args):
             # Add all available benchmark folder
             found_benchmarks = all_benchmarks
         else:
-            # Get highest benchmark id
+            # Get highest benchmark id and build benchmark_folder
             benchmark_id = jube2.util.util.get_current_id(args.dir)
-            # Restart existing benchmark
             benchmark_folder = jube2.util.util.id_dir(args.dir, benchmark_id)
             if os.path.isdir(benchmark_folder):
                 found_benchmarks.append(benchmark_folder)
@@ -544,6 +543,9 @@ def _update_analyse_and_result(args, benchmark):
                                                     bench.results_order,
                                                     dirname)
                 break
+        else:
+            LOGGER.debug(("No benchmark data for benchmark {0} was found " +
+                          "while running update.").format(benchmark.name))
 
 
 def _remove_benchmark(benchmark_folder, args):
