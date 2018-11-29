@@ -238,7 +238,7 @@ There are two new attributes:
        >>> jube continue bench_run
 
     This will continue your benchmark execution (``bench_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relativly seen towards the work directory.
-  * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory gets an unique name. When changing the directory the user must select a
+  * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory gets a unique name. When changing the directory the user must select a
     unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id``, which are *JUBE* :term:`internal parameters <jube_variables>` and will be expanded to the current benchmark and workpackage ids. Files and directories out of a given
     ``<fileset>`` will be copied into the new work directory. Other automatic links, like the dependency links, will not be created!
 
@@ -307,7 +307,7 @@ It will search for include files inside four different positions (in the followi
 
      >>> jube run --include-path some_path another_path -- main.xml
 
-* inside any path given by a ``<include-path>``-tag:
+* inside any path given by an ``<include-path>``-tag:
 
   .. code-block:: xml
      :linenos:
@@ -331,7 +331,7 @@ It will search for include files inside four different positions (in the followi
 Tagging
 ~~~~~~~
 
-:term:`Tagging <tagging>` is a easy way to hide selectable parts of your input file.
+:term:`Tagging <tagging>` is an easy way to hide selectable parts of your input file.
 
 The files used for this example can be found inside ``examples/tagging``.
 
@@ -378,7 +378,7 @@ Platform independent benchmarking
 
 If you want to create platform independent benchmarks you can use the include features inside of *JUBE*.
 
-All platform related sets must be declared in a includable file e.g. ``platform.xml``. There can be multiple ``platform.xml`` in different
+All platform related sets must be declared in an includable file e.g. ``platform.xml``. There can be multiple ``platform.xml`` in different
 directories to allow different platforms. By changing the ``include-path`` the benchmark changes its platform specific data.
 
 An example benchmark structure bases on three include files:
@@ -391,7 +391,7 @@ An example benchmark structure bases on three include files:
 Inside the ``platform`` directory you will find some example benchmark independent platform configuration files for the supercomputers at
 Forschungszentrum Jülich.
 
-To avoid writing long include-pathes every time you run a platform independent benchmark, you can store the include-path inside your
+To avoid writing long include-paths every time you run a platform independent benchmark, you can store the include-path inside your
 input file. This can be mixed using the tagging-feature:
 
 .. code-block:: xml
@@ -429,7 +429,7 @@ Often you only have one benchmark inside your input file. But it is also possibl
    </jube>
 
 All benchmarks can use the same global (as a child of ``<jube>``) declared sets. Often it might be better to use an include feature instead.
-*JUBE* will run every benchmark in the given order. Every benchmark gets an unique benchmark id.
+*JUBE* will run every benchmark in the given order. Every benchmark gets a unique benchmark id.
 
 To select only one benchmark you can use::
 
@@ -506,7 +506,7 @@ You will get the following directory structure:
 Environment handling
 ~~~~~~~~~~~~~~~~~~~~
 
-*Shell* environment handling can be very important to configure pathes or parameter of your program.
+*Shell* environment handling can be very important to configure paths or parameter of your program.
 
 The files used for this example can be found inside ``examples/environment``.
 
@@ -573,7 +573,7 @@ There is a simple work-around to change the update behaviour of a parameter by u
 
    * ``update_mode="never"`` No update (default behaviour)
    * ``update_mode="use"`` Re-evaluate the parameter if the parameterset is explicitly used
-   * ``update_mode="step"`` Re-ealuate the parameter for each new step
+   * ``update_mode="step"`` Re-evaluate the parameter for each new step
    * ``update_mode="cycle"`` Re-evaluate the parameter for each new cycleloop, but not at the begin of a new step
    * ``update_mode="always"`` Combine step and cycle
 
@@ -582,10 +582,19 @@ Within a cycle loop no new workpackages can be created. Templates will be reeval
 Within the result generation, the parameter value, which is presented in the result table is the value of the selected analysed step. If another parameter representation is needed as well,
 all other steps can be reached by using ``<parameter_name>_<step_name>``.
 
-
 .. index:: iteration
 
 .. _step_iteration:
+
+The files used for this example can be found inside ``examples/parameter_update``.
+
+The input file ``parameter_update.xml``:
+
+.. literalinclude:: ../examples/parameter_update/parameter_update.xml
+   :language: xml
+
+The use and influence of the three update modes ``update_mode="never"``, ``update_mode="use"`` and ``update_mode="step"`` is shown here. Keep in mind, that the steps have to be dependent
+from each other leading to identical outputs otherwise.
 
 Step iteration
 ~~~~~~~~~~~~~~
@@ -594,7 +603,7 @@ Especially in the context of benchmarking an application should be executed mult
 The handling of statistical values is described in :ref:`statistic_values`. This allows you to aggregate multiple result lines if your application 
 automatically support to run multiple times.
 
-In addition there is also an iteration feature within JUBE to run a specific step and its parametristation multiple times.
+In addition there is also an iteration feature within JUBE to run a specific step and its parametrisation multiple times.
 
 The files used for this example can be found inside ``examples/iterations``.
 
@@ -603,14 +612,14 @@ The input file ``iterations.xml``:
 .. literalinclude:: ../examples/iterations/iterations.xml
    :language: xml
 
-In this example either step 1 as well as step 2 are executed 2 times for each parameter and dependcy configuration. Because of the given parameter step 1
-is executed 6 times in total (3 parameter combinations x 2). Step 2 is executed 12 times (6 from the depnedent step x 2). Each run will be executed in the normal way
+In this example either step 1 as well as step 2 are executed 2 times for each parameter and dependency configuration. Because of the given parameter step 1
+is executed 6 times in total (3 parameter combinations x 2). Step 2 is executed 12 times (6 from the dependent step x 2). Each run will be executed in the normal way
 using its individual sandbox folder.
 
 ``$jube_wp_iteration`` holds the individual iteration id. The ``update_mode`` is needed here to reevaluate the parameter ``bar`` in step 2.
 
 In the analyser ``reduce=true`` or ``reduce=false`` can be enabled, to allow you to see all individual results or to aggregate all results of the same parameter combination.
-for the given step. If ``reduce=true`` is enabled (the default behaviour) the output of the individual runs, which uses the same parametristation, are treated like a big continous file
+for the given step. If ``reduce=true`` is enabled (the default behaviour) the output of the individual runs, which uses the same parametrisation, are treated like a big continuous file
 before applying the statistical patterns.
 
 .. code-block:: none
