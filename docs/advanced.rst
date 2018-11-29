@@ -582,10 +582,6 @@ Within a cycle loop no new workpackages can be created. Templates will be reeval
 Within the result generation, the parameter value, which is presented in the result table is the value of the selected analysed step. If another parameter representation is needed as well,
 all other steps can be reached by using ``<parameter_name>_<step_name>``.
 
-.. index:: iteration
-
-.. _step_iteration:
-
 The files used for this example can be found inside ``examples/parameter_update``.
 
 The input file ``parameter_update.xml``:
@@ -595,6 +591,10 @@ The input file ``parameter_update.xml``:
 
 The use and influence of the three update modes ``update_mode="never"``, ``update_mode="use"`` and ``update_mode="step"`` is shown here. Keep in mind, that the steps have to be dependent
 from each other leading to identical outputs otherwise.
+
+.. index:: iteration
+
+.. _step_iteration:
 
 Step iteration
 ~~~~~~~~~~~~~~
