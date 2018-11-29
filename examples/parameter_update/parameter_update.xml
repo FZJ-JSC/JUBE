@@ -5,9 +5,15 @@
 
     <!-- Configuration -->
     <parameterset name="foo">
-      <parameter name="bar_never" mode="text" update_mode="never">iter_never: $jube_wp_id</parameter>
-      <parameter name="bar_use" mode="text" update_mode="use">iter_use: $jube_wp_id</parameter>
-      <parameter name="bar_step" mode="text" update_mode="step">iter_step: $jube_wp_id</parameter>
+      <parameter name="bar_never" mode="text" update_mode="never">
+        iter_never: $jube_wp_id
+      </parameter>
+      <parameter name="bar_use" mode="text" update_mode="use">
+        iter_use: $jube_wp_id
+      </parameter>
+      <parameter name="bar_step" mode="text" update_mode="step">
+        iter_step: $jube_wp_id
+      </parameter>
     </parameterset>
 
     <!-- Operation -->
@@ -17,7 +23,7 @@
       <do>echo $bar_use</do>
       <do>echo $bar_step</do>
     </step>
- 
+
     <step name="step2" depend="step1">
       <use>foo</use>
       <do>echo $bar_never</do>
