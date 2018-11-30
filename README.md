@@ -16,58 +16,60 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
 
-------------------------------------------------------------------------------
+----
 
-Prerequisites:
+# Prerequisites
 
 JUBE version 2 is written in the Python programming language.
 
 You need Python 2.7 or Python 3.2 (or a higher version) to run the program.
 
-You also can use Python 2.6 to run JUBE. In this case you had to add the 
-argparse-module (https://pypi.python.org/pypi/argparse) to your Python module 
-library on your own.
+You also can use Python 2.6 to run JUBE. In this case you had to add the argparse-module (https://pypi.python.org/pypi/argparse) to your Python module library on your own.
 
-------------------------------------------------------------------------------
+# Installation
 
-Installation:
+After download, unpack the distribution file `JUBE-<version>.tar.gz` with:
 
-After download unpack the distribution file JUBE-<version>.tar.gz with:
+```bash
+tar -xf JUBE-<version>.tar.gz
+```
 
->>> tar -xf JUBE-<version>.tar.gz
+You can install the files to your `$HOME/.local` directory by using:
 
-You can install the files to your $HOME/.local directory by using:
+```bash
+cd JUBE-<version>
+python setup.py install --user
+```
 
->>> cd JUBE-<version>
 
->>> python setup.py install --user
-
-$HOME/.local/bin must be inside your $PATH environment variable to use 
-JUBE in an easy way.
+`$HOME/.local/bin` must be inside your `$PATH` environment variable to use JUBE in an easy way.
 
 Instead you can also specify a self defined path prefix:
 
->>> python setup.py install --prefix=<some_path>
+```bash
+python setup.py install --prefix=<some_path>
+```
 
-You might be asked during the installation to add your path (and some subfolders)
-to the $PYTHONPATH environment variable (this should be stored in your profile
-settings):
+You might be asked during the installation to add your path (and some subfolders) to the `$PYTHONPATH` environment variable (this should be stored in your profile settings):
 
->>> export PYTHONPATH=<needed_path>:$PYTHONPATH
 
-In addition it is usefull to also set the $PATH variable again.
+```bash
+export PYTHONPATH=<needed_path>:$PYTHONPATH
+```
+
+In addition it is useful to also set the `$PATH` variable again.
 
 To check the installation you can run:
 
->>> jube --version
 
-Without the --user or --prefix argument, JUBE will be installed in the standard 
-system path for Python packages.
+```
+jube --version
+```
 
-------------------------------------------------------------------------------
+Without the `--user` or `--prefix` argument, JUBE will be installed in the standard system path for Python packages.
 
-For further information please see the Documentation:
-http://www.fz-juelich.de/jsc/jube
+# Further Information
 
-Contact:
-jube.jsc@fz-juelich.de
+For further information please see the documentation: http://www.fz-juelich.de/jsc/jube
+
+Contact: [jube.jsc@fz-juelich.de](mailto:jube.jsc@fz-juelich.de)
