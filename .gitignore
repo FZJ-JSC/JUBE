@@ -1,0 +1,4 @@
+.project
+.pydevproject
+JUBE.egg-info
+*.pyc
