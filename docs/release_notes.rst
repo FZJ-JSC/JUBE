@@ -133,7 +133,7 @@ Release: 2015-11-10
 * Fix slow verbose mode
 * Fix empty debug output file
 * Fix broken command line ``--include-path`` option
-* Allow recursive ``<include-path>`` and ``<selection>`` handling (additional include-pathes
+* Allow recursive ``<include-path>`` and ``<selection>`` handling (additional include-paths
   can now be included by using the ``<include>`` tag)
 * Allow multiple ``<selection>`` and ``<include-path>`` areas
 * New ``transpose="true"`` attribute possible in ``<table>``

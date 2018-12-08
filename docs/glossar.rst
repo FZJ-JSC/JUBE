@@ -101,7 +101,7 @@ Glossary
         * the path will be relative to input file location
 
    include-path_tag
-      Add some include pathes where to search for include files.
+      Add some include paths where to search for include files.
 
       .. code-block:: xml
 
@@ -333,8 +333,8 @@ Glossary
      * ``rel_path_ref`` is optional
 
        * ``external`` or ``internal`` can be chosen, default: external
-       * ``external``: rel.-pathes based on position of xml-file
-       * ``internal``: rel.-pathes based on current work directory (e.g. to link files of another step)
+       * ``external``: rel.-paths based on position of xml-file
+       * ``internal``: rel.-paths based on current work directory (e.g. to link files of another step)
 
      * ``active`` is optional
 
@@ -361,8 +361,8 @@ Glossary
      * ``rel_path_ref`` is optional
 
        * ``external`` or ``internal`` can be chosen, default: external
-       * ``external``: rel.-pathes based on position of xml-file
-       * ``internal``: rel.-pathes based on current work directory (e.g. to link files of another step)
+       * ``external``: rel.-paths based on position of xml-file
+       * ``internal``: rel.-paths based on current work directory (e.g. to link files of another step)
 
      * ``active`` is optional
 
@@ -723,7 +723,7 @@ Glossary
          <?xml version="1.0" encoding="UTF-8"?>
          <!-- Basic top level JUBE structure -->
          <jube>
-           <!-- optional additional include pathes -->
+           <!-- optional additional include paths -->
            <include-path>
              <path>...</path>
              ...

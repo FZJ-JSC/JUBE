@@ -33,7 +33,7 @@ Installation
 
 Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher version)
 
-You also can use **Python 2.6** to run *JUBE*. In this case you had to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
+You also can use **Python 2.6** to run *JUBE*. In this case you have to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
 your *Python* module library on your own.
 
 To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in three different ways:
@@ -60,7 +60,7 @@ To check your final installation, you can use
 
    >>> jube --version
 
-which should highlight you the current version number.
+which should highlight the current version number.
 
 
 .. index:: configuration
@@ -73,15 +73,15 @@ Configuration
 The main *JUBE* configuration bases on the given input configuration file. But in addition, some
 shell environment variables are available which can be used to set system specific options:
 
-* ``JUBE_INCLUDE_PATH``: Can contain a list of pathes (seperated by ``:``) pointing to directories, which contain
+* ``JUBE_INCLUDE_PATH``: Can contain a list of paths (seperated by ``:``) pointing to directories, which contain
   system relevant include configuration files. This technique can be used to store platform specific parameter
   in a platform specific directory.
-* ``JUBE_EXEC_SHELL``: *JUBE* normaly uses ``/bin/sh`` to execute the given shell commands. This default shell can be changed
+* ``JUBE_EXEC_SHELL``: *JUBE* normally uses ``/bin/sh`` to execute the given shell commands. This default shell can be changed
   by using this environment variable.
 * ``JUBE_GROUP_NAME``: *JUBE* will use the given *UNIX* groupname to share benchmarks between different users.
   The group must exist and the *JUBE* user must be part of this group.
   The given group will be the owner of new benchmark runs. By default (without setting the environment variable)
-  all file and directory permissions are definied by the normal *UNIX* rules.
+  all file and directory permissions are defined by the normal *UNIX* rules.
 
 *BASH* autocompletion can be enabled by using the ``eval "$(jube complete)"`` command. You can store the command in your bash profile
 settings if needed.
@@ -196,7 +196,7 @@ Inside the benchmark directory you will see the follwing structure:
       +- 000000_say_hello  # the workpackage
          |
          +- done           # workpackage finished marker
-         +- work           # user sanbox folder
+         +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands
             +- stdout      # standard output of used shell commands
@@ -306,7 +306,7 @@ The input file ``dependencies.xml``:
 .. literalinclude:: ../examples/dependencies/dependencies.xml
    :language: xml
 
-In this example we create a dependency between ``first_step`` and ``second_step``. After ``first_step`` finished, the
+In this example we create a dependency between ``first_step`` and ``second_step``. After ``first_step`` is finished, the
 corresponding ``second_step`` will start. Steps can also have multiple dependencies (separated by ``,`` in the definition), but
 circular definitions will not be resolved. A dependency is a unidirectional link!
 
@@ -348,13 +348,13 @@ The content of file ``file.in``:
 .. literalinclude:: ../examples/files_and_sub/file.in
    :language: none
 
-Inside the ``<fileset>`` the current location (relativly to the current input file; also absolute pathes are allowed) of files is defined. ``<copy>`` specifies that the
+Inside the ``<fileset>`` the current location (relative to the current input file; also absolute paths are allowed) of files is defined. ``<copy>`` specifies that the
 file should be copied to the sandbox directory when the fileset is used. Also a ``<link>`` option is available to create a symbolic link to the given file
 inside the sandbox directory.
 
 If there are additional operations needed to :term:`prepare <prepare_tag>` your files (e.g. expand a tar-file). You can use the ``<prepare>``-tag inside your ``<fileset>``.
 
-The ``<substituteset>`` describe the substitution process. The ``<iofile>`` contains the input and output filename. The path is relative to
+The ``<substituteset>`` describes the substitution process. The ``<iofile>`` contains the input and output filename. The path is relative to
 the sandbox directory. Because we do/should not know that location we use the fileset to copy ``file.in`` to this directory.
 
 The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
@@ -381,7 +381,7 @@ The resulting directory-tree will be:
       |
       +- configuration.xml # the stored benchmark configuration
       +- workpackages.xml  # workpackage information
-      +- 000000_say_hello  # the workpackage ($number = 1)
+      +- 000000_sub_step   # the workpackage ($number = 1)
          |
          +- done           # workpackage finished marker
          +- work           # user sandbox folder
@@ -390,7 +390,7 @@ The resulting directory-tree will be:
             +- stdout      # standard output of used shell commands (Number: 1)
             +- file.in     # the file copy
             +- file.out    # the substituted file
-      +- 000001_say_hello  # the workpackage ($number = 2)
+      +- 000001_sub_step   # the workpackage ($number = 2)
          |
          +- ...
       +- ...
@@ -432,7 +432,7 @@ To use your ``<patternset>`` you have to specify the files which should be parse
 It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
-The analyser automatically knows all parameters which where used in the given step and in depending steps. There is no ``<use>`` option to add additonal completely new
+The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to additionally add complete new
 parametersets.
 
 To run the anlayse you have to write::

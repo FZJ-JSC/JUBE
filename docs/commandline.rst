@@ -100,7 +100,7 @@ Run a new benchmark.
    hide the progress bar animation (if you want to use *JUBE* inside a scripting environment)
 
 ``--include-path INCLUDE_PATH [INCLUDE_PATH ...]``
-   add additional include pathes where to search for include files
+   add additional include paths where to search for include files
 
 ``-a``, ``--analyse``
    run analyse after finishing run command
@@ -150,7 +150,7 @@ Continue an existing benchmark.
    run will exit if there is an error
 
 ``DIRECTORY``
-   directory which contain benchmarks, default: ``.``
+   directory which contains benchmarks, default: ``.``
 
 .. index:: analyse
 
@@ -176,13 +176,13 @@ Run the analyse procedure.
    use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
 
 ``--include-path INCLUDE_PATH [INCLUDE_PATH ...]``
-   add additional include pathes where to search for include files (when using ``--update``)
+   add additional include paths where to search for include files (when using ``--update``)
 
 ``-t TAG [TAG ...]``, ``--tag TAG [TAG ...]``
    use specific tags when running this file. This will be used for :term:`tagging` (when using ``--update``)
 
 ``DIRECTORY``
-   directory which contain benchmarks, default: ``.``
+   directory which contains benchmarks, default: ``.``
 
 .. index:: result
 
@@ -218,7 +218,7 @@ Run the result creation.
    use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
 
 ``--include-path INCLUDE_PATH [INCLUDE_PATH ...]``
-   add additional include pathes where to search for include files (when using ``--update``)
+   add additional include paths where to search for include files (when using ``--update``)
 
 ``-t TAG [TAG ...]``, ``--tag TAG [TAG ...]``
    use specific tags when running this file. This will be used for :term:`tagging` (when using ``--update``)
@@ -227,7 +227,7 @@ Run the result creation.
    only create specific results given by name
 
 ``DIRECTORY``
-   directory which contain benchmarks, default: ``.``
+   directory which contains benchmarks, default: ``.``
 
 .. index:: comment
 
@@ -253,7 +253,7 @@ Add or manipulate the benchmark comment.
    new comment
 
 ``DIRECTORY``
-   directory which contain benchmarks, default: ``.``
+   directory which contains benchmarks, default: ``.``
 
 .. index:: remove
 
@@ -276,7 +276,7 @@ Remove an existing benchmark
    do not prompt
 
 ``DIRECTORY``
-   directory which contain benchmarks, default: ``.``
+   directory which contains benchmarks, default: ``.``
 
 .. index:: info
 
@@ -329,7 +329,7 @@ Show logs for benchmark
    show only logs for specified commands
 
 ``DIRECTORY``
-   directory which contain benchmarks, default: .
+   directory which contains benchmarks, default: .
 
 .. index:: status
 
@@ -349,7 +349,7 @@ Show benchmark status RUNNING or FINISHED.
    |ID_DESCRIPTION|
 
 ``DIRECTORY``
-   directory which contain benchmarks, default: .
+   directory which contains benchmarks, default: .
 
 .. index:: complete
 
@@ -366,7 +366,7 @@ Generate shell completion. Usage: ``eval "$(jube complete)"``
    show command help information
 
 ``--command-name COMMAND_NAME``, ``-c COMMAND_NAME``
-   name of command to be complete, default: programname which was used to run the ``complete`` command
+   name of command to be complete, default: program name which was used to run the ``complete`` command
 
 .. index:: help
 
