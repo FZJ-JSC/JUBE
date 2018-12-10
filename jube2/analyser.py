@@ -296,12 +296,11 @@ class Analyser(object):
                                  pattern.name + "_std": 0})
 
                 # Evaluate derived pattern
-                if len(result[stepname][root_workpackage.id]) > 0:
-                    new_result_dict = self._eval_derived_pattern(
-                        local_patternset, root_workpackage.parameterset,
-                        result[stepname][root_workpackage.id])
-                    result[stepname][root_workpackage.id].update(
-                        new_result_dict)
+                new_result_dict = self._eval_derived_pattern(
+                    local_patternset, root_workpackage.parameterset,
+                    result[stepname][root_workpackage.id])
+                result[stepname][root_workpackage.id].update(
+                    new_result_dict)
 
         self._analyse_result = result
 
