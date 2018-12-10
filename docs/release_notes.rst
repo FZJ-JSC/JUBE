@@ -74,14 +74,12 @@ Release: 2016-09-01
 * Added new optional argument ``suffix="..."`` to the ``<step>`` tag
 
    * Parameter are allowed inside this argument string.
-   * The evaluated string will be attached to the default workpackage directory name to allow users to find
-     specific directories in an easier way (e.g. ``000001_stepname_suffix`` ).
+   * The evaluated string will be attached to the default workpackage directory name to allow users to find specific directories in an easier way (e.g. ``000001_stepname_suffix`` ).
 
 * The *XML* schema files can now be found inside the ``contrib`` folder
 * Added new advanced error handling
 
-   * JUBE will not stop any more if an error occurs inside a ``run`` or ``continue``. The error will be
-     marked and the corresponding workpackage will not be touched anymore.
+   * JUBE will not stop any more if an error occurs inside a ``run`` or ``continue``. The error will be marked and the corresponding workpackage will not be touched anymore.
    * There is also a ``-e``/``--exit`` option to overwrite this behaviour to directly exit if there is an error.
 
 
