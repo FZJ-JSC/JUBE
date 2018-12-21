@@ -356,7 +356,7 @@ class Workpackage(object):
 
     def create_relpath(self, value):
         """Create relative path representation"""
-        return os.path.relpath(value,self._benchmark.file_path_ref)
+        return os.path.relpath(value, self._benchmark.file_path_ref)
 
     def create_abspath(self, value):
         """Create absolute path representation"""
