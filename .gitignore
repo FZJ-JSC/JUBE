@@ -2,3 +2,4 @@
 .pydevproject
 JUBE.egg-info
 *.pyc
+docs/_build
