@@ -8,7 +8,7 @@
 #BSUB -R "span[ptile=#NCPUS#]"
 #BSUB -W #TIME_LIMIT#
 #BSUB #EXCLUSIVE#
-#REQ#
+#ADDITIONAL_JOB_CONFIG#
 
 #ENV#
 

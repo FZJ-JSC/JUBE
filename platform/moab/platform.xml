@@ -1,55 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
-    <!-- Default JUQUEEN sets -->
+    <!-- Default MOAB sets -->
     <parameterset name="executeset">
         <!-- Jobscript handling -->
-        <parameter name="submit">llsubmit</parameter>
+        <parameter name="submit">msub</parameter>
         <parameter name="submit_script">submit.job</parameter>
-        <parameter name="done_file">ready</parameter>
-        <parameter name="starter">runjob</parameter>
-        <parameter name="export_list" mode="python">
-            "$jube_wp_envlist".replace(","," ")
-        </parameter>
+        <parameter name="starter">mpiexec</parameter>
         <parameter name="args_starter">
-            --ranks-per-node $taskspernode --np $tasks --exp-env $export_list
+            -np $tasks --exports=$jube_wp_envlist
         </parameter>
+        <parameter name="done_file">ready</parameter>
         <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
-        <parameter name="shared_file">jobid</parameter>
-        <parameter name="shared_job_info">
-            ${shared_folder}/${shared_file}
-        </parameter>
-        <parameter name="chainjob_script">./prepareJobs.sh</parameter>
-        <parameter name="chainjob_needs_submit">true</parameter>
-        <parameter name="submit_chainjob">
-            ./chainJobs.py $shared_file; $submit submit.job
-        </parameter>
+        <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
+        <parameter name="chainjob_script">./chainJobs.sh</parameter>
+        <parameter name="chainjob_needs_submit">false</parameter>
     </parameterset>
 
     <parameterset name="systemParameter">
         <!-- Default jobscript parameter -->
-        <parameter name="nodes" type="int">32</parameter>
+        <parameter name="nodes" type="int">1</parameter>
         <parameter name="taskspernode" type="int">1</parameter>
         <parameter name="threadspertask" type="int">1</parameter>
         <parameter name="tasks" mode="python" type="int">
-            $nodes * $taskspernode
+            $nodes * $taskspernode // $threadspertask
         </parameter>
         <parameter name="OMP_NUM_THREADS" type="int" export="true">
             $threadspertask
         </parameter>
-        <parameter name="network">Mesh</parameter>
-        <parameter name="job_class"></parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
         <parameter name="env" separator=";">$jube_wp_envstr</parameter>
-        <parameter name="notification">never</parameter>
+        <parameter name="notification">abe</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
         <parameter name="timelimit">00:30:00</parameter>
         <parameter name="preprocess"></parameter>
         <parameter name="postprocess"></parameter>
         <parameter name="measurement"></parameter>
+        <parameter name="additional_job_config"></parameter>
     </parameterset>
 
     <substituteset name="executesub">
@@ -59,11 +49,10 @@
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#NOTIFY_MODE#" dest="$notification" />
         <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
-        <sub source="#TIME_LIMIT#" dest="$timelimit" />
-        <sub source="#JOB_CLASS#" dest="$job_class" />
-        <sub source="#BGSIZE#" dest="$nodes" />
+        <sub source="#NODES#" dest="$nodes" />
+        <sub source="#NCPUS#" dest="$taskspernode" />
         <sub source="#NTHREADS#" dest="$threadspertask" />
-        <sub source="#BGCONNECTIVITY#" dest="$network" />
+        <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#PREPROCESS#" dest="$preprocess" />
         <sub source="#POSTPROCESS#" dest="$postprocess" />
         <sub source="#STARTER#" dest="$starter" />
@@ -71,6 +60,7 @@
         <sub source="#MEASUREMENT#" dest="$measurement" />
         <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
+        <sub source="#ADDITIONAL_JOB_CONFIG#" dest="$additional_job_config" />
         <sub source="#EXECUTABLE#" dest="$executable" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />
@@ -78,9 +68,6 @@
 
     <substituteset name="chainsub">
         <!-- Default chainjob substitution -->
-        <iofile in="${chainjob_script}.in" out="$chainjob_script" />
-        <sub source="#BGSIZE#" dest="$nodes" />
-        <sub source="#BGCONNECTIVITY#" dest="$network" />
     </substituteset>
 
     <fileset name="jobfiles">
@@ -90,7 +77,6 @@
 
     <fileset name="chainfiles">
         <!-- Chainjob script access -->
-        <copy name="$shared_folder/chainJobs.py">chainJobs.py</copy>
-        <copy>${chainjob_script}.in</copy>
+        <copy>$chainjob_script</copy>
     </fileset>
 </jube>
