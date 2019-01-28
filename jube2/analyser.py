@@ -216,7 +216,10 @@ class Analyser(object):
             while len(workpackages) > 0:
                 root_workpackage = workpackages.pop()
                 match_dict = dict()
-                local_patternset = patternset.copy()
+                # Global patternset to store all existing pattern (e.g. from
+                # individual file uses), necessary to evaluate default pattern
+                # and derived pattern
+                global_patternset = patternset.copy()
                 result[stepname][root_workpackage.id] = dict()
                 # Should multiple iterations be reduced to a single result line
                 if self._reduce_iteration:
@@ -262,7 +265,8 @@ class Analyser(object):
                             LOGGER.debug(("    scan file {0}").format(path))
 
                             new_result_dict, match_dict = \
-                                self._analyse_file(path, local_patternset,
+                                self._analyse_file(path, patternset,
+                                                   global_patternset,
                                                    workpackage.parameterset,
                                                    match_dict,
                                                    file_obj.use)
@@ -271,7 +275,7 @@ class Analyser(object):
 
                 # Set default pattern values if available and necessary
                 new_result_dict = result[stepname][root_workpackage.id]
-                for pattern in local_patternset.pattern_storage:
+                for pattern in global_patternset.pattern_storage:
                     if (pattern.default_value is not None) and \
                             (pattern.name not in new_result_dict):
                         default = pattern.default_value
@@ -292,12 +296,12 @@ class Analyser(object):
                                  pattern.name + "_min": default,
                                  pattern.name + "_max": default,
                                  pattern.name + "_avg": default,
-                                 pattern.name + "_sum2": default**2,
+                                 pattern.name + "_sum2": default ** 2,
                                  pattern.name + "_std": 0})
 
                 # Evaluate derived pattern
                 new_result_dict = self._eval_derived_pattern(
-                    local_patternset, root_workpackage.parameterset,
+                    global_patternset, root_workpackage.parameterset,
                     result[stepname][root_workpackage.id])
                 result[stepname][root_workpackage.id].update(
                     new_result_dict)
@@ -328,8 +332,8 @@ class Analyser(object):
                                                  par.value, stop=False)
         return new_result_dict
 
-    def _analyse_file(self, file_path, patternset, parameterset,
-                      match_dict=None, additional_uses=None):
+    def _analyse_file(self, file_path, patternset, global_patternset,
+                      parameterset, match_dict=None, additional_uses=None):
         """Scan given files with given pattern and produce a result
         parameterset"""
         if additional_uses is None:
@@ -344,11 +348,7 @@ class Analyser(object):
 
         # Add file specific uses
         self._combine_and_check_patternsets(local_patternset, additional_uses)
-
-        # Store all derived pattern in original patternset
-        for pattern in local_patternset.derived_pattern_storage:
-            if pattern not in patternset:
-                patternset.add_pattern(pattern)
+        self._combine_and_check_patternsets(global_patternset, additional_uses)
 
         # Unique pattern/parameter check
         if (not parameterset.is_compatible(
@@ -439,9 +439,9 @@ class Analyser(object):
                         else:
                             match_dict[pattern.name]["sum"] = match
                         if "sum2" in match_dict[pattern.name]:
-                            match_dict[pattern.name]["sum2"] += match**2
+                            match_dict[pattern.name]["sum2"] += match ** 2
                         else:
-                            match_dict[pattern.name]["sum2"] = match**2
+                            match_dict[pattern.name]["sum2"] = match ** 2
 
                     if "cnt" in match_dict[pattern.name]:
                         match_dict[pattern.name]["cnt"] += 1
@@ -457,7 +457,7 @@ class Analyser(object):
                     if match_dict[pattern.name]["cnt"] > 1:
                         match_dict[pattern.name]["std"] = math.sqrt(
                             (abs(match_dict[pattern.name]["sum2"] -
-                                 (match_dict[pattern.name]["sum"]**2 /
+                                 (match_dict[pattern.name]["sum"] ** 2 /
                                   match_dict[pattern.name]["cnt"])) /
                              (match_dict[pattern.name]["cnt"] - 1)))
                     else:

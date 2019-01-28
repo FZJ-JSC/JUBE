@@ -41,6 +41,7 @@ class JubeLogger(logging.getLoggerClass(), object):
         for line in lines:
             super(JubeLogger, self)._log(level, line, *args, **kwargs)
 
+
 logging.setLoggerClass(JubeLogger)
 
 LOGGING_MODE = jube2.conf.DEFAULT_LOGGING_MODE
