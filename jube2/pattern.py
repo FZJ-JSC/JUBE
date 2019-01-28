@@ -216,6 +216,15 @@ class Pattern(jube2.parameter.StaticParameter):
         of value
         """
         try:
+            # To take care of default values for derived pattern sets, always
+            # run final_sub instead of force_evaluation. Otherwise new error
+            # will be thrown. Only using the final_sub setup is too late
+            # because the default pattern might be used within another derived
+            # pattern
+            if (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES and
+                    force_evaluation and self._default is not None):
+                final_sub = True
+                force_evaluation = False
             param, changed = \
                 jube2.parameter.StaticParameter.substitute_and_evaluate(
                     self, parametersets, final_sub, no_templates,
