@@ -328,6 +328,8 @@ It will search for include files inside four different positions (in the followi
 
 .. index:: tagging
 
+.. _tagging:
+
 Tagging
 ~~~~~~~
 

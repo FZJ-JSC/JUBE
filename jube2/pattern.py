@@ -217,7 +217,7 @@ class Pattern(jube2.parameter.StaticParameter):
         """
         try:
             # To take care of default values for derived pattern sets, always
-            # run final_sub instead of force_evaluation. Otherwise new error
+            # run final_sub instead of force_evaluation. Otherwise no error
             # will be thrown. Only using the final_sub setup is too late
             # because the default pattern might be used within another derived
             # pattern

@@ -21,6 +21,20 @@
 Release notes
 =============
 
+Version 2.2.2
+~~~~~~~~~~~~~
+Release: 2019-02-04
+
+* New ``tag`` handling: Tags can now be mixed by using boolean operations (``+`` for and, ``|`` for or), brackates are allowed as well.
+  Old ``,`` separated lists of tags are automatically converted. See :ref:`tagging`
+* Extend parameter update documentation. See :ref:`parameter_update_mode`
+* Platfrom files were renamed (system specific to queuing system specific)
+* Fix ``$jube_wp_relpath`` and ``$jube_wp_abspath`` if *JUBE* is executed from a relative directory
+* Fixed missing or wrong environment variable evaluation within *JUBE* parameters
+* Fix for derived pattern handling if no match for regular pattern was found
+* Fix default value handling for derived pattern
+* Fix unicode decoding problems for environment variables
+
 Version 2.2.1
 ~~~~~~~~~~~~~
 Release: 2018-06-22

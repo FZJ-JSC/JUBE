@@ -1,6 +1,34 @@
-
 Release notes
 *************
+
+
+Version 2.2.2
+=============
+
+Release: 2019-02-04
+
+* New "tag" handling: Tags can now be mixed by using boolean
+  operations ("+" for and, "|" for or), brackates are allowed as well.
+  Old "," separated lists of tags are automatically converted. See
+  Tagging
+
+* Extend parameter update documentation. See Parameter update
+
+* Platfrom files were renamed (system specific to queuing system
+  specific)
+
+* Fix "$jube_wp_relpath" and "$jube_wp_abspath" if *JUBE* is
+  executed from a relative directory
+
+* Fixed missing or wrong environment variable evaluation within
+  *JUBE* parameters
+
+* Fix for derived pattern handling if no match for regular pattern
+  was found
+
+* Fix default value handling for derived pattern
+
+* Fix unicode decoding problems for environment variables
 
 
 Version 2.2.1
@@ -67,8 +95,8 @@ Release: 2016-12-20
 * "active" attribute can now be used in "<prepare>", "<copy>" and
   "<link>"
 
-* New FAQ entry concerning multiple file analysis: *Frequently Asked
-  Questions*
+* New FAQ entry concerning multiple file analysis: Frequently Asked
+  Questions
 
 * "<parameter>" using "mode="shell"" or "mode="perl"" will now stop
   program execution if an error occurs (similar to "mode="python"")
@@ -150,8 +178,8 @@ Release: 2016-07-29
 * "null_value=..." was removed from the "<column>" and "<key>"-tag
   because the new default attribute matches its behaviour
 
-* Added first *JUBE* FAQ entries to the documentation: *Frequently
-  Asked Questions*
+* Added first *JUBE* FAQ entries to the documentation: Frequently
+  Asked Questions
 
 * New "active"-attribute inside a "<step>"-tag. The attribute
   enables or disables the corresponding step (and all following

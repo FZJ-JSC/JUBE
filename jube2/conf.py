@@ -22,7 +22,7 @@ from __future__ import (print_function,
                         division)
 
 # general
-JUBE_VERSION = "2.2.1"
+JUBE_VERSION = "2.2.2"
 ALLOWED_SCRIPTTYPES = set(["python", "perl", "shell"])
 DEBUG_MODE = False
 VERBOSE_LEVEL = 0
