@@ -8,13 +8,13 @@ Version 2.2.2
 Release: 2019-02-04
 
 * New "tag" handling: Tags can now be mixed by using boolean
-  operations ("+" for and, "|" for or), brackates are allowed as well.
+  operations ("+" for and, "|" for or), brackets are allowed as well.
   Old "," separated lists of tags are automatically converted. See
   Tagging
 
 * Extend parameter update documentation. See Parameter update
 
-* Platfrom files were renamed (system specific to queuing system
+* Platform files were renamed (system specific to queuing system
   specific)
 
 * Fix "$jube_wp_relpath" and "$jube_wp_abspath" if *JUBE* is
