@@ -505,7 +505,8 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
 
     # Create benchmark results
     result_list = benchmark.create_result(only=args.only,
-                                          data_list=result_list)
+                                          data_list=result_list, 
+                                          style=args.style)
 
     # Reset logging
     jube2.log.only_console_log()
@@ -721,7 +722,10 @@ def gen_subparser_conf():
                 {"help": "reverse benchmark output order",
                  "action": "store_true"},
             ("-n", "--num"):
-                {"type": int, "help": "show only last N benchmarks"}
+                {"type": int, "help": "show only last N benchmarks"},
+            ("-s", "--style"):
+                {"help": "sets style for table", 
+                 "choices":["pretty", "csv"]}
         }
     }
 
