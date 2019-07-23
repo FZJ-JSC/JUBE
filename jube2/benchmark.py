@@ -348,7 +348,6 @@ class Benchmark(object):
                 if result.result_dir is None:
                     result_dir = os.path.join(self.bench_dir,
                                               jube2.conf.RESULT_DIRNAME)
-                    
                 else:
                     result_dir = result.result_dir
                     result_dir = os.path.expanduser(result_dir)
@@ -543,12 +542,12 @@ class Benchmark(object):
         # Change logfile
         jube2.log.change_logfile_name(os.path.join(
             self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
-        
+        # Move parse logfile into benchmark folder
         if os.path.isfile(jube2.conf.DEFAULT_LOGFILE_NAME):
-            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME, 
+            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME,
                       os.path.join(self.bench_dir,
                                    jube2.conf.LOGFILE_PARSE_NAME))
-        
+
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
 
@@ -560,7 +559,7 @@ class Benchmark(object):
         LOGGER.debug("Store initial workpackage information")
         self.write_workpackage_information(
             os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
-        
+
         LOGGER.debug("Start benchmark run")
         self.run()
 
@@ -641,7 +640,6 @@ class Benchmark(object):
         LOGGER.info((">>>>      log: jube log {0} " +
                      "--id {1}").format(self._outpath, self._id))
         LOGGER.info(jube2.util.output.text_line() + "\n")
-        
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""
