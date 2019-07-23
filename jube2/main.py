@@ -724,7 +724,7 @@ def gen_subparser_conf():
             ("-n", "--num"):
                 {"type": int, "help": "show only last N benchmarks"},
             ("-s", "--style"):
-                {"help": "sets style for table",
+                {"help": "overwrites table style type",
                  "choices": ["pretty", "csv"]}
         }
     }
