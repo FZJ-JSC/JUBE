@@ -224,7 +224,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
 
     #Add log information
     LOGGER.debug("Command: {0} {1}".format(
-        os.path.basename(sys.argv[0])," ".join(sys.argv[1:])))
+        os.path.basename(sys.argv[0]), " ".join(sys.argv[1:])))
     LOGGER.debug("Version: {0}".format(jube2.conf.JUBE_VERSION))
 
     # Read existing benchmark configuration
@@ -358,7 +358,7 @@ def run_new_benchmark(args):
 
         #Add log information
         LOGGER.debug("Command: {0} {1}".format(
-            os.path.basename(sys.argv[0])," ".join(sys.argv[1:])))
+            os.path.basename(sys.argv[0]), " ".join(sys.argv[1:])))
         LOGGER.debug("Version: {0}".format(jube2.conf.JUBE_VERSION))
 
         # Read new benchmarks
