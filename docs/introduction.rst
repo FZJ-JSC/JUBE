@@ -24,7 +24,7 @@ Introduction
 Automating benchmarks is important for reproducibility and hence
 comparability which is the major intent when performing
 benchmarks. Furthermore managing different combinations of parameters
-is error-prone and often results in significant amounts work
+is error-prone and often results in significant amounts of work
 especially if the parameter space gets large.
 
 In order to alleviate these problems *JUBE* helps performing and
