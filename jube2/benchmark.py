@@ -133,6 +133,10 @@ class Benchmark(object):
         """Return workpackages"""
         return self._workpackages
 
+    def add_tags(self, other_tags):
+        if other_tags is not None:
+            self._tags = self._tags.union(set(other_tags))
+
     def workpackage_by_id(self, wp_id):
         """Search and return a benchmark workpackage by its wp_id"""
         for stepname in self._workpackages:
