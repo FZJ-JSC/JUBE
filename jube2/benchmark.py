@@ -542,6 +542,11 @@ class Benchmark(object):
         # Change logfile
         jube2.log.change_logfile_name(os.path.join(
             self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
+        # Move parse logfile into benchmark folder
+        if os.path.isfile(jube2.conf.DEFAULT_LOGFILE_NAME):
+            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME,
+                      os.path.join(self.bench_dir,
+                                   jube2.conf.LOGFILE_PARSE_NAME))
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
@@ -671,7 +676,6 @@ class Benchmark(object):
         # Create root-tag and append single benchmark
         benchmarks_etree = ET.Element("jube")
         benchmarks_etree.attrib["version"] = jube2.conf.JUBE_VERSION
-
         # Store tag information
         if len(self._tags) > 0:
             selection_etree = ET.SubElement(benchmarks_etree, "selection")

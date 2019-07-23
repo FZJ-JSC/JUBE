@@ -222,6 +222,11 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
     jube2.log.change_logfile_name(os.path.join(
         benchmark_folder, jube2.conf.LOGFILE_PARSE_NAME))
 
+    #Add log information
+    LOGGER.debug("Command: {0} {1}".format(
+        os.path.basename(sys.argv[0])," ".join(sys.argv[1:])))
+    LOGGER.debug("Version: {0}".format(jube2.conf.JUBE_VERSION))
+
     # Read existing benchmark configuration
     try:
         parser = jube2.jubeio.XMLParser(os.path.join(
@@ -350,6 +355,13 @@ def run_new_benchmark(args):
         jube2.log.change_logfile_name(
             filename=os.path.join(os.path.dirname(path),
                                   jube2.conf.DEFAULT_LOGFILE_NAME))
+
+
+        #Add log information
+        LOGGER.debug("Command: {0} {1}".format(
+            os.path.basename(sys.argv[0])," ".join(sys.argv[1:])))
+        LOGGER.debug("Version: {0}".format(jube2.conf.JUBE_VERSION))
+
         # Read new benchmarks
         if args.include_path is not None:
             include_pathes = [include_path for include_path in
