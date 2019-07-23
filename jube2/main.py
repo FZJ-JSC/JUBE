@@ -524,7 +524,7 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
 
     # Create benchmark results
     result_list = benchmark.create_result(only=args.only,
-                                          data_list=result_list, 
+                                          data_list=result_list,
                                           style=args.style)
 
     # Reset logging
@@ -743,8 +743,8 @@ def gen_subparser_conf():
             ("-n", "--num"):
                 {"type": int, "help": "show only last N benchmarks"},
             ("-s", "--style"):
-                {"help": "sets style for table", 
-                 "choices":["pretty", "csv"]}
+                {"help": "overwrites table style type",
+                 "choices": ["pretty", "csv"]}
         }
     }
 
