@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2018
+   # Copyright (C) 2008-2019
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -327,6 +327,8 @@ It will search for include files inside four different positions (in the followi
 * inside the same directory of your ``main.xml``
 
 .. index:: tagging
+
+.. _tagging:
 
 Tagging
 ~~~~~~~

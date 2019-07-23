@@ -2,3 +2,6 @@
 .pydevproject
 JUBE.egg-info
 *.pyc
+jube-parse.log
+jube-debug.log
+docs/_build

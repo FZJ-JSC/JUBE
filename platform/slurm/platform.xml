@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
-    <!-- Default JURECA sets -->
+    <!-- Default SLURM sets -->
     <parameterset name="executeset">
         <!-- Jobscript handling -->
         <parameter name="submit">sbatch</parameter>
@@ -11,7 +11,7 @@
         <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
         <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
-        <parameter name="chainjob_script">./jureca-chainJobs.sh</parameter>
+        <parameter name="chainjob_script">./chainJobs.sh</parameter>
         <parameter name="chainjob_needs_submit">false</parameter>
     </parameterset>
 
@@ -27,6 +27,7 @@
             $threadspertask
         </parameter>
         <parameter name="queue">batch</parameter>
+        <parameter name="account"></parameter>
         <parameter name="gres"></parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
@@ -39,6 +40,7 @@
         <parameter name="preprocess"></parameter>
         <parameter name="postprocess"></parameter>
         <parameter name="measurement"></parameter>
+        <parameter name="additional_job_config"></parameter>
     </parameterset>
 
     <substituteset name="executesub">
@@ -56,6 +58,7 @@
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#PREPROCESS#" dest="$preprocess" />
         <sub source="#POSTPROCESS#" dest="$postprocess" />
+        <sub source="#ACCOUNT#" dest ="$account" />
         <sub source="#QUEUE#" dest="$queue" />
         <sub source="#GRES#" dest="$gres" />
         <sub source="#STARTER#" dest="$starter" />
@@ -63,6 +66,7 @@
         <sub source="#MEASUREMENT#" dest="$measurement" />
         <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
+        <sub source="#ADDITIONAL_JOB_CONFIG#" dest="$additional_job_config" />
         <sub source="#EXECUTABLE#" dest="$executable" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />

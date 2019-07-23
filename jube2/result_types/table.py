@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2018
+# Copyright (C) 2008-2019
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -167,11 +167,12 @@ class Table(KeyValuesResult):
         """Add an additional key to the dataset"""
         self._keys.append(Table.Column(name, title, None, format_string))
 
-    def create_result_data(self):
+    def create_result_data(self, style):
         """Create result data"""
         result_data = KeyValuesResult.create_result_data(self)
-        return Table.TableData(result_data, self._style, self._separator,
-                               self._transpose)
+        return Table.TableData(result_data,
+                               style if style is not None else self._style,
+                               self._separator, self._transpose)
 
     def etree_repr(self):
         """Return etree object representation"""

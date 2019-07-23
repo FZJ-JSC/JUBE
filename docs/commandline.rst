@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2018
+   # Copyright (C) 2008-2019
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -194,7 +194,7 @@ Run the result creation.
 .. code-block:: none
 
    jube result [-h] [-i ID [ID ...]] [-a] [-r] [-u UPDATE_FILE] [-n NUM]
-               [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
+               [-s {pretty,csv}] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
                [-t TAG [TAG ...]] [-o RESULT_NAME [RESULT_NAME ...]] [DIRECTORY]
 
 
@@ -216,6 +216,9 @@ Run the result creation.
 
 ``-u UPDATE_FILE``, ``--update UPDATE_FILE``
    use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
+
+``-s {pretty,csv}``, ``--style {pretty,csv}``
+   overwrites table style type
 
 ``--include-path INCLUDE_PATH [INCLUDE_PATH ...]``
    add additional include paths where to search for include files (when using ``--update``)

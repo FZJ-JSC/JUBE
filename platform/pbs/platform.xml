@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
-    <!-- Default JUROPA2 sets -->
+    <!-- Default PBS Sets -->
     <parameterset name="executeset">
         <!-- Jobscript handling -->
-        <parameter name="submit">msub</parameter>
+        <parameter name="submit">qsub</parameter>
         <parameter name="submit_script">submit.job</parameter>
         <parameter name="starter">mpiexec</parameter>
         <parameter name="args_starter">
@@ -13,7 +13,7 @@
         <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
         <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
-        <parameter name="chainjob_script">./juropa2-chainJobs.sh</parameter>
+        <parameter name="chainjob_script">./chainJobs.sh</parameter>
         <parameter name="chainjob_needs_submit">false</parameter>
     </parameterset>
 
@@ -32,13 +32,14 @@
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
         <parameter name="env" separator=";">$jube_wp_envstr</parameter>
-        <parameter name="notification">abe</parameter>
+        <parameter name="notification"></parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
         <parameter name="timelimit">00:30:00</parameter>
         <parameter name="preprocess"></parameter>
         <parameter name="postprocess"></parameter>
         <parameter name="measurement"></parameter>
+        <parameter name="additional_job_config"></parameter>
     </parameterset>
 
     <substituteset name="executesub">
@@ -46,11 +47,9 @@
         <iofile in="${submit_script}.in" out="$submit_script" />
         <sub source="#ENV#" dest="$env" />
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
-        <sub source="#NOTIFY_MODE#" dest="$notification" />
         <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
         <sub source="#NODES#" dest="$nodes" />
         <sub source="#NCPUS#" dest="$taskspernode" />
-        <sub source="#NTHREADS#" dest="$threadspertask" />
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#PREPROCESS#" dest="$preprocess" />
         <sub source="#POSTPROCESS#" dest="$postprocess" />
@@ -60,6 +59,7 @@
         <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
         <sub source="#EXECUTABLE#" dest="$executable" />
+        <sub source="#ADDITIONAL_JOB_CONFIG#" dest="$additional_job_config" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />
     </substituteset>

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2018
+# Copyright (C) 2008-2019
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -132,6 +132,10 @@ class Benchmark(object):
     def workpackages(self):
         """Return workpackages"""
         return self._workpackages
+
+    def add_tags(self, other_tags):
+        if other_tags is not None:
+            self._tags = self._tags.union(set(other_tags))
 
     def workpackage_by_id(self, wp_id):
         """Search and return a benchmark workpackage by its wp_id"""
@@ -335,7 +339,7 @@ class Benchmark(object):
         if show_info:
             LOGGER.info(">>> Analyse finished")
 
-    def create_result(self, only=None, show=False, data_list=None):
+    def create_result(self, only=None, show=False, data_list=None, style=None):
         """Show benchmark result"""
         if only is None:
             only = [result_name for result_name in self._results]
@@ -344,7 +348,7 @@ class Benchmark(object):
         for result_name in self._results_order:
             result = self._results[result_name]
             if result.name in only:
-                result_data = result.create_result_data()
+                result_data = result.create_result_data(style)
                 if result.result_dir is None:
                     result_dir = os.path.join(self.bench_dir,
                                               jube2.conf.RESULT_DIRNAME)
@@ -542,6 +546,11 @@ class Benchmark(object):
         # Change logfile
         jube2.log.change_logfile_name(os.path.join(
             self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
+        # Move parse logfile into benchmark folder
+        if os.path.isfile(jube2.conf.DEFAULT_LOGFILE_NAME):
+            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME,
+                      os.path.join(self.bench_dir,
+                                   jube2.conf.LOGFILE_PARSE_NAME))
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
@@ -671,7 +680,6 @@ class Benchmark(object):
         # Create root-tag and append single benchmark
         benchmarks_etree = ET.Element("jube")
         benchmarks_etree.attrib["version"] = jube2.conf.JUBE_VERSION
-
         # Store tag information
         if len(self._tags) > 0:
             selection_etree = ET.SubElement(benchmarks_etree, "selection")

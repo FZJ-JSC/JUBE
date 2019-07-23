@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2018
+# Copyright (C) 2008-2019
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -40,6 +40,7 @@ class JubeLogger(logging.getLoggerClass(), object):
             lines = str(msg).splitlines()
         for line in lines:
             super(JubeLogger, self)._log(level, line, *args, **kwargs)
+
 
 logging.setLoggerClass(JubeLogger)
 
