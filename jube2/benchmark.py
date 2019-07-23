@@ -133,6 +133,10 @@ class Benchmark(object):
         """Return workpackages"""
         return self._workpackages
 
+    def add_tags(self, other_tags):
+        if other_tags is not None:
+            self._tags = self._tags.union(set(other_tags))
+    
     def workpackage_by_id(self, wp_id):
         """Search and return a benchmark workpackage by its wp_id"""
         for stepname in self._workpackages:
@@ -545,7 +549,7 @@ class Benchmark(object):
             self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
         
         if os.path.isfile(jube2.conf.DEFAULT_LOGFILE_NAME):
-            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME, 
+            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME,
                       os.path.join(self.bench_dir,
                                    jube2.conf.LOGFILE_PARSE_NAME))
         
@@ -622,7 +626,7 @@ class Benchmark(object):
         LOGGER.info(jube2.util.output.text_table(
             status_data, use_header_line=True, indent=2))
 
-        LOGGER.info("\n>>>> Benchmark information and " +
+        LOGGER.info("\n>>>> Benchmark information and " + 
                     "further useful commands:")
         LOGGER.info(">>>>       id: {0}".format(self._id))
         LOGGER.info(">>>>   handle: {0}".format(self._outpath))
@@ -630,18 +634,17 @@ class Benchmark(object):
 
         status = self.benchmark_status
         if status["all"] != status["done"]:
-            LOGGER.info((">>>> continue: jube continue {0} " +
+            LOGGER.info((">>>> continue: jube continue {0} " + 
                          "--id {1}").format(self._outpath, self._id))
-        LOGGER.info((">>>>  analyse: jube analyse {0} " +
+        LOGGER.info((">>>>  analyse: jube analyse {0} " + 
                      "--id {1}").format(self._outpath, self._id))
-        LOGGER.info((">>>>   result: jube result {0} " +
+        LOGGER.info((">>>>   result: jube result {0} " + 
                      "--id {1}").format(self._outpath, self._id))
-        LOGGER.info((">>>>     info: jube info {0} " +
+        LOGGER.info((">>>>     info: jube info {0} " + 
                      "--id {1}").format(self._outpath, self._id))
-        LOGGER.info((">>>>      log: jube log {0} " +
+        LOGGER.info((">>>>      log: jube log {0} " + 
                      "--id {1}").format(self._outpath, self._id))
         LOGGER.info(jube2.util.output.text_line() + "\n")
-        
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""
