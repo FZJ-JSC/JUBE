@@ -75,7 +75,7 @@ def benchmarks_results(args):
     """Show benchmark results"""
     found_benchmarks = search_for_benchmarks(args)
     result_list = list()
-    
+
     # Start with the newest benchmark to set the newest result configuration
     found_benchmarks.reverse()
     cnt = 0
@@ -308,7 +308,7 @@ def search_for_benchmarks(args):
                               .format(benchmark_folder))
             if not os.path.isfile(os.path.join(
                     benchmark_folder, jube2.conf.CONFIGURATION_FILENAME)):
-                LOGGER.warning(("Configuration file \"{0}\" not found in " + 
+                LOGGER.warning(("Configuration file \"{0}\" not found in " +
                                 "\"{1}\" or directory not readable.")
                                .format(jube2.conf.CONFIGURATION_FILENAME,
                                        benchmark_folder))
@@ -533,7 +533,7 @@ def _update_analyse_and_result(args, benchmark):
         # Extract tags
         benchmark.add_tags(args.tag)
         tags = benchmark.tags
-            
+
         # Read new benchmarks
         if args.include_path is not None:
             include_pathes = [include_path for include_path in
@@ -554,7 +554,7 @@ def _update_analyse_and_result(args, benchmark):
                                                     dirname)
                 break
         else:
-            LOGGER.debug(("No benchmark data for benchmark {0} was found " + 
+            LOGGER.debug(("No benchmark data for benchmark {0} was found " +
                           "while running update.").format(benchmark.name))
 
 
@@ -603,8 +603,8 @@ def gen_parser_conf():
           "version": "JUBE, version {0}".format(
               jube2.conf.JUBE_VERSION)}),
         (("-v", "--verbose"),
-         {"help": "enable verbose console output (use -vv to " + 
-                  "show stdout during execution and -vvv to " + 
+         {"help": "enable verbose console output (use -vv to " +
+                  "show stdout during execution and -vvv to " +
                   "show log and stdout)",
           "action": "count",
           "default": 0}),
@@ -755,7 +755,7 @@ def gen_subparser_conf():
                 {"help": "display only parametrization of given step",
                  "action": "store_true"},
             ("-c", "--csv-parametrization"):
-                {"help": "display only parametrization of given step " + 
+                {"help": "display only parametrization of given step " +
                  "using csv format", "nargs": "?", "default": False,
                  "metavar": "SEPARATOR"}
         }
@@ -890,7 +890,7 @@ def _get_args_parser():
         subparsers.add_parser(
             'help', help='command help',
             formatter_class=argparse.RawDescriptionHelpFormatter,
-            description="available commands or info elements: \n" + 
+            description="available commands or info elements: \n" +
             help_overview)
     subparser["help"].add_argument('command', nargs='?',
                                    help="command or info element")
@@ -901,17 +901,14 @@ def _get_args_parser():
 
 def main(command=None):
     """Parse the command line and run the requested command."""
-    
+
     jube2.help.load_help()
     parser = _get_args_parser()[0]
     if command is None:
         args = parser.parse_args()
     else:
         args = parser.parse_args(command)
-    
-    for elem in args.tag:
-        elem = str(elem)
-      
+
     jube2.conf.DEBUG_MODE = args.debug
     jube2.conf.VERBOSE_LEVEL = args.verbose
 
