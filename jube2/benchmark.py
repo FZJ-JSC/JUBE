@@ -122,7 +122,7 @@ class Benchmark(object):
     def outpath(self):
         return self._outpath
     
-    @set_outpath.setter
+    @outpath.setter
     def set_outpath(self, new_outpath):
         self._outpath = new_outpath
 
