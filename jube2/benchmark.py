@@ -122,7 +122,7 @@ class Benchmark(object):
     def outpath(self):
         return self._outpath
     
-    @set_outpath.setter
+    @outpath.setter
     def set_outpath(self, new_outpath):
         self._outpath = new_outpath
 
@@ -578,6 +578,7 @@ class Benchmark(object):
     def run(self):
         """Run benchmark"""
         title = "benchmark: {0}".format(self._name)
+        title += "\n\n id:{0}".format(self._id)
         if jube2.conf.DEBUG_MODE:
             title += " ---DEBUG_MODE---"
         title += "\n\n{0}".format(self._comment)
