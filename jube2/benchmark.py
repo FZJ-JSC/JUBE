@@ -554,7 +554,13 @@ class Benchmark(object):
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
-
+        
+        
+        for parameterset in self._parametersets.values():
+            for parameter in parameterset.all_parameters:
+                if parameter.mode == "tag":
+                    parameter.eval_helper = lambda a: a if a in self.tags else ""
+                    
         # Create initial workpackages
         LOGGER.debug("Create initial workpackages")
         self._create_initial_workpackages()

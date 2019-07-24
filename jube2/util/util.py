@@ -200,13 +200,6 @@ def script_evaluation(cmd, script_type):
                     pass
             return stdout
         
-def advanced_evaluation(cmd, mode_type):
-    if mode_type == "env":
-        return os.environ[cmd]
-    else:
-        return ""
-
-
 def eval_bool(cmd):
     """Evaluate a bool expression"""
     if cmd.lower() == "true":
