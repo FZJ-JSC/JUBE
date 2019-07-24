@@ -640,7 +640,8 @@ class StaticParameter(Parameter):
                 force_evaluation or final_sub) and \
                 (not any(parname.startswith("jube_wp_")
                          for parname in self._depending_parameter)) and \
-                (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
+                ((self._mode in jube2.conf.ALLOWED_SCRIPTTYPES) or 
+                 (self._mode in jube2.conf.ADVANCED_MODETYPES)):
             try:
                 # Run additional substitution to remove $$ before running
                 # script evaluation to allow usage of environment variables
@@ -648,7 +649,10 @@ class StaticParameter(Parameter):
                     value = jube2.util.util.substitution(value, parameter_dict)
                 # Run script evaluation
                 LOGGER.debug("Evaluate parameter: {0}".format(self._name))
-                value = jube2.util.util.script_evaluation(value, self._mode)
+                if self._mode in jube2.conf.ALLOWED_SCRIPTTYPES:
+                    value = jube2.util.util.script_evaluation(value, self._mode)
+                else:
+                    value = jube2.util.util.advanced_evaluation(value, self._mode)
                 # Insert new $$ if needed
                 if not final_sub and "$" in value:
                     value = re.sub(r"\$", "$$", value)
