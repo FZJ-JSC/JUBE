@@ -22,6 +22,7 @@ from __future__ import (print_function,
                         division)
 
 import itertools
+import os
 import xml.etree.ElementTree as ET
 import copy
 import jube2.util.util
@@ -405,6 +406,14 @@ class Parameter(object):
     def copy(self):
         """Returns Parameter copy (flat copy)"""
         return copy.copy(self)
+    
+    @property
+    def eval_helper(self):
+        return self._eval_helper
+    
+    @eval_helper.setter
+    def eval_helper(self, new_eval_helper):
+        self._eval_helper = new_eval_helper
 
     @property
     def name(self):
@@ -651,8 +660,13 @@ class StaticParameter(Parameter):
                 LOGGER.debug("Evaluate parameter: {0}".format(self._name))
                 if self._mode in jube2.conf.ALLOWED_SCRIPTTYPES:
                     value = jube2.util.util.script_evaluation(value, self._mode)
-                else:
-                    value = jube2.util.util.advanced_evaluation(value, self._mode)
+                if self._mode == "env":
+                    try:
+                        value = os.environ[value]
+                    except Exception as exception:
+                        raise RuntimeError(("\"{0}\" isn't a environment variable").format(
+                                            value))
+                    
                 # Insert new $$ if needed
                 if not final_sub and "$" in value:
                     value = re.sub(r"\$", "$$", value)
