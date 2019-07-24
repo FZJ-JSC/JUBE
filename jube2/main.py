@@ -399,7 +399,9 @@ def run_new_benchmark(args):
                     continue
                 bench.id = args.id[id_cnt]
                 id_cnt += 1
-            bench.new_run(args)
+            if args.outpath is not None:
+                bench.set_outpath = args.outpath
+            bench.new_run()
             # Run analyse
             if args.analyse or args.result:
                 jube2.log.change_logfile_name(os.path.join(
