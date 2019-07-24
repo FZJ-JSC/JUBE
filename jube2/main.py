@@ -390,6 +390,8 @@ def run_new_benchmark(args):
             if bench_name in not_bench:
                 continue
             bench = benchmarks[bench_name]
+            #Add benchmark id 
+            LOGGER.debug("ID: {0}".format(bench._id))
             # Set user defined id
             if (args.id is not None) and (len(args.id) > id_cnt):
                 if args.id[id_cnt] < 0:
