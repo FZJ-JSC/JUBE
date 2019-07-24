@@ -117,6 +117,9 @@ class Benchmark(object):
     def file_path_ref(self):
         """Get file path reference"""
         return self._file_path_ref
+    
+    def set_outpath(self, new_outpath):
+        self._outpath = new_outpath
 
     @file_path_ref.setter
     def file_path_ref(self, file_path_ref):
@@ -533,7 +536,7 @@ class Benchmark(object):
 
         return new_workpackages
 
-    def new_run(self):
+    def new_run(self, args):
         """Create workpackage structure and run benchmark"""
         # Check benchmark consistency
         LOGGER.debug("Start consistency check")
@@ -541,7 +544,7 @@ class Benchmark(object):
 
         # Create benchmark directory
         LOGGER.debug("Create benchmark directory")
-        self._create_bench_dir()
+        self._create_bench_dir(args)
 
         # Change logfile
         jube2.log.change_logfile_name(os.path.join(
@@ -645,10 +648,13 @@ class Benchmark(object):
                      "--id {1}").format(self._outpath, self._id))
         LOGGER.info(jube2.util.output.text_line() + "\n")
 
-    def _create_bench_dir(self):
+    def _create_bench_dir(self, args):
         """Create the directory for a benchmark."""
         # Get group_id if available (given by JUBE_GROUP_NAME)
         group_id = jube2.util.util.check_and_get_group_id()
+        print(args)
+        if args.outpath is not None:
+            self.set_outpath(args.outpath)
         # Check if outpath exists
         if not (os.path.exists(self._outpath) and
                 os.path.isdir(self._outpath)):
@@ -731,3 +737,4 @@ class Benchmark(object):
     def bench_dir(self):
         """Return benchmark directory"""
         return jube2.util.util.id_dir(self._outpath, self._id)
+    

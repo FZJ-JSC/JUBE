@@ -399,7 +399,7 @@ def run_new_benchmark(args):
                     continue
                 bench.id = args.id[id_cnt]
                 id_cnt += 1
-            bench.new_run()
+            bench.new_run(args)
             # Run analyse
             if args.analyse or args.result:
                 jube2.log.change_logfile_name(os.path.join(
@@ -656,7 +656,9 @@ def gen_subparser_conf():
             ("-r", "--result"):
                 {"action": "store_true", "help": "show results"},
             ("-m", "--comment"):
-                {"help": "add comment"}
+                {"help": "add comment"},
+            ("-o", "--outpath"):
+                {"help": "overwrites outpath directory"}
         }
     }
 
