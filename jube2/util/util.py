@@ -28,7 +28,7 @@ except ImportError:
 import re
 import string
 import operator
-import os.path
+import os
 import subprocess
 import jube2.log
 import time
@@ -199,6 +199,12 @@ def script_evaluation(cmd, script_type):
                 except UnicodeDecodeError:
                     pass
             return stdout
+        
+def advanced_evaluation(cmd, mode_type):
+    if mode_type == "env":
+        return os.environ[cmd]
+    else:
+        return ""
 
 
 def eval_bool(cmd):

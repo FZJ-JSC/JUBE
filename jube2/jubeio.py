@@ -1227,7 +1227,8 @@ class XMLParser(object):
             export_str = param.get("export", default="false").strip()
             export = export_str.lower() == "true"
             if parameter_mode not in \
-                    set(["text"]).union(jube2.conf.ALLOWED_SCRIPTTYPES):
+                    set(["text"]).union(jube2.conf.ALLOWED_SCRIPTTYPES)\
+                                 .union(jube2.conf.ADVANCED_MODETYPES):
                 raise ValueError(
                     ("parameter-mode \"{0}\" not allowed in " +
                      "<parameter name=\"{1}\">").format(parameter_mode,
