@@ -82,7 +82,8 @@ Run a new benchmark.
    jube run [-h] [--only-bench ONLY_BENCH [ONLY_BENCH ...]]
             [--not-bench NOT_BENCH [NOT_BENCH ...]] [-t TAG [TAG ...]]
             [--hide-animation] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
-            [-a] [-r] [-e] [-m COMMENT] [--id ID [ID ...]] FILE [FILE ...]
+            [-o OUTPATH] [-a] [-r] [-e]
+            [-m COMMENT] [--id ID [ID ...]] FILE [FILE ...]
 
 ``-h``, ``--help``
    show command help information
@@ -113,6 +114,9 @@ Run a new benchmark.
 
 ``-m COMMENT``, ``--comment COMMENT``
    overwrite benchmark specific comment
+
+``-o OUTPATH``, ``--outpath OUTPATH``
+   overwrite outpath directory
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
    use specific benchmark id (must be >= 0)

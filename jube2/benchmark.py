@@ -117,13 +117,15 @@ class Benchmark(object):
     def file_path_ref(self):
         """Get file path reference"""
         return self._file_path_ref
-    
+
     @property
     def outpath(self):
+        """Return outpath"""
         return self._outpath
-    
+
     @outpath.setter
     def set_outpath(self, new_outpath):
+        """Overwrite outpath"""
         self._outpath = new_outpath
 
     @file_path_ref.setter
@@ -740,4 +742,3 @@ class Benchmark(object):
     def bench_dir(self):
         """Return benchmark directory"""
         return jube2.util.util.id_dir(self._outpath, self._id)
-    
