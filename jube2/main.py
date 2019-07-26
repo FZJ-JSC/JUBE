@@ -399,6 +399,7 @@ def run_new_benchmark(args):
                     continue
                 bench.id = args.id[id_cnt]
                 id_cnt += 1
+            # Change runtime outpath if specified
             if args.outpath is not None:
                 bench.set_outpath = args.outpath
             bench.new_run()
@@ -660,7 +661,7 @@ def gen_subparser_conf():
             ("-m", "--comment"):
                 {"help": "add comment"},
             ("-o", "--outpath"):
-                {"help": "overwrites outpath directory"}
+                {"help": "overwrite outpath directory"}
         }
     }
 
