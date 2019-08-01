@@ -52,6 +52,15 @@ class TestParameter(unittest.TestCase):
         self.para_error = \
             jube2.parameter.Parameter.create_parameter("error", "2+'test'",
                                                        parameter_mode="python")
+        self.para_update = \
+            jube2.parameter.Parameter.create_parameter("update", "3",
+                                                       update_mode="jube")
+        self.para_update.based_on = self.para_error
+        self.para_no_update = \
+            jube2.parameter.Parameter.create_parameter("no_update", "4",
+                                                       update_mode="nothing")
+        self.para_no_update.idx = 3
+        self.para_no_update.based_on = self.para_update
 
     def test_constant(self):
         """Test Constants"""
@@ -87,6 +96,7 @@ class TestParameter(unittest.TestCase):
         self.assertFalse(self.para_select.is_template)
 
     def test_no_template(self):
+        """Test no template"""
         self.assertFalse(self.para_no_template.is_template)
         self.assertEqual(self.para_no_template.value, "2,3,4")
 
@@ -116,8 +126,72 @@ class TestParameter(unittest.TestCase):
         self.assertFalse(self.para_cons.export)
         etree = self.para_export.etree_repr()
         self.assertEqual(etree.get("export"), "true")
+        
+        etree = self.para_update.etree_repr()
+        self.assertEqual(etree.attrib["update_mode"], "jube")
+    
+    def test_update(self):
+        """Test update"""
+        self.assertEqual(self.para_update.update_mode, "jube")
+        self.assertTrue(self.para_update.is_jube_parameter)
+    
+    def test_no_update(self):
+        """Test no update"""
+        self.assertEqual(self.para_no_update.idx, 3)
+        self.assertEqual(self.para_no_update.update_mode, "never")
+        self.assertFalse(self.para_no_update.update_allowed(None))
+        self.assertFalse(self.para_no_update.update_allowed("nothing"))
+        self.assertFalse(self.para_no_update.is_equivalent(self.para_update))
+        
+        
+    def test_update_allowed(self):
+        """Test update_allowed()"""
+        self.para_always_update = \
+            jube2.parameter.Parameter.create_parameter("always_update", "4",
+                                                       update_mode="always")
+        self.assertEqual(self.para_always_update.update_mode, "always")
+        self.assertTrue(self.para_always_update.update_allowed("cycle"))
+        self.assertTrue(self.para_always_update.update_allowed("step"))
+        self.assertTrue(self.para_always_update.update_allowed("use"))
+        self.para_step_update = \
+            jube2.parameter.Parameter.create_parameter("step_update", "4",
+                                                       update_mode="step")
+        self.assertTrue(self.para_step_update.update_allowed("use"))
+        self.assertTrue(self.para_step_update.update_allowed("step"))
+        self.assertFalse(self.para_step_update.update_allowed("cycle"))
 
+class TestStaticParameter(unittest.TestCase):
+    """StaticParameter test class"""
+    #fix_export_string dont understand
+    def setUp(self):
+        self.static_cons = \
+            jube2.parameter.Parameter.create_parameter("cons", "$3")
 
+    def test_cons(self):
+        self.assertFalse(self.static_cons.is_fixed)
+        self.assertFalse(self.static_cons.is_template)
+        
+class TestFixedParameter(unittest.TestCase):
+    """FixedParameter test class"""
+    def setUp(self):
+        self.fixed_cons = \
+            jube2.parameter.Parameter.create_parameter("cons", "3", 
+                                                      fixed = True)
+        
+    def test_cons(self):
+        self.assertTrue(self.fixed_cons.is_fixed)
+        self.assertEqual(self.fixed_cons.substitute_and_evaluate(), (self.fixed_cons, False))
+
+class TestTemplateParameter(unittest.TestCase):
+    """TemplateParameter test class"""
+    def setUp(self):
+        self.temp_cons = \
+            jube2.parameter.Parameter.create_parameter("cons", "3,2,1", idx =2)
+        self.temp_cons.expand() #Cant get in the else
+        
+    def test_cons(self):
+        self.assertTrue(self.temp_cons.is_template)
+        
 class TestParameterSet(unittest.TestCase):
 
     """ParameterSet test class"""
@@ -125,7 +199,9 @@ class TestParameterSet(unittest.TestCase):
     def setUp(self):
         self.temp_values = ["2", "3", "4"]
         self.para_cons = \
-            jube2.parameter.Parameter.create_parameter("test", "3")
+            jube2.parameter.Parameter.create_parameter("test", "3",
+                                                        update_mode="jube",
+                                                        parameter_mode="nop")
         self.para_export = \
             jube2.parameter.Parameter.create_parameter("test2", "4",
                                                        export=True)
@@ -136,7 +212,8 @@ class TestParameterSet(unittest.TestCase):
             jube2.parameter.Parameter.create_parameter("test2", "2,3,4",
                                                        selected_value="3")
         self.para_sub = \
-            jube2.parameter.Parameter.create_parameter("test4", "$test2")
+            jube2.parameter.Parameter.create_parameter("test4", "$test2",)
+            
         self.para_eval = \
             jube2.parameter.Parameter.create_parameter("test5",
                                                        "${test4} * 2",
@@ -203,6 +280,7 @@ class TestParameterSet(unittest.TestCase):
 
     def test_delete(self):
         """Test parameter deletion"""
+        self.parameterset.remove_jube_parameter()
         parameterset = self.parameterset.copy()
         self.assertFalse(self.para_export in parameterset)
         parameterset.add_parameter(self.para_export)
@@ -247,6 +325,11 @@ class TestParameterSet(unittest.TestCase):
             self.assertEqual(new_parameterset["test2"].value,
                              self.temp_values[idx])
 
+
+        nextparameterset = self.parameterset.copy()
+        nextparameterset.parameter_substitution(final_sub=True)
+        self.assertTrue(nextparameterset.is_compatible(self.parameterset))
+        
         # Substitution and evaluation check
         parameterset = self.parameterset.copy()
         parameterset.add_parameter(self.para_sub)
@@ -285,6 +368,16 @@ class TestParameterSet(unittest.TestCase):
         etree = self.parameterset.etree_repr()
         self.assertEqual(etree.tag, "parameterset")
         self.assertEqual(len(etree.findall("parameter")), 2)
+    
+    def test_get_updatable_parameter(self):
+        self.parameterset4 = jube2.parameter.Parameterset("Parameterset")
+        self.parameterset4.add_parameter(self.para_cons)
+        self.parameterset4.add_parameter(self.para_temp)
+        self.parameterset5 = self.parameterset.get_updatable_parameter("never", 
+                                                                       True)
+        self.assertTrue(self.parameterset5.is_compatible(self.parameterset.
+                                                         get_updatable_parameter
+                                                         ("never", True)))
 
 
 if __name__ == "__main__":

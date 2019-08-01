@@ -33,7 +33,8 @@ class TestPattern(unittest.TestCase):
     """Pattern test class"""
 
     def setUp(self):
-        self.std_pattern = jube2.pattern.Pattern("std", ".*", unit="s")
+        self.std_pattern = jube2.pattern.Pattern("std", ".*", unit="s", 
+                                                 default="none")
         self.std_pattern2 = jube2.pattern.Pattern("std2", ".*")
         self.derived_pattern = jube2.pattern.Pattern(
             "derived", "$std2", pattern_mode="text")
@@ -66,6 +67,7 @@ class TestPattern(unittest.TestCase):
             [patternset.pattern_storage])
         self.assertTrue(changed)
         self.assertEqual(result_pattern.value, self.std_pattern2.value)
+        self.assertEqual(self.derived_pattern.default_value, None)
         self.assertNotEqual(id(result_pattern), id(self.derived_pattern))
 
     def test_calculate_pattern(self):
@@ -85,6 +87,7 @@ class TestPattern(unittest.TestCase):
     def test_etree_repr(self):
         """check etree repr"""
         etree = self.std_pattern.etree_repr()
+        self.assertEqual(etree.get("default"), "none")
         self.assertEqual(etree.tag, "pattern")
         self.assertEqual(etree.get("type"), "string")
         self.assertEqual(etree.get("mode"), "pattern")
@@ -110,6 +113,47 @@ class TestPattern(unittest.TestCase):
                 match, result, "'{pattern}' on '{mystr}' matches '{match}' "
                 "and not '{result}'".format(**locals()))
 
+class TestPatternset(unittest.TestCase):
+    def setUp(self):
+        self.patt_set = jube2.pattern.Patternset(name="test_set")
+        self.patt_set2 = jube2.pattern.Patternset(name="test_set2")
+        self.std_pattern = jube2.pattern.Pattern("std", ".*", unit="s", 
+                                                 pattern_mode= "std")
+        self.std_pattern2 = jube2.pattern.Pattern("std", ".*", unit="s")
+        self.std_pattern3 = jube2.pattern.Pattern("std", ".*", unit="s", 
+                                                 pattern_mode= "std")
+        self.std_pattern4 = jube2.pattern.Pattern("std2", ".*", unit="s")
+        
+    def test_patt(self):
+        #Test add_pattern
+        self.assertEqual(self.patt_set.name, "test_set")
+        self.assertTrue(self.std_pattern.derived)
+        self.assertEqual(str(self.patt_set), str(self.patt_set2))
+        self.assertEqual(self.patt_set['std'], None)
+        self.patt_set.add_pattern(self.std_pattern)
+        self.patt_set2.add_pattern(self.std_pattern2)
+        self.assertEqual(str(self.patt_set2.get_incompatible_pattern(self.patt_set)), 'set()')
+        
+    def test_add(self):
+        self.patt_set.add_pattern(self.std_pattern)
+        self.assertEqual(str(self.patt_set.derived_pattern_storage), "Parameterset:{'std': '.*'}")
+        self.patt_set.add_pattern(self.std_pattern2)
+        self.assertEqual(str(self.patt_set.pattern_storage), "Parameterset:{'std': '.*'}")
+        self.patt_set.add_pattern(self.std_pattern)
+        self.assertEqual(str(self.patt_set.derived_pattern_storage), "Parameterset:{'std': '.*'}")
+        self.patt_set3 = self.patt_set.copy()
+        self.patt_set.add_patternset(self.patt_set2)
+        self.assertTrue(self.patt_set.is_compatible(self.patt_set3))
+        
+    def test_etree_repr(self):
+        self.patt_set.add_pattern(self.std_pattern3)
+        self.patt_set.add_pattern(self.std_pattern4)
+        etree_repr = self.patt_set.etree_repr()
+        self.assertEqual(etree_repr.attrib['name'], 'test_set')
+        self.assertEqual(len(etree_repr), 2)
+        self.assertEqual(etree_repr[0].attrib['name'], 'std2')
+        self.assertEqual(etree_repr[1].attrib['name'], 'std')
+        
 
 TEST_PATTERNS_FULL = [
     # Simple patterns with full match
