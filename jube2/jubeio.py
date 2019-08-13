@@ -1315,6 +1315,8 @@ class XMLParser(object):
                     pattern_mode, name))
             content_type = pattern.get("type", default="string").strip()
             unit = pattern.get("unit", "").strip()
+            dotall = \
+                pattern.get("dotall", "true").strip().lower() == "true"
             default = pattern.get("default")
             if default is not None:
                 default = default.strip()
@@ -1324,7 +1326,7 @@ class XMLParser(object):
                 value = pattern.text.strip()
             patternlist.append(jube2.pattern.Pattern(name, value, pattern_mode,
                                                      content_type, unit,
-                                                     default))
+                                                     default, dotall))
         return patternlist
 
     def _extract_filesets(self, etree):

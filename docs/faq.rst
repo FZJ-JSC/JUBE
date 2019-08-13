@@ -212,4 +212,31 @@ correct result:
               2  |             B |           11
               1  |             A |           12
               2  |             B |           13
- 
+
+.. index:: extract specifc block
+
+Extract data from a specifc text block
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In many cases the standard program output is structured into multiple blocks:
+
+.. code-block:: none
+
+   blockA:
+   ...
+   time=20
+
+   blockB:
+   ...
+   time=30
+
+Using a simple ``<pattern>`` like ``time=$jube_pat_int`` will match all ``time=`` lines (the default match will be the first one,
+and :ref:`statistic_values` are available as well). However in many cases a specifc value from a sepcifc block should be extracted.
+This is possible by using ``\s`` within the pattern for each individual newline character within the block, or by using the ``dotall`` option:
+
+.. code-block:: xml
+
+   <pattern name="a_pattern" dotall="true">blockB:.*?time=$jube_pat_int</pattern>
+
+This only extracts ``30`` from ``blockB``. Setting ``dotall="true"`` allows to use the ``.`` to take care of all newline characters in between (by default newline characters are 
+not matched by ``.``).

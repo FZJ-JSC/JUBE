@@ -381,7 +381,10 @@ class Analyser(object):
             if pattern.name not in match_dict:
                 match_dict[pattern.name] = dict()
             try:
-                regex = re.compile(pattern.value, re.MULTILINE)
+                mode = re.MULTILINE
+                if pattern.dotall:
+                    mode += re.DOTALL
+                regex = re.compile(pattern.value, mode)
             except re.error as ree:
                 raise RuntimeError(("Error inside pattern \"{0}\" : " +
                                     "\"{1}\" : {2}")

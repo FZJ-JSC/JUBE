@@ -128,6 +128,7 @@ attlist.pattern &=
   attribute mode { text }?,
   attribute unit { text }?,
   attribute default { text }?,
+  attribute dotall { "true" | "false" | "True" | "False" }?,
   attribute tag { text }?
 step = element step { attlist.step, (use | do | \include)* }
 attlist.step &=

@@ -143,6 +143,7 @@
         <xs:attribute name="mode" type="xs:string" use="optional" />
         <xs:attribute name="tag" type="xs:string" use="optional" />
         <xs:attribute name="default" type="xs:string" use="optional" />
+        <xs:attribute name="dotall" type="booleanType" use="optional" />
       </xs:extension>
     </xs:simpleContent> 
   </xs:complexType>
