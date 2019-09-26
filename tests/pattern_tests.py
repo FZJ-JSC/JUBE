@@ -158,7 +158,7 @@ class TestPatternset(unittest.TestCase):
         self.assertEqual(str(self.patt_set), str(self.patt_set2))
         self.patt_set.add_pattern(self.std_pattern)
         self.patt_set2.add_pattern(self.std_pattern2)
-        self.assertEqual(str(self.patt_set2.get_incompatible_pattern(self.patt_set)), 'set()')
+        self.assertEqual(self.patt_set2.get_incompatible_pattern(self.patt_set), set())
         self.patt_set2 = self.patt_set.copy()
         self.assertEqual(str(self.patt_set), str(self.patt_set2))
         self.assertTrue(self.patt_set.is_compatible(self.patt_set2))
@@ -167,9 +167,9 @@ class TestPatternset(unittest.TestCase):
     def test_add(self):
         '''Testing the add_pattern function'''
         self.patt_set.add_pattern(self.std_pattern)
-        self.assertEqual(str(self.patt_set.derived_pattern_storage), "Parameterset:{'std': '.*'}")
+        self.assertEqual(str(self.patt_set.derived_pattern_storage), "Parameterset:{}".format({"std":".*"}))
         self.patt_set.add_pattern(self.std_pattern2)
-        self.assertEqual(str(self.patt_set.pattern_storage), "Parameterset:{'std': '.*'}")
+        self.assertEqual(str(self.patt_set.pattern_storage), "Parameterset:{}".format({'std': '.*'}))
         self.patt_set.add_pattern(self.std_pattern)
         self.assertEqual(str(self.patt_set.pattern_storage), "Parameterset:{}")
         self.patt_set.add_pattern(self.std_pattern2)
@@ -200,18 +200,18 @@ class TestPatternset(unittest.TestCase):
         self.sub_set.derived_pattern_substitution()
         
         self.assertEqual(str(self.sub_set.pattern_storage),
-                        "Parameterset:{'patt': '$patt_test'}")
+                        "Parameterset:{}".format({'patt': '$patt_test'}))
         self.assertEqual(str(self.sub_set.derived_pattern_storage),
-                        "Parameterset:{'deri': '$deri_test'}")
+                        "Parameterset:{}".format({'deri': '$deri_test'}))
         
         #With parameterset
         self.sub_set.pattern_substitution(parametersets = {self.test_set})
         self.sub_set.derived_pattern_substitution(parametersets = {self.test_set})
         
         self.assertEqual(str(self.sub_set.pattern_storage),
-                        "Parameterset:{'patt': '3'}")
+                        "Parameterset:{}".format({'patt': '3'}))
         self.assertEqual(str(self.sub_set.derived_pattern_storage),
-                        "Parameterset:{'deri': 'a'}")
+                        "Parameterset:{}".format({'deri': 'a'}))
         
     def test_search(self):
         '''Testing the contains and get item function'''
