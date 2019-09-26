@@ -23,8 +23,12 @@ from __future__ import (print_function,
                         division)
 
 import unittest
-from parameter_tests import TestParameter, TestParameterSet
-from pattern_tests import TestPattern
+from parameter_tests import TestParameter, TestParameterSet,
+                            TestStaticParameter, TestFixedParameter, 
+                            TestTemplateParameter
+from pattern_tests import TestPattern, TestPatternset, 
+from fileset_test import TestFileset, TestFile, TestLink, TestCopy, TestPrepare
+from step_test import TestStep, TestOperation
 #from examples_test import TestExamples
 
 

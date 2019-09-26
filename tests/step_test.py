@@ -165,12 +165,6 @@ class TestOperation(unittest.TestCase):
         param_dict = {"test": 5}
         self.assertTrue(self.std_oper.active(param_dict))
         
-        #test execute
-        self.assertTrue(self.notactive_oper.execute({"test": 5}, "test"))
-        print(self.execute_oper.execute({"test": 5}, "test",
-                                    environment={"HOME": '/home/zam/wellmann'}))
-        print(self.std_oper.execute({"test": 5}, "test"))
-        #self.assertTrue(self.std_oper.execute({"test": 5}, "test")[1])
     
     def test_etree(self):
         etree = self.etree_oper.etree_repr()
