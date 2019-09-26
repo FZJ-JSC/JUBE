@@ -94,7 +94,7 @@ class TestParameter(unittest.TestCase):
         """Test parameter evaluation"""
         eval_para, changed = self.para_eval.substitute_and_evaluate([])
         self.assertTrue(changed)
-        self.assertEqual(eval_para.value, "5")
+        self.assertEqual(eval_para.value, "4")
         self.assertRaises(RuntimeError,
                           self.para_error.substitute_and_evaluate, [])
 
