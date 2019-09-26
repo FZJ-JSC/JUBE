@@ -86,7 +86,8 @@
                         mode CDATA #IMPLIED
                         default CDATA #IMPLIED
                         unit CDATA #IMPLIED
-                        tag CDATA #IMPLIED>
+                        tag CDATA #IMPLIED
+                        dotall (true|false|True|False) #IMPLIED>
 <!ELEMENT step ((use|do|include)*)>
 <!ATTLIST step          name CDATA #REQUIRED
                         iterations CDATA #IMPLIED

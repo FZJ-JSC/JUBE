@@ -127,9 +127,9 @@ copy_tag
 
      * "external" or "internal" can be chosen, default: external
 
-     * "external": rel.-pathes based on position of xml-file
+     * "external": rel.-paths based on position of xml-file
 
-     * "internal": rel.-pathes based on current work directory (e.g.
+     * "internal": rel.-paths based on current work directory (e.g.
        to link files of another step)
 
    * "active" is optional
@@ -269,7 +269,7 @@ general_structure
       <?xml version="1.0" encoding="UTF-8"?>
       <!-- Basic top level JUBE structure -->
       <jube>
-        <!-- optional additional include pathes -->
+        <!-- optional additional include paths -->
         <include-path>
           <path>...</path>
           ...
@@ -315,7 +315,7 @@ general_structure
       </jube>
 
 include-path_tag
-   Add some include pathes where to search for include files.
+   Add some include paths where to search for include files.
 
       <include-path>
         <path>...</path>
@@ -463,9 +463,9 @@ link_tag
 
      * "external" or "internal" can be chosen, default: external
 
-     * "external": rel.-pathes based on position of xml-file
+     * "external": rel.-paths based on position of xml-file
 
-     * "internal": rel.-pathes based on current work directory (e.g.
+     * "internal": rel.-paths based on current work directory (e.g.
        to link files of another step)
 
    * "active" is optional
@@ -631,7 +631,7 @@ pattern_tag
    A pattern is used to parse your output files and create your result
    data.
 
-      <pattern name="..." default="..." unit="..." mode="..." type="...">...</pattern>
+      <pattern name="..." default="..." unit="..." mode="..." type="..." dotall="...">...</pattern>
 
    * "unit" is optional, will be used in the result table
 
@@ -655,6 +655,12 @@ pattern_tag
 
    * "default" is optional: Specify default value if pattern cannot
      be found or if it cannot be evaluated
+
+   * "dotall" is optional (default: "false"): Can be set to
+     "true```or ``false" to specify if a "." within the regular
+     expression should also match newline characters, which can be
+     very helpfull to extract a line only after a specific header was
+     mentioned.
 
 patternset_tag
    A patternset is a container to store a bundle of patterns.

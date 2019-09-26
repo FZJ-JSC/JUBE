@@ -161,7 +161,7 @@ Glossary
 
       .. code-block:: xml
 
-         <pattern name="..." default="..." unit="..." mode="..." type="...">...</pattern>
+         <pattern name="..." default="..." unit="..." mode="..." type="..." dotall="...">...</pattern>
 
       * ``unit`` is optional, will be used in the result table
       * ``mode`` is optional, allowed modes:
@@ -178,6 +178,8 @@ Glossary
         * allowed: ``int``, ``float`` or ``string``
 
       * ``default`` is optional: Specify default value if pattern cannot be found or if it cannot be evaluated
+      * ``dotall`` is optional (default: ``false``): Can be set to ``true```or ``false`` to specify if a ``.`` within the regular expression
+        should also match newline characters, which can be very helpfull to extract a line only after a specific header was mentioned.
 
    statistical_values
       If there are multiple pattern matches within one file, multiple files or

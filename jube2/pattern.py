@@ -168,13 +168,15 @@ class Pattern(jube2.parameter.StaticParameter):
     or to represent a derived pattern."""
 
     def __init__(self, name, value, pattern_mode="pattern",
-                 content_type="string", unit="", default=None):
+                 content_type="string", unit="", default=None, dotall=False):
         self._derived = pattern_mode != "pattern"
 
         if not self._derived:
             pattern_mode = "text"
 
         self._default = default
+
+        self._dotall = dotall
 
         # Unicode conversion
         value = "" + value
@@ -199,6 +201,11 @@ class Pattern(jube2.parameter.StaticParameter):
     def default_value(self):
         """Return pattern default value"""
         return self._default
+    
+    @property
+    def dotall(self):
+        """Return pattern dot regex handling"""
+        return self._dotall
 
     @property
     def unit(self):
@@ -238,7 +245,8 @@ class Pattern(jube2.parameter.StaticParameter):
             else:
                 value = ""
             pattern = Pattern(
-                self._name, value, "text", self._type, self._unit)
+                self._name, value, "text", self._type, self._unit,
+                dotall = self._dotall)
             pattern.based_on = self
             return pattern, True
 
@@ -249,7 +257,8 @@ class Pattern(jube2.parameter.StaticParameter):
             else:
                 pattern_mode = param.mode
             pattern = Pattern(param.name, param.value, pattern_mode,
-                              param.parameter_type, self._unit)
+                              param.parameter_type, self._unit,
+                              dotall = self._dotall)
             pattern.based_on = param.based_on
         else:
             pattern = param
@@ -260,6 +269,7 @@ class Pattern(jube2.parameter.StaticParameter):
         pattern_etree = ET.Element('pattern')
         pattern_etree.attrib["name"] = self._name
         pattern_etree.attrib["type"] = self._type
+        pattern_etree.attrib["dotall"] = str(self._dotall)
         if self._default is not None:
             pattern_etree.attrib["default"] = self._default
         if not self._derived:

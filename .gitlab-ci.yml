@@ -1,0 +1,4 @@
+test:
+    script:
+        - export PYTHONPATH=jube2:$PYTHONPATH
+        - ./tests/run_all_tests.py
