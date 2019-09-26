@@ -57,6 +57,7 @@ class TestPattern(unittest.TestCase):
         """Test standard pattern"""
         self.assertEqual(self.std_pattern.name, "std")
         self.assertEqual(self.std_pattern.value, ".*")
+        self.assertEqual(self.std_pattern.dotall, False)
         self.assertEqual(self.std_pattern.unit, "s")
         self.assertEqual(self.std_pattern.content_type, "string")
         result_pattern, changed = self.std_pattern.substitute_and_evaluate([])
