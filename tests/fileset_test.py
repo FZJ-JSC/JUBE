@@ -30,20 +30,32 @@ class TestFileset(unittest.TestCase):
     """Fileset test class"""
     
     def setUp(self):
-        pass
+        self.fileset = jube2.fileset.Fileset("fileset")
     
     def test_std(self):
-        pass
+        self.assertEqual(self.fileset.name, "fileset")
+        self.fileset.create("test", {})
+        etree = self.fileset.etree_repr()
+        self.assertEqual(etree.attrib["name"], "fileset")
 
 class TestFile(unittest.TestCase):
 
     """File test class"""
 
     def setUp(self):
-        pass
+        self.std_file = jube2.fileset.File("file")
 
     def test_std(self):
-        pass
+        self.assertEqual(self.std_file.path, "file")
+        self.assertEqual(self.std_file.file_path_ref, "")
+        self.std_file.file_path_ref = "tests"
+        self.assertEqual(self.std_file.file_path_ref, "tests")
+        self.assertEqual(self.std_file.is_internal_ref, False)
+        self.assertEqual(str(self.std_file), "file")
+        with self.assertRaises(NotImplementedError):
+            self.std_file.etree_repr()
+        with self.assertRaises(NotImplementedError):
+            self.std_file.create_action("tests", "test", "tests")
     
 class TestLink(unittest.TestCase):
 

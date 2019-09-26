@@ -162,20 +162,47 @@ class TestParameter(unittest.TestCase):
 
 class TestStaticParameter(unittest.TestCase):
     """StaticParameter test class"""
-    #fix_export_string dont understand
+    #missed some in sub and eval
     def setUp(self):
         self.static_cons = \
             jube2.parameter.Parameter.create_parameter("cons", "$3")
+        self.static_cons2 = \
+            jube2.parameter.Parameter.create_parameter("cons", "3",
+                                                       eval_helper = 
+                                                       jube2.parameter.\
+                                                       StaticParameter.\
+                                                       fix_export_string)
 
     def test_cons(self):
+        
+        self.para = \
+            jube2.parameter.Parameter.create_parameter("para", "$3",
+                                                       fixed = True)
+        self.para2 = \
+            jube2.parameter.Parameter.create_parameter("cons", "",
+                                                       eval_helper = 
+                                                       jube2.parameter.\
+                                                       StaticParameter.\
+                                                       fix_export_string)
+        self.parameterset = jube2.parameter.Parameterset("subs")
+        self.parameterset.add_parameter(self.para)
+        para_sets = {self.parameterset}
+        
         self.assertFalse(self.static_cons.is_fixed)
         self.assertFalse(self.static_cons.is_template)
+        
+        
+        self.assertEqual(self.static_cons.substitute_and_evaluate(parametersets = para_sets), (self.static_cons, False))
+        
+        
+        self.assertEqual(self.static_cons.fix_export_string("export test = 'test'"), "export test='test'\n")
+        self.assertEqual(self.static_cons.fix_export_string("export test = test"), "export test=\"test\"\n")
         
 class TestFixedParameter(unittest.TestCase):
     """FixedParameter test class"""
     def setUp(self):
         self.fixed_cons = \
-            jube2.parameter.Parameter.create_parameter("cons", "3", 
+            jube2.parameter.Parameter.create_parameter("cons", "$3", 
                                                       fixed = True)
         
     def test_cons(self):
@@ -187,10 +214,11 @@ class TestTemplateParameter(unittest.TestCase):
     def setUp(self):
         self.temp_cons = \
             jube2.parameter.Parameter.create_parameter("cons", "3,2,1", idx =2)
-        self.temp_cons.expand() #Cant get in the else
+        self.temp_cons.expand() #dont use function?? 
         
     def test_cons(self):
         self.assertTrue(self.temp_cons.is_template)
+        self.assertEqual(self.temp_cons.value, "3,2,1")
         
 class TestParameterSet(unittest.TestCase):
 
@@ -212,7 +240,7 @@ class TestParameterSet(unittest.TestCase):
             jube2.parameter.Parameter.create_parameter("test2", "2,3,4",
                                                        selected_value="3")
         self.para_sub = \
-            jube2.parameter.Parameter.create_parameter("test4", "$test2",)
+            jube2.parameter.Parameter.create_parameter("test4", "$test2")
             
         self.para_eval = \
             jube2.parameter.Parameter.create_parameter("test5",
