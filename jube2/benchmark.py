@@ -124,6 +124,16 @@ class Benchmark(object):
         self._file_path_ref = file_path_ref
 
     @property
+    def outpath(self):
+        """Return outpath"""
+        return self._outpath
+
+    @outpath.setter
+    def outpath(self, new_outpath):
+        """Overwrite outpath"""
+        self._outpath = new_outpath
+
+    @property
     def substitutesets(self):
         """Return substitutesets"""
         return self._substitutesets
@@ -570,6 +580,7 @@ class Benchmark(object):
     def run(self):
         """Run benchmark"""
         title = "benchmark: {0}".format(self._name)
+        title += "\nid: {0}".format(self._id)
         if jube2.conf.DEBUG_MODE:
             title += " ---DEBUG_MODE---"
         title += "\n\n{0}".format(self._comment)

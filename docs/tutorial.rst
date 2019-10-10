@@ -156,8 +156,9 @@ This benchmark will produce the follwing output:
 
    ######################################################################
    # benchmark: hello_world
-
-   A simple hello world
+   # id: 0
+   #
+   # A simple hello world
    ######################################################################
 
    Running workpackages (#=done, 0=wait, E=error):
@@ -174,6 +175,7 @@ This benchmark will produce the follwing output:
    >>>>  analyse: jube analyse bench_run --id 0
    >>>>   result: jube result bench_run --id 0
    >>>>     info: jube info bench_run --id 0
+   >>>>      log: jube log bench_run --id 0
    ######################################################################
 
 As you can see, there was a single step ``say_hello``,
