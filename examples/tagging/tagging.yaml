@@ -1,0 +1,22 @@
+---
+benchmark: 
+  - name: tagging
+    outpath: bench_run
+    comment: Tags as logical combination
+
+    #Configuration -->
+    parameterset:
+      - name: param_set
+        parameter:
+          - {name: hello_str, tag: "!deu+eng", _: Hello}
+          - {name: hello_str, tag: deu|!eng, _: Hallo}
+          - {name: world_str, tag: eng, _: World}
+     
+    #Operation 
+    step:
+      - name: say_hello
+        use:
+          - param_set #use existing parameterset
+        do:
+          - echo '$hello_str $world_str' #shell command
+    

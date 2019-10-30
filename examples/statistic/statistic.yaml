@@ -1,0 +1,47 @@
+---
+benchmark: 
+  - name: reduce_example
+    outpath: bench_run
+    comment: A result reduce example
+
+    #Regex pattern
+    patternset:
+      - name: pattern
+        pattern:
+          - name: number_pat
+            type: int
+            _: $jube_pat_int
+     
+    #Operation 
+    step:
+      - name: write_some_numbers
+        do:
+          - echo "1 2 3 4 5 6 7 8 9 10" #shell command
+    
+    #Analyse
+    analyser:
+      - name: analyse
+        use:
+          - pattern #use existing patternset
+        analyse:
+          - step: write_some_numbers
+            file:
+              - stdout #file which should be scanned
+    
+    #Create result table
+    result:
+      - use:
+          - analyse #use existing analyser
+        table:
+          - name: result
+            style: pretty
+            column:
+              - number_pat #first match
+              - number_pat_last #last match
+              - number_pat_min #min of all matches
+              - number_pat_max #max of all matches
+              - number_pat_sum #sum of all matches
+              - number_pat_cnt #number of matches
+              - number_pat_avg #avg of all matches
+              - format: .2f
+                _: number_pat_std #std of all matches

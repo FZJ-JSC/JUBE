@@ -202,7 +202,7 @@ class TestFixedParameter(unittest.TestCase):
     """FixedParameter test class"""
     def setUp(self):
         self.fixed_cons = \
-            jube2.parameter.Parameter.create_parameter("cons", "$3", 
+            jube2.parameter.Parameter.create_parameter("cons", "3$bla", 
                                                       fixed = True)
         
     def test_cons(self):

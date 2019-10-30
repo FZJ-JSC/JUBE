@@ -1,0 +1,37 @@
+---
+benchmark: 
+  - name: files_and_sub
+    outpath: bench_run
+    comment: A file copy and substitution example
+    
+    #Configuration
+    parameterset:
+      - name: param_set
+        parameter:
+          - {name: number, type: int,  _: "1,2,4"} #comma separated integers must be in quotations
+          
+    #Files
+    fileset:
+      - name: files
+        copy:
+          - file.in
+          
+    #Substitute
+    substituteset:
+      - name: substitute
+        iofile:
+          - in: file.in
+            out: file.out
+        sub:
+          - source: "#NUMBER#" #attributes with # must be in quotations
+            dest: $number
+          
+    #Operation
+    step:
+      - name: sub_step
+        use:
+          - param_set #use existing parameterset
+          - files #use existing fileset
+          - substitute #use existing substituteset
+        do:
+          - cat file.out #shell command
