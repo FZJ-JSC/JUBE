@@ -24,6 +24,9 @@ from __future__ import (print_function,
 # general
 JUBE_VERSION = "2.2.2"
 ALLOWED_SCRIPTTYPES = set(["python", "perl", "shell"])
+ALLOWED_ADVANCED_MODETYPES = set(["tag", "env"])
+ALLOWED_MODETYPES = set(["text"]).union(ALLOWED_SCRIPTTYPES).union(
+    ALLOWED_ADVANCED_MODETYPES)
 DEBUG_MODE = False
 VERBOSE_LEVEL = 0
 UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"

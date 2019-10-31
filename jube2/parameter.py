@@ -22,6 +22,7 @@ from __future__ import (print_function,
                         division)
 
 import itertools
+import os
 import xml.etree.ElementTree as ET
 import copy
 import jube2.util.util
@@ -122,7 +123,8 @@ class Parameterset(object):
                      for parameter in self._parameters.values()
                      if (not parameter.is_template) and
                         (parameter.mode not in
-                         jube2.conf.ALLOWED_SCRIPTTYPES)])
+                         jube2.conf.ALLOWED_SCRIPTTYPES.union(
+                             jube2.conf.ALLOWED_ADVANCED_MODETYPES))])
 
     @property
     def template_parameter_dict(self):
@@ -379,7 +381,8 @@ class Parameter(object):
                       jube2.util.util.safe_split(value, sep)]
 
         if len(values) == 1 or \
-           (parameter_mode in jube2.conf.ALLOWED_SCRIPTTYPES):
+           (parameter_mode in jube2.conf.ALLOWED_SCRIPTTYPES.union(
+               jube2.conf.ALLOWED_ADVANCED_MODETYPES)):
             if fixed:
                 result = FixedParameter(name, value, separator, parameter_type,
                                         parameter_mode, export, update_mode,
@@ -405,6 +408,16 @@ class Parameter(object):
     def copy(self):
         """Returns Parameter copy (flat copy)"""
         return copy.copy(self)
+
+    @property
+    def eval_helper(self):
+        """Return evaluation helper function"""
+        return self._eval_helper
+
+    @eval_helper.setter
+    def eval_helper(self, new_eval_helper):
+        """Sets a new evaluation helper function"""
+        self._eval_helper = new_eval_helper
 
     @property
     def name(self):
@@ -587,7 +600,8 @@ class StaticParameter(Parameter):
         return all([(param_name not in parameterset) or
                     ((not parameterset[param_name].is_template) and
                      (not parameterset[param_name].mode in
-                      jube2.conf.ALLOWED_SCRIPTTYPES))
+                      jube2.conf.ALLOWED_SCRIPTTYPES.union(
+                          jube2.conf.ALLOWED_ADVANCED_MODETYPES)))
                     for param_name in self._depending_parameter])
 
     def depends_on(self, parameter):
@@ -640,7 +654,8 @@ class StaticParameter(Parameter):
                 force_evaluation or final_sub) and \
                 (not any(parname.startswith("jube_wp_")
                          for parname in self._depending_parameter)) and \
-                (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES):
+                ((self._mode in jube2.conf.ALLOWED_SCRIPTTYPES.union(
+                    jube2.conf.ALLOWED_ADVANCED_MODETYPES))):
             try:
                 # Run additional substitution to remove $$ before running
                 # script evaluation to allow usage of environment variables
@@ -648,7 +663,17 @@ class StaticParameter(Parameter):
                     value = jube2.util.util.substitution(value, parameter_dict)
                 # Run script evaluation
                 LOGGER.debug("Evaluate parameter: {0}".format(self._name))
-                value = jube2.util.util.script_evaluation(value, self._mode)
+                if self._mode in jube2.conf.ALLOWED_SCRIPTTYPES:
+                    value = jube2.util.util.script_evaluation(
+                        value, self._mode)
+                if self._mode == "env":
+                    try:
+                        value = os.environ[value]
+                    except KeyError:
+                        raise RuntimeError(("\"{0}\" isn't an available "+
+                                            "environment variable").format(
+                            value))
+
                 # Insert new $$ if needed
                 if not final_sub and "$" in value:
                     value = re.sub(r"\$", "$$", value)

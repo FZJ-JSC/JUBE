@@ -276,6 +276,13 @@ class Step(object):
         # update parameters
         global_parameterset.update_parameterset(update_parameters)
 
+        # Set tag-mode evaluation helper function to allow access to tag list
+        # during paramter evaluation
+        for parameter in global_parameterset.all_parameters:
+            if parameter.mode == "tag":
+                parameter.eval_helper = \
+                    lambda tag: tag if tag in benchmark.tags else ""
+
         # Expand templates
         parametersets = [global_parameterset]
         change = True

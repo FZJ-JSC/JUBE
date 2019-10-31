@@ -277,11 +277,13 @@ Glossary
         * ``mode="python"``: allow *Python* snippets (using ``eval <cmd>``)
         * ``mode="perl"``: allow *Perl* snippets (using ``perl -e "print <cmd>"``)
         * ``mode="shell"``: allow *Shell* snippets
+        * ``mode="env"``: include the content of an available environment variable
+        * ``mode="tag"``: include the tag name if the tag was set during execution, otherwise the content is empty
 
       * Templates can be created, using scripting e.g.: ``",".join([str(2**i) for i in range(3)])``
       * ``update_mode`` is optional (default: ``never``)
 
-         * can be set to ``never``, ``use``, ``step`` and ``cycle``
+         * can be set to ``never``, ``use``, ``step``, ``cycle`` and ``always``
          * depending on the setting the parameter will be reevaluated:
 
             * ``never``: no reevaluation, even if the parameterset is used multiple times
