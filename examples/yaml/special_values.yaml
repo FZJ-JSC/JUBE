@@ -1,0 +1,19 @@
+---
+benchmark: 
+  - name: special values
+    outpath: bench_run
+    comment: An example for values that need to be in quotations
+
+    parameterset:
+      - name: special_parameters
+        parameter:
+          - {name: integer, type: int,  _: "1,2,4"} #comma seperated values need to be in quotations
+          - {name: plus, _: "1+3"} #values with + need to be in quotations
+          - {name: "#NUMBER", type: int, _: 3} #values with # need to be in quotations
+          
+    patternset:
+      - name: special_pattern
+        pattern:
+          - {name: result, type: int, _: "Result: $plus"} #values with : need to be in quotations
+          - {name: integers, type: int, _: "Integers = {$integers}"} #values with {} need to be in quotations
+          - {name: integer, type: int, _: "'Integer' = $#NUMBER"} #values with ' need to be in quotations

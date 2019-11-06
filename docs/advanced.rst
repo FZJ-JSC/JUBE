@@ -675,4 +675,32 @@ itself is still executed). In the given example the output will be:
 
 In contrast to the iterations, all executions for the cycle feature take place inside of the same folder.
 
+.. index:: yaml
+
+.. _yaml_support:
+
+Yaml Support
+~~~~~~~~~~~~
+
+Instead of using xml you can also use the yaml format for your files.
+
+The files used for this example can be found inside ``examples/yaml``.
+
+The input file ``hello_world.yaml``:
+
+.. literalinclude:: ../examples/yaml/hello_world.yaml
+   :language: yaml
+   
+!!!Instead of tags the yaml format have keys which values are a list of elements which define the attributes.
+
+As you can see you have three options to set the attributes. The ``parameter`` is set as a dictionary with the attributename as their key and the content as their value. Otherwise you can write it among each other and indent it as the preceding line, like the key ``do``. If a key like ``use`` has only a value, you can write it in one line without any keyword.
+
+The input file ``special_values.yaml``:
+
+.. literalinclude:: ../examples/yaml/special_values.yaml
+   :language: yaml
+   
+As shown there are some values that need to be enclosed in quotation marks. 
+Anytime you have a symbol like ``#``, ``'``, ``+``, ``,``, ``:`` or ``{}`` you have to enclose the entire value in quotation marks. 
+
 

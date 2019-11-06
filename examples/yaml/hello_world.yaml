@@ -1,0 +1,20 @@
+---
+benchmark: 
+  - name: hello_world
+    outpath: bench_run
+    comment: A simple hello world in yaml
+
+    #Configuration
+    parameterset:
+      - name: hello_parameter
+        parameter:
+          - {name: hello_str,  _: Hello World}
+          
+    #Operation
+    step:
+      - name: say_hello
+        use:
+          - hello_parameter #use existing parameter
+        do:
+          - _: echo $hello_str #shell command
+            active: true
