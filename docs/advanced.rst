@@ -691,7 +691,7 @@ The input file ``hello_world.yaml``:
 .. literalinclude:: ../examples/yaml/hello_world.yaml
    :language: yaml
    
-!!!Instead of tags the yaml format have keys which values are a list of elements which define the attributes.
+Instead of tags the yaml format have keys which values are a list of elements.
 
 As you can see you have three options to set the attributes. The ``parameter`` is set as a dictionary with the attributename as their key and the content as their value. Otherwise you can write it among each other and indent it as the preceding line, like the key ``do``. If a key like ``use`` has only a value, you can write it in one line without any keyword.
 
