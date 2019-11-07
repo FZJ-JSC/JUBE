@@ -201,7 +201,7 @@ class Pattern(jube2.parameter.StaticParameter):
     def default_value(self):
         """Return pattern default value"""
         return self._default
-    
+
     @property
     def dotall(self):
         """Return pattern dot regex handling"""
@@ -246,7 +246,7 @@ class Pattern(jube2.parameter.StaticParameter):
                 value = ""
             pattern = Pattern(
                 self._name, value, "text", self._type, self._unit,
-                dotall = self._dotall)
+                dotall=self._dotall)
             pattern.based_on = self
             return pattern, True
 
@@ -258,7 +258,7 @@ class Pattern(jube2.parameter.StaticParameter):
                 pattern_mode = param.mode
             pattern = Pattern(param.name, param.value, pattern_mode,
                               param.parameter_type, self._unit,
-                              dotall = self._dotall)
+                              dotall=self._dotall)
             pattern.based_on = param.based_on
         else:
             pattern = param

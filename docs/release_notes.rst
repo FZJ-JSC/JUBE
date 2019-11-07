@@ -21,6 +21,27 @@
 Release notes
 =============
 
+Version 2.3.0
+~~~~~~~~~~~~~
+Release: 2019-11-07
+
+* New command line option ``-s {pretty,csv}, --style {pretty,csv}`` for the ``result`` 
+  command allows to overwrite the selected table style
+* New command line option ``-o OUTPATH, --outpath OUTPATH`` for the ``run``
+  command allows to overwrite the selected outpath for the benchmark run
+* New parameter modes: ``env`` and ``tag``
+
+   * ``mode="env``: include the content of an available environment variable
+   * ``mode="tag``: include the tag name if the tag was set during execution, otherwise the content is empty
+
+* New option ``dotall=true`` in ``<pattern>`` (default: ``false``) allows that ``.`` within a regular
+  expression also matches newline characters. This can be very helpfull to extract a line only after a specific header was mentioned. See :ref:`extract_specifc_block`
+* ``--tags`` used in combination with the ``--update`` option will now be added to the 
+  existing tags of the original run instead of overwriting the old tags. If no new tags need to be added within
+  an update ``--tags`` can now be skipped.
+* ``parse.log`` is now automatically moved into the specifc job run folder and is also available within the ``jube log`` command
+
+
 Version 2.2.2
 ~~~~~~~~~~~~~
 Release: 2019-02-04

@@ -215,6 +215,8 @@ correct result:
 
 .. index:: extract specifc block
 
+.. _extract_specifc_block:
+
 Extract data from a specifc text block
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

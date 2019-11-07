@@ -670,7 +670,7 @@ class StaticParameter(Parameter):
                     try:
                         value = os.environ[value]
                     except KeyError:
-                        raise RuntimeError(("\"{0}\" isn't an available "+
+                        raise RuntimeError(("\"{0}\" isn't an available " +
                                             "environment variable").format(
                             value))
 
