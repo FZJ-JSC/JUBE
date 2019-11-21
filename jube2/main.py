@@ -98,9 +98,15 @@ def analyse_benchmarks(args):
 
 def remove_benchmarks(args):
     """Remove benchmarks"""
-    found_benchmarks = search_for_benchmarks(args)
-    for benchmark_folder in found_benchmarks:
-        _remove_benchmark(benchmark_folder, args)
+    if(args.workpackage is not None):
+        found_workpackages = search_for_workpackage(args)
+        _remove_workpackages(found_workpackages, args)
+    else:
+        found_benchmarks = search_for_benchmarks(args)
+        for benchmark_folder in found_benchmarks:
+            _remove_benchmark(benchmark_folder, args)
+        
+    
 
 
 def command_help(args):
@@ -333,9 +339,26 @@ def search_for_benchmarks(args):
          os.path.isfile(os.path.join(benchmark_folder,
                                      jube2.conf.CONFIGURATION_FILENAME))]
 
+        
     found_benchmarks.sort()
     return found_benchmarks
 
+def search_for_workpackage(args):
+    found_benchmarks = search_for_benchmarks(args)
+    found_workpackages = list()
+    for benchmark_folder in found_benchmarks:
+        benchmark = \
+            _load_existing_benchmark(args, benchmark_folder,
+                                     load_analyse=False)
+        if benchmark is None:
+            continue
+        for wp_id in args.workpackage:
+            if benchmark.workpackage_by_id(int(wp_id)) is None: 
+                raise OSError("No workpackage \"{0}\" found in benchmark \"{1}\""
+                              .format(wp_id, benchmark.id))
+            else:
+                found_workpackages.append(benchmark.workpackage_by_id(int(wp_id)))
+    return found_workpackages
 
 def run_new_benchmark(args):
     """Start a new benchmark run"""
@@ -572,6 +595,29 @@ def _remove_benchmark(benchmark_folder, args):
     if remove:
         # Delete benchmark folder
         shutil.rmtree(benchmark_folder, ignore_errors=True)
+        
+def _remove_workpackages(workpackage_folder, args):
+    """Remove existing workpackages"""
+    benchmark = workpackage_folder[0].benchmark
+    remove = True
+    for workpackage in workpackage_folder:
+        if not args.force:
+            try:
+                inp = raw_input("Really remove \"{0}\" and maybe his children (y/n):"
+                            .format(workpackage.workpackage_dir))
+            except NameError:
+                inp = input("Really remove \"{0}\" and maybe his children (y/n):"
+                        .format(workpackage.workpackage_dir))
+            remove = inp.startswith("y")
+        if remove:
+            if workpackage.children_future is not None:
+                for child in workpackage.children_future:
+                   shutil.rmtree(child.workpackage_dir, ignore_errors=True) 
+                   child._benchmark.remove_workpackage(child)
+            
+            shutil.rmtree(workpackage.workpackage_dir, ignore_errors=True)
+    benchmark.write_workpackage_information(
+        os.path.join(benchmark.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
 
 def _manipulate_comment(benchmark_folder, args):
@@ -804,6 +850,9 @@ def gen_subparser_conf():
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
                 {"help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("-w", "--workpackage"):
+                {"help": "use workpackage given by id",
                  "nargs": "+"},
             ("-f", "--force"):
                 {"help": "force removing, never prompt",

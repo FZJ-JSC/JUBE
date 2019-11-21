@@ -16,7 +16,7 @@
     
     <!-- Create a dependency between both steps -->
     <step name="second_step" depend="first_step">
-      <do>cat first_step/stdout</do> <!-- shell command -->
+      <do>cat first_step/stdout </do> <!-- shell command -->
     </step>    
   </benchmark>
 </jube>

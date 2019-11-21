@@ -14,7 +14,7 @@ class Conv():
         self.convert()
         
     def convert(self):
-         """ Opens given file, make a Tree of it and print it """
+        """ Opens given file, make a Tree of it and print it """
         file_handle = open(self.path,"r")
         data = file_handle.read()
         a = yaml.load(data,  Loader=yaml.Loader)
@@ -272,6 +272,6 @@ class XMLTree():
                     self.create_selection(attr_and_tags, current_sub)
         
 
-file = Conv("/home/zam/wellmann/jube/examples/include/main.yaml")
+file = Conv("/home/zam/wellmann/jube/examples/scripting_pattern/scripting_pattern.yaml")
 
 
