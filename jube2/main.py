@@ -599,26 +599,19 @@ def _remove_benchmark(benchmark_folder, args):
         # Delete benchmark folder
         shutil.rmtree(benchmark_folder, ignore_errors=True)
         
-def _remove_workpackage(workpackage, args=None):
+def _remove_workpackage(workpackage, args):
     """Remove existing workpackages"""
     remove = True
-    if workpackage.children:
-        for children in workpackage.children:
-            _remove_workpackage(children)
-    if args is not None:
-        if not args.force:
-            try:
-                inp = raw_input("Really remove \"{0}\" and maybe his children (y/n):"
-                            .format(workpackage.workpackage_dir))
-            except NameError:
-                inp = input("Really remove \"{0}\" and maybe his children (y/n):"
+    if not args.force:
+        try:
+            inp = raw_input("Really remove \"{0}\" and maybe his children (y/n):"
                         .format(workpackage.workpackage_dir))
-            remove = inp.startswith("y")
+        except NameError:
+            inp = input("Really remove \"{0}\" and maybe his children (y/n):"
+                    .format(workpackage.workpackage_dir))
+        remove = inp.startswith("y")
     if remove:
-        if args is not None:
-            workpackage.remove()
-        else:
-            workpackage.remove(in_benchmark=True)
+        workpackage.remove()
     
 
 

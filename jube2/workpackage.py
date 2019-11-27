@@ -272,10 +272,12 @@ class Workpackage(object):
         for operation_number in range(len(self._step.operations)):
             self.operation_done(operation_number, False)
             
-    def remove(self, in_benchmark=False):
+    def remove(self, remove_from_benchmark=False):
+        for children in self.children:
+            children.remove(remove_from_benchmark=True)
         shutil.rmtree(self.workpackage_dir, ignore_errors=True)
-        if in_benchmark:
-            self._benchmark.remove_workpackage(self)
+        if remove_from_benchmark:
+            self.benchmark.remove_workpackage(self)
         
 
     def add_parent(self, workpackage):
