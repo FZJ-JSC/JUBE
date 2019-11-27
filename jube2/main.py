@@ -100,7 +100,10 @@ def remove_benchmarks(args):
     """Remove benchmarks"""
     if(args.workpackage is not None):
         found_workpackages = search_for_workpackage(args)
-        _remove_workpackages(found_workpackages, args)
+        for workpackage in found_workpackages:
+            _remove_workpackage(workpackage, args)
+        workpackage.benchmark.write_workpackage_information(
+            os.path.join(workpackage.benchmark.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
     else:
         found_benchmarks = search_for_benchmarks(args)
         for benchmark_folder in found_benchmarks:
@@ -596,11 +599,13 @@ def _remove_benchmark(benchmark_folder, args):
         # Delete benchmark folder
         shutil.rmtree(benchmark_folder, ignore_errors=True)
         
-def _remove_workpackages(workpackage_folder, args):
+def _remove_workpackage(workpackage, args=None):
     """Remove existing workpackages"""
-    benchmark = workpackage_folder[0].benchmark
     remove = True
-    for workpackage in workpackage_folder:
+    if workpackage.children:
+        for children in workpackage.children:
+            _remove_workpackage(children)
+    if args is not None:
         if not args.force:
             try:
                 inp = raw_input("Really remove \"{0}\" and maybe his children (y/n):"
@@ -609,15 +614,12 @@ def _remove_workpackages(workpackage_folder, args):
                 inp = input("Really remove \"{0}\" and maybe his children (y/n):"
                         .format(workpackage.workpackage_dir))
             remove = inp.startswith("y")
-        if remove:
-            if workpackage.children_future is not None:
-                for child in workpackage.children_future:
-                   shutil.rmtree(child.workpackage_dir, ignore_errors=True) 
-                   child._benchmark.remove_workpackage(child)
-            
-            shutil.rmtree(workpackage.workpackage_dir, ignore_errors=True)
-    benchmark.write_workpackage_information(
-        os.path.join(benchmark.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
+    if remove:
+        if args is not None:
+            workpackage.remove()
+        else:
+            workpackage.remove(in_benchmark=True)
+    
 
 
 def _manipulate_comment(benchmark_folder, args):
