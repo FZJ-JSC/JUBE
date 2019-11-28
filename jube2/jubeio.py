@@ -846,6 +846,9 @@ class XMLParser(object):
                 async_filename = element.get("done_file")
                 if async_filename is not None:
                     async_filename = async_filename.strip()
+                error_filename = element.get("error_file")
+                if error_filename is not None:
+                    error_filename = error_filename.strip()
                 break_filename = element.get("break_file")
                 if break_filename is not None:
                     break_filename = break_filename.strip()
@@ -876,6 +879,7 @@ class XMLParser(object):
                 if cmd is None:
                     cmd = ""
                 operation = jube2.step.Operation(cmd.strip(),
+                                                 error_filename,
                                                  async_filename,
                                                  stdout_filename,
                                                  stderr_filename,
