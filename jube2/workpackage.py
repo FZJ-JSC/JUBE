@@ -29,6 +29,7 @@ import jube2.log
 import jube2.parameter
 import os
 import stat
+import shutil
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -271,6 +272,14 @@ class Workpackage(object):
         for operation_number in range(len(self._step.operations)):
             self.operation_done(operation_number, False)
 
+    def remove(self, remove_config_from_benchmark=False):
+        """Remove all data of this workpackage"""
+        for children in self.children:
+            children.remove(remove_config_from_benchmark=True)
+        shutil.rmtree(self.workpackage_dir, ignore_errors=True)
+        if remove_config_from_benchmark:
+            self.benchmark.remove_workpackage(self)
+
     def add_parent(self, workpackage):
         """Add a parent Workpackage"""
         self._parents.append(workpackage)
@@ -300,6 +309,11 @@ class Workpackage(object):
             history += parent.parent_history
         history += self._parents
         return history
+
+    @property
+    def benchmark(self):
+        """Return benchmark of this workpackage"""
+        return self._benchmark
 
     @property
     def children_future(self):
@@ -568,6 +582,14 @@ class Workpackage(object):
                                 operation_number + 1) or workpackage.done
                               ) and
                              operation.active(workpackage.parameter_dict))
+
+                    # If a workpackage is removed and restarted, a shared
+                    # operation will not be re-executed, user should be warned
+                    if shared_done and not self.operation_done(
+                            operation_number):
+                        LOGGER.warning(
+                            "\nShared operation in {0} was already executed".
+                            format(self._step.name))
 
                     # All older workpackages in tree must be done
                     for step_name in self._step.get_depend_history(

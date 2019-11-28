@@ -279,6 +279,9 @@ Remove an existing benchmark
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
    |ID_DESCRIPTION|
 
+``-w WORKPACKAGE [WORKPACKAGE ...]``, ``--workpackage WORKPACKAGE [WORKPACKAGE ...]``
+   specifc workpackage id to be removed
+
 ``-f``, ``--force``
    do not prompt
 

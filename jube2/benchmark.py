@@ -155,6 +155,13 @@ class Benchmark(object):
                     return workpackage
         return None
 
+    def remove_workpackage(self, workpackage_to_delete):
+        """Remove a specifc workpackage"""
+        stepname = workpackage_to_delete.step.name
+        if stepname in self._workpackages and \
+            workpackage_to_delete in self._workpackages[stepname]:
+            self._workpackages[stepname].remove(workpackage_to_delete)
+
     @property
     def work_stat(self):
         """Return work queue"""
