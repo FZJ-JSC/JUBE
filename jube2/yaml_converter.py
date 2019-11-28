@@ -1,17 +1,14 @@
-import xml.etree.ElementTree as ET
 from lxml import etree
 import xml.dom.minidom as DOM
 import yaml
 import jube2.util.output
 import os
-from eric6.ThirdParty.Pygments.pygments.lexers.data import YamlLexer
 
 
 class Conv():
     def __init__(self, path):
         self.path = path
         yaml.add_constructor("!include", self.yaml_include)
-        self.convert()
         
     def convert(self):
         """ Opens given file, make a Tree of it and print it """
@@ -21,7 +18,11 @@ class Conv():
         tree = XMLTree(a)
         xml = jube2.util.output.element_tree_tostring(tree.tree, encoding="UTF-8")
         xml = etree.fromstring(xml)
-        print(etree.tostring(xml, pretty_print=True).decode())
+        with open(os.path.basename(os.path.splitext(self.path)[0] + '.xml'),
+                  'w') as f: 
+            f.write(etree.tostring(xml, pretty_print=True).decode())
+        
+        return os.path.basename(os.path.splitext(self.path)[0] + '.xml')
         
     # adapted from http://code.activestate.com/recipes/577613-yaml-include-support/
     def yaml_include(self, loader, node):
@@ -36,8 +37,6 @@ class Conv():
                     _ = eval(_yaml_node_data[2])
             return _
     #              leave out the [0] if your include file drops the key ^^^
-
-        
 
 class XMLTree():
     def __init__(self, dict):
@@ -127,6 +126,17 @@ class XMLTree():
             elif key == "prepare":
                 for prepare_attr in value:
                     self.create_endtag("prepare", prepare_attr, local_sub)
+            
+    def create_include_path(self, attr_and_tags, current_sub):
+        local_sub = etree.SubElement(self.current_sub \
+                                     if current_sub is None else current_sub,
+                                     "include-path")
+        for key,value in attr_and_tags.items():
+            if key == "path":
+                for path_attr in value:
+                    self.create_endtag("path", path_attr, local_sub)
+            else:
+                local_sub.set(key, str(value))
         
     def create_parameterset(self, attr_and_tags, current_sub):
         """ Create the Subelement parameterset, search for known tags
@@ -270,8 +280,7 @@ class XMLTree():
                     self.create_patternset(attr_and_tags, current_sub)
                 elif key == "selection":
                     self.create_selection(attr_and_tags, current_sub)
+                elif key == "include-path":
+                    self.create_include_path(attr_and_tags, current_sub)
         
-
-file = Conv("/home/zam/wellmann/jube/examples/scripting_pattern/scripting_pattern.yaml")
-
 
