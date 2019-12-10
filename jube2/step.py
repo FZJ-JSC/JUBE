@@ -435,7 +435,7 @@ class Operation(object):
     
     @property
     def error_filename(self):
-        """Get async filename"""
+        """Get error filename"""
         return self._error_filename
 
     @property
