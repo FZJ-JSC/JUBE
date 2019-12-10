@@ -346,6 +346,7 @@ def search_for_benchmarks(args):
 
 
 def search_for_workpackage(args):
+    """Search for existing workpackages"""
     found_benchmarks = search_for_benchmarks(args)
     found_workpackages = list()
     for benchmark_folder in found_benchmarks:
@@ -355,8 +356,8 @@ def search_for_workpackage(args):
         if benchmark is not None:
             for wp_id in args.workpackage:
                 if benchmark.workpackage_by_id(int(wp_id)) is None:
-                    raise RuntimeError("No workpackage \"{0}\" found " +
-                                       "in benchmark \"{1}\""
+                    raise RuntimeError(("No workpackage \"{0}\" found " +
+                                        "in benchmark \"{1}\".")
                                        .format(wp_id, benchmark.id))
                 else:
                     found_workpackages.append(
@@ -608,19 +609,23 @@ def _remove_benchmark(benchmark_folder, args):
 def _remove_workpackage(workpackage, args):
     """Remove existing workpackages"""
     remove = True
-    if not args.force:
-        try:
-            inp = raw_input("Really remove \"{0}\" and its children (y/n):"
+    # Ignore deleted/unstarted workpackages
+    if workpackage.started:
+        if not args.force:
+            try:
+                inp = raw_input(("Really remove \"{0}\" and its dependent " +
+                                 "workpackages (y/n):")
+                                .format(workpackage.workpackage_dir))
+            except NameError:
+                inp = input(("Really remove \"{0}\" and its dependent " +
+                             "workpackages (y/n):")
                             .format(workpackage.workpackage_dir))
-        except NameError:
-            inp = input("Really remove \"{0}\" and its children (y/n):"
-                        .format(workpackage.workpackage_dir))
-        remove = inp.startswith("y")
-    if remove:
-        workpackage.remove()
-        workpackage.benchmark.write_workpackage_information(
-            os.path.join(workpackage.benchmark.bench_dir,
-                         jube2.conf.WORKPACKAGES_FILENAME))
+            remove = inp.startswith("y")
+        if remove:
+            workpackage.remove()
+            workpackage.benchmark.write_workpackage_information(
+                os.path.join(workpackage.benchmark.bench_dir,
+                             jube2.conf.WORKPACKAGES_FILENAME))
 
 
 def _manipulate_comment(benchmark_folder, args):

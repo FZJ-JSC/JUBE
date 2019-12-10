@@ -159,7 +159,7 @@ class Benchmark(object):
         """Remove a specifc workpackage"""
         stepname = workpackage_to_delete.step.name
         if stepname in self._workpackages and \
-            workpackage_to_delete in self._workpackages[stepname]:
+                workpackage_to_delete in self._workpackages[stepname]:
             self._workpackages[stepname].remove(workpackage_to_delete)
 
     @property
