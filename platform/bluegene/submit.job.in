@@ -15,12 +15,25 @@
 
 #PREPROCESS#
 
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
+    exit $JUBE_ERR_CODE
+fi
+
 #MEASUREMENT# #STARTER# #ARGS_STARTER# : #EXECUTABLE# #ARGS_EXECUTABLE#
+
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
+    exit $JUBE_ERR_CODE
+fi
 
 #POSTPROCESS#
 
 JUBE_ERR_CODE=$?
 if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
     exit $JUBE_ERR_CODE
 fi
 

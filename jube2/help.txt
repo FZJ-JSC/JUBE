@@ -196,7 +196,7 @@ do_tag
    A do contain a executable *Shell* operation.
 
       <do stdout="..." stderr="..." active="...">...</do>
-      <do done_file="...">...</do>
+      <do done_file="..." error_file="...">...</do>
       <do break_file="...">...</do>
       <do shared="true">...</do>
       <do work_dir="...">...</do>
@@ -218,11 +218,16 @@ do_tag
 
      * *parameter* are allowed inside this attribute
 
-   * "done_file"-filename is optional
+   * "done_file"-filename and "error_file" are optional
 
      * by using "done_file" the user can mark async-steps. The
        operation will stop until the script will create the named file
        inside the work directory.
+
+     * by using "error_file" the operation will produce a error if
+       the named file can be found inside the work directory. This
+       feature can be used together with the "done_file" to signalise
+       broken async-steps.
 
    * "break_file"-filename is optional
 

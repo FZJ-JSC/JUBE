@@ -4,7 +4,6 @@
 #SBATCH --mail-type=#NOTIFICATION_TYPE#
 #SBATCH --nodes=#NODES#
 #SBATCH --ntasks=#TASKS#
-#SBATCH --ntasks-per-node=#NCPUS#
 #SBATCH --cpus-per-task=#NTHREADS#
 #SBATCH --time=#TIME_LIMIT#
 #SBATCH --output=#STDOUTLOGFILE#
@@ -18,12 +17,25 @@
 
 #PREPROCESS#
 
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
+    exit $JUBE_ERR_CODE
+fi
+
 #MEASUREMENT# #STARTER# #ARGS_STARTER# #EXECUTABLE# #ARGS_EXECUTABLE#
+
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
+    exit $JUBE_ERR_CODE
+fi
 
 #POSTPROCESS#
 
 JUBE_ERR_CODE=$?
 if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
     exit $JUBE_ERR_CODE
 fi
 

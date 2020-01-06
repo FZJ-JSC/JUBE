@@ -497,7 +497,7 @@ Glossary
      .. code-block:: xml
 
         <do stdout="..." stderr="..." active="...">...</do>
-        <do done_file="...">...</do>
+        <do done_file="..." error_file="...">...</do>
         <do break_file="...">...</do>
         <do shared="true">...</do>
         <do work_dir="...">...</do>
@@ -512,9 +512,11 @@ Glossary
        * can be set to ``true`` or ``false`` or any *Python* parsable bool expression to enable or disable the single command
        * :term:`parameter <parameter_tag>` are allowed inside this attribute
 
-     * ``done_file``-filename is optional
+     * ``done_file``-filename and ``error_file`` are optional
 
        * by using ``done_file`` the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.
+       * by using ``error_file`` the operation will produce a error if the named file can be found inside the work directory. This feature can be used together with the
+         ``done_file`` to signalise broken async-steps.
 
      * ``break_file``-filename is optional
 

@@ -6,12 +6,14 @@
         <parameter name="submit">llsubmit</parameter>
         <parameter name="submit_script">submit.job</parameter>
         <parameter name="done_file">ready</parameter>
+        <parameter name="error_file">error</parameter>
         <parameter name="starter">runjob</parameter>
         <parameter name="export_list" mode="python">
             "$jube_wp_envlist".replace(","," ")
         </parameter>
         <parameter name="args_starter">
-            --ranks-per-node $taskspernode --np $tasks --exp-env $export_list
+            --ranks-per-node $taskspernode --np
+            $tasks --exp-env $export_list
         </parameter>
         <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
@@ -22,7 +24,8 @@
         <parameter name="chainjob_script">./prepareJobs.sh</parameter>
         <parameter name="chainjob_needs_submit">true</parameter>
         <parameter name="submit_chainjob">
-            ./chainJobs.py $shared_file; $submit submit.job
+            ./chainJobs.py $shared_file; $submit
+            submit.job
         </parameter>
     </parameterset>
 
@@ -32,9 +35,11 @@
         <parameter name="taskspernode" type="int">1</parameter>
         <parameter name="threadspertask" type="int">1</parameter>
         <parameter name="tasks" mode="python" type="int">
-            $nodes * $taskspernode
+            $nodes *
+            $taskspernode
         </parameter>
-        <parameter name="OMP_NUM_THREADS" type="int" export="true">
+        <parameter name="OMP_NUM_THREADS" type="int"
+            export="true">
             $threadspertask
         </parameter>
         <parameter name="network">Mesh</parameter>
@@ -42,7 +47,8 @@
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
-        <parameter name="env" separator=";">$jube_wp_envstr</parameter>
+        <parameter name="env" separator=";">$jube_wp_envstr
+        </parameter>
         <parameter name="notification">never</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
@@ -58,7 +64,8 @@
         <sub source="#ENV#" dest="$env" />
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#NOTIFY_MODE#" dest="$notification" />
-        <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
+        <sub source="#BENCHNAME#"
+            dest="&quot;${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}&quot;" />
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#JOB_CLASS#" dest="$job_class" />
         <sub source="#BGSIZE#" dest="$nodes" />
@@ -74,6 +81,7 @@
         <sub source="#EXECUTABLE#" dest="$executable" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />
+        <sub source="#FLAG_ERROR#" dest="touch $error_file" />
     </substituteset>
 
     <substituteset name="chainsub">

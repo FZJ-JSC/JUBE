@@ -10,6 +10,7 @@
             -np $tasks --exports=$jube_wp_envlist
         </parameter>
         <parameter name="done_file">ready</parameter>
+        <parameter name="error_file">error</parameter>
         <!-- Chainjob handling -->
         <parameter name="shared_folder">shared</parameter>
         <parameter name="shared_job_info">${shared_folder}/jobid</parameter>
@@ -23,15 +24,18 @@
         <parameter name="taskspernode" type="int">1</parameter>
         <parameter name="threadspertask" type="int">1</parameter>
         <parameter name="tasks" mode="python" type="int">
-            $nodes * $taskspernode // $threadspertask
+            $nodes *
+            $taskspernode // $threadspertask
         </parameter>
-        <parameter name="OMP_NUM_THREADS" type="int" export="true">
+        <parameter name="OMP_NUM_THREADS" type="int"
+            export="true">
             $threadspertask
         </parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
-        <parameter name="env" separator=";">$jube_wp_envstr</parameter>
+        <parameter name="env" separator=";">$jube_wp_envstr
+        </parameter>
         <parameter name="notification">abe</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
@@ -48,7 +52,8 @@
         <sub source="#ENV#" dest="$env" />
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#NOTIFY_MODE#" dest="$notification" />
-        <sub source="#BENCHNAME#" dest="$jube_benchmark_name" />
+        <sub source="#BENCHNAME#"
+            dest="&quot;${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}&quot;" />
         <sub source="#NODES#" dest="$nodes" />
         <sub source="#NCPUS#" dest="$taskspernode" />
         <sub source="#NTHREADS#" dest="$threadspertask" />
@@ -60,10 +65,12 @@
         <sub source="#MEASUREMENT#" dest="$measurement" />
         <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
-        <sub source="#ADDITIONAL_JOB_CONFIG#" dest="$additional_job_config" />
+        <sub source="#ADDITIONAL_JOB_CONFIG#"
+            dest="$additional_job_config" />
         <sub source="#EXECUTABLE#" dest="$executable" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />
+        <sub source="#FLAG_ERROR#" dest="touch $error_file" />
     </substituteset>
 
     <substituteset name="chainsub">
