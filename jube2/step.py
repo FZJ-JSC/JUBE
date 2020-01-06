@@ -410,9 +410,9 @@ class Operation(object):
     executed in a shell environment.
     """
 
-    def __init__(self, do, error_filename, async_filename=None, stdout_filename=None,
+    def __init__(self, do, async_filename=None, stdout_filename=None,
                  stderr_filename=None, active="true", shared=False,
-                 work_dir=None, break_filename=None):
+                 work_dir=None, break_filename=None, error_filename=None):
         self._do = do
         self._error_filename = error_filename
         self._async_filename = async_filename
@@ -432,7 +432,7 @@ class Operation(object):
     def stderr_filename(self):
         """Get stderr filename"""
         return self._stderr_filename
-    
+
     @property
     def error_filename(self):
         """Get error filename"""
@@ -636,7 +636,7 @@ class Operation(object):
                     LOGGER.debug("  skip waiting")
                 else:
                     continue_op = False
-                    
+
         #Search for error file
         if self._error_filename is not None:
             error_filename = jube2.util.util.substitution(
@@ -649,7 +649,9 @@ class Operation(object):
                 if jube2.conf.DEBUG_MODE:
                     LOGGER.debug("  skip error")
                 else:
-                    raise(RuntimeError("Find error file"))
+                    raise(RuntimeError(("Error file \"{0}\" found while " +
+                                        "running the command \"{1}\".").format(
+                                            error_filename, do)))
 
         return continue_op, continue_cycle
 
