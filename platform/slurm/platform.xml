@@ -29,6 +29,9 @@
         </parameter>
         <parameter name="queue">batch</parameter>
         <parameter name="account"></parameter>
+        <parameter name="account_slurm" mode="python">
+            "#SBATCH --account=$account" if "$account" else ""
+        </parameter>
         <parameter name="gres"></parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
@@ -59,7 +62,7 @@
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#PREPROCESS#" dest="$preprocess" />
         <sub source="#POSTPROCESS#" dest="$postprocess" />
-        <sub source="#ACCOUNT#" dest="$account" />
+        <sub source="#ACCOUNT_CONFIG#" dest="$account_slurm" />
         <sub source="#QUEUE#" dest="$queue" />
         <sub source="#GRES#" dest="$gres" />
         <sub source="#STARTER#" dest="$starter" />

@@ -26,8 +26,7 @@
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
-        <parameter name="env" separator=";">$jube_wp_envstr
-        </parameter>
+        <parameter name="env" separator=";">$jube_wp_envstr</parameter>
         <parameter name="notification">ALL</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
