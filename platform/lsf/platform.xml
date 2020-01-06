@@ -17,8 +17,7 @@
         <parameter name="taskspernode" type="int">1</parameter>
         <parameter name="threadspertask" type="int">1</parameter>
         <parameter name="tasks" mode="python" type="int">
-            $nodes *
-            $taskspernode
+            $nodes * $taskspernode
         </parameter>
         <parameter name="OMP_NUM_THREADS" type="int" export="true">
             $threadspertask
