@@ -287,6 +287,7 @@
     <xs:complexContent>
       <xs:extension base="stringTagType">
         <xs:attribute name="done_file" type="xs:string" use="optional" />
+        <xs:attribute name="error_file" type="xs:string" use="optional" />
         <xs:attribute name="break_file" type="xs:string" use="optional" />
         <xs:attribute name="stdout" type="xs:string" use="optional" />
         <xs:attribute name="stderr" type="xs:string" use="optional" />

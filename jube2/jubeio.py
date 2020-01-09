@@ -879,14 +879,14 @@ class XMLParser(object):
                 if cmd is None:
                     cmd = ""
                 operation = jube2.step.Operation(cmd.strip(),
-                                                 error_filename,
                                                  async_filename,
                                                  stdout_filename,
                                                  stderr_filename,
                                                  active,
                                                  shared,
                                                  alt_work_dir,
-                                                 break_filename)
+                                                 break_filename,
+                                                 error_filename)
                 step.add_operation(operation)
             elif element.tag == "use":
                 step.add_uses(XMLParser._extract_use(element))

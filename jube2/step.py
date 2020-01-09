@@ -649,6 +649,7 @@ class Operation(object):
                 if jube2.conf.DEBUG_MODE:
                     LOGGER.debug("  skip error")
                 else:
+                    do = jube2.util.util.substitution(self._do, parameter_dict)
                     raise(RuntimeError(("Error file \"{0}\" found while " +
                                         "running the command \"{1}\".").format(
                                             error_filename, do)))

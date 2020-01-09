@@ -112,6 +112,7 @@
                         tag CDATA #IMPLIED>
 <!ELEMENT do ANY>
 <!ATTLIST do            done_file CDATA #IMPLIED
+                        error_file CDATA #IMPLIED
                         break_file CDATA #IMPLIED
                         active CDATA #IMPLIED
                         shared (true|false|True|False) #IMPLIED
