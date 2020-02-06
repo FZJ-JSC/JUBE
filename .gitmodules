@@ -1,0 +1,3 @@
+[submodule "juri"]
+	path = juri
+	url = ssh://git@gitlab.version.fz-juelich.de:10022/luehrs2/juri.git
