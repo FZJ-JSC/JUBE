@@ -644,13 +644,13 @@ class Operation(object):
             error_filename = \
                 os.path.expandvars(os.path.expanduser(error_filename))
             if os.path.exists(os.path.join(work_dir, error_filename)):
-                LOGGER.debug("Find error file \"{0}\" ..."
+                LOGGER.debug("Checking for error file \"{0}\" ..."
                              .format(error_filename))
                 if jube2.conf.DEBUG_MODE:
                     LOGGER.debug("  skip error")
                 else:
                     do = jube2.util.util.substitution(self._do, parameter_dict)
-                    raise(RuntimeError(("Error file \"{0}\" found while " +
+                    raise(RuntimeError(("Error file \"{0}\" found after " +
                                         "running the command \"{1}\".").format(
                                             error_filename, do)))
 
