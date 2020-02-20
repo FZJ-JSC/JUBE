@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2019
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -97,10 +97,18 @@ def analyse_benchmarks(args):
 
 
 def remove_benchmarks(args):
-    """Remove benchmarks"""
-    found_benchmarks = search_for_benchmarks(args)
-    for benchmark_folder in found_benchmarks:
-        _remove_benchmark(benchmark_folder, args)
+    """Remove benchmarks or workpackages"""
+    if(args.workpackage is not None):
+        # If a workpackage id is provided by the user, only specific
+        # workpackages will be removed
+        found_workpackages = search_for_workpackage(args)
+        for workpackage in found_workpackages:
+            _remove_workpackage(workpackage, args)
+    else:
+        # Delete complete benchmarks
+        found_benchmarks = search_for_benchmarks(args)
+        for benchmark_folder in found_benchmarks:
+            _remove_benchmark(benchmark_folder, args)
 
 
 def command_help(args):
@@ -335,6 +343,26 @@ def search_for_benchmarks(args):
 
     found_benchmarks.sort()
     return found_benchmarks
+
+
+def search_for_workpackage(args):
+    """Search for existing workpackages"""
+    found_benchmarks = search_for_benchmarks(args)
+    found_workpackages = list()
+    for benchmark_folder in found_benchmarks:
+        benchmark = \
+            _load_existing_benchmark(args, benchmark_folder,
+                                     load_analyse=False)
+        if benchmark is not None:
+            for wp_id in args.workpackage:
+                if benchmark.workpackage_by_id(int(wp_id)) is None:
+                    raise RuntimeError(("No workpackage \"{0}\" found " +
+                                        "in benchmark \"{1}\".")
+                                       .format(wp_id, benchmark.id))
+                else:
+                    found_workpackages.append(
+                        benchmark.workpackage_by_id(int(wp_id)))
+    return found_workpackages
 
 
 def run_new_benchmark(args):
@@ -578,6 +606,28 @@ def _remove_benchmark(benchmark_folder, args):
         shutil.rmtree(benchmark_folder, ignore_errors=True)
 
 
+def _remove_workpackage(workpackage, args):
+    """Remove existing workpackages"""
+    remove = True
+    # Ignore deleted/unstarted workpackages
+    if workpackage.started:
+        if not args.force:
+            try:
+                inp = raw_input(("Really remove \"{0}\" and its dependent " +
+                                 "workpackages (y/n):")
+                                .format(workpackage.workpackage_dir))
+            except NameError:
+                inp = input(("Really remove \"{0}\" and its dependent " +
+                             "workpackages (y/n):")
+                            .format(workpackage.workpackage_dir))
+            remove = inp.startswith("y")
+        if remove:
+            workpackage.remove()
+            workpackage.benchmark.write_workpackage_information(
+                os.path.join(workpackage.benchmark.bench_dir,
+                             jube2.conf.WORKPACKAGES_FILENAME))
+
+
 def _manipulate_comment(benchmark_folder, args):
     """Change or append the comment in given benchmark."""
     benchmark = _load_existing_benchmark(args,
@@ -802,14 +852,17 @@ def gen_subparser_conf():
 
     # remove subparser
     subparser_configuration["remove"] = {
-        "help": "remove benchmark",
+        "help": "remove benchmark or workpackages",
         "func": remove_benchmarks,
         "arguments": {
             ('dir',):
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"help": "use benchmarks given by id",
+                {"help": "remove benchmarks given by id",
+                 "nargs": "+"},
+            ("-w", "--workpackage"):
+                {"help": "specifc workpackage id to be removed",
                  "nargs": "+"},
             ("-f", "--force"):
                 {"help": "force removing, never prompt",

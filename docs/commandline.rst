@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2019
+   # Copyright (C) 2008-2020
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -278,6 +278,9 @@ Remove an existing benchmark
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
    |ID_DESCRIPTION|
+
+``-w WORKPACKAGE [WORKPACKAGE ...]``, ``--workpackage WORKPACKAGE [WORKPACKAGE ...]``
+   specifc workpackage id to be removed
 
 ``-f``, ``--force``
    do not prompt
