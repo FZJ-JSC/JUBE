@@ -161,6 +161,7 @@ attlist.use &=
 do = element do { attlist.do, any }
 attlist.do &=
   attribute done_file { text }?,
+  attribute error_file { text }?,
   attribute break_file { text }?,
   attribute active { text }?,
   attribute shared { "true" | "false" | "True" | "False" }?,

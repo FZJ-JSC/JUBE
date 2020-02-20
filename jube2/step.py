@@ -412,8 +412,9 @@ class Operation(object):
 
     def __init__(self, do, async_filename=None, stdout_filename=None,
                  stderr_filename=None, active="true", shared=False,
-                 work_dir=None, break_filename=None):
+                 work_dir=None, break_filename=None, error_filename=None):
         self._do = do
+        self._error_filename = error_filename
         self._async_filename = async_filename
         self._break_filename = break_filename
         self._stdout_filename = stdout_filename
@@ -431,6 +432,11 @@ class Operation(object):
     def stderr_filename(self):
         """Get stderr filename"""
         return self._stderr_filename
+
+    @property
+    def error_filename(self):
+        """Get error filename"""
+        return self._error_filename
 
     @property
     def async_filename(self):
@@ -631,6 +637,23 @@ class Operation(object):
                 else:
                     continue_op = False
 
+        #Search for error file
+        if self._error_filename is not None:
+            error_filename = jube2.util.util.substitution(
+                self._error_filename, parameter_dict)
+            error_filename = \
+                os.path.expandvars(os.path.expanduser(error_filename))
+            if os.path.exists(os.path.join(work_dir, error_filename)):
+                LOGGER.debug("Checking for error file \"{0}\" ..."
+                             .format(error_filename))
+                if jube2.conf.DEBUG_MODE:
+                    LOGGER.debug("  skip error")
+                else:
+                    do = jube2.util.util.substitution(self._do, parameter_dict)
+                    raise(RuntimeError(("Error file \"{0}\" found after " +
+                                        "running the command \"{1}\".").format(
+                                            error_filename, do)))
+
         return continue_op, continue_cycle
 
     def etree_repr(self):
@@ -639,6 +662,8 @@ class Operation(object):
         do_etree.text = self._do
         if self._async_filename is not None:
             do_etree.attrib["done_file"] = self._async_filename
+        if self._error_filename is not None:
+            do_etree.attrib["error_file"] = self._error_filename
         if self._break_filename is not None:
             do_etree.attrib["break_file"] = self._break_filename
         if self._stdout_filename is not None:
