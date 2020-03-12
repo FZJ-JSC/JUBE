@@ -178,7 +178,7 @@ Glossary
         * allowed: ``int``, ``float`` or ``string``
 
       * ``default`` is optional: Specify default value if pattern cannot be found or if it cannot be evaluated
-      * ``dotall`` is optional (default: ``false``): Can be set to ``true```or ``false`` to specify if a ``.`` within the regular expression
+      * ``dotall`` is optional (default: ``false``): Can be set to ``true`` or ``false`` to specify if a ``.`` within the regular expression
         should also match newline characters, which can be very helpfull to extract a line only after a specific header was mentioned.
 
    statistical_values
