@@ -597,7 +597,7 @@ class StaticParameter(Parameter):
                  parameter_mode="text", unit="", export=False,
                  update_mode=NEVER_MODE, idx=-1, eval_helper=None):
         Parameter.__init__(self, name, value, separator, parameter_type,
-                           parameter_mode, unit="", export, update_mode, idx,
+                           parameter_mode, unit, export, update_mode, idx,
                            eval_helper)
         self._depending_parameter = \
             set([other_par[1] for other_par in
