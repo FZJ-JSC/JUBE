@@ -181,11 +181,12 @@ class Pattern(jube2.parameter.StaticParameter):
         # Unicode conversion
         value = "" + value
 
+        self._unit = unit
+
         jube2.parameter.StaticParameter.__init__(
             self, name, value, parameter_type=content_type,
-            parameter_mode=pattern_mode)
+            parameter_mode=pattern_mode, unit=self._unit)
 
-        self._unit = unit
 
     @property
     def derived(self):
