@@ -338,7 +338,7 @@ class Parameter(object):
         re.compile(r"(?<!\$)(?:\$\$)*\$(?!\$)(\{)?(\w+?)(?(1)\}|(?=\W|$))")
 
     def __init__(self, name, value, separator=None, parameter_type="string",
-                 parameter_mode="text", export=False,
+                 parameter_mode="text", unit="", export=False,
                  update_mode=NEVER_MODE, idx=-1, eval_helper=None):
         self._name = name
         self._value = value
@@ -348,6 +348,7 @@ class Parameter(object):
             self._separator = separator
         self._type = parameter_type
         self._mode = parameter_mode
+        self._unit = unit
         self._based_on = None
         self._export = export
         self._idx = idx
@@ -359,7 +360,7 @@ class Parameter(object):
 
     @staticmethod
     def create_parameter(name, value, separator=None, parameter_type="string",
-                         selected_value=None, parameter_mode="text",
+                         selected_value=None, parameter_mode="text", unit="",
                          export=False, no_templates=False,
                          update_mode=NEVER_MODE, idx=-1, eval_helper=None,
                          fixed=False):
@@ -385,23 +386,23 @@ class Parameter(object):
                jube2.conf.ALLOWED_ADVANCED_MODETYPES)):
             if fixed:
                 result = FixedParameter(name, value, separator, parameter_type,
-                                        parameter_mode, export, update_mode,
-                                        idx, eval_helper)
+                                        parameter_mode, unit, export, 
+                                        update_mode, idx, eval_helper)
             else:
                 result = StaticParameter(name, value, separator,
-                                         parameter_type, parameter_mode,
+                                         parameter_type, parameter_mode, unit
                                          export, update_mode, idx, eval_helper)
         else:
             result = TemplateParameter(name, values, separator, parameter_type,
-                                       parameter_mode, export, update_mode,
-                                       idx, eval_helper)
+                                       parameter_mode, unit, export,
+                                       update_mode, idx, eval_helper)
 
         if selected_value is not None:
             tmp = result
             parameter_mode = "text"
             result = FixedParameter(name, selected_value, separator,
-                                    parameter_type, parameter_mode, export,
-                                    update_mode, idx, eval_helper)
+                                    parameter_type, parameter_mode, unit,
+                                    export, update_mode, idx, eval_helper)
             result.based_on = tmp
         return result
 
@@ -471,6 +472,11 @@ class Parameter(object):
     def mode(self):
         """Return parameter mode"""
         return self._mode
+        
+    @property
+    def unit(self):
+        """Return unit"""
+        return self.unit
 
     @property
     def value(self):
@@ -573,6 +579,9 @@ class Parameter(object):
             parameter_etree.attrib["mode"] = self._mode
         if self._export:
             parameter_etree.attrib["export"] = "true"
+        if self._unit != "":
+            parameter_etree.attrib["unit"] = self._unit
+
 
         return parameter_etree
 
@@ -585,10 +594,10 @@ class StaticParameter(Parameter):
     """A StaticParameter can be substituted and evaluated."""
 
     def __init__(self, name, value, separator=None, parameter_type="string",
-                 parameter_mode="text", export=False,
+                 parameter_mode="text", unit="", export=False,
                  update_mode=NEVER_MODE, idx=-1, eval_helper=None):
         Parameter.__init__(self, name, value, separator, parameter_type,
-                           parameter_mode, export, update_mode, idx,
+                           parameter_mode, unit="", export, update_mode, idx,
                            eval_helper)
         self._depending_parameter = \
             set([other_par[1] for other_par in
@@ -705,6 +714,7 @@ class StaticParameter(Parameter):
                                                separator=self._separator,
                                                parameter_type=self._type,
                                                parameter_mode=mode,
+                                               unit=self._unit,
                                                export=self._export,
                                                no_templates=no_templates,
                                                update_mode=self._update_mode,
@@ -755,6 +765,7 @@ class TemplateParameter(Parameter):
                                            value=value,
                                            separator=self._separator,
                                            parameter_type=self._type,
+                                           unit = self._unit,
                                            export=self._export,
                                            update_mode=self._update_mode,
                                            idx=index)
@@ -769,10 +780,10 @@ class FixedParameter(StaticParameter):
     """
 
     def __init__(self, name, value, separator=None, parameter_type="string",
-                 parameter_mode="text", export=False,
+                 parameter_mode="text", unit="",  export=False,
                  update_mode=NEVER_MODE, idx=-1, eval_helper=None):
         StaticParameter.__init__(self, name, value, separator, parameter_type,
-                                 parameter_mode, export, update_mode, idx,
+                                 parameter_mode, unit, export, update_mode, idx,
                                  eval_helper)
         self._depending_parameter = set()
 
