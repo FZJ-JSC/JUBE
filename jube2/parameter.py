@@ -390,7 +390,7 @@ class Parameter(object):
                                         update_mode, idx, eval_helper)
             else:
                 result = StaticParameter(name, value, separator,
-                                         parameter_type, parameter_mode, unit
+                                         parameter_type, parameter_mode, unit,
                                          export, update_mode, idx, eval_helper)
         else:
             result = TemplateParameter(name, values, separator, parameter_type,
