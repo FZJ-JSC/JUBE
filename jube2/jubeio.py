@@ -1261,7 +1261,7 @@ class XMLParser(object):
             parameter = \
                 jube2.parameter.Parameter.create_parameter(
                     name, value, separator, parameter_type, selected_value,
-                    parameter_mode, param_unit, export, update_mode=parameter_update_mode,
+                    parameter_mode, parameter_unit, export, update_mode=parameter_update_mode,
                     idx=idx)
             parameters.append(parameter)
         return parameters
