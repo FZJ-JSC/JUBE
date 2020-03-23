@@ -187,9 +187,11 @@ class KeyValuesResult(Result):
             return key_etree
 
         def __eq__(self, other):
+	    print("hallooo1")
             return self.resulting_name == other.resulting_name
 
         def __hash__(self):
+	    print("hallooo2")
             return hash(self.resulting_name)
 
     def __init__(self, name, sort_names=None, res_filter=None):
