@@ -305,12 +305,18 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
 
 def print_benchmark_status(benchmark):
-    """Print FINISHED or "RUNNING" dependign on the workpackage status"""
-    all_done = True
+    """Print FINISHED, RUNNING or ERROR dependign on the workpackage status"""
+    done = True
+    error = False
+    running = False
     for step_name in benchmark.workpackages:
         for workpackage in benchmark.workpackages[step_name]:
-            all_done = workpackage.done and all_done
-    if all_done:
-        print("FINISHED")
-    else:
+	    running = not workpackage.done and not workpackage.error
+	    error = workpackage.error
+            done = workpackage.done and done
+    if running:
         print("RUNNING")
+    elif error:
+	print("ERROR")
+    elif done:
+	print("FINISHED")
