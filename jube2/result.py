@@ -198,7 +198,7 @@ class Result(object):
 
         alt_pattern_names = list(pattern_names)
         for i, pattern_name in enumerate(alt_pattern_names):
-            for option in ["last", "min", "max", "avg", "sum", "std"]:
+            for option in ["last", "min", "max", "avg", "sum", "std", "first"]:
                 matcher = re.match("^(.+)_{0}$".format(option), pattern_name)
                 if matcher:
                     alt_pattern_names[i] = matcher.group(1)
