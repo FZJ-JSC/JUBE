@@ -288,7 +288,6 @@ class Analyser(object):
                         elif pattern.content_type == "float":
                             default = float(default)
                         new_result_dict[pattern.name] = default
-			new_result_dict[pattern.name + "_first"] = default
                         new_result_dict[pattern.name + "_cnt"] = 0
                         new_result_dict[pattern.name + "_last"] = default
                         if pattern.content_type in ["int", "float"]:
@@ -422,6 +421,10 @@ class Analyser(object):
             match_list = new_match_list
 
             if len(match_list) > 0:
+		# First match is default
+                if "first" not in match_dict[pattern.name]:
+                    match_dict[pattern.name]["first"] = match_list[0]
+
                 for match in match_list:
                     if pattern.content_type in ["int", "float"]:
                         if "min" in match_dict[pattern.name]:
@@ -463,7 +466,6 @@ class Analyser(object):
                     else:
                         match_dict[pattern.name]["std"] = 0
 
-		match_dict[pattern.name]["first"] = match_list[0]
                 match_dict[pattern.name]["last"] = match_list[-1]
 
         info_str = "      file \"{0}\" scanned pattern found:\n".format(
@@ -482,8 +484,8 @@ class Analyser(object):
             for option in match_dict[pattern_name]:
                 if option == "first":
                     name = pattern_name
-		    result_dict[name] = match_dict[pattern_name][option]
-	        name = "{0}_{1}".format(pattern_name, option)
+		else:
+                    name = "{0}_{1}".format(pattern_name, option)
                 result_dict[name] = match_dict[pattern_name][option]
 
         return result_dict, match_dict
