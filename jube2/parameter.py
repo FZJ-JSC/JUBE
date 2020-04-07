@@ -476,7 +476,7 @@ class Parameter(object):
     @property
     def unit(self):
         """Return unit"""
-        return self.unit
+        return self._unit
 
     @property
     def value(self):
