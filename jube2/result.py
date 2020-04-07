@@ -109,9 +109,10 @@ class Result(object):
             if analyse is None:
                 LOGGER.warning(("No data found for analyser \"{0}\" "
                                 "in benchmark run {1}. "
-                                "Run analyse step first please.")
+                                "Run analyse step automatically.")
                                .format(analyser_name, self._benchmark.id))
-                continue
+                analyser.analyse()
+		analyse = analyser.analyse_result	
 
             # Create workpackage chains
             wp_chains = list()
