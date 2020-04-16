@@ -428,14 +428,14 @@ E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
    <pattern name="jube_pat_int" type="int">([+-]?\d+)</pattern>
    <pattern name="jube_pat_fp" type="float">([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)</pattern>
 
-If there are multiple matches inside a single file you can add a :term:`reduce option <pattern_tag>`. Normally only the first match will be extracted.
+If there are multiple matches inside a single file you can add a :term:`reduce option <analyser_tag>`. By default, only the first match will be extracted.
 
 To use your ``<patternset>`` you have to specify the files which should be parsed. This can be done using the ``<analyser>``.
 It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
-The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to additionally add complete new
-parametersets.
+The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to include additional ``<parameterset>`` 
+that have not been already used within the analysed ``<step>``.
 
 To run the anlayse you have to write::
 
@@ -450,7 +450,7 @@ To create the result table you have to write::
 
    >>> jube result bench_run -i last
 
-The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` can also be replaced by a specific benchmark id.
+The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` is the default option and can also be replaced by a specific benchmark id.
 If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
 
 Output of the given example:
@@ -462,6 +462,10 @@ Output of the given example:
         1 |          1
         2 |          2
         4 |          4
+
+The analyse and result instructions can be combined within one single command:
+
+   >>> jube result bench_run -a
 
 This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about
 including external sets, jobsystem representation and scripting parameter.
