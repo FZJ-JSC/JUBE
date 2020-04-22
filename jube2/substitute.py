@@ -82,7 +82,6 @@ class Substituteset(object):
         else:
             sub_list = self._sub_list
 
-        print(sub_list)
         # Do file substitution
         for data in self._files:
             outfile_name = data[0]
