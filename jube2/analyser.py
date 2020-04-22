@@ -484,7 +484,7 @@ class Analyser(object):
             for option in match_dict[pattern_name]:
                 if option == "first":
                     name = pattern_name
-		        else:
+                else:
                     name = "{0}_{1}".format(pattern_name, option)
                 result_dict[name] = match_dict[pattern_name][option]
 
