@@ -1510,7 +1510,6 @@ class XMLParser(object):
                 if type is None:
                     type = "text"
                 subs.append(jube2.substitute.Sub(source, type, dest))
-                print(subs)
         return (files, subs)
 
     @staticmethod

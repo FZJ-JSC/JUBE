@@ -22,6 +22,7 @@ from __future__ import (print_function,
                         division)
 
 import os
+import re
 import jube2.util.util
 import jube2.util.output
 import jube2.conf
@@ -72,15 +73,14 @@ class Substituteset(object):
 
         # Do pre-substitution of source and destination-variables
         if parameter_dict is not None:
-            substitute_dict = dict()
+            sub_list = list()
             for sub in self._sub_list:
                 new_source = jube2.util.util.substitution(sub.source, parameter_dict)
                 new_dest = jube2.util.util.substitution(
                     sub.dest, parameter_dict)
-                substitute_dict[new_source] = new_dest
+                sub_list.append(Sub(new_source, sub.type, new_dest))
         else:
-            for sub in self._sub_list:
-                substitute_dict[sub.source] = sub.dest
+            sub_list = self._sub_list
 
         # Do file substitution
         for data in self._files:
@@ -97,9 +97,9 @@ class Substituteset(object):
 
             LOGGER.debug("  substitute:\n" +
                          jube2.util.output.text_table(
-                             [("source", "dest")] + [(source, dest)
-                                                     for source, dest in
-                                                     substitute_dict.items()],
+                             [("source", "dest")] + [(sub.source, sub.dest)
+                                                     for sub in
+                                                     self._sub_list],
                              use_header_line=True, indent=9,
                              align_right=False))
             if not jube2.conf.DEBUG_MODE:
@@ -115,8 +115,11 @@ class Substituteset(object):
                 file_handle.close()
 
                 # Substitute
-                for source, dest in substitute_dict.items():
-                    text = text.replace(source, dest)
+                for sub in sub_list:
+                    if sub.type == "text":
+                        text = text.replace(sub.source, sub.dest)
+                    else:
+                        text = re.sub(sub.source, sub.dest, text)
 
                 # Write out-file
                 file_handle = codecs.open(outfile, out_mode, "utf-8")
