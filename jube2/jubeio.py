@@ -1147,7 +1147,7 @@ class XMLParser(object):
                         jube2.substitute.Substituteset(name, files, subs)
                 else:
                     result_set.update_files(files)
-                    result_set.update_substitute(subs)
+                    result_set.update_subs(subs)
             elif set_type == "fileset":
                 if result_set is None:
                     result_set = jube2.fileset.Fileset(name)
@@ -1466,7 +1466,7 @@ class XMLParser(object):
                     self._extract_extern_set(parts[0], "substituteset", name,
                                              search_name)
                 substitutesets[name].update_files(files)
-                substitutesets[name].update_substitute(subs)
+                substitutesets[name].update_subs(subs)
             else:
                 substitutesets[name] = \
                     jube2.substitute.Substituteset(name, files, subs)
@@ -1480,7 +1480,7 @@ class XMLParser(object):
         """
         valid_tags = ["iofile", "sub"]
         files = list()
-        subs = dict()
+        subs = list()
         for sub in etree_substituteset:
             XMLParser._check_tag(sub, valid_tags)
             if sub.tag == "iofile":
@@ -1506,7 +1506,11 @@ class XMLParser(object):
                     if dest is None:
                         dest = ""
                 dest = dest.strip() + ""
-                subs[source] = dest
+                type = sub.get("type")
+                if type is None:
+                    type = "text"
+                subs.append(jube2.substitute.Sub(source, type, dest))
+                print(subs)
         return (files, subs)
 
     @staticmethod
