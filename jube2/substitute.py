@@ -82,6 +82,7 @@ class Substituteset(object):
         else:
             sub_list = self._sub_list
 
+        print(sub_list)
         # Do file substitution
         for data in self._files:
             outfile_name = data[0]
@@ -166,5 +167,13 @@ class Sub(object):
     def dest(self):
         """Return dest of Sub"""
         return self._dest
+    
+    def __eq__(self, other):
+        return (self._source == other.source \
+               and self._dest == other.dest \
+               and self.type == othe.type)
+    
+    def __hash__(self):
+        return hash(self._source)
 
     
