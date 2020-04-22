@@ -112,9 +112,9 @@ class SysloggedResult(KeyValuesResult):
         else:
             self._syslog_fmt_string = syslog_fmt_string
 
-    def create_result_data(self):
+    def create_result_data(self, style, display_only = None, masking = None):
         """Create result data"""
-        result_data = KeyValuesResult.create_result_data(self)
+        result_data = KeyValuesResult.create_result_data(self, display_only, masking)
         return SysloggedResult.SyslogData(result_data, self._syslog_address,
                                           self._syslog_host, self._syslog_port,
                                           self._syslog_fmt_string)

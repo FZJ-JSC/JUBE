@@ -205,7 +205,7 @@ class KeyValuesResult(Result):
         self._keys.append(KeyValuesResult.DataKey(name, title, format_string,
                                                   unit))
 
-    def create_result_data(self):
+    def create_result_data(self, display_only = None, masking = None):
         """Create result data"""
         result_data = KeyValuesResult.KeyValuesData(self._name)
 
@@ -239,7 +239,12 @@ class KeyValuesResult(Result):
             row = list()
             cnt = 0
             for key in self._keys:
-                if key.name in dataset:
+                if display_only and key.name not in display_only:
+                    key.show = False
+                if masking and key.name in masking:
+                    key.show = False
+                        
+                if key.name in dataset and key.show:
                     # Cnt number of final entries to avoid complete empty
                     # result entries
                     cnt += 1
@@ -256,9 +261,13 @@ class KeyValuesResult(Result):
                     row.append(value)
                 else:
                     row.append("")
+                
+                if not key.show:
+                    self._keys.remove(key)
 
             if cnt > 0:
                 table_data.append(row)
+        
 
         # Add data to toe result set
         result_data.add_key_value_data(self._keys, table_data,

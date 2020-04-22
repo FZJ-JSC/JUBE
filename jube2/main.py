@@ -83,7 +83,9 @@ def benchmarks_results(args):
         if (args.num is None) or (cnt < args.num):
             result_list = _benchmark_result(benchmark_folder=benchmark_folder,
                                             args=args,
-                                            result_list=result_list)
+                                            result_list=result_list,
+                                            display_only = args.display_only, 
+                                            masking = args.masking)
             cnt += 1
     for result_data in result_list:
         result_data.create_result(reverse=args.reverse)
@@ -520,7 +522,8 @@ def _analyse_benchmark(benchmark_folder, args):
     jube2.log.only_console_log()
 
 
-def _benchmark_result(benchmark_folder, args, result_list=None):
+def _benchmark_result(benchmark_folder, args, result_list=None,
+                      display_only = None, masking = None):
     """Show benchmark result"""
     benchmark = _load_existing_benchmark(args, benchmark_folder)
     if result_list is None:
@@ -549,7 +552,9 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
     # Create benchmark results
     result_list = benchmark.create_result(only=args.only,
                                           data_list=result_list,
-                                          style=args.style)
+                                          style=args.style,
+                                          display_only = display_only, 
+                                          masking = masking)
 
     # Reset logging
     jube2.log.only_console_log()
@@ -790,7 +795,13 @@ def gen_subparser_conf():
                 {"type": int, "help": "show only last N benchmarks"},
             ("-s", "--style"):
                 {"help": "overwrites table style type",
-                 "choices": ["pretty", "csv"]}
+                 "choices": ["pretty", "csv"]},
+            ("-d", "--display_only"):
+                {"nargs": "+", "help": "display only given columns",
+                "default": []},
+            ("-m", "--masking"):
+                {"nargs": "+", "help": "hides given columns",
+                 "default": []}
         }
     }
 
