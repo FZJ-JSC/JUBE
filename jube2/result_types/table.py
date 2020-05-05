@@ -95,8 +95,6 @@ class Table(KeyValuesResult):
             data += self._data
             if self._style == "pretty":
                 output = "{0}:\n".format(self.name)
-            elif self._style == "csv":
-                output = ""
             else:
                 output = ""
                 
