@@ -95,11 +95,14 @@ class Table(KeyValuesResult):
             data += self._data
             if self._style == "pretty":
                 output = "{0}:\n".format(self.name)
+            elif self._style == "csv":
+                output = ""
             else:
                 output = ""
+                
             output += jube2.util.output.text_table(
                 data, use_header_line=True, auto_linebreak=False, colw=colw,
-                indent=0, pretty=(self._style == "pretty"),
+                indent=0, style=self._style,
                 separator=self._separator, transpose=self._transpose)
 
             return output

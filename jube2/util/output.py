@@ -47,9 +47,8 @@ def text_line():
     """Return a horizonal ASCII line"""
     return "#" * jube2.conf.DEFAULT_WIDTH
 
-
 def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
-               auto_linebreak=True, colw=None, pretty=True, separator=None,
+               auto_linebreak=True, colw=None, style="csv", separator=None,
                transpose=False):
     """Create a ASCII based table.
     entries must contain a list of lists, use_header_line can be used to
@@ -58,7 +57,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
     Return the ASCII table
     """
 
-    if not pretty:
+    if style != "pretty":
         auto_linebreak = False
         use_header_line = False
         indent = 0
@@ -79,7 +78,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
         for i, text in enumerate(item):
             if i > len(max_length) - 1:
                 max_length.append(0)
-            if pretty:
+            if style != "csv":
                 for line in text.splitlines():
                     max_length[i] = max(max_length[i], len(line))
                 if auto_linebreak:
@@ -104,7 +103,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                         textwrap.wrap(line, jube2.conf.MAX_TABLE_CELL_WIDTH)
                 wraps.append(lines)
             else:
-                if pretty:
+                if style == "pretty":
                     wraps.append(text.splitlines())
                 else:
                     wraps.append([text.replace("\n", " ")])
@@ -126,7 +125,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                     align = "<"
                 line_str += \
                     ("{0:" + align + str(max_length[i]) + "s}").format(text)
-                if pretty:
+                if style == "pretty":
                     if i < len(max_length) - 1:
                         if separator is None:
                             line_str += " | "
