@@ -47,8 +47,9 @@ def text_line():
     """Return a horizonal ASCII line"""
     return "#" * jube2.conf.DEFAULT_WIDTH
 
+
 def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
-               auto_linebreak=True, colw=None, style="csv", separator=None,
+               auto_linebreak=True, colw=None, style="pretty", separator=None,
                transpose=False):
     """Create a ASCII based table.
     entries must contain a list of lists, use_header_line can be used to
@@ -125,18 +126,11 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                     align = "<"
                 line_str += \
                     ("{0:" + align + str(max_length[i]) + "s}").format(text)
-                if style == "pretty":
-                    if i < len(max_length) - 1:
-                        if separator is None:
-                            line_str += " | "
-                        else:
-                            line_str += separator
-                else:
-                    if i < len(max_length) - 1:
-                        if separator is None:
-                            line_str += ","
-                        else:
-                            line_str += separator
+                if i < len(max_length) - 1:
+                    if separator is None:
+                        line_str += " | " if style == "pretty" else ","
+                    else:
+                        line_str += separator
             line_str += "\n"
             table_str += line_str
             height += 1

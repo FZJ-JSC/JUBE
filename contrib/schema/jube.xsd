@@ -271,6 +271,7 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="csv" />
       <xs:enumeration value="pretty" />
+      <xs:enumeration value="aligned" />
     </xs:restriction>
   </xs:simpleType>
   

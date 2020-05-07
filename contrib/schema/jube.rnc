@@ -180,7 +180,7 @@ attlist.result &=
 table = element table { attlist.table, (column | \include)* }
 attlist.table &=
   attribute name { text },
-  attribute style { "csv" | "pretty" }?,
+  attribute style { "csv" | "pretty" | "aligned" }?,
   attribute separator { text }?,
   attribute transpose { "true" | "false" | "True" | "False" }?,
   attribute sort { text }?,

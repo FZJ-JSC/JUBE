@@ -599,7 +599,7 @@ Glossary
           ...
         </table>
 
-     * ``style`` is optional; allowed styles: ``csv``, ``pretty``; default: ``csv``
+     * ``style`` is optional; allowed styles: ``csv``, ``pretty``, ``aligned``; default: ``csv``
      * ``separator`` is optional; only used in csv-style, default: ``,``
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting

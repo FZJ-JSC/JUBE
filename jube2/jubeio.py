@@ -996,7 +996,7 @@ class XMLParser(object):
         separator = \
             etree_table.get("separator", jube2.conf.DEFAULT_SEPARATOR)
         style = etree_table.get("style", "csv").strip()
-        if style not in ["csv", "pretty", "alligned"]:
+        if style not in ["csv", "pretty", "aligned"]:
             raise ValueError("Not allowed style-type \"{0}\" "
                              "in <table name=\"{1}\">".format(style, name))
         sort_names = etree_table.get("sort", "").split(
