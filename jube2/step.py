@@ -637,7 +637,7 @@ class Operation(object):
                 else:
                     continue_op = False
 
-        #Search for error file
+        # Search for error file
         if self._error_filename is not None:
             error_filename = jube2.util.util.substitution(
                 self._error_filename, parameter_dict)

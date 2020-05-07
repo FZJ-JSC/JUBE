@@ -444,7 +444,7 @@ To run the anlayse you have to write::
 The analyse data will be stored inside the benchmark directory.
 
 The last part is the result table creation. Here you have to use an existing analyser. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
-the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv`` or ``pretty`` to get different ASCII representations.
+the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv``, ``pretty`` or ``aligned`` to get different ASCII representations.
 
 To create the result table you have to write::
 
