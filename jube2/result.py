@@ -107,12 +107,21 @@ class Result(object):
             analyse = analyser.analyse_result
             # Ignore empty analyse results
             if analyse is None:
+                LOGGER.debug(("No data found for analyser \"{0}\" "
+                              "in benchmark run {1}. "
+                              "Run analyse step automatically.")
+                             .format(analyser_name, self._benchmark.id))
+                self._benchmark.analyse(show_info=False,
+                                        specific_analyser_name=analyser_name)
+                analyse = \
+                    self._benchmark.analyser[analyser_name].analyse_result
+
+            # Check if analyse is still empty
+            if analyse is None:
                 LOGGER.warning(("No data found for analyser \"{0}\" "
-                                "in benchmark run {1}. "
-                                "Run analyse step automatically.")
+                                "in benchmark run {1}.")
                                .format(analyser_name, self._benchmark.id))
-                analyser.analyse()
-		analyse = analyser.analyse_result	
+                continue
 
             # Create workpackage chains
             wp_chains = list()

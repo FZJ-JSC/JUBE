@@ -341,14 +341,18 @@ class Benchmark(object):
                     workpackage.queued = True
                     self._work_stat.put(workpackage)
 
-    def analyse(self, show_info=True):
+    def analyse(self, show_info=True, specific_analyser_name=None):
         """Run analyser"""
 
         if show_info:
             LOGGER.info(">>> Start analyse")
 
-        for analyser in self._analyser.values():
-            analyser.analyse()
+        if specific_analyser_name is not None and \
+                specific_analyser_name in self._analyser:
+            self._analyser[specific_analyser_name].analyse()
+        else:
+            for analyser in self._analyser.values():
+                analyser.analyse()
         if ((not jube2.conf.DEBUG_MODE) and
                 (os.access(self.bench_dir, os.W_OK))):
             self.write_analyse_data(os.path.join(self.bench_dir,
