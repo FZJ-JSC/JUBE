@@ -178,7 +178,7 @@ Glossary
         * allowed: ``int``, ``float`` or ``string``
 
       * ``default`` is optional: Specify default value if pattern cannot be found or if it cannot be evaluated
-      * ``dotall`` is optional (default: ``false``): Can be set to ``true```or ``false`` to specify if a ``.`` within the regular expression
+      * ``dotall`` is optional (default: ``false``): Can be set to ``true`` or ``false`` to specify if a ``.`` within the regular expression
         should also match newline characters, which can be very helpfull to extract a line only after a specific header was mentioned.
 
    statistical_values
@@ -599,7 +599,7 @@ Glossary
           ...
         </table>
 
-     * ``style`` is optional; allowed styles: ``csv``, ``pretty``; default: ``csv``
+     * ``style`` is optional; allowed styles: ``csv``, ``pretty``, ``aligned``; default: ``csv``
      * ``separator`` is optional; only used in csv-style, default: ``,``
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting

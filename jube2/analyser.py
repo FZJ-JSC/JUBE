@@ -421,7 +421,7 @@ class Analyser(object):
             match_list = new_match_list
 
             if len(match_list) > 0:
-		# First match is default
+                # First match is default
                 if "first" not in match_dict[pattern.name]:
                     match_dict[pattern.name]["first"] = match_list[0]
 
@@ -484,7 +484,7 @@ class Analyser(object):
             for option in match_dict[pattern_name]:
                 if option == "first":
                     name = pattern_name
-		else:
+                else:
                     name = "{0}_{1}".format(pattern_name, option)
                 result_dict[name] = match_dict[pattern_name][option]
 

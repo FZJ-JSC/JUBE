@@ -128,7 +128,7 @@
                         tag CDATA #IMPLIED>
 <!ELEMENT table ((column|include)*)>
 <!ATTLIST table         name CDATA #REQUIRED
-                        style (csv|pretty) #IMPLIED
+                        style (csv|pretty|aligned) #IMPLIED
                         separator CDATA #IMPLIED
                         transpose (true|false|True|False) #IMPLIED
                         sort CDATA #IMPLIED

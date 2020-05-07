@@ -149,11 +149,11 @@ If you want to use some scripting expressions you have to create a new parameter
 Scripting pattern
 ~~~~~~~~~~~~~~~~~
 
-Similar to the :ref:`scripting_parameter` also different patterns, or patterns and parameters can be combined.
+Similar to the :ref:`scripting_parameter`, also different patterns, or patterns and parameters can be combined.
 For this a scripting pattern can be created by using the ``mode=`` attribute in the same way as it is used for the :ref:`scripting_parameter`.
 
 All scripting patterns are evaluated at the end of the analyse part. Each scripting pattern is evaluated once. If there are multiple matches
-as described in the  :ref:`statistic_values` section, only the resulting statistical pattern is available (not each individual value). Scripting pattern
+as described in the :ref:`statistic_values` section, only the resulting statistical pattern is available (not each individual value). Scripting pattern
 do not create statistic values by themselves.
 
 In addition the ``default=`` attribute can be used to set a default pattern value, if the value can't be found during the analysis.
@@ -186,7 +186,7 @@ Normally a pattern should only match a single entry in your result files. But so
 similar entries (e.g. if the benchmark uses some iteration feature).
 
 *JUBE* will create the statistical values ``last``, ``min``, ``max``, ``avg``, ``std``, ``cnt`` and ``sum`` automatically.
-To use these values, the user had to specify the pattern name followed by ``_<statistic_option>``,
+To use these values, the user have to specify the pattern name followed by ``_<statistic_option>``,
 e.g. ``pattern_name_last`` (the pattern_name itself will always be the first match).
 
 An example for multiple matches and the statistic values can be found in ``examples/statistic``.
@@ -224,20 +224,21 @@ The *JUBE* input file ``jobsystem.xml``:
    :language: xml
 
 As you can see the jobfile is very general and several parameters will be used for replacement. By using a general jobfile and the substitution mechanism
-you can control your jobsystem directly out of your *JUBE* input file.
+you can control your jobsystem directly out of your *JUBE* input file. 
+``$$`` is used for *Shell* substitutions instead of *JUBE* substitution (see :ref:`environment-handling`).
 
 The submit command is a normal *Shell* command so there are no special *JUBE* tags to submit a job.
 
 There are two new attributes:
 
   * ``done_file`` inside the ``<do>`` allows you to set a filename/path to a file which should be used by the jobfile to mark the end of execution. *JUBE* does not know when the job ends.
-    Normally it will return when the *Shell* command was finished. When using a jobsystem we had to wait until the jobfile was executed. If *JUBE* found a
+    Normally it will return when the *Shell* command was finished. When using a jobsystem the user usually have to wait until the jobfile is executed. If *JUBE* found a
     ``<do>`` containing a ``done_file`` attribute *JUBE* will return directly and will not continue automatically until the ``done_file`` exists. If you want to check the current status
     of your running steps and continue the benchmark process if possible you can type::
 
        >>> jube continue bench_run
 
-    This will continue your benchmark execution (``bench_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relativly seen towards the work directory.
+    This will continue your benchmark execution (``bench_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relatively seen towards the work directory.
   * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory gets a unique name. When changing the directory the user must select a
     unique name by his own. For example he can use ``$jube_benchmark_id`` and ``$jube_wp_id``, which are *JUBE* :term:`internal parameters <jube_variables>` and will be expanded to the current benchmark and workpackage ids. Files and directories out of a given
     ``<fileset>`` will be copied into the new work directory. Other automatic links, like the dependency links, will not be created!
@@ -275,7 +276,7 @@ The include file ``include_data.xml``:
 .. literalinclude:: ../examples/include/include_data.xml
    :language: xml
 
-All files which contain data to be included must use the *XML*-format. The include files can have a user specific structure (there can be none valid
+All files which contain data to be included must use the *XML*-format. The include files can have a user specific structure (there can be no valid
 *JUBE* tags like ``<dos>``), but the structure must be allowed by the searching mechanism (see below). The resulting file must have a valid *JUBE* structure.
 
 The main file ``main.xml``:
@@ -286,7 +287,7 @@ The main file ``main.xml``:
 In these file there are three different include types:
 
 The ``init_with`` can be used inside any set definition. Inside the given file the search mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
-``main.xml``. Inside ``main.xml`` you can add additional values or overwrite existing ones. If your include-set uses a different name inside your include file you can use ``init_with="filename.xml:new_name"``.
+``main.xml``. Inside ``main.xml`` you can add additional values or overwrite existing ones. If your include-set uses a different name inside your include file you can use ``init_with="filename.xml:old_name"``.
 
 The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure, but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the set's name must
 be unique inside the include-file.
@@ -300,8 +301,7 @@ To run the benchmark you can use the normal command::
 
    >>> jube run main.xml
 
-It will search for include files inside four different positions (in the following order):
-
+It will search for the files to include inside four different positions, in the following order:
 
 * inside a directory given over the command line interface::
 
@@ -326,6 +326,8 @@ It will search for include files inside four different positions (in the followi
 
 * inside the same directory of your ``main.xml``
 
+*JUBE* stops searching as soon as it finds the file to include, or gives an error if the file is not found.
+
 .. index:: tagging
 
 .. _tagging:
@@ -346,7 +348,7 @@ When running this example::
 
    >>> jube run tagging.xml
 
-all ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden if the tag results to ``false``. ``!deu`` stands for ``not deu``. 
+All ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden if the tag results to ``false``. ``!deu`` stands for ``not deu``. 
 To connect the ``tags`` ``|`` can be used as the oprator OR and ``+`` for the operator AND. Also brackets are allowed.
 
 The result (if no ``tag`` is set on the commandline) inside the ``stdout`` file will be
@@ -383,7 +385,7 @@ If you want to create platform independent benchmarks you can use the include fe
 All platform related sets must be declared in an includable file e.g. ``platform.xml``. There can be multiple ``platform.xml`` in different
 directories to allow different platforms. By changing the ``include-path`` the benchmark changes its platform specific data.
 
-An example benchmark structure bases on three include files:
+An example benchmark structure is based on three include files:
 
 * The main benchmark include file which contain all benchmark specific but platform independent data
 * A mostly generic platform include file which contain benchmark independent but platform specific data (this can be created once and placed somewhere
@@ -505,6 +507,8 @@ You will get the following directory structure:
 
 .. index:: environment handling
 
+.. _environment-handling:
+
 Environment handling
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -532,7 +536,7 @@ You can also export the complete environment of a step to a dependent step by us
 Parameter dependencies
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Sometimes you need parameters which based on other parameters or only a specific parameter combination make sense and other combinations
+Sometimes you need parameters which are based on other parameters or only a specific parameter combination makes sense and other combinations
 are useless or wrong. For this there are several techniques inside of *JUBE* to create such a more complex workflow.
 
 The files used for this example can be found inside ``examples/parameter_dependencies``.
@@ -571,7 +575,7 @@ Once a parameter is specified and evaluated the first time, its value will not c
 In this example ``foo`` should hold the ``$jube_wp_id``. If you have two steps, where one step depends on the other one ``foo`` will be available in both, but it will only be evaluated in
 the first one.
 
-There is a simple work-around to change the update behaviour of a parameter by using the attribute ``update_mode``:
+There is a simple workaround to change the update behaviour of a parameter by using the attribute ``update_mode``:
 
    * ``update_mode="never"`` No update (default behaviour)
    * ``update_mode="use"`` Re-evaluate the parameter if the parameterset is explicitly used
@@ -601,7 +605,7 @@ from each other leading to identical outputs otherwise.
 Step iteration
 ~~~~~~~~~~~~~~
 
-Especially in the context of benchmarking an application should be executed multiple times to generate some meaningful statistical values.
+Especially in the context of benchmarking, an application should be executed multiple times to generate some meaningful statistical values.
 The handling of statistical values is described in :ref:`statistic_values`. This allows you to aggregate multiple result lines if your application 
 automatically support to run multiple times.
 
@@ -614,7 +618,7 @@ The input file ``iterations.xml``:
 .. literalinclude:: ../examples/iterations/iterations.xml
    :language: xml
 
-In this example either step 1 as well as step 2 are executed 2 times for each parameter and dependency configuration. Because of the given parameter step 1
+In this example, both steps 1 and 2 are executed 2 times for each parameter and dependency configuration. Because of the given parameter, step 1
 is executed 6 times in total (3 parameter combinations x 2). Step 2 is executed 12 times (6 from the dependent step x 2). Each run will be executed in the normal way
 using its individual sandbox folder.
 
@@ -654,7 +658,8 @@ before applying the statistical patterns.
 Step cycle
 ~~~~~~~~~~
 
-Instead of having a new workpackage you can also redo the ``<do>`` commands inside a step using the cycle-feature.
+Instead of having a new workpackage you can also redo the ``<do>`` commands inside a step using the cycle-feature. 
+In contrast to the iterations, all executions for the cycle feature take place inside the same folder.
 
 The files used for this example can be found inside ``examples/cycle``.
 
@@ -672,7 +677,5 @@ itself is still executed). In the given example the output will be:
    1
    2
    3
-
-In contrast to the iterations, all executions for the cycle feature take place inside of the same folder.
 
 
