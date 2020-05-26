@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2019
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -98,19 +98,18 @@ def analyse_benchmarks(args):
 
 
 def remove_benchmarks(args):
-    """Remove benchmarks"""
+    """Remove benchmarks or workpackages"""
     if(args.workpackage is not None):
+        # If a workpackage id is provided by the user, only specific
+        # workpackages will be removed
         found_workpackages = search_for_workpackage(args)
         for workpackage in found_workpackages:
             _remove_workpackage(workpackage, args)
-        workpackage.benchmark.write_workpackage_information(
-            os.path.join(workpackage.benchmark.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
     else:
+        # Delete complete benchmarks
         found_benchmarks = search_for_benchmarks(args)
         for benchmark_folder in found_benchmarks:
             _remove_benchmark(benchmark_folder, args)
-        
-    
 
 
 def command_help(args):
@@ -232,7 +231,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
     jube2.log.change_logfile_name(os.path.join(
         benchmark_folder, jube2.conf.LOGFILE_PARSE_NAME))
 
-    #Add log information
+    # Add log information
     LOGGER.debug("Command: {0} {1}".format(
         os.path.basename(sys.argv[0]), " ".join(sys.argv[1:])))
     LOGGER.debug("Version: {0}".format(jube2.conf.JUBE_VERSION))
@@ -364,6 +363,26 @@ def search_for_workpackage(args):
                 found_workpackages.append(benchmark.workpackage_by_id(int(wp_id)))
     return found_workpackages
 
+def search_for_workpackage(args):
+    """Search for existing workpackages"""
+    found_benchmarks = search_for_benchmarks(args)
+    found_workpackages = list()
+    for benchmark_folder in found_benchmarks:
+        benchmark = \
+            _load_existing_benchmark(args, benchmark_folder,
+                                     load_analyse=False)
+        if benchmark is not None:
+            for wp_id in args.workpackage:
+                if benchmark.workpackage_by_id(int(wp_id)) is None:
+                    raise RuntimeError(("No workpackage \"{0}\" found " +
+                                        "in benchmark \"{1}\".")
+                                       .format(wp_id, benchmark.id))
+                else:
+                    found_workpackages.append(
+                        benchmark.workpackage_by_id(int(wp_id)))
+    return found_workpackages
+
+
 def run_new_benchmark(args):
     """Start a new benchmark run"""
 
@@ -383,7 +402,7 @@ def run_new_benchmark(args):
             filename=os.path.join(os.path.dirname(path),
                                   jube2.conf.DEFAULT_LOGFILE_NAME))
 
-        #Add log information
+        # Add log information
         LOGGER.debug("Command: {0} {1}".format(
             os.path.basename(sys.argv[0]), " ".join(sys.argv[1:])))
         LOGGER.debug("Version: {0}".format(jube2.conf.JUBE_VERSION))
@@ -428,6 +447,10 @@ def run_new_benchmark(args):
                     continue
                 bench.id = args.id[id_cnt]
                 id_cnt += 1
+            # Change runtime outpath if specified
+            if args.outpath is not None:
+                bench.outpath = args.outpath
+            # Start benchmark run
             bench.new_run()
             # Run analyse
             if args.analyse or args.result:
@@ -618,6 +641,28 @@ def _remove_workpackage(workpackage, args):
     
 
 
+def _remove_workpackage(workpackage, args):
+    """Remove existing workpackages"""
+    remove = True
+    # Ignore deleted/unstarted workpackages
+    if workpackage.started:
+        if not args.force:
+            try:
+                inp = raw_input(("Really remove \"{0}\" and its dependent " +
+                                 "workpackages (y/n):")
+                                .format(workpackage.workpackage_dir))
+            except NameError:
+                inp = input(("Really remove \"{0}\" and its dependent " +
+                             "workpackages (y/n):")
+                            .format(workpackage.workpackage_dir))
+            remove = inp.startswith("y")
+        if remove:
+            workpackage.remove()
+            workpackage.benchmark.write_workpackage_information(
+                os.path.join(workpackage.benchmark.bench_dir,
+                             jube2.conf.WORKPACKAGES_FILENAME))
+
+
 def _manipulate_comment(benchmark_folder, args):
     """Change or append the comment in given benchmark."""
     benchmark = _load_existing_benchmark(args,
@@ -700,7 +745,9 @@ def gen_subparser_conf():
             ("-r", "--result"):
                 {"action": "store_true", "help": "show results"},
             ("-m", "--comment"):
-                {"help": "add comment"}
+                {"help": "add comment"},
+            ("-o", "--outpath"):
+                {"help": "overwrite outpath directory"}
         }
     }
 
@@ -778,7 +825,7 @@ def gen_subparser_conf():
                 {"type": int, "help": "show only last N benchmarks"},
             ("-s", "--style"):
                 {"help": "overwrites table style type",
-                 "choices": ["pretty", "csv"]}
+                 "choices": ["pretty", "csv", "aligned"]}
         }
     }
 
@@ -840,14 +887,17 @@ def gen_subparser_conf():
 
     # remove subparser
     subparser_configuration["remove"] = {
-        "help": "remove benchmark",
+        "help": "remove benchmark or workpackages",
         "func": remove_benchmarks,
         "arguments": {
             ('dir',):
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
             ("-i", "--id"):
-                {"help": "use benchmarks given by id",
+                {"help": "remove benchmarks given by id",
+                 "nargs": "+"},
+            ("-w", "--workpackage"):
+                {"help": "specifc workpackage id to be removed",
                  "nargs": "+"},
             ("-w", "--workpackage"):
                 {"help": "use workpackage given by id",

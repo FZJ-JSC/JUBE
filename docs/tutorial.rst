@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2019
+   # Copyright (C) 2008-2020
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -156,8 +156,9 @@ This benchmark will produce the follwing output:
 
    ######################################################################
    # benchmark: hello_world
-
-   A simple hello world
+   # id: 0
+   #
+   # A simple hello world
    ######################################################################
 
    Running workpackages (#=done, 0=wait, E=error):
@@ -174,6 +175,7 @@ This benchmark will produce the follwing output:
    >>>>  analyse: jube analyse bench_run --id 0
    >>>>   result: jube result bench_run --id 0
    >>>>     info: jube info bench_run --id 0
+   >>>>      log: jube log bench_run --id 0
    ######################################################################
 
 As you can see, there was a single step ``say_hello``,
@@ -426,14 +428,14 @@ E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
    <pattern name="jube_pat_int" type="int">([+-]?\d+)</pattern>
    <pattern name="jube_pat_fp" type="float">([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)</pattern>
 
-If there are multiple matches inside a single file you can add a :term:`reduce option <pattern_tag>`. Normally only the first match will be extracted.
+If there are multiple matches inside a single file you can add a :term:`reduce option <analyser_tag>`. By default, only the first match will be extracted.
 
 To use your ``<patternset>`` you have to specify the files which should be parsed. This can be done using the ``<analyser>``.
 It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
-The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to additionally add complete new
-parametersets.
+The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to include additional ``<parameterset>`` 
+that have not been already used within the analysed ``<step>``.
 
 To run the anlayse you have to write::
 
@@ -442,13 +444,16 @@ To run the anlayse you have to write::
 The analyse data will be stored inside the benchmark directory.
 
 The last part is the result table creation. Here you have to use an existing analyser. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
-the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv`` or ``pretty`` to get different ASCII representations.
+the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv``, ``pretty`` or ``aligned`` to get different ASCII representations.
 
 To create the result table you have to write::
 
    >>> jube result bench_run -i last
 
-The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` can also be replaced by a specific benchmark id.
+If you run the ``result`` command for the first time, the ``analyse`` step will be executed automatically, if it wasn't executed before. So it is not necessary to run the separate ``analyse`` step all the time. However you need the separate ``analyse`` 
+if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the first ``analyse`` will be used in the ``result`` step.
+
+The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` is the default option and can also be replaced by a specific benchmark id.
 If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
 
 Output of the given example:
@@ -460,6 +465,10 @@ Output of the given example:
         1 |          1
         2 |          2
         4 |          4
+
+The analyse and result instructions can be combined within one single command:
+
+   >>> jube result bench_run -a
 
 This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about
 including external sets, jobsystem representation and scripting parameter.

@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2019
+   # Copyright (C) 2008-2020
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -82,7 +82,8 @@ Run a new benchmark.
    jube run [-h] [--only-bench ONLY_BENCH [ONLY_BENCH ...]]
             [--not-bench NOT_BENCH [NOT_BENCH ...]] [-t TAG [TAG ...]]
             [--hide-animation] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
-            [-a] [-r] [-e] [-m COMMENT] [--id ID [ID ...]] FILE [FILE ...]
+            [-o OUTPATH] [-a] [-r] [-e]
+            [-m COMMENT] [--id ID [ID ...]] FILE [FILE ...]
 
 ``-h``, ``--help``
    show command help information
@@ -113,6 +114,9 @@ Run a new benchmark.
 
 ``-m COMMENT``, ``--comment COMMENT``
    overwrite benchmark specific comment
+
+``-o OUTPATH``, ``--outpath OUTPATH``
+   overwrite outpath directory
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
    use specific benchmark id (must be >= 0)
@@ -194,7 +198,7 @@ Run the result creation.
 .. code-block:: none
 
    jube result [-h] [-i ID [ID ...]] [-a] [-r] [-u UPDATE_FILE] [-n NUM]
-               [-s {pretty,csv}] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
+               [-s {pretty,csv,aligned}] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
                [-t TAG [TAG ...]] [-o RESULT_NAME [RESULT_NAME ...]] [DIRECTORY]
 
 
@@ -217,7 +221,7 @@ Run the result creation.
 ``-u UPDATE_FILE``, ``--update UPDATE_FILE``
    use given input *XML* file to update ``patternsets``, ``analyser`` and ``result`` before running the analyse
 
-``-s {pretty,csv}``, ``--style {pretty,csv}``
+``-s {pretty,csv,aligned}``, ``--style {pretty,csv,aligned}``
    overwrites table style type
 
 ``--include-path INCLUDE_PATH [INCLUDE_PATH ...]``
@@ -274,6 +278,9 @@ Remove an existing benchmark
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
    |ID_DESCRIPTION|
+
+``-w WORKPACKAGE [WORKPACKAGE ...]``, ``--workpackage WORKPACKAGE [WORKPACKAGE ...]``
+   specifc workpackage id to be removed
 
 ``-f``, ``--force``
    do not prompt

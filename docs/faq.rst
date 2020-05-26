@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2019
+   # Copyright (C) 2008-2020
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -215,6 +215,8 @@ correct result:
 
 .. index:: extract specifc block
 
+.. _extract_specifc_block:
+
 Extract data from a specifc text block
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -240,3 +242,20 @@ This is possible by using ``\s`` within the pattern for each individual newline 
 
 This only extracts ``30`` from ``blockB``. Setting ``dotall="true"`` allows to use the ``.`` to take care of all newline characters in between (by default newline characters are 
 not matched by ``.``).
+
+.. index:: restart workpackage
+
+Restart a workpackage execution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If a problem occurs outside of the general *JUBE* handling (e.g. a crashed HPC job or a broken dependency) it might be necessary to restart a specific workpackage.
+*JUBE* allows this restart by removing the problematic workpackage entry and using the ``jube continue`` command afterwards:
+
+.. code-block:: none
+
+   jube remove bechmark_directory --id <id> --workpackage <workpackage_id>
+   ...
+   jube continue bechmark_directory
+
+This will rerun the specific workpackage. The *JUBE* configuration will stay unchanged. It is not possible to change the ``<paramter>`` or ``<step>`` configuration later on. Shared ``<do>``
+operations (``shared=true``) will be ignored within such a rerun scenario except if all workpackages of a specifc step were removed and the full step is re-executed.

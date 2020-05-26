@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2019
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -65,7 +65,7 @@ config = {'name': 'JUBE',
           'url': 'www.fz-juelich.de/jube',
           'download_url': 'www.fz-juelich.de/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
-          'version': '2.2.2',
+          'version': '2.3.0',
           'packages': ['jube2','jube2.result_types','jube2.util'],
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),

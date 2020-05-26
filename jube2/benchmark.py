@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2019
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -124,6 +124,16 @@ class Benchmark(object):
         self._file_path_ref = file_path_ref
 
     @property
+    def outpath(self):
+        """Return outpath"""
+        return self._outpath
+
+    @outpath.setter
+    def outpath(self, new_outpath):
+        """Overwrite outpath"""
+        self._outpath = new_outpath
+
+    @property
     def substitutesets(self):
         """Return substitutesets"""
         return self._substitutesets
@@ -149,6 +159,13 @@ class Benchmark(object):
         for stepname in self._workpackages:
             if del_workpackage in self._workpackages[stepname]:
                 self._workpackages[stepname].remove(del_workpackage)
+
+    def remove_workpackage(self, workpackage_to_delete):
+        """Remove a specifc workpackage"""
+        stepname = workpackage_to_delete.step.name
+        if stepname in self._workpackages and \
+                workpackage_to_delete in self._workpackages[stepname]:
+            self._workpackages[stepname].remove(workpackage_to_delete)
 
     @property
     def work_stat(self):
@@ -329,14 +346,18 @@ class Benchmark(object):
                     workpackage.queued = True
                     self._work_stat.put(workpackage)
 
-    def analyse(self, show_info=True):
+    def analyse(self, show_info=True, specific_analyser_name=None):
         """Run analyser"""
 
         if show_info:
             LOGGER.info(">>> Start analyse")
 
-        for analyser in self._analyser.values():
-            analyser.analyse()
+        if specific_analyser_name is not None and \
+                specific_analyser_name in self._analyser:
+            self._analyser[specific_analyser_name].analyse()
+        else:
+            for analyser in self._analyser.values():
+                analyser.analyse()
         if ((not jube2.conf.DEBUG_MODE) and
                 (os.access(self.bench_dir, os.W_OK))):
             self.write_analyse_data(os.path.join(self.bench_dir,
@@ -575,6 +596,7 @@ class Benchmark(object):
     def run(self):
         """Run benchmark"""
         title = "benchmark: {0}".format(self._name)
+        title += "\nid: {0}".format(self._id)
         if jube2.conf.DEBUG_MODE:
             title += " ---DEBUG_MODE---"
         title += "\n\n{0}".format(self._comment)

@@ -6,6 +6,7 @@
         <parameter name="submit">sbatch</parameter>
         <parameter name="submit_script">submit.job</parameter>
         <parameter name="done_file">ready</parameter>
+        <parameter name="error_file">error</parameter>
         <parameter name="starter">srun</parameter>
         <parameter name="args_starter"></parameter>
         <!-- Chainjob handling -->
@@ -16,7 +17,7 @@
     </parameterset>
 
     <parameterset name="systemParameter">
-        <!-- Default jobscript parameter  -->
+        <!-- Default jobscript parameter -->
         <parameter name="nodes" type="int">1</parameter>
         <parameter name="taskspernode" type="int">1</parameter>
         <parameter name="threadspertask" type="int">1</parameter>
@@ -28,6 +29,9 @@
         </parameter>
         <parameter name="queue">batch</parameter>
         <parameter name="account"></parameter>
+        <parameter name="account_slurm" mode="python">
+            "#SBATCH --account=$account" if "$account" else ""
+        </parameter>
         <parameter name="gres"></parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
@@ -50,7 +54,7 @@
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#NOTIFICATION_TYPE#" dest="$notification" />
         <sub source="#BENCHNAME#"
-             dest="${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}" />
+            dest="&quot;${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}&quot;" />
         <sub source="#NODES#" dest="$nodes" />
         <sub source="#TASKS#" dest="$tasks" />
         <sub source="#NCPUS#" dest="$taskspernode" />
@@ -58,7 +62,7 @@
         <sub source="#TIME_LIMIT#" dest="$timelimit" />
         <sub source="#PREPROCESS#" dest="$preprocess" />
         <sub source="#POSTPROCESS#" dest="$postprocess" />
-        <sub source="#ACCOUNT#" dest ="$account" />
+        <sub source="#ACCOUNT_CONFIG#" dest="$account_slurm" />
         <sub source="#QUEUE#" dest="$queue" />
         <sub source="#GRES#" dest="$gres" />
         <sub source="#STARTER#" dest="$starter" />
@@ -66,10 +70,12 @@
         <sub source="#MEASUREMENT#" dest="$measurement" />
         <sub source="#STDOUTLOGFILE#" dest="$outlogfile" />
         <sub source="#STDERRLOGFILE#" dest="$errlogfile" />
-        <sub source="#ADDITIONAL_JOB_CONFIG#" dest="$additional_job_config" />
+        <sub source="#ADDITIONAL_JOB_CONFIG#"
+            dest="$additional_job_config" />
         <sub source="#EXECUTABLE#" dest="$executable" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />
+        <sub source="#FLAG_ERROR#" dest="touch $error_file" />
     </substituteset>
 
     <substituteset name="chainsub">

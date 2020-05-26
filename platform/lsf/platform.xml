@@ -8,6 +8,7 @@
         <parameter name="starter">mpirun</parameter>
         <parameter name="args_starter"></parameter>
         <parameter name="done_file">ready</parameter>
+        <parameter name="error_file">error</parameter>
     </parameterset>
 
     <parameterset name="systemParameter">
@@ -16,8 +17,7 @@
         <parameter name="taskspernode" type="int">1</parameter>
         <parameter name="threadspertask" type="int">1</parameter>
         <parameter name="tasks" mode="python" type="int">
-            $nodes *
-            $taskspernode
+            $nodes * $taskspernode
         </parameter>
         <parameter name="OMP_NUM_THREADS" type="int" export="true">
             $threadspertask
@@ -26,8 +26,7 @@
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
-        <parameter name="env" separator=";">$jube_wp_envstr
-        </parameter>
+        <parameter name="env" separator=";">$jube_wp_envstr</parameter>
         <parameter name="notification">ALL</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
@@ -46,7 +45,7 @@
         <sub source="#ENV#" dest="$env" />
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#BENCHNAME#"
-            dest="${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}" />
+            dest="&quot;${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}&quot;" />
         <sub source="#NODES#" dest="$nodes" />
         <sub source="#TASKS#" dest="$tasks" />
         <sub source="#NCPUS#" dest="$taskspernode" />
@@ -65,6 +64,7 @@
         <sub source="#EXECUTABLE#" dest="$executable" />
         <sub source="#ARGS_EXECUTABLE#" dest="$args_exec" />
         <sub source="#FLAG#" dest="touch $done_file" />
+        <sub source="#FLAG_ERROR#" dest="touch $error_file" />
     </substituteset>
 
 

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2019
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -22,8 +22,11 @@ from __future__ import (print_function,
                         division)
 
 # general
-JUBE_VERSION = "2.2.2"
+JUBE_VERSION = "2.3.0"
 ALLOWED_SCRIPTTYPES = set(["python", "perl", "shell"])
+ALLOWED_ADVANCED_MODETYPES = set(["tag", "env"])
+ALLOWED_MODETYPES = set(["text"]).union(ALLOWED_SCRIPTTYPES).union(
+    ALLOWED_ADVANCED_MODETYPES)
 DEBUG_MODE = False
 VERBOSE_LEVEL = 0
 UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"

@@ -15,13 +15,26 @@ cd ${PBS_O_WORKDIR}
 
 #PREPROCESS#
 
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
+    exit $JUBE_ERR_CODE
+fi
+
 #MEASUREMENT# #STARTER# #ARGS_STARTER# #EXECUTABLE# #ARGS_EXECUTABLE#
+
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
+    exit $JUBE_ERR_CODE
+fi
 
 cd ${PBS_O_WORKDIR}
 #POSTPROCESS#
 
 JUBE_ERR_CODE=$?
 if [ $JUBE_ERR_CODE -ne 0 ]; then
+    #FLAG_ERROR#
     exit $JUBE_ERR_CODE
 fi
 

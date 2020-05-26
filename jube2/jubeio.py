@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2019
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -846,6 +846,9 @@ class XMLParser(object):
                 async_filename = element.get("done_file")
                 if async_filename is not None:
                     async_filename = async_filename.strip()
+                error_filename = element.get("error_file")
+                if error_filename is not None:
+                    error_filename = error_filename.strip()
                 break_filename = element.get("break_file")
                 if break_filename is not None:
                     break_filename = break_filename.strip()
@@ -882,7 +885,8 @@ class XMLParser(object):
                                                  active,
                                                  shared,
                                                  alt_work_dir,
-                                                 break_filename)
+                                                 break_filename,
+                                                 error_filename)
                 step.add_operation(operation)
             elif element.tag == "use":
                 step.add_uses(XMLParser._extract_use(element))
@@ -992,7 +996,7 @@ class XMLParser(object):
         separator = \
             etree_table.get("separator", jube2.conf.DEFAULT_SEPARATOR)
         style = etree_table.get("style", "csv").strip()
-        if style not in ["csv", "pretty"]:
+        if style not in ["csv", "pretty", "aligned"]:
             raise ValueError("Not allowed style-type \"{0}\" "
                              "in <table name=\"{1}\">".format(style, name))
         sort_names = etree_table.get("sort", "").split(
@@ -1226,8 +1230,7 @@ class XMLParser(object):
                     .format(parameter_update_mode, name))
             export_str = param.get("export", default="false").strip()
             export = export_str.lower() == "true"
-            if parameter_mode not in \
-                    set(["text"]).union(jube2.conf.ALLOWED_SCRIPTTYPES):
+            if parameter_mode not in jube2.conf.ALLOWED_MODETYPES:
                 raise ValueError(
                     ("parameter-mode \"{0}\" not allowed in " +
                      "<parameter name=\"{1}\">").format(parameter_mode,

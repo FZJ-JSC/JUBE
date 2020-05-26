@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2019
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -280,6 +280,27 @@ class Workpackage(object):
             self.benchmark.remove_workpackage(self)
         
 
+    def remove(self, remove_config_from_benchmark=False):
+        """Remove all data of this workpackage"""
+        for children in self.children:
+            children.remove(remove_config_from_benchmark=True)
+        shutil.rmtree(self.workpackage_dir, ignore_errors=True)
+
+        # Remove shared folder if all workpackages of the current step were
+        # removed
+        if self._step.shared_link_name is not None:
+            all_deleted = True
+            for workpackage in self._benchmark.workpackages[self._step.name]:
+                if workpackage.started:
+                    all_deleted = False
+            if all_deleted:
+                shared_folder = self._step.shared_folder_path(
+                    self._benchmark.bench_dir, self.parameter_dict)
+                shutil.rmtree(shared_folder, ignore_errors=True)
+
+        if remove_config_from_benchmark:
+            self.benchmark.remove_workpackage(self)
+
     def add_parent(self, workpackage):
         """Add a parent Workpackage"""
         self._parents.append(workpackage)
@@ -310,6 +331,11 @@ class Workpackage(object):
         history += self._parents
         return history
     
+    @property
+    def benchmark(self):
+        """Return benchmark of this workpackage"""
+        return self._benchmark
+
     @property
     def benchmark(self):
         """Return benchmark of this workpackage"""
@@ -582,8 +608,15 @@ class Workpackage(object):
                                 operation_number + 1) or workpackage.done
                               ) and
                              operation.active(workpackage.parameter_dict))
-                    if shared_done and not self.operation_done(operation_number):
-                        LOGGER.warning("\nShared operation in {0} was already executed".format(self._step.name))
+
+                    # If a workpackage is removed and restarted, a shared
+                    # operation will not be re-executed, user should be warned
+                    if shared_done and not self.operation_done(
+                            operation_number):
+                        LOGGER.warning(
+                            "\nShared operation in {0} was already executed".
+                            format(self._step.name))
+
                     # All older workpackages in tree must be done
                     for step_name in self._step.get_depend_history(
                             self._benchmark):

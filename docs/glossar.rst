@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2019
+   # Copyright (C) 2008-2020
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -178,7 +178,7 @@ Glossary
         * allowed: ``int``, ``float`` or ``string``
 
       * ``default`` is optional: Specify default value if pattern cannot be found or if it cannot be evaluated
-      * ``dotall`` is optional (default: ``false``): Can be set to ``true```or ``false`` to specify if a ``.`` within the regular expression
+      * ``dotall`` is optional (default: ``false``): Can be set to ``true`` or ``false`` to specify if a ``.`` within the regular expression
         should also match newline characters, which can be very helpfull to extract a line only after a specific header was mentioned.
 
    statistical_values
@@ -277,11 +277,13 @@ Glossary
         * ``mode="python"``: allow *Python* snippets (using ``eval <cmd>``)
         * ``mode="perl"``: allow *Perl* snippets (using ``perl -e "print <cmd>"``)
         * ``mode="shell"``: allow *Shell* snippets
+        * ``mode="env"``: include the content of an available environment variable
+        * ``mode="tag"``: include the tag name if the tag was set during execution, otherwise the content is empty
 
       * Templates can be created, using scripting e.g.: ``",".join([str(2**i) for i in range(3)])``
       * ``update_mode`` is optional (default: ``never``)
 
-         * can be set to ``never``, ``use``, ``step`` and ``cycle``
+         * can be set to ``never``, ``use``, ``step``, ``cycle`` and ``always``
          * depending on the setting the parameter will be reevaluated:
 
             * ``never``: no reevaluation, even if the parameterset is used multiple times
@@ -495,7 +497,7 @@ Glossary
      .. code-block:: xml
 
         <do stdout="..." stderr="..." active="...">...</do>
-        <do done_file="...">...</do>
+        <do done_file="..." error_file="...">...</do>
         <do break_file="...">...</do>
         <do shared="true">...</do>
         <do work_dir="...">...</do>
@@ -510,9 +512,11 @@ Glossary
        * can be set to ``true`` or ``false`` or any *Python* parsable bool expression to enable or disable the single command
        * :term:`parameter <parameter_tag>` are allowed inside this attribute
 
-     * ``done_file``-filename is optional
+     * ``done_file``-filename and ``error_file`` are optional
 
        * by using ``done_file`` the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.
+       * by using ``error_file`` the operation will produce a error if the named file can be found inside the work directory. This feature can be used together with the
+         ``done_file`` to signalise broken async-steps.
 
      * ``break_file``-filename is optional
 
@@ -595,7 +599,7 @@ Glossary
           ...
         </table>
 
-     * ``style`` is optional; allowed styles: ``csv``, ``pretty``; default: ``csv``
+     * ``style`` is optional; allowed styles: ``csv``, ``pretty``, ``aligned``; default: ``csv``
      * ``separator`` is optional; only used in csv-style, default: ``,``
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
