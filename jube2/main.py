@@ -342,26 +342,8 @@ def search_for_benchmarks(args):
          os.path.isfile(os.path.join(benchmark_folder,
                                      jube2.conf.CONFIGURATION_FILENAME))]
 
-        
     found_benchmarks.sort()
     return found_benchmarks
-
-def search_for_workpackage(args):
-    found_benchmarks = search_for_benchmarks(args)
-    found_workpackages = list()
-    for benchmark_folder in found_benchmarks:
-        benchmark = \
-            _load_existing_benchmark(args, benchmark_folder,
-                                     load_analyse=False)
-        if benchmark is None:
-            continue
-        for wp_id in args.workpackage:
-            if benchmark.workpackage_by_id(int(wp_id)) is None: 
-                raise OSError("No workpackage \"{0}\" found in benchmark \"{1}\""
-                              .format(wp_id, benchmark.id))
-            else:
-                found_workpackages.append(benchmark.workpackage_by_id(int(wp_id)))
-    return found_workpackages
 
 def search_for_workpackage(args):
     """Search for existing workpackages"""
@@ -624,21 +606,6 @@ def _remove_benchmark(benchmark_folder, args):
     if remove:
         # Delete benchmark folder
         shutil.rmtree(benchmark_folder, ignore_errors=True)
-        
-def _remove_workpackage(workpackage, args):
-    """Remove existing workpackages"""
-    remove = True
-    if not args.force:
-        try:
-            inp = raw_input("Really remove \"{0}\" and maybe his children (y/n):"
-                        .format(workpackage.workpackage_dir))
-        except NameError:
-            inp = input("Really remove \"{0}\" and maybe his children (y/n):"
-                    .format(workpackage.workpackage_dir))
-        remove = inp.startswith("y")
-    if remove:
-        workpackage.remove()
-    
 
 
 def _remove_workpackage(workpackage, args):
@@ -898,9 +865,6 @@ def gen_subparser_conf():
                  "nargs": "+"},
             ("-w", "--workpackage"):
                 {"help": "specifc workpackage id to be removed",
-                 "nargs": "+"},
-            ("-w", "--workpackage"):
-                {"help": "use workpackage given by id",
                  "nargs": "+"},
             ("-f", "--force"):
                 {"help": "force removing, never prompt",

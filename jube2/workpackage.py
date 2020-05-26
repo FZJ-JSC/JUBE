@@ -29,7 +29,6 @@ import jube2.log
 import jube2.parameter
 import os
 import stat
-import shutil
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -271,14 +270,6 @@ class Workpackage(object):
         """Remove all operation info files"""
         for operation_number in range(len(self._step.operations)):
             self.operation_done(operation_number, False)
-            
-    def remove(self, remove_from_benchmark=False):
-        for children in self.children:
-            children.remove(remove_from_benchmark=True)
-        shutil.rmtree(self.workpackage_dir, ignore_errors=True)
-        if remove_from_benchmark:
-            self.benchmark.remove_workpackage(self)
-        
 
     def remove(self, remove_config_from_benchmark=False):
         """Remove all data of this workpackage"""
@@ -330,11 +321,6 @@ class Workpackage(object):
             history += parent.parent_history
         history += self._parents
         return history
-    
-    @property
-    def benchmark(self):
-        """Return benchmark of this workpackage"""
-        return self._benchmark
 
     @property
     def benchmark(self):
