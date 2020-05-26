@@ -154,11 +154,6 @@ class Benchmark(object):
                 if workpackage.id == wp_id:
                     return workpackage
         return None
-    
-    def remove_workpackage(self, del_workpackage):
-        for stepname in self._workpackages:
-            if del_workpackage in self._workpackages[stepname]:
-                self._workpackages[stepname].remove(del_workpackage)
 
     def remove_workpackage(self, workpackage_to_delete):
         """Remove a specifc workpackage"""

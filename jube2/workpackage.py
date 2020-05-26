@@ -29,6 +29,7 @@ import jube2.log
 import jube2.parameter
 import os
 import stat
+import shutil
 
 LOGGER = jube2.log.get_logger(__name__)
 
