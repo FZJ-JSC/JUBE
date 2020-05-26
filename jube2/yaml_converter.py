@@ -1,4 +1,8 @@
-from lxml import etree
+from __future__ import (print_function,
+                        unicode_literals,
+                        division)
+
+import xml.etree.ElementTree as etree
 import xml.dom.minidom as DOM
 import yaml
 import jube2.util.output
@@ -17,10 +21,10 @@ class Conv():
         a = yaml.load(data,  Loader=yaml.Loader)
         tree = XMLTree(a)
         xml = jube2.util.output.element_tree_tostring(tree.tree, encoding="UTF-8")
-        xml = etree.fromstring(xml)
+        dom = DOM.parseString(xml.encode('UTF-8'))
         with open(os.path.basename(os.path.splitext(self.path)[0] + '.xml'),
-                  'w') as f: 
-            f.write(etree.tostring(xml, pretty_print=True).decode())
+                  'wb') as f: 
+            f.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
         
         return os.path.basename(os.path.splitext(self.path)[0] + '.xml')
         
@@ -108,11 +112,14 @@ class XMLTree():
                                      if current_sub is None else current_sub,
                                      name)
             for key,value in attr_and_tags.items():
-                if key in allowed_tags:
-                    if key in ["analyse", "table", "syslog"]:
-                        self.create_tag(key, value, local_sub)
+                if (type(value) is not list):
+                    value = [value]
+                for val in value:
+                    if key in allowed_tags:
+                        if key in ["analyse", "table", "syslog"]:
+                            self.create_tag(key, val, local_sub)
+                        else:
+                            self.create_endtag(key, val, local_sub)
                     else:
-                        self.create_endtag(key, value, local_sub)
-                else:
-                    local_sub.set(key, str(value))
+                        local_sub.set(key, str(val))
 
