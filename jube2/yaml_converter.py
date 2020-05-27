@@ -7,32 +7,44 @@ import xml.dom.minidom as DOM
 import yaml
 import jube2.util.output
 import os
+import StringIO
 
+def is_parseable_yaml_file(filename):
+    try:
+        with open(filename,"r") as file_handle:
+            if type(yaml.load(file_handle.read())) is str:
+                return False
+            else:
+                return True
+    except Exception as parseerror:
+        return False
 
-class Conv():
+class Conv(object):
     def __init__(self, path):
-        self.path = path
-        yaml.add_constructor("!include", self.yaml_include)
-        
-    def convert(self):
+        self._path = path
+        yaml.add_constructor("!include", self.__yaml_include)
+        self._int_file = StringIO.StringIO()
+        self.__convert()
+
+    def __convert(self):
         """ Opens given file, make a Tree of it and print it """
-        file_handle = open(self.path,"r")
-        data = file_handle.read()
-        a = yaml.load(data,  Loader=yaml.Loader)
-        tree = XMLTree(a)
-        xml = jube2.util.output.element_tree_tostring(tree.tree, encoding="UTF-8")
-        dom = DOM.parseString(xml.encode('UTF-8'))
-        with open(os.path.basename(os.path.splitext(self.path)[0] + '.xml'),
-                  'wb') as f: 
-            f.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
-        
-        return os.path.basename(os.path.splitext(self.path)[0] + '.xml')
-        
+        with open(self._path,"r") as file_handle:
+            xmltree = XMLTree(yaml.load(file_handle.read()))
+            xml = jube2.util.output.element_tree_tostring(xmltree.tree, encoding="UTF-8")
+            dom = DOM.parseString(xml.encode('UTF-8'))
+            self._int_file.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
+
+    def read(self):
+        return self._int_file.getvalue()
+
+    def close(self):
+        self._int_file.close()
+
     # adapted from http://code.activestate.com/recipes/577613-yaml-include-support/
-    def yaml_include(self, loader, node):
+    def __yaml_include(self, loader, node):
         """ Constructor for the include tag"""
         _yaml_node_data = node.value.split(":")
-        with open(os.path.join(os.path.dirname(self.path),_yaml_node_data[0])) as inputfile:
+        with open(os.path.join(os.path.dirname(self._path),_yaml_node_data[0])) as inputfile:
             _ = yaml.load(inputfile.read(), Loader=yaml.Loader)
             inputfile.close()
             if len(_yaml_node_data)>1:

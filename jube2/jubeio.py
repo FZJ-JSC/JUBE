@@ -40,6 +40,7 @@ import jube2.util.output
 import jube2.conf
 import jube2.result_types.syslog
 import jube2.result_types.table
+import jube2.yaml_converter
 import sys
 import re
 import copy
@@ -48,6 +49,18 @@ import jube2.log
 from distutils.version import StrictVersion
 
 LOGGER = jube2.log.get_logger(__name__)
+
+
+def get_input_parser(filename, tags=None, include_path=None, force=False,
+                     strict=False):
+    """Select input parser based on file format"""
+    if filename.endswith(".xml"):
+        return XMLParser(filename, tags, include_path, force, strict)
+    elif filename.endswith(".yml") or filename.endswith(".yaml") or \
+            jube2.yaml_converter.is_parseable_yaml_file(filename):
+        return YAMLParser(filename, tags, include_path, force, strict)
+    else:
+        return XMLParser(filename, tags, include_path, force, strict)
 
 
 class XMLParser(object):
@@ -65,6 +78,11 @@ class XMLParser(object):
         self._tags = tags
         self._force = force
         self._strict = strict
+        self._file_handle = None
+
+    def __del__(self):
+        if self._file_handle is not None:
+            self._file_handle.close()
 
     @property
     def file_path_ref(self):
@@ -88,7 +106,12 @@ class XMLParser(object):
             raise IOError("Benchmark configuration file not found: \"{0}\""
                           .format(self._filename))
         try:
-            tree = ET.parse(self._filename)
+            if self._file_handle is not None:
+                a = self._file_handle.read()
+                print(a)
+                tree = ET.ElementTree(ET.fromstring(a))
+            else:
+                tree = ET.parse(self._filename)
         except Exception as parseerror:
             raise IOError(("XML parse error in \"{0}\": {1}\n" +
                            "XML is not valid, use validation tool.")
@@ -1530,3 +1553,13 @@ class XMLParser(object):
         if element.tag not in valid_tags:
             raise ValueError(("Unknown tag or tag used in wrong " +
                               "position: <{0}>").format(element.tag))
+
+
+class YAMLParser(XMLParser):
+
+    """JUBE YAML input file parser"""
+
+    def __init__(self, filename, tags=None, include_path=None, force=False,
+                 strict=False):
+        XMLParser.__init__(self, filename, tags, include_path, force, strict)
+        self._file_handle = jube2.yaml_converter.Conv(filename)

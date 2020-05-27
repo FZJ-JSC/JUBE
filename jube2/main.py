@@ -29,7 +29,6 @@ import jube2.info
 import jube2.help
 import jube2.log
 import jube2.completion
-import jube2.yaml_converter
 
 import sys
 import os
@@ -395,10 +394,8 @@ def run_new_benchmark(args):
                               args.include_path if include_path != ""]
         else:
             include_pathes = None
-        if path.endswith('yaml'):
-            path = jube2.yaml_converter.Conv(path).convert()
-        parser = jube2.jubeio.XMLParser(path, tags, include_pathes, args.force,
-                                        args.strict)
+        parser = jube2.jubeio.get_input_parser(path, tags, include_pathes, 
+                                               args.force,args.strict)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
