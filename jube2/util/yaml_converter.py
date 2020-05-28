@@ -60,24 +60,24 @@ class YAML_Converter(object):
          "table": ["column"]}
 
     def __init__(self, path, include_path=None):
+        self._path = path
+        if include_path is None:
+            include_path = []
+        self._include_path = list(include_path)
+        self._include_path += [os.path.dirname(self._path)]
         try:
-            self._path = path
-            if include_path is None:
-                include_path = []
-            self._include_path = list(include_path)
-            self._include_path += [os.path.dirname(self._path)]
             yaml.add_constructor("!include", self.__yaml_include)
-            self._ignore_search_errors = True
-            self._include_path = list(include_path) + \
-                self.__search_for_include_pathes() + \
-                [os.path.dirname(self._path)]
-            self._ignore_search_errors = False
-            self._int_file = IOStream()
-            self.__convert()
         except NameError:
             raise NameError("yaml module not available; either install it " +
                             "(https://pyyaml.org), or switch to .xml input " +
                             "files.")
+        self._ignore_search_errors = True
+        self._include_path = list(include_path) + \
+            self.__search_for_include_pathes() + \
+            [os.path.dirname(self._path)]
+        self._ignore_search_errors = False
+        self._int_file = IOStream()
+        self.__convert()
 
     def __convert(self):
         """ Opens given file, make a Tree of it and print it """
@@ -137,8 +137,14 @@ class YAML_Converter(object):
         """ Constructor for the include tag"""
         yaml_node_data = node.value.split(":")
         try:
-            with open(self.__find_include_file(yaml_node_data[0])) as inputfile:
-                _ = yaml.load(inputfile.read(), Loader=yaml.BaseLoader)
+            file = self.__find_include_file(yaml_node_data[0])
+            if os.path.normpath(file) == os.path.normpath(self._path):
+                # Avoid recursive !include loops
+                loader = yaml.BaseLoader
+            else:
+                loader = yaml.Loader
+            with open(file) as inputfile:
+                _ = yaml.load(inputfile.read(), Loader=loader)
                 inputfile.close()
                 if len(yaml_node_data) > 1:
                     _ = eval("_" + yaml_node_data[1])
@@ -180,7 +186,10 @@ class YAML_Converter(object):
         # Check if tag can have subtags
         if new_node_name in YAML_Converter.allowed_tags:
             allowed_tags = YAML_Converter.allowed_tags[new_node_name]
-            if (type(data) is str or type(data) is unicode) and \
+            # Check for implicit tags, "unicode" should only be reached in
+            # backward compatibility cases
+            if type(data) is not dict and (type(data) is str or \
+                                           type(data) is unicode) and \
                     len(allowed_tags) == 1:
                 data = {allowed_tags[0]: data}
             for key, value in data.items():
