@@ -1,20 +1,17 @@
----
-benchmark: 
-  - name: hello_world
-    outpath: bench_run
-    comment: A simple hello world in yaml
+benchmark: # having only a single benchmark, this key is optional
+  name: hello_world
+  outpath: bench_run
+  comment: A simple hello world in yaml
 
-    #Configuration
-    parameterset:
-      - name: hello_parameter
-        parameter:
-          - {name: hello_str,  _: Hello World}
-          
-    #Operation
-    step:
-      - name: say_hello
-        use:
-          - hello_parameter #use existing parameter
-        do:
-          - _: echo $hello_str #shell command
-            active: true
+  #Configuration
+  parameterset:
+    name: hello_parameter
+    parameter: {name: hello_str,  _: Hello World}
+
+  #Operation
+  step:
+    name: say_hello
+    use: hello_parameter # special key _ can be skipped
+    do:
+      - _: echo $hello_str # - is optional in this case, as ther is only one do entry
+        active: true

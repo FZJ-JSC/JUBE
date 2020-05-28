@@ -561,11 +561,20 @@ class Operation(object):
                         if (not read_out):
                             break
                         else:
-                            print(read_out.decode(errors="ignore"), end="")
+                            try:
+                                print(read_out.decode(errors="ignore"), end="")
+                            except TypeError:
+                                print(read_out.decode("utf-8", "ignore"),
+                                      end="")
                             try:
                                 stdout.write(read_out)
                             except TypeError:
-                                stdout.write(read_out.decode(errors="ignore"))
+                                try:
+                                    stdout.write(read_out.decode(
+                                        errors="ignore"))
+                                except TypeError:
+                                    stdout.write(read_out.decode("utf-8",
+                                                                 "ignore"))
                             time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
                     sub.communicate()
 

@@ -344,6 +344,7 @@ def search_for_benchmarks(args):
     found_benchmarks.sort()
     return found_benchmarks
 
+
 def search_for_workpackage(args):
     """Search for existing workpackages"""
     found_benchmarks = search_for_benchmarks(args)
@@ -395,7 +396,7 @@ def run_new_benchmark(args):
         else:
             include_pathes = None
         parser = jube2.jubeio.Parser(path, tags, include_pathes,
-                                        args.force,args.strict)
+                                     args.force, args.strict)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
@@ -572,7 +573,7 @@ def _update_analyse_and_result(args, benchmark):
         else:
             include_pathes = None
         parser = jube2.jubeio.Parser(args.update, tags, include_pathes,
-                                        args.force, args.strict)
+                                     args.force, args.strict)
         benchmarks = parser.benchmarks_from_xml()[0]
 
         # Update benchmark

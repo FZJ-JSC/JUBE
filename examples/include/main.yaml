@@ -1,23 +1,19 @@
----
-benchmark: 
-  - name: include
-    outpath: bench_run
-    comment: A include example
+name: include
+outpath: bench_run
+comment: A include example
 
-    #use parameterset out of an external file and add a additional parameter
-    parameterset:
-      - name: param_set
-        init_with: include_data.xml
-        parameter:
-          - {name: foo, _: bar}
-    
-    #Operation
-    step:
-      - name: say_hello"
-        use:
-          - param_set #use existing parameterset
-          - from: include_data.yaml
-            _: param_set2  #out of an external file
-        do: !include include_data.yaml:["dos"]  #include all available tag  
-             
-             
+#use parameterset out of an external file and add a additional parameter
+parameterset:
+  name: param_set
+  init_with: include_data.yaml
+  parameter: {name: foo, _: bar}
+
+#Operation
+step:
+  name: say_hello
+  use:
+   - param_set #use existing parameterset
+   - from: include_data.yaml
+     _: param_set2  #out of an external file
+  do: !include include_data.yaml:["dos"]  #include all available tag
+

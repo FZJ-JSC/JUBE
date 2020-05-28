@@ -127,6 +127,10 @@ def substitution(text, substitution_dict):
         str_substitution_dict = \
             dict([(k, str(v).decode("utf-8", errors="ignore")) for k, v in
                   substitution_dict.items()])
+    except TypeError:
+        str_substitution_dict = \
+            dict([(k, str(v).decode("utf-8", "ignore")) for k, v in
+                  substitution_dict.items()])
     except AttributeError:
         str_substitution_dict = dict([(k, str(v)) for k, v in
                                       substitution_dict.items()])

@@ -36,13 +36,16 @@ Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher versi
 You also can use **Python 2.6** to run *JUBE*. In this case you have to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
 your *Python* module library on your own.
 
+If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml-module <https://pyyaml.org>`_ to
+your *Python* module library.
+
 To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in three different ways:
 
-* You can use the **installation tool** to copy all files to the right position (preferred)::
+* You can use the **installation script** to copy all files to the right position (preferred)::
 
    >>> python setup.py install --user
 
-  This will install the *JUBE* package and the binary to your ``$HOME/.local`` directory. Instead of ``--user`` also a user
+  This will install the *JUBE* package files and executables to your ``$HOME/.local`` directory. Instead of ``--user`` also a user
   specific ``--prefix`` option is available. Here you might have to set the ``PYTHONPATH`` environment variable first
   (this will be mentioned during the install process).
 
@@ -86,6 +89,25 @@ shell environment variables are available which can be used to set system specif
 *BASH* autocompletion can be enabled by using the ``eval "$(jube complete)"`` command. You can store the command in your bash profile
 settings if needed.
 
+.. index:: input format
+
+Input format
+~~~~~~~~~~~~
+
+*JUBE* supports two different types of input formats: *XML* based files and *YAML* based files. Both formats support the same amount of *JUBE*
+features and you can select your more preffered input format.
+
+The following sections will always show all examples using both formats. However the explanations will mostly stick to the *XML* format but can be easily transfered 
+to the *YAML* solution.
+
+Both formats depends on a specifc special scharacter handling. More details can be found in the following FAQ sections:
+
+* :ref:`XML_character_handling`
+* :ref:`YAML_character_handling`
+
+Internally *JUBE* always uses the *XML* based format, by converting *YAML* based configuration files into *XML* if necessary. This is why parsing error messages might point 
+to *XML* errors even if the *YAML* format was used.
+
 .. index:: hello world
 
 Hello World
@@ -100,6 +122,11 @@ The input file ``hello_world.xml``:
 
 .. literalinclude:: ../examples/hello_world/hello_world.xml
    :language: xml
+
+The input file ``hello_world.yaml``:
+
+.. literalinclude:: ../examples/hello_world/hello_world.yaml
+   :language: yaml
 
 Every *JUBE* input file starts (after the general *XML* header line) with the root tag ``<jube>``.
 This root tag must be unique. *XML* does not allow multiple root tags.
@@ -274,6 +301,11 @@ The input file ``parameterspace.xml``:
 
 .. literalinclude:: ../examples/parameterspace/parameterspace.xml
    :language: xml
+
+The input file ``parameterspace.yaml``:
+
+.. literalinclude:: ../examples/parameterspace/parameterspace.yaml
+   :language: yaml
 
 Whenever a parameter contains a ``,`` (this can be changed using the ``separator`` attribute) this parameter becomes
 a **template**. A step which **uses the parameterset** containing this parameter will run multiple times to iterate over

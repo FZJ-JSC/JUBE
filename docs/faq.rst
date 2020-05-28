@@ -108,10 +108,12 @@ use it within a path definition.
 
 .. index:: XML character handling
 
+.. _XML_character_handling:
+
 XML character handling
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The *JUBE* input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
+The *JUBE* *XML* based input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
 
 Linebreaks are not allowed inside a tag-option (e.g. ``<sub ... dest="...\n...">`` is not possible). Inside a tag
 multiple lines are no problem (e.g. inside of ``<parameter>...</parameter>``). Often multiple lines are also needed
@@ -133,6 +135,42 @@ Some characters are not allowed inside an *XML* script or at least not inside a 
 * ``&`` : ``&amp;``
 * ``"`` : ``&quot;``
 * ``'`` : ``&apos;``
+
+.. index:: YAML character handling
+
+.. _YAML_character_handling:
+
+YAML character handling
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The *JUBE* *YAML* based input format bases on the general *YAML* rules.
+   
+Instead of tags in the *XML* format the *YAML* format uses keys which values are a list of elements or other keys.
+
+The files used for this example can be found inside ``examples/yaml``.
+
+The input file ``hello_world.yaml``:
+
+.. literalinclude:: ../examples/yaml/hello_world.yaml
+   :language: yaml
+
+You can use different styles of writing key value pairs:
+In the example, the ``parameter`` is declared in one line using ``{}``.
+Mutliple key value pairs can be stored per element. The main content attribute is marked by using ``_``.
+As an alternative you can write the key value pairs amongst multiple lines using the same indent as the preceding line, 
+like the key ``do`` in the example.
+If a key like ``use`` has only a value, you can write it in one line without using the special ``_`` key.
+
+Is list of elements can be specifiec by using ``[]`` or by using ``-`` amongst multiple lines (always keeping the same indent).
+
+*YAML* also has a number of spcial characters which can be integrated by using quotation marks:
+
+The input file ``special_values.yaml``:
+
+.. literalinclude:: ../examples/yaml/special_values.yaml
+   :language: yaml
+   
+Anytime you have a symbol like ``#``, ``'``, ``+``, ``,``, ``:`` or ``{}`` you have to enclose the entire value in quotation marks. 
 
 .. index:: analyse multiple files
 

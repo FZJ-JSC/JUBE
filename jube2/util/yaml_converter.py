@@ -23,11 +23,17 @@ from __future__ import (print_function,
 
 import xml.etree.ElementTree as etree
 import xml.dom.minidom as DOM
-import yaml
+try:
+    import yaml
+except ImportError:
+    pass
 import jube2.log
 import jube2.util.output
 import os
-import StringIO
+try:
+    from StringIO import StringIO as IOStream
+except ImportError:
+    from io import BytesIO as IOStream
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -54,10 +60,15 @@ class YAML_Converter(object):
          "table": ["column"]}
 
     def __init__(self, path):
-        self._path = path
-        yaml.add_constructor("!include", self.__yaml_include)
-        self._int_file = StringIO.StringIO()
-        self.__convert()
+        try:
+            self._path = path
+            yaml.add_constructor("!include", self.__yaml_include)
+            self._int_file = IOStream()
+            self.__convert()
+        except NameError:
+            raise NameError("yaml module not available; either install it " +
+                            "(https://pyyaml.org), or switch to .xml input " +
+                            "files.")
 
     def __convert(self):
         """ Opens given file, make a Tree of it and print it """

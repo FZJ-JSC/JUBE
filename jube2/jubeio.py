@@ -93,6 +93,7 @@ class Parser(object):
         if not os.path.isfile(self._filename):
             raise IOError("Benchmark configuration file not found: \"{0}\""
                           .format(self._filename))
+        tree = Parser._tree_from_file(self._filename)
         try:
             tree = Parser._tree_from_file(self._filename)
         except Exception as parseerror:
@@ -383,7 +384,7 @@ class Parser(object):
                 set_etree.attrib["init_with"] = "{0}:{1}".format(
                     filename, name)
                 LOGGER.debug("    Created new <{0}>: jube_{1}_{2}".format(
-                    set_type,fileid, name))
+                    set_type, fileid, name))
 
     def _find_include_file(self, filename):
         """Search for filename in include-pathes and return resulting path"""
@@ -435,7 +436,7 @@ class Parser(object):
             raise ValueError("benchmark-tag not found in \"{0}\"".format(
                 self._filename))
         name = Parser._attribute_from_element(benchmark_etree,
-                                                 "name").strip()
+                                              "name").strip()
         comment_element = benchmark_etree.find("comment")
         if comment_element is not None:
             comment = comment_element.text
@@ -642,7 +643,7 @@ class Parser(object):
         if environment_etree is not None:
             for env_etree in environment_etree:
                 env_name = Parser._attribute_from_element(env_etree,
-                                                             "name")
+                                                          "name")
                 if env_etree.tag == "env":
                     if env_etree.text is not None:
                         set_env[env_name] = env_etree.text.strip()
@@ -735,7 +736,7 @@ class Parser(object):
             comment = ""
         comment = re.sub(r"\s+", " ", comment).strip()
         outpath = Parser._attribute_from_element(benchmark_etree,
-                                                    "outpath").strip()
+                                                 "outpath").strip()
         outpath = os.path.expandvars(os.path.expanduser(outpath))
         # Add position of user to outpath
         outpath = os.path.normpath(os.path.join(self.file_path_ref, outpath))
@@ -918,7 +919,7 @@ class Parser(object):
         """Extract an analyser from etree"""
         valid_tags = ["use", "analyse"]
         name = Parser._attribute_from_element(etree_analyser,
-                                                 "name").strip()
+                                              "name").strip()
         reduce_iteration = \
             etree_analyser.get("reduce", "true").strip().lower() == "true"
         analyser = jube2.analyser.Analyser(name, reduce_iteration)
@@ -927,7 +928,7 @@ class Parser(object):
             Parser._check_tag(element, valid_tags)
             if element.tag == "analyse":
                 step_name = Parser._attribute_from_element(element,
-                                                              "step").strip()
+                                                           "step").strip()
                 # If there are no files, just add a dummy element to the list
                 if len(element) == 0:
                     analyser.add_analyse(step_name, None)
