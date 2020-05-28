@@ -93,9 +93,8 @@ class Parser(object):
         if not os.path.isfile(self._filename):
             raise IOError("Benchmark configuration file not found: \"{0}\""
                           .format(self._filename))
-        tree = Parser._tree_from_file(self._filename)
         try:
-            tree = Parser._tree_from_file(self._filename)
+            tree = self._tree_from_file(self._filename)
         except Exception as parseerror:
             raise IOError(("XML parse error in \"{0}\": {1}\n" +
                            "XML is not valid, use validation tool.")
@@ -187,7 +186,7 @@ class Parser(object):
                 self._extract_include_path(include_path_tree)
 
             # Add env var based include path
-            self._read_envvar_include_path()
+            self._include_path += Parser._read_envvar_include_path()
 
             # Add local dir to include path
             self._include_path += [self.file_path_ref]
@@ -402,7 +401,7 @@ class Parser(object):
         LOGGER.debug(
             "    Searching for type of \"{0}\" in {1}".format(name, filename))
         file_path = self._find_include_file(filename)
-        etree = Parser._tree_from_file(file_path).getroot()
+        etree = self._tree_from_file(file_path).getroot()
         Parser._remove_invalid_tags(etree, self._tags)
         found_set = jube2.util.util.get_tree_elements(
             etree, attribute_dict={"name": name})
@@ -702,14 +701,16 @@ class Parser(object):
             self._include_path += [path]
             LOGGER.debug("    New path: {0}".format(path))
 
-    def _read_envvar_include_path(self):
+    @staticmethod
+    def _read_envvar_include_path():
         """Add environment var include-path"""
         LOGGER.debug("  Read $JUBE_INCLUDE_PATH")
         if "JUBE_INCLUDE_PATH" in os.environ:
-            self._include_path += \
-                [include_path for include_path in
-                 os.environ["JUBE_INCLUDE_PATH"].split(":")
-                 if include_path != ""]
+            return [include_path for include_path in
+                    os.environ["JUBE_INCLUDE_PATH"].split(":")
+                    if include_path != ""]
+        else:
+            return []
 
     def _create_benchmark(self, benchmark_etree, global_parametersets,
                           global_substitutesets, global_filesets,
@@ -1097,15 +1098,16 @@ class Parser(object):
         else:
             raise ValueError("Empty <use> found")
 
-    @staticmethod
-    def _tree_from_file(file_path):
+    def _tree_from_file(self,file_path):
         """Extract a XML tree from a file (doing implicit YAML conversion)"""
         if file_path.endswith(".xml"):
             return ET.parse(file_path)
         elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
             jube2.util.yaml_converter.YAML_Converter.is_parseable_yaml_file(
                 file_path):
-            file_handle = jube2.util.yaml_converter.YAML_Converter(file_path)
+            include_path = list(self._include_path)
+            include_path += Parser._read_envvar_include_path()
+            file_handle = jube2.util.yaml_converter.YAML_Converter(file_path,include_path)
             data = file_handle.read()
             tree = ET.ElementTree(ET.fromstring(data))
             file_handle.close()
@@ -1120,7 +1122,7 @@ class Parser(object):
         LOGGER.debug("    Searching for <{0} name=\"{1}\"> in {2}"
                      .format(set_type, search_name, filename))
         file_path = self._find_include_file(filename)
-        etree = Parser._tree_from_file(file_path).getroot()
+        etree = self._tree_from_file(file_path).getroot()
         Parser._remove_invalid_tags(etree, self._tags)
         result_set = None
 

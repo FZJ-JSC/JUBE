@@ -1,60 +1,50 @@
----
-benchmark: 
-  - name: jobsystem
-    outpath: bench_run
-    comment: A jobsystem example
+name: jobsystem
+outpath: bench_run
+comment: A jobsystem example
 
-    
-    parameterset:
-      #benchmark configuration
-      - name: param_set
-        parameter:
-          - {name: number, type: int,  _: "1,2,4"} #comma separated integer must be in quotations
-      #Job configuration
-      - name: executeset
-        parameter:
-          - {name: submit_cmd, "_": msub}
-          - {name: job_file, "_": job.run}
-          - {name: nodes, type: int, "_": 1}
-          - {name: walltime, "_": 00:01:00}
-          - {name: ppn, type: int, "_": 4}
-          - {name: ready_file, "_": ready}
-          - {name: mail_mode, "_": abe}
-          - {name: mail_address}
-          - {name: err_file, "_": stderr}
-          - {name: out_file, "_": stdout}
-          - {name: exec, "_": echo $number}
-          
-    #Load jobfile
-    fileset:
-      - name: files
-        copy:
-        - ${job_file}.in
-        
-    substituteset:
-      - name: sub_job
-        iofile:
-          - {in: "${job_file}.in", out: $job_file} #attributes with {} must be in quotations
-        sub:
-          #attributes with  must be in quotations
-          - {source: "#NODES#", dest: $nodes} 
-          - {source: "#PROCS_PER_NODE#", dest: $ppn} 
-          - {source: "#WALLTIME#", dest: $walltime}
-          - {source: "#ERROR_FILEPATH#", dest: $err_file}
-          - {source: "#OUT_FILEPATH#", dest: $out_file}
-          - {source: "#MAIL_ADDRESS#", dest: $mail_address}
-          - {source: "#MAIL_MODE#", dest: $mail_mode}
-          - {source: "#EXEC#", dest: $exec}
-          - {source: "#READY#", dest: $ready_file }
-        
-    #Operation
-    step:
-      - name: submit
-        work_dir: "$$WORK/jobsystem_bench_${jube_benchmark_id}_${jube_wp_id}"
-        use:
-          - param_set
-          - executeset
-          - files,sub_job
-        do:
-          - done_file: $ready_file
-            "_": $submit_cmd $job_file #shell command
+parameterset:
+  #benchmark configuration
+  - name: param_set
+    parameter: {name: number, type: int,  _: "1,2,4"} #comma separated integer must be quoted
+  #Job configuration
+  - name: executeset
+    parameter:
+      - {name: submit_cmd, "_": msub}
+      - {name: job_file, "_": job.run}
+      - {name: nodes, type: int, "_": 1}
+      - {name: walltime, "_": "00:01:00"} #: must be quoted
+      - {name: ppn, type: int, "_": 4}
+      - {name: ready_file, "_": ready}
+      - {name: mail_mode, "_": abe}
+      - {name: mail_address}
+      - {name: err_file, "_": stderr}
+      - {name: out_file, "_": stdout}
+      - {name: exec, "_": echo $number}
+
+#Load jobfile
+fileset:
+  name: files
+  copy: ${job_file}.in
+
+substituteset:
+  name: sub_job
+  iofile: {in: "${job_file}.in", out: $job_file} #attributes with {} must be quoted
+  sub:
+    - {source: "#NODES#", dest: $nodes} 
+    - {source: "#PROCS_PER_NODE#", dest: $ppn} 
+    - {source: "#WALLTIME#", dest: $walltime}
+    - {source: "#ERROR_FILEPATH#", dest: $err_file}
+    - {source: "#OUT_FILEPATH#", dest: $out_file}
+    - {source: "#MAIL_ADDRESS#", dest: $mail_address}
+    - {source: "#MAIL_MODE#", dest: $mail_mode}
+    - {source: "#EXEC#", dest: $exec}
+    - {source: "#READY#", _: $ready_file } # _ can be used here as well instead of dest (should be used for multiline output)
+
+#Operation
+step:
+  name: submit
+  work_dir: "$$WORK/jobsystem_bench_${jube_benchmark_id}_${jube_wp_id}"
+  use: [param_set,executeset,files,sub_job]
+  do:
+    done_file: $ready_file
+    _: $submit_cmd $job_file #shell command

@@ -170,7 +170,7 @@ The input file ``special_values.yaml``:
 .. literalinclude:: ../examples/yaml/special_values.yaml
    :language: yaml
    
-Anytime you have a symbol like ``#``, ``'``, ``+``, ``,``, ``:`` or ``{}`` you have to enclose the entire value in quotation marks. 
+Anytime you have a symbol like ``#``, ``'``, ``,``, ``:`` or ``{}`` you have to enclose the entire value in quotation marks. 
 
 .. index:: analyse multiple files
 

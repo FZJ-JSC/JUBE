@@ -59,10 +59,19 @@ class YAML_Converter(object):
          "substituteset": ["iofile", "sub"], "syslog": ["key"],
          "table": ["column"]}
 
-    def __init__(self, path):
+    def __init__(self, path, include_path=None):
         try:
             self._path = path
+            if include_path is None:
+                include_path = []
+            self._include_path = list(include_path)
+            self._include_path += [os.path.dirname(self._path)]
             yaml.add_constructor("!include", self.__yaml_include)
+            self._ignore_search_errors = True
+            self._include_path = list(include_path) + \
+                self.__search_for_include_pathes() + \
+                [os.path.dirname(self._path)]
+            self._ignore_search_errors = False
             self._int_file = IOStream()
             self.__convert()
         except NameError:
@@ -93,21 +102,54 @@ class YAML_Converter(object):
         """Close converted file"""
         self._int_file.close()
 
+    def __find_include_file(self, filename):
+        """Search for filename in include-pathes and return resulting path"""
+        for path in self._include_path:
+            file_path = os.path.join(path, filename)
+            if os.path.exists(file_path):
+                break
+        else:
+            raise ValueError(("\"{0}\" not found in possible " +
+                              "include pathes").format(filename))
+        return file_path
+
+    def __search_for_include_pathes(self):
+        """Search a YAML file for stored include-path information"""
+        include_pathes = []
+        with open(self._path, "r") as file_handle:
+            data = yaml.load(file_handle.read())
+            #include-path is only allowed on the top level of the tree
+            if "include-path" in data:
+                if type(data["include-path"]) is not list:
+                    data["include-path"] = [data["include-path"]]
+                for path in data["include-path"]:
+                    if type(path) is dict:
+                        include_pathes.append(os.path.join(
+                            os.path.dirname(self._path), path["path"]))
+                    else:
+                        include_pathes.append(os.path.join(
+                            os.path.dirname(self._path), path))
+        return include_pathes
+
     # adapted from
     # http://code.activestate.com/recipes/577613-yaml-include-support/
     def __yaml_include(self, loader, node):
         """ Constructor for the include tag"""
-        _yaml_node_data = node.value.split(":")
-        with open(os.path.join(os.path.dirname(self._path),
-                               _yaml_node_data[0])) as inputfile:
-            _ = yaml.load(inputfile.read(), Loader=yaml.Loader)
-            inputfile.close()
-            if len(_yaml_node_data) > 1:
-                _ = eval("_" + _yaml_node_data[1])
-                if len(_yaml_node_data) > 2:
-                    _ = eval(_yaml_node_data[2])
-            return _
-    #              leave out the [0] if your include file drops the key ^^^
+        yaml_node_data = node.value.split(":")
+        try:
+            with open(self.__find_include_file(yaml_node_data[0])) as inputfile:
+                _ = yaml.load(inputfile.read(), Loader=yaml.BaseLoader)
+                inputfile.close()
+                if len(yaml_node_data) > 1:
+                    _ = eval("_" + yaml_node_data[1])
+                    if len(yaml_node_data) > 2:
+                        _ = eval(yaml_node_data[2])
+                return _
+        except ValueError as ve:
+            if self._ignore_search_errors:
+                return "!include {0}".format(node.value)
+            else:
+                raise ve
 
     @staticmethod
     def create_headtags(data, parent_node):
@@ -138,7 +180,8 @@ class YAML_Converter(object):
         # Check if tag can have subtags
         if new_node_name in YAML_Converter.allowed_tags:
             allowed_tags = YAML_Converter.allowed_tags[new_node_name]
-            if type(data) is str and len(allowed_tags) == 1:
+            if (type(data) is str or type(data) is unicode) and \
+                    len(allowed_tags) == 1:
                 data = {allowed_tags[0]: data}
             for key, value in data.items():
                 if (type(value) is not list):

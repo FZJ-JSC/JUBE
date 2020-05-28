@@ -128,7 +128,7 @@ The input file ``hello_world.yaml``:
 .. literalinclude:: ../examples/hello_world/hello_world.yaml
    :language: yaml
 
-Every *JUBE* input file starts (after the general *XML* header line) with the root tag ``<jube>``.
+Every *JUBE* *XML* based input file starts (after the general *XML* header line) with the root tag ``<jube>``.
 This root tag must be unique. *XML* does not allow multiple root tags.
 
 The first tag which contains benchmark specific information is ``<benchmark>``. ``hello_world`` is
@@ -340,6 +340,11 @@ The input file ``dependencies.xml``:
 .. literalinclude:: ../examples/dependencies/dependencies.xml
    :language: xml
 
+The input file ``dependencies.yaml``:
+
+.. literalinclude:: ../examples/dependencies/dependencies.yaml
+   :language: yaml
+
 In this example we create a dependency between ``first_step`` and ``second_step``. After ``first_step`` is finished, the
 corresponding ``second_step`` will start. Steps can also have multiple dependencies (separated by ``,`` in the definition), but
 circular definitions will not be resolved. A dependency is a unidirectional link!
@@ -376,6 +381,11 @@ The input file ``files_and_sub.xml``:
 
 .. literalinclude:: ../examples/files_and_sub/files_and_sub.xml
    :language: xml
+
+The input file ``files_and_sub.yaml``:
+
+.. literalinclude:: ../examples/files_and_sub/files_and_sub.yaml
+   :language: yaml
 
 The content of file ``file.in``:
 
@@ -443,6 +453,11 @@ The input file ``result_creation.xml``:
 
 .. literalinclude:: ../examples/result_creation/result_creation.xml
    :language: xml
+
+The input file ``result_creation.yaml``:
+
+.. literalinclude:: ../examples/result_creation/result_creation.yaml
+   :language: yaml
 
 Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``stdout``.
 

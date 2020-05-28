@@ -1,63 +1,46 @@
----
-benchmark: 
-  - name: scripting_pattern
-    outpath: bench_run
-    comment: A scripting_pattern example
+name: scripting_pattern
+outpath: bench_run
+comment: A scripting_pattern example
 
-    
-    #Configuration
-    parameterset:
-      - name: param_set
-        parameter:
-          - {name: value, type: int, _: "0,1,2"}
-    
-    #Operation
-    step:
-      - name: operation
-        use:
-          - param_set
-        do:
-          - echo "$value"
-          
-    #Pattern to extract
-    patternset:
-      - name: pattern_set
-        pattern:
-            #A normal pattern
-          - {name: value_pat, type: int, _: $jube_pat_int}
-            #A combination of a pattern and a parameter
-          - {name: dep_pat, type: int, mode: python, _: $value_pat+$value}
-            #This pattern is not available
-          - {name: missing_pat, type: int, _: "pattern_not_available: $jube_pat_int"}
-            #The combination will fail (create NaN)
-          - {name: missing_dep_pat, type: int, mode: python, _: $missing_pat*$value}
-            #Default value for missing pattern
-          - {name: missing_pat_def, type: int, default: 0, _: "pattern_not_available: $jube_pat_int"}
-            #Combination of default value and parameter -->
-          - {name: missing_def_dep_pat, type: int, mode: python, _: $missing_pat_def*$value}
+#Configuration
+parameterset:
+  name: param_set
+  parameter: {name: value, type: int, _: "0,1,2"}
 
-    analyser:
-      - name: analyse
-        use:
-          - pattern_set
-        analyse:
-          - step: operation
-            file:
-              - stdout
+#Operation
+step:
+  name: operation
+  use: param_set
+  do: echo "$value"
 
-    #result table creation
-    result:
-      - use:
-          - analyse
-        table:
-          - name: result
-            style: pretty
-            column:
-              - value
-              - value_pat
-              - dep_pat
-              - missing_pat
-              - missing_dep_pat
-              - missing_pat_def
-              - missing_def_dep_pat
-          
+#Pattern to extract
+patternset:
+  name: pattern_set
+  pattern:
+    #A normal pattern
+    - {name: value_pat, type: int, _: $jube_pat_int}
+    #A combination of a pattern and a parameter
+    - {name: dep_pat, type: int, mode: python, _: $value_pat+$value}
+    #This pattern is not available
+    - {name: missing_pat, type: int, _: "pattern_not_available: $jube_pat_int"}
+    #The combination will fail (create NaN)
+    - {name: missing_dep_pat, type: int, mode: python, _: $missing_pat*$value}
+    #Default value for missing pattern
+    - {name: missing_pat_def, type: int, default: 0, _: "pattern_not_available: $jube_pat_int"}
+    #Combination of default value and parameter
+    - {name: missing_def_dep_pat, type: int, mode: python, _: $missing_pat_def*$value}
+
+analyser:
+  name: analyse
+  use: pattern_set
+  analyse:
+    step: operation
+    file: stdout
+
+#result table creation
+result:
+  use: analyse
+  table:
+    name: result
+    style: pretty
+    column: [value,value_pat,dep_pat,missing_pat,missing_dep_pat,missing_pat_def,missing_def_dep_pat]

@@ -7,7 +7,7 @@ parameterset:
   name: param_set
   #Create a parameterspace out of two template parameter
   parameter:
-    - {name: number, type: int, _: "1,2,4"} #comma serparated integer must be in quotations
+    - {name: number, type: int, _: "1,2,4"} #comma separated integer must be quoted
     - {name: text, separator: ;, _: Hello;World}
 
 #Operation
