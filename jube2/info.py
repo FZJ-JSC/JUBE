@@ -46,7 +46,7 @@ def print_benchmarks_info(path):
         if os.path.isdir(dir_path) and os.path.exists(configuration_file):
             try:
                 id_number = int(dir_name)
-                parser = jube2.jubeio.XMLParser(configuration_file)
+                parser = jube2.jubeio.Parser(configuration_file)
                 name_str, comment_str, tags = parser.benchmark_info_from_xml()
                 tags_str = jube2.conf.DEFAULT_SEPARATOR.join(tags)
 

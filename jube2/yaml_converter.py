@@ -1,3 +1,22 @@
+# JUBE Benchmarking Environment
+# Copyright (C) 2008-2020
+# Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
+# http://www.fz-juelich.de/jsc/jube
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""YAML to XML converter"""
+
 from __future__ import (print_function,
                         unicode_literals,
                         division)
@@ -5,23 +24,35 @@ from __future__ import (print_function,
 import xml.etree.ElementTree as etree
 import xml.dom.minidom as DOM
 import yaml
+import jube2.log
 import jube2.util.output
 import os
 import StringIO
 
-
-def is_parseable_yaml_file(filename):
-    try:
-        with open(filename, "r") as file_handle:
-            if type(yaml.load(file_handle.read())) is str:
-                return False
-            else:
-                return True
-    except Exception as parseerror:
-        return False
+LOGGER = jube2.log.get_logger(__name__)
 
 
-class Conv(object):
+class YAML_Converter(object):
+
+    """YAML to XML converter"""
+
+    allowed_tags = \
+        {"/": ["benchmark", "parameterset", "comment", "step",
+               "fileset", "substituteset", "analyser", "result", "patternset",
+               "selection", "include-path"],
+         "/benchmark": ["benchmark", "parameterset", "fileset",
+                        "substituteset", "patternset", "selection",
+                        "include-path"],
+         "benchmark": ["parameterset", "comment", "step", "fileset",
+                       "substituteset", "analyser", "result", "patternset"],
+         "analyse": ["file"], "analyser": ["use", "analyse"],
+         "fileset": ["link", "copy", "prepare"],
+         "include-path": ["path"], "parameterset": ["parameter"],
+         "patternset": ["pattern"], "result": ["use", "table", "syslog"],
+         "selection": ["not", "only"], "step": ["use", "do"],
+         "substituteset": ["iofile", "sub"], "syslog": ["key"],
+         "table": ["column"]}
+
     def __init__(self, path):
         self._path = path
         yaml.add_constructor("!include", self.__yaml_include)
@@ -30,13 +61,18 @@ class Conv(object):
 
     def __convert(self):
         """ Opens given file, make a Tree of it and print it """
+        LOGGER.debug("  Start YAML to XML file conversion for file {0}".format(
+            self._path))
         with open(self._path, "r") as file_handle:
-            xmltree = XMLTree(yaml.load(file_handle.read()))
+            xmltree = etree.Element('jube')
+            YAML_Converter.create_headtags(
+                yaml.load(file_handle.read()), xmltree)
             xml = jube2.util.output.element_tree_tostring(
-                xmltree.tree, encoding="UTF-8")
+                xmltree, encoding="UTF-8")
             dom = DOM.parseString(xml.encode('UTF-8'))
             self._int_file.write(dom.toprettyxml(
                 indent="  ", encoding="UTF-8"))
+        LOGGER.debug("  YAML Conversion finalized")
 
     def read(self):
         return self._int_file.getvalue()
@@ -49,7 +85,8 @@ class Conv(object):
     def __yaml_include(self, loader, node):
         """ Constructor for the include tag"""
         _yaml_node_data = node.value.split(":")
-        with open(os.path.join(os.path.dirname(self._path), _yaml_node_data[0])) as inputfile:
+        with open(os.path.join(os.path.dirname(self._path),
+                               _yaml_node_data[0])) as inputfile:
             _ = yaml.load(inputfile.read(), Loader=yaml.Loader)
             inputfile.close()
             if len(_yaml_node_data) > 1:
@@ -59,65 +96,61 @@ class Conv(object):
             return _
     #              leave out the [0] if your include file drops the key ^^^
 
-
-class XMLTree():
-    allowed = {"/": ["benchmark", "parameterset", "comment", "step", "fileset",
-                     "substituteset", "analyser", "result", "patternset",
-                     "selection", "include-path"],
-               "/benchmark": ["benchmark", "parameterset", "fileset",
-                              "substituteset", "patternset", "selection", "include-path"],
-               "benchmark": ["parameterset", "comment", "step", "fileset",
-                             "substituteset", "analyser", "result", "patternset"],
-               "analyse": ["file"], "analyser": ["use", "analyse"],
-               "fileset": ["link", "copy", "prepare"],
-               "include-path": ["path"], "parameterset": ["parameter"],
-               "patternset": ["pattern"], "result": ["use", "table", "syslog"],
-               "selection": ["not", "only"], "step": ["use", "do"],
-               "substituteset": ["iofile", "sub"], "syslog": ["key"],
-               "table": ["column"]}
-
-    def __init__(self, dict):
-        """ Create the Treeelement Jube """
-        self.dict = dict
-        self.tree = etree.Element('jube')
-        self.create_headtags(self.dict, self.tree)
-
-    def create_headtags(self, dict, current_sub):
+    @staticmethod
+    def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
-        for key in dict.keys():
-            if "benchmark" in dict and key in XMLTree.allowed["/benchmark"]:
-                for attr_and_tags in dict[key]:
-                    self.create_tag(key, attr_and_tags, current_sub)
-            elif "benchmark" not in dict and key in XMLTree.allowed["/"]:
-                if key not in XMLTree.allowed["benchmark"]:
-                    for attr_and_tags in dict[key]:
-                        self.create_tag(key, attr_and_tags, current_sub)
-                    del(dict[key])
-        if "benchmark" not in dict:
-            self.create_tag("benchmark", dict, current_sub)
+        for tag in data.keys():
+            if type(data[tag]) is not list:
+                data[tag] = [data[tag]]
+            if "benchmark" in data and \
+                    tag in YAML_Converter.allowed_tags["/benchmark"]:
+                for attr_and_tags in data[tag]:
+                    YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
+            elif "benchmark" not in data and \
+                    tag in YAML_Converter.allowed_tags["/"]:
+                if tag not in YAML_Converter.allowed_tags["benchmark"]:
+                    for attr_and_tags in data[tag]:
+                        YAML_Converter.create_tag(
+                            tag, attr_and_tags, parent_node)
+                    del(data[tag])
+        if "benchmark" not in data:
+            YAML_Converter.create_tag("benchmark", data, parent_node)
 
-    def create_tag(self, name, attr_and_tags, current_sub):
+    @staticmethod
+    def create_tag(new_node_name, data, parent_node):
         """ Create the Subtag name, search for known tags
             and set the given attributes"""
-        local_sub = etree.SubElement(current_sub, name)
-        if name in self.allowed:
-            allowed_tags = self.allowed[name]
-            if type(attr_and_tags) is str and len(allowed_tags) == 1:
-                attr_and_tags = {allowed_tags[0]: attr_and_tags}
-            for key, value in attr_and_tags.items():
+        LOGGER.debug("    Create XML tag <{0}>".format(new_node_name))
+        new_node = etree.SubElement(parent_node, new_node_name)
+        if new_node_name in YAML_Converter.allowed_tags:
+            allowed_tags = YAML_Converter.allowed_tags[new_node_name]
+            if type(data) is str and len(allowed_tags) == 1:
+                data = {allowed_tags[0]: data}
+            for key, value in data.items():
                 if (type(value) is not list):
                     value = [value]
                 for val in value:
                     if key in allowed_tags:
-                        self.create_tag(key, val, local_sub)
+                        YAML_Converter.create_tag(key, val, new_node)
                     else:
-                        local_sub.set(key, str(val))
+                        new_node.set(key, str(val))
         else:
-            if type(attr_and_tags) is not dict:
-                local_sub.text = str(attr_and_tags)
+            if type(data) is not dict:
+                new_node.text = str(data)
             else:
-                for key, value in attr_and_tags.items():
+                for key, value in data.items():
                     if key == "_":
-                        local_sub.text = str(value)
+                        new_node.text = str(value)
                     else:
-                        local_sub.set(key, str(value))
+                        new_node.set(key, str(value))
+
+    @staticmethod
+    def is_parseable_yaml_file(filename):
+        try:
+            with open(filename, "r") as file_handle:
+                if type(yaml.load(file_handle.read())) is str:
+                    return False
+                else:
+                    return True
+        except Exception as parseerror:
+            return False
