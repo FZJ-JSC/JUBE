@@ -40,7 +40,7 @@ import jube2.util.output
 import jube2.conf
 import jube2.result_types.syslog
 import jube2.result_types.table
-import jube2.yaml_converter
+import jube2.util.yaml_converter
 import sys
 import re
 import copy
@@ -1102,9 +1102,9 @@ class Parser(object):
         if file_path.endswith(".xml"):
             return ET.parse(file_path)
         elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
-            jube2.yaml_converter.YAML_Converter.is_parseable_yaml_file(
+            jube2.util.yaml_converter.YAML_Converter.is_parseable_yaml_file(
                 file_path):
-            file_handle = jube2.yaml_converter.YAML_Converter(file_path)
+            file_handle = jube2.util.yaml_converter.YAML_Converter(file_path)
             data = file_handle.read()
             tree = ET.ElementTree(ET.fromstring(data))
             file_handle.close()

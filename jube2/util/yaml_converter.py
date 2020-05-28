@@ -75,9 +75,11 @@ class YAML_Converter(object):
         LOGGER.debug("  YAML Conversion finalized")
 
     def read(self):
+        """Read data of converted file"""
         return self._int_file.getvalue()
 
     def close(self):
+        """Close converted file"""
         self._int_file.close()
 
     # adapted from
@@ -122,6 +124,7 @@ class YAML_Converter(object):
             and set the given attributes"""
         LOGGER.debug("    Create XML tag <{0}>".format(new_node_name))
         new_node = etree.SubElement(parent_node, new_node_name)
+        # Check if tag can have subtags
         if new_node_name in YAML_Converter.allowed_tags:
             allowed_tags = YAML_Converter.allowed_tags[new_node_name]
             if type(data) is str and len(allowed_tags) == 1:
@@ -131,17 +134,23 @@ class YAML_Converter(object):
                     value = [value]
                 for val in value:
                     if key in allowed_tags:
+                        # Create new subtag
                         YAML_Converter.create_tag(key, val, new_node)
                     else:
+                        # Create attribute
                         new_node.set(key, str(val))
         else:
+            #
             if type(data) is not dict:
+                # standard tag value
                 new_node.text = str(data)
             else:
                 for key, value in data.items():
                     if key == "_":
+                        # _ represents the standard tag value
                         new_node.text = str(value)
                     else:
+                        # Create attribute
                         new_node.set(key, str(value))
 
     @staticmethod
