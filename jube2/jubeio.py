@@ -688,6 +688,9 @@ class Parser(object):
         """Extract include-path pathes from etree"""
         LOGGER.debug("  Parsing <include-path>")
         valid_tags = ["path"]
+        pathes = []
+        if len(include_path_etree.text.strip()) > 0:
+            pathes.append(include_path_etree.text.strip())
         for element in include_path_etree:
             Parser._check_tag(element, valid_tags)
             path = element.text
@@ -696,6 +699,8 @@ class Parser(object):
             path = path.strip()
             if len(path) == 0:
                 raise ValueError("Empty \"<path>\" found")
+            pathes.append(path)
+        for path in pathes:
             path = os.path.expandvars(os.path.expanduser(path))
             path = os.path.join(self.file_path_ref, path)
             self._include_path += [path]

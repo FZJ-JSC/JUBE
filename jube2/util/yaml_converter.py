@@ -184,14 +184,8 @@ class YAML_Converter(object):
         LOGGER.debug("    Create XML tag <{0}>".format(new_node_name))
         new_node = etree.SubElement(parent_node, new_node_name)
         # Check if tag can have subtags
-        if new_node_name in YAML_Converter.allowed_tags:
+        if new_node_name in YAML_Converter.allowed_tags and type(data) is dict:
             allowed_tags = YAML_Converter.allowed_tags[new_node_name]
-            # Check for implicit tags, "unicode" should only be reached in
-            # backward compatibility cases
-            if type(data) is not dict and (type(data) is str or \
-                                           type(data) is unicode) and \
-                    len(allowed_tags) == 1:
-                data = {allowed_tags[0]: data}
             for key, value in data.items():
                 if (type(value) is not list):
                     value = [value]
@@ -203,18 +197,25 @@ class YAML_Converter(object):
                         # Create attribute
                         new_node.set(key, str(val))
         else:
-            #
             if type(data) is not dict:
                 # standard tag value
-                new_node.text = str(data)
+                tag_value = data
             else:
                 for key, value in data.items():
                     if key == "_":
                         # _ represents the standard tag value
-                        new_node.text = str(value)
+                        tag_value = value
                     else:
                         # Create attribute
                         new_node.set(key, str(value))
+            if type(tag_value) is list:
+                new_node.text = str(tag_value.pop(0))
+                while len(tag_value) > 0:
+                    new_node = new_node.copy()
+                    parent_node.append(new_node)
+                    new_node.text = str(tag_value.pop(0))
+            else:
+                new_node.text = str(tag_value)
 
     @staticmethod
     def is_parseable_yaml_file(filename):

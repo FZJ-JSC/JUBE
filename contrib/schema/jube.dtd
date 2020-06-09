@@ -10,7 +10,7 @@
 <!ATTLIST not           tag CDATA #IMPLIED>
 <!ELEMENT tag (#PCDATA)>
 <!ATTLIST tag           tag CDATA #IMPLIED>
-<!ELEMENT include-path (path*)>
+<!ELEMENT include-path (#PCDATA|path)*>
 <!ATTLIST include-path  tag CDATA #IMPLIED>
 <!ELEMENT path (#PCDATA)>
 <!ATTLIST path          tag CDATA #IMPLIED>
