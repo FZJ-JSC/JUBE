@@ -262,31 +262,7 @@ class Parser(object):
     @staticmethod
     def _check_valid_tags(element, tags):
         """Check if element contains only valid tags"""
-        if tags is None:
-            tags = set()
-        tag_tags_str = element.get("tag")
-        if tag_tags_str is not None:
-            # Check for old tag format
-            if "," in tag_tags_str:
-                tag_tags_str = Parser._convert_old_tag_format(tag_tags_str)
-            tag_tags_str = tag_tags_str.replace(' ', '')
-            tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
-                         if len(i) > 0]
-            tag_state = {}
-            for tag in tag_array:
-                tag_state.update({tag: str(tag in tags)})
-            for tag in tag_array:
-                tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + '(?=\W|$)',
-                                      tag_state[tag], tag_tags_str)
-            tag_tags_str = tag_tags_str.replace('|', ' or ')\
-                .replace('+', ' and ').replace('!', ' not ')
-            try:
-                return eval(tag_tags_str)
-            except SyntaxError:
-                raise ValueError("Tag string '{0}' not parseable."
-                                 .format(element.get("tag")))
-        else:
-            return True
+        return jube2.util.util.valid_tags(element.get("tag"),tags)
 
     @staticmethod
     def _remove_invalid_tags(etree, tags):
@@ -1112,7 +1088,7 @@ class Parser(object):
                 file_path):
             include_path = list(self._include_path)
             include_path += Parser._read_envvar_include_path()
-            file_handle = jube2.util.yaml_converter.YAML_Converter(file_path,include_path)
+            file_handle = jube2.util.yaml_converter.YAML_Converter(file_path,include_path,self._tags)
             data = file_handle.read()
             tree = ET.ElementTree(ET.fromstring(data))
             file_handle.close()

@@ -28,8 +28,10 @@ try:
 except ImportError:
     pass
 import jube2.log
+import jube2.conf
 import jube2.util.output
 import os
+import jube2.util.util
 try:
     from StringIO import StringIO as IOStream
 except ImportError:
@@ -55,16 +57,19 @@ class YAML_Converter(object):
          "fileset": ["link", "copy", "prepare"],
          "include-path": ["path"], "parameterset": ["parameter"],
          "patternset": ["pattern"], "result": ["use", "table", "syslog"],
-         "selection": ["not", "only"], "step": ["use", "do"],
+         "selection": ["not", "only", "tag"], "step": ["use", "do"],
          "substituteset": ["iofile", "sub"], "syslog": ["key"],
          "table": ["column"]}
 
-    def __init__(self, path, include_path=None):
+    def __init__(self, path, include_path=None, tags=None):
         self._path = path
         if include_path is None:
             include_path = []
+        if tags is None:
+            tags = set()
         self._include_path = list(include_path)
         self._include_path += [os.path.dirname(self._path)]
+        self._tags = set(tags)
         try:
             yaml.add_constructor("!include", self.__yaml_include)
         except NameError:
@@ -72,9 +77,21 @@ class YAML_Converter(object):
                             "(https://pyyaml.org), or switch to .xml input " +
                             "files.")
         self._ignore_search_errors = True
-        self._include_path = list(include_path) + \
-            self.__search_for_include_pathes() + \
-            [os.path.dirname(self._path)]
+        self._tags.update(self.__search_for_tags())
+        old_tags = set(self._tags)
+        changed = True
+        counter = 0
+        # It is possible to add new tags by including external files into a 
+        # selection block therefore the input must be scanned multiple times 
+        # to gather all available tags
+        while changed and counter < jube2.conf.PREPROCESS_MAX_ITERATION:
+            self._include_path = list(include_path) + \
+                self.__search_for_include_pathes() + \
+                [os.path.dirname(self._path)]
+            self._tags.update(self.__search_for_tags())
+            changed = len(self._tags.difference(old_tags)) > 0
+            old_tags = set(self._tags)
+            counter += 1
         self._ignore_search_errors = False
         self._int_file = IOStream()
         self.__convert()
@@ -113,6 +130,19 @@ class YAML_Converter(object):
                               "include pathes").format(filename))
         return file_path
 
+    def __search_for_tags(self):
+        """Search a YAML file for stored tag information"""
+        tags = set()
+        with open(self._path, "r") as file_handle:
+            data = yaml.load(file_handle.read())
+            if "selection" in data and "tag" in data["selection"]:
+                if type(data["selection"]["tag"]) is not list:
+                    data["selection"]["tag"] = [data["selection"]["tag"]]
+                for tag in data["selection"]["tag"]:
+                    if not tag.startswith("!include "):
+                        tags.update(set(tag.split(jube2.conf.DEFAULT_SEPARATOR)))
+        return tags
+
     def __search_for_include_pathes(self):
         """Search a YAML file for stored include-path information"""
         include_pathes = []
@@ -123,9 +153,25 @@ class YAML_Converter(object):
                 if type(data["include-path"]) is not list:
                     data["include-path"] = [data["include-path"]]
                 for path in data["include-path"]:
+                    # path in include-path is optional
+                    # verify tags
                     if type(path) is dict:
-                        include_pathes.append(os.path.join(
-                            os.path.dirname(self._path), path["path"]))
+                        if "tag" in path and not \
+                                jube2.util.util.valid_tags(path["tag"],
+                                                           self._tags):
+                            continue
+                        value = path["path"] if "path" in path else path["_"]
+                        if type(value) is not list:
+                            value = [value]
+                        for val in value:
+                            if type(val) is dict:
+                                if "tag" in val and not \
+                                    jube2.util.util.valid_tags(val["tag"],
+                                                               self._tags):
+                                    continue
+                                val = val["_"]
+                            include_pathes.append(os.path.join(
+                                os.path.dirname(self._path), val))
                     else:
                         include_pathes.append(os.path.join(
                             os.path.dirname(self._path), path))
