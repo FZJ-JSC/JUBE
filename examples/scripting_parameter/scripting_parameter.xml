@@ -15,7 +15,7 @@
       <parameter name="number_mult" mode="python" type="float">
         ${number}*${additional_number}
       </parameter>
-      <!-- Normal template -->
+      <!-- Reuse another parameter -->
       <parameter name="text">Number: $number</parameter>
     </parameterset>
     

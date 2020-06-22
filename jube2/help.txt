@@ -270,7 +270,7 @@ fileset_tag
 
    * filesets can be used inside the step-command
 
-general_structure
+general_structure_xml
       <?xml version="1.0" encoding="UTF-8"?>
       <!-- Basic top level JUBE structure -->
       <jube>
@@ -318,6 +318,51 @@ general_structure
         </benchmark>
         ...
       </jube>
+
+general_structure_yaml
+      # optional additional include paths
+      include-path:
+        ...
+
+      # optional benchmark selection
+      selection:
+        only: ...
+        not: ...
+
+      # global sets
+      parameterset:
+        ...
+      substitutionset:
+        ...
+      fileset:
+        ...
+      patternset:
+        ...
+
+      benchmark: # can be skipped if only a single benchmark is handled
+        - name: ...
+          outpath: ...
+          # optional benchmark comment
+          comment: ...
+
+          # local sets
+          parameterset:
+            ...
+          substitutionset:
+            ...
+          fileset:
+            ...
+          patternset:
+            ...
+
+          # commands
+          step:
+            ...
+
+          analyser:
+            ...
+          result:
+            ...
 
 include-path_tag
    Add some include paths where to search for include files.
@@ -484,7 +529,7 @@ link_tag
      separated by ",", the default separator can be changed by using
      the "separator" attribute
 
-        * if "name" is present, the lists must have the same length
+     * if "name" is present, the lists must have the same length
 
    * in the execution step the given files or directories will be
      linked
@@ -567,23 +612,21 @@ parameter_tag
 
    * "update_mode" is optional (default: "never")
 
-        * can be set to "never", "use", "step", "cycle" and "always"
+     * can be set to "never", "use", "step", "cycle" and "always"
 
-        * depending on the setting the parameter will be
-          reevaluated:
+     * depending on the setting the parameter will be reevaluated:
 
-             * "never": no reevaluation, even if the parameterset is
-               used multiple times
+       * "never": no reevaluation, even if the parameterset is used
+         multiple times
 
-             * "use": reevaluation if the parameterset is explicitly
-               used
+       * "use": reevaluation if the parameterset is explicitly used
 
-             * "step": reevaluation in each new step
+       * "step": reevaluation in each new step
 
-             * "cycle": reevaluation in each cycle (number of
-               workpackages will stay unchanged)
+       * "cycle": reevaluation in each cycle (number of workpackages
+         will stay unchanged)
 
-             * "always": reevaluation in each step and cycle
+       * "always": reevaluation in each step and cycle
 
 parameterset_tag
    A parameterset is a container to store a bundle of *parameters*.
@@ -667,11 +710,10 @@ pattern_tag
    * "default" is optional: Specify default value if pattern cannot
      be found or if it cannot be evaluated
 
-   * "dotall" is optional (default: "false"): Can be set to
-     "true```or ``false" to specify if a "." within the regular
-     expression should also match newline characters, which can be
-     very helpfull to extract a line only after a specific header was
-     mentioned.
+   * "dotall" is optional (default: "false"): Can be set to "true"
+     or "false" to specify if a "." within the regular expression
+     should also match newline characters, which can be very helpfull
+     to extract a line only after a specific header was mentioned.
 
 patternset_tag
    A patternset is a container to store a bundle of patterns.
@@ -961,8 +1003,8 @@ table_tag
         ...
       </table>
 
-   * "style" is optional; allowed styles: "csv", "pretty"; default:
-     "csv"
+   * "style" is optional; allowed styles: "csv", "pretty",
+     "aligned"; default: "csv"
 
    * "separator" is optional; only used in csv-style, default: ","
 
@@ -1026,17 +1068,17 @@ update_mode
 
    These update modes are available:
 
-      * "never": no reevaluation, even if the parameterset is used
-        multiple times
+   * "never": no reevaluation, even if the parameterset is used
+     multiple times
 
-      * "use": reevaluation if the parameterset is explicitly used
+   * "use": reevaluation if the parameterset is explicitly used
 
-      * "step": reevaluation in each new step
+   * "step": reevaluation in each new step
 
-      * "cycle": reevaluation in each cycle (number of workpackages
-        will stay unchanged)
+   * "cycle": reevaluation in each cycle (number of workpackages
+     will stay unchanged)
 
-      * "always": reevaluation in each step and cycle
+   * "always": reevaluation in each step and cycle
 
 workpackage
    A workpackage is the combination of a *step* (which contains all

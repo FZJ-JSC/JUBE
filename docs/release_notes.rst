@@ -25,21 +25,22 @@ Version 2.3.0
 ~~~~~~~~~~~~~
 Release: 2019-11-07
 
-* New command line option ``-s {pretty,csv}, --style {pretty,csv}`` for the ``result`` 
-  command allows to overwrite the selected table style
-* New command line option ``-o OUTPATH, --outpath OUTPATH`` for the ``run``
-  command allows to overwrite the selected outpath for the benchmark run
+* New command line option ``-s {pretty,csv}, --style {pretty,csv}`` for the ``result`` command
+  allows to overwrite the selected table style
+* New command line option ``-o OUTPATH, --outpath OUTPATH`` for the ``run`` command allows
+  to overwrite the selected outpath for the benchmark run
 * New parameter modes: ``env`` and ``tag``
 
-   * ``mode="env``: include the content of an available environment variable
-   * ``mode="tag``: include the tag name if the tag was set during execution, otherwise the content is empty
+  * ``mode="env``: include the content of an available environment variable
+  * ``mode="tag``: include the tag name if the tag was set during execution, otherwise the content is empty
 
-* New option ``dotall=true`` in ``<pattern>`` (default: ``false``) allows that ``.`` within a regular
-  expression also matches newline characters. This can be very helpfull to extract a line only after a specific header was mentioned. See :ref:`extract_specifc_block`
-* ``--tags`` used in combination with the ``--update`` option will now be added to the 
-  existing tags of the original run instead of overwriting the old tags. If no new tags need to be added within
-  an update ``--tags`` can now be skipped.
-* ``parse.log`` is now automatically moved into the specifc job run folder and is also available within the ``jube log`` command
+* New option ``dotall=true`` in ``<pattern>`` (default: ``false``) allows that ``.`` within a
+  regular expression also matches newline characters. This can be very helpfull to extract a
+  line only after a specific header was mentioned. See :ref:`extract_specifc_block`
+* ``--tags`` used in combination with the ``--update`` option will now be added to the existing
+  tags of the original run instead of overwriting the old tags. If no new tags need to be added within an update ``--tags`` can now be skipped.
+* ``parse.log`` is now automatically moved into the specifc job run folder and is also available 
+  within the ``jube log`` command
 
 
 Version 2.2.2
@@ -95,7 +96,7 @@ Release: 2016-12-20
 * ``<do>`` specfic ``work_dir`` is now created automatically if needed
 * ``directory`` attribute in ``<link>`` and ``<copy>`` was renamed to ``source_dir`` (old attribute name is still possible)
 
-   * ``source_dir`` now allows parameter substitution
+  * ``source_dir`` now allows parameter substitution
 
 * New attribute ``target_dir`` in ``<link>`` and ``<copy>`` to specify the target directory path prefix
 
@@ -108,14 +109,14 @@ Release: 2016-09-01
 * Fix ``jube_wp_...`` parameter handling bug, if these parameter are used inside another script parameter
 * Added new optional argument ``suffix="..."`` to the ``<step>`` tag
 
-   * Parameter are allowed inside this argument string.
-   * The evaluated string will be attached to the default workpackage directory name to allow users to find specific directories in an easier way (e.g. ``000001_stepname_suffix`` ).
+  * Parameter are allowed inside this argument string.
+  * The evaluated string will be attached to the default workpackage directory name to allow users to find specific directories in an easier way (e.g. ``000001_stepname_suffix`` ).
 
 * The *XML* schema files can now be found inside the ``contrib`` folder
 * Added new advanced error handling
 
-   * JUBE will not stop any more if an error occurs inside a ``run`` or ``continue``. The error will be marked and the corresponding workpackage will not be touched anymore.
-   * There is also a ``-e``/``--exit`` option to overwrite this behaviour to directly exit if there is an error.
+  * JUBE will not stop any more if an error occurs inside a ``run`` or ``continue``. The error will be marked and the corresponding workpackage will not be touched anymore.
+  * There is also a ``-e``/``--exit`` option to overwrite this behaviour to directly exit if there is an error.
 
 
 Version 2.1.2

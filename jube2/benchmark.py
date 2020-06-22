@@ -568,8 +568,10 @@ class Benchmark(object):
         jube2.log.change_logfile_name(os.path.join(
             self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
         # Move parse logfile into benchmark folder
-        if os.path.isfile(jube2.conf.DEFAULT_LOGFILE_NAME):
-            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME,
+        if os.path.isfile(os.path.join(self._file_path_ref,
+                                       jube2.conf.DEFAULT_LOGFILE_NAME)):
+            os.rename(os.path.join(self._file_path_ref,
+                                   jube2.conf.DEFAULT_LOGFILE_NAME),
                       os.path.join(self.bench_dir,
                                    jube2.conf.LOGFILE_PARSE_NAME))
 

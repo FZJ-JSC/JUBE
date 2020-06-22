@@ -283,25 +283,25 @@ Glossary
       * Templates can be created, using scripting e.g.: ``",".join([str(2**i) for i in range(3)])``
       * ``update_mode`` is optional (default: ``never``)
 
-         * can be set to ``never``, ``use``, ``step``, ``cycle`` and ``always``
-         * depending on the setting the parameter will be reevaluated:
+        * can be set to ``never``, ``use``, ``step``, ``cycle`` and ``always``
+        * depending on the setting the parameter will be reevaluated:
 
-            * ``never``: no reevaluation, even if the parameterset is used multiple times
-            * ``use``: reevaluation if the parameterset is explicitly used
-            * ``step``: reevaluation in each new step
-            * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
-            * ``always``: reevaluation in each step and cycle
+          * ``never``: no reevaluation, even if the parameterset is used multiple times
+          * ``use``: reevaluation if the parameterset is explicitly used
+          * ``step``: reevaluation in each new step
+          * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+          * ``always``: reevaluation in each step and cycle
 
    update_mode
       The update mode is parameter attribute which can be used to control the reevaluation of the parameter content.
 
       These update modes are available:
 
-         * ``never``: no reevaluation, even if the parameterset is used multiple times
-         * ``use``: reevaluation if the parameterset is explicitly used
-         * ``step``: reevaluation in each new step
-         * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
-         * ``always``: reevaluation in each step and cycle
+      * ``never``: no reevaluation, even if the parameterset is used multiple times
+      * ``use``: reevaluation if the parameterset is explicitly used
+      * ``step``: reevaluation in each new step
+      * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+      * ``always``: reevaluation in each step and cycle
 
    fileset_tag
       A fileset is a container to store a bundle of links and copy commands.
@@ -348,7 +348,7 @@ Glossary
      * each link-tag can contain a list of filenames (or directories), separated by ``,``, the default separator can be changed
        by using the ``separator`` attribute
 
-        * if ``name`` is present, the lists must have the same length
+       * if ``name`` is present, the lists must have the same length
 
      * in the execution step the given files or directories will be linked
 
@@ -722,7 +722,7 @@ Glossary
               +- 000001_execute
               +- 000002_postprocessing
 
-   general_structure
+   general_structure_xml
 
       .. code-block:: xml
 
@@ -773,6 +773,54 @@ Glossary
            </benchmark>
            ...
          </jube>
+
+   general_structure_yaml
+
+      .. code-block:: yaml
+
+         # optional additional include paths
+         include-path:
+           ...
+
+         # optional benchmark selection 
+         selection:
+           only: ...
+           not: ...
+
+         # global sets
+         parameterset: 
+           ...
+         substitutionset:
+           ...
+         fileset:
+           ...
+         patternset:
+           ... 
+
+         benchmark: # can be skipped if only a single benchmark is handled
+           - name: ...
+             outpath: ...
+             # optional benchmark comment
+             comment: ...
+
+             # local sets
+             parameterset:
+               ...
+             substitutionset:
+               ...
+             fileset:
+               ...
+             patternset:
+               ...
+
+             # commands
+             step:
+               ...
+
+             analyser:
+               ...
+             result:
+               ...
 
    jube_pattern
       List of available jube pattern:

@@ -31,7 +31,7 @@ read the general :doc:`tutorial` first.
 
 Schema validation
 ~~~~~~~~~~~~~~~~~
-To validate your input files you can use DTD or schema validation. You will find ``jube.dtd``, ``jube.xsd``
+To validate your *XML* based input files you can use DTD or schema validation. You will find ``jube.dtd``, ``jube.xsd``
 and ``jube.rnc`` inside the ``schema`` folder. You have to add these schema information to your input files
 which you want to validate.
 
@@ -106,6 +106,11 @@ The input file ``scripting_parameter.xml``:
 .. literalinclude:: ../examples/scripting_parameter/scripting_parameter.xml
    :language: xml
 
+The input file ``scripting_parameter.yaml``:
+
+.. literalinclude:: ../examples/scripting_parameter/scripting_parameter.yaml
+   :language: yaml
+
 In this example we see four different parameters.
 
 * ``number`` is a normal template which will be expanded to three different :term:`workpackages <workpackage>`.
@@ -165,6 +170,11 @@ The input file ``scripting_pattern.xml``:
 .. literalinclude:: ../examples/scripting_pattern/scripting_pattern.xml
    :language: xml
 
+The input file ``scripting_pattern.yaml``:
+
+.. literalinclude:: ../examples/scripting_pattern/scripting_pattern.yaml
+   :language: yaml
+
 It will create the following output:
 
 .. code-block:: none
@@ -196,6 +206,11 @@ The input file ``statistic.xml``:
 .. literalinclude:: ../examples/statistic/statistic.xml
    :language: xml
 
+The input file ``statistic.yaml``:
+
+.. literalinclude:: ../examples/statistic/statistic.yaml
+   :language: yaml
+
 It will create the following output:
 
 .. code-block:: none
@@ -222,6 +237,11 @@ The *JUBE* input file ``jobsystem.xml``:
 
 .. literalinclude:: ../examples/jobsystem/jobsystem.xml
    :language: xml
+
+The *JUBE* input file ``jobsystem.yaml``:
+
+.. literalinclude:: ../examples/jobsystem/jobsystem.yaml
+   :language: yaml
 
 As you can see the jobfile is very general and several parameters will be used for replacement. By using a general jobfile and the substitution mechanism
 you can control your jobsystem directly out of your *JUBE* input file. 
@@ -276,6 +296,11 @@ The include file ``include_data.xml``:
 .. literalinclude:: ../examples/include/include_data.xml
    :language: xml
 
+The include file ``include_data.yaml``:
+
+.. literalinclude:: ../examples/include/include_data.yaml
+   :language: yaml
+
 All files which contain data to be included must use the *XML*-format. The include files can have a user specific structure (there can be no valid
 *JUBE* tags like ``<dos>``), but the structure must be allowed by the searching mechanism (see below). The resulting file must have a valid *JUBE* structure.
 
@@ -284,18 +309,30 @@ The main file ``main.xml``:
 .. literalinclude:: ../examples/include/main.xml
    :language: xml
 
+The main file ``main.yaml``:
+
+.. literalinclude:: ../examples/include/main.yaml
+   :language: yaml
+
 In these file there are three different include types:
 
 The ``init_with`` can be used inside any set definition. Inside the given file the search mechanism will search for the same set (same type, same name), will parse its structure (this must be *JUBE* valid) and copy the content to
-``main.xml``. Inside ``main.xml`` you can add additional values or overwrite existing ones. If your include-set uses a different name inside your include file you can use ``init_with="filename.xml:old_name"``.
+``main.xml``. Inside ``main.xml`` you can add additional values or overwrite existing ones. If your include-set uses a different name inside your include file you can use ``init_with="filename.xml:old_name"``. It is possible to mix *YAML* based
+include files with *XML* files and vice versa.
 
 The second method is the ``<use from="...">``. This is mostly the same like the ``init_with`` structure, but in this case you are not able to add or overwrite some values. The external set will be used directly. There is no set-type inside the ``<use>``, because of that, the set's name must
-be unique inside the include-file.
+be unique inside the include-file. The remote file can use the *YAML* or the *XML* format.
 
-The last method is the most generic include. By using ``<include />`` you can copy any *XML*-nodes you want to your main-*XML* file. The included file can provide tags which are not *JUBE*-conform but it must be a valid *XML*-file (e.g. only one root node allowed). The
+The last method is the most generic include. The include mechanic is the only element in *JUBE* which works slightly different in *YAML* and *XML* based files.
+
+In *XML* based files by using ``<include />`` you can copy any *XML*-nodes you want to your main-*XML* file. The included file can provide tags which are not *JUBE*-conform but it must be a valid *XML*-file (e.g. only one root node allowed). The
 resulting main configuration file must be completely *JUBE* valid.
 The ``path`` is optional and can be used to select a specific node set (otherwise the root-node itself will be included). The ``<include />`` is the only
 include-method that can be used to include any tag you want. The ``<include />`` will copy all parts without any changes. The other include types will update path names, which were relative to the include-file position.
+
+In *YAML* based files the prefix ``! include`` is used followed by the file name. The file must be a *YAML* file, which will be opened and parsed. The second block `:["dos"]` can be used to select any subset of data of the full dictionary, any Python syntax is allowed for this selection.
+Finally it is possible to also specify a third block which allows full Python list comprehensions. ``_`` is the match of the selection before, e.g.: ``!include include_data.yaml:["dos"]:[i for i in _ if "Test" in i]``. In contrast to the *XML* based include it isn't possible to mix lists
+or dictionaries out of different files, each key can only handle a single include.
 
 To run the benchmark you can use the normal command::
 
@@ -343,6 +380,11 @@ The input file ``tagging.xml``:
 
 .. literalinclude:: ../examples/tagging/tagging.xml
    :language: xml
+
+The input file ``tagging.yaml``:
+
+.. literalinclude:: ../examples/tagging/tagging.yaml
+   :language: yaml
 
 When running this example::
 
@@ -432,6 +474,14 @@ Often you only have one benchmark inside your input file. But it is also possibl
      ...
    </jube>
 
+.. code-block:: yaml
+   :linenos:
+
+   - name: a
+     # data for benchmark a
+   - name: b
+     # data for benchmark b
+
 All benchmarks can use the same global (as a child of ``<jube>``) declared sets. Often it might be better to use an include feature instead.
 *JUBE* will run every benchmark in the given order. Every benchmark gets a unique benchmark id.
 
@@ -471,6 +521,11 @@ The input file ``shared.xml``:
 
 .. literalinclude:: ../examples/shared/shared.xml
    :language: xml
+
+The input file ``shared.yaml``:
+
+.. literalinclude:: ../examples/shared/shared.yaml
+   :language: yaml
 
 The step must be marked using the ``shared`` attribute. The name, given inside this attribute, will be the name of a symbolic link, which will be created
 inside every single sandbox work directory pointing to a single shared folder. Every Workpackage can access this folder by using its own link. In this example
@@ -521,6 +576,11 @@ The input file ``environment.xml``:
 .. literalinclude:: ../examples/environment/environment.xml
    :language: xml
 
+The input file ``environment.yaml``:
+
+.. literalinclude:: ../examples/environment/environment.yaml
+   :language: yaml
+
 In normal cases all ``<do>`` within one ``<step>`` shares the same environment. All **exported** variables of one ``<do>``
 will be available inside the next ``<do>`` within the same ``<step>``.
 
@@ -546,10 +606,20 @@ The input file ``parameter_dependencies.xml``:
 .. literalinclude:: ../examples/parameter_dependencies/parameter_dependencies.xml
    :language: xml
 
+The input file ``parameter_dependencies.yaml``:
+
+.. literalinclude:: ../examples/parameter_dependencies/parameter_dependencies.yaml
+   :language: yaml
+
 The include file ``include_file.xml``:
 
 .. literalinclude:: ../examples/parameter_dependencies/include_file.xml
    :language: xml
+
+The include file ``include_file.yaml``:
+
+.. literalinclude:: ../examples/parameter_dependencies/include_file.yaml
+   :language: yaml
 
 The easiest way to handle dependencies is to define an index-parameter which can be used in other scripting parameters
 to combine all dependent parameter combinations.
@@ -577,11 +647,11 @@ the first one.
 
 There is a simple workaround to change the update behaviour of a parameter by using the attribute ``update_mode``:
 
-   * ``update_mode="never"`` No update (default behaviour)
-   * ``update_mode="use"`` Re-evaluate the parameter if the parameterset is explicitly used
-   * ``update_mode="step"`` Re-evaluate the parameter for each new step
-   * ``update_mode="cycle"`` Re-evaluate the parameter for each new cycleloop, but not at the begin of a new step
-   * ``update_mode="always"`` Combine step and cycle
+* ``update_mode="never"`` No update (default behaviour)
+* ``update_mode="use"`` Re-evaluate the parameter if the parameterset is explicitly used
+* ``update_mode="step"`` Re-evaluate the parameter for each new step
+* ``update_mode="cycle"`` Re-evaluate the parameter for each new cycleloop, but not at the begin of a new step
+* ``update_mode="always"`` Combine step and cycle
 
 Within a cycle loop no new workpackages can be created. Templates will be reevaluated, but they can not increase the number of existing workpackages within a cycle.
 
@@ -594,6 +664,11 @@ The input file ``parameter_update.xml``:
 
 .. literalinclude:: ../examples/parameter_update/parameter_update.xml
    :language: xml
+
+The input file ``parameter_update.yaml``:
+
+.. literalinclude:: ../examples/parameter_update/parameter_update.yaml
+   :language: yaml
 
 The use and influence of the three update modes ``update_mode="never"``, ``update_mode="use"`` and ``update_mode="step"`` is shown here. Keep in mind, that the steps have to be dependent
 from each other leading to identical outputs otherwise.
@@ -617,6 +692,11 @@ The input file ``iterations.xml``:
 
 .. literalinclude:: ../examples/iterations/iterations.xml
    :language: xml
+
+The input file ``iterations.yaml``:
+
+.. literalinclude:: ../examples/iterations/iterations.yaml
+   :language: yaml
 
 In this example, both steps 1 and 2 are executed 2 times for each parameter and dependency configuration. Because of the given parameter, step 1
 is executed 6 times in total (3 parameter combinations x 2). Step 2 is executed 12 times (6 from the dependent step x 2). Each run will be executed in the normal way
@@ -678,4 +758,4 @@ itself is still executed). In the given example the output will be:
    2
    3
 
-
+In contrast to the iterations, all executions for the cycle feature take place inside of the same folder.

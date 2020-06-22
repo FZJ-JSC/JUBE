@@ -28,7 +28,7 @@ try:
     from setuptools import setup
     import sys
     SHARE_PATH = ""
-    add_opt["install_requires"] = list()
+    add_opt["install_requires"] = ['pyyaml']
     if sys.hexversion < 0x02070000:
         add_opt["install_requires"].append("argparse")
 except ImportError:

@@ -92,6 +92,34 @@ class WorkStat(object):
         """Check if work queue is empty"""
         return self._work_list.empty()
 
+def valid_tags(tag_string, tags):
+    """Check if tag_string contains only valid tags"""
+    if tags is None:
+        tags = set()
+    tag_tags_str = tag_string
+    if tag_tags_str is not None:
+        # Check for old tag format
+        if "," in tag_tags_str:
+            tag_tags_str = Parser._convert_old_tag_format(tag_tags_str)
+        tag_tags_str = tag_tags_str.replace(' ', '')
+        tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
+                     if len(i) > 0]
+        tag_state = {}
+        for tag in tag_array:
+            tag_state.update({tag: str(tag in tags)})
+        for tag in tag_array:
+            tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + '(?=\W|$)',
+                                  tag_state[tag], tag_tags_str)
+        tag_tags_str = tag_tags_str.replace('|', ' or ')\
+            .replace('+', ' and ').replace('!', ' not ')
+        try:
+            return eval(tag_tags_str)
+        except SyntaxError:
+            raise ValueError("Tag string '{0}' not parseable."
+                             .format(element.get("tag")))
+    else:
+        return True
+
 
 def get_current_id(base_dir):
     """Return the highest id found in directory 'base_dir'."""
@@ -126,6 +154,10 @@ def substitution(text, substitution_dict):
     try:
         str_substitution_dict = \
             dict([(k, str(v).decode("utf-8", errors="ignore")) for k, v in
+                  substitution_dict.items()])
+    except TypeError:
+        str_substitution_dict = \
+            dict([(k, str(v).decode("utf-8", "ignore")) for k, v in
                   substitution_dict.items()])
     except AttributeError:
         str_substitution_dict = dict([(k, str(v)) for k, v in

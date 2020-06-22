@@ -1,0 +1,15 @@
+---
+benchmark: 
+  - name: cycle
+    outpath: bench_run
+    comment: A cycle example
+
+    step:
+      - name: a_step
+        cycles: 5
+        do:
+          - _: echo $jube_wp_cycle
+            break_file: done
+          - _: touch done
+            active: $jube_wp_cycle==2
+        
