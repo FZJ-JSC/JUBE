@@ -381,6 +381,11 @@ The input file ``tagging.xml``:
 .. literalinclude:: ../examples/tagging/tagging.xml
    :language: xml
 
+The input file ``tagging.yaml``:
+
+.. literalinclude:: ../examples/tagging/tagging.yaml
+   :language: yaml
+
 When running this example::
 
    >>> jube run tagging.xml
@@ -469,6 +474,14 @@ Often you only have one benchmark inside your input file. But it is also possibl
      ...
    </jube>
 
+.. code-block:: yaml
+   :linenos:
+
+   - name: a
+     # data for benchmark a
+   - name: b
+     # data for benchmark b
+
 All benchmarks can use the same global (as a child of ``<jube>``) declared sets. Often it might be better to use an include feature instead.
 *JUBE* will run every benchmark in the given order. Every benchmark gets a unique benchmark id.
 
@@ -508,6 +521,11 @@ The input file ``shared.xml``:
 
 .. literalinclude:: ../examples/shared/shared.xml
    :language: xml
+
+The input file ``shared.yaml``:
+
+.. literalinclude:: ../examples/shared/shared.yaml
+   :language: yaml
 
 The step must be marked using the ``shared`` attribute. The name, given inside this attribute, will be the name of a symbolic link, which will be created
 inside every single sandbox work directory pointing to a single shared folder. Every Workpackage can access this folder by using its own link. In this example
@@ -558,6 +576,11 @@ The input file ``environment.xml``:
 .. literalinclude:: ../examples/environment/environment.xml
    :language: xml
 
+The input file ``environment.yaml``:
+
+.. literalinclude:: ../examples/environment/environment.yaml
+   :language: yaml
+
 In normal cases all ``<do>`` within one ``<step>`` shares the same environment. All **exported** variables of one ``<do>``
 will be available inside the next ``<do>`` within the same ``<step>``.
 
@@ -583,10 +606,20 @@ The input file ``parameter_dependencies.xml``:
 .. literalinclude:: ../examples/parameter_dependencies/parameter_dependencies.xml
    :language: xml
 
+The input file ``parameter_dependencies.yaml``:
+
+.. literalinclude:: ../examples/parameter_dependencies/parameter_dependencies.yaml
+   :language: yaml
+
 The include file ``include_file.xml``:
 
 .. literalinclude:: ../examples/parameter_dependencies/include_file.xml
    :language: xml
+
+The include file ``include_file.yaml``:
+
+.. literalinclude:: ../examples/parameter_dependencies/include_file.yaml
+   :language: yaml
 
 The easiest way to handle dependencies is to define an index-parameter which can be used in other scripting parameters
 to combine all dependent parameter combinations.
@@ -614,11 +647,11 @@ the first one.
 
 There is a simple workaround to change the update behaviour of a parameter by using the attribute ``update_mode``:
 
-   * ``update_mode="never"`` No update (default behaviour)
-   * ``update_mode="use"`` Re-evaluate the parameter if the parameterset is explicitly used
-   * ``update_mode="step"`` Re-evaluate the parameter for each new step
-   * ``update_mode="cycle"`` Re-evaluate the parameter for each new cycleloop, but not at the begin of a new step
-   * ``update_mode="always"`` Combine step and cycle
+* ``update_mode="never"`` No update (default behaviour)
+* ``update_mode="use"`` Re-evaluate the parameter if the parameterset is explicitly used
+* ``update_mode="step"`` Re-evaluate the parameter for each new step
+* ``update_mode="cycle"`` Re-evaluate the parameter for each new cycleloop, but not at the begin of a new step
+* ``update_mode="always"`` Combine step and cycle
 
 Within a cycle loop no new workpackages can be created. Templates will be reevaluated, but they can not increase the number of existing workpackages within a cycle.
 
@@ -631,6 +664,11 @@ The input file ``parameter_update.xml``:
 
 .. literalinclude:: ../examples/parameter_update/parameter_update.xml
    :language: xml
+
+The input file ``parameter_update.yaml``:
+
+.. literalinclude:: ../examples/parameter_update/parameter_update.yaml
+   :language: yaml
 
 The use and influence of the three update modes ``update_mode="never"``, ``update_mode="use"`` and ``update_mode="step"`` is shown here. Keep in mind, that the steps have to be dependent
 from each other leading to identical outputs otherwise.
@@ -654,6 +692,11 @@ The input file ``iterations.xml``:
 
 .. literalinclude:: ../examples/iterations/iterations.xml
    :language: xml
+
+The input file ``iterations.yaml``:
+
+.. literalinclude:: ../examples/iterations/iterations.yaml
+   :language: yaml
 
 In this example, both steps 1 and 2 are executed 2 times for each parameter and dependency configuration. Because of the given parameter, step 1
 is executed 6 times in total (3 parameter combinations x 2). Step 2 is executed 12 times (6 from the dependent step x 2). Each run will be executed in the normal way

@@ -1,55 +1,45 @@
----
-benchmark: 
-  - name: iterations
-    outpath: bench_run
-    comment: A Iteration example
+name: iterations
+outpath: bench_run
+comment: A Iteration example
 
-    #Configuration
-    parameterset:
-      - name: param_set
-        parameter:
-          - {name: foo, type: int,   _: "1,2,4"} #comma separated integer must be in quotations
-          - {name: bar, mode: text, update_mode: step,   _: $foo iter:$jube_wp_iteration}
-          
-    step:
-      - name: first_step
-        iterations: 2
-        use:
-          - param_set #use existing parameterset
-        do:
-          - echo $bar #shell command
-      - name: second_step
-        depend: first_step
-        iterations: 2
-        do:
-          - echo $bar #shell command
-          
-    
-    analyser:
-      #analyse without reduce
-      - name: analyse_no_reduce
-        reduce: false
-        analyse:
-          - step: second_step
-      #analyse with reduce
-      - name: analyse
-        reduce: true
-        analyse:
-          - step: second_step
-          
-    result:
-      - use: 
-        - analyse
-        - analyse_no_reduce
-        table:
-        - name: result
-          style: pretty
-          column:
-            - jube_res_analyser
-            - jube_wp_id_first_step
-            - jube_wp_id
-            - jube_wp_iteration_first_step
-            - jube_wp_iteration
-            - foo
-            
-          
+#Configuration
+parameterset:
+  name: param_set
+  parameter:
+    - {name: foo, type: int, _: "1,2,4"}
+    - {name: bar, update_mode: step, _: '$foo iter:$jube_wp_iteration'}
+
+step:
+  - name: first_step
+    iterations: 2
+    use: param_set #use existing parameterset
+    do: echo $bar #shell command
+  - name: second_step
+    depend: first_step
+    iterations: 2
+    do: echo $bar #shell command
+
+analyser:
+  #analyse without reduce
+  - name: analyse_no_reduce
+    reduce: false
+    analyse: 
+      step: second_step
+  #analyse with reduce
+  - name: analyse
+    reduce: true
+    analyse:
+      step: second_step
+
+result:
+  use: [analyse,analyse_no_reduce]
+  table:
+    name: result
+    style: pretty
+    column:
+      - jube_res_analyser
+      - jube_wp_id_first_step
+      - jube_wp_id
+      - jube_wp_iteration_first_step
+      - jube_wp_iteration
+      - foo

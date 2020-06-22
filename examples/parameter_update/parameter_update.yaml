@@ -1,41 +1,33 @@
----
-benchmark: 
-  - name: parameter_updates
-    outpath: bench_run
-    comment: A parameter_update example
+name: parameter_updates
+outpath: bench_run
+comment: A parameter_update example
 
-    
-    #Configuration
-    parameterset:
-      - name: foo
-        parameter:
-          #attributes with : musst be in quotations
-          - {name: bar_never, mode: text, update_mode: never, _: "iter_never: $jube_wp_id"} 
-          - {name: bar_use, mode: text, update_mode: use, _: "iter_use: $jube_wp_id quotations"} 
-          - {name: bar_step, mode: text, update_mode: step, _: "iter_step: $jube_wp_id"}
-          
-    #Operation
-    step:
-      - name: step1
-        use:
-          - foo
-        do:
-          - echo $bar_never
-          - echo $bar_use
-          - echo $bar_step
-      - name: step2
-        depend: step1
-        use:
-          - foo
-        do:
-          - echo $bar_never
-          - echo $bar_use
-          - echo $bar_step
-      - name: step3
-        depend: step2
-        use:
-          - foo
-        do:
-          - echo $bar_never
-          - echo $bar_use
-          - echo $bar_step
+#Configuration
+parameterset:
+  name: foo
+  parameter:
+    - {name: bar_never, mode: text, update_mode: never, _: "iter_never: $jube_wp_id"} 
+    - {name: bar_use, mode: text, update_mode: use, _: "iter_use: $jube_wp_id"} 
+    - {name: bar_step, mode: text, update_mode: step, _: "iter_step: $jube_wp_id"}
+
+#Operation
+step:
+  - name: step1
+    use: foo
+    do:
+      - echo $bar_never
+      - echo $bar_use
+      - echo $bar_step
+  - name: step2
+    depend: step1
+    use: foo
+    do:
+      - echo $bar_never
+      - echo $bar_use
+      - echo $bar_step
+  - name: step3
+    depend: step2
+    do:
+      - echo $bar_never
+      - echo $bar_use
+      - echo $bar_step

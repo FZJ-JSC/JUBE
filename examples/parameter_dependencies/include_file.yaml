@@ -1,8 +1,5 @@
----
 parameterset: 
   - name: depend_param_set0
-    parameter:
-      - {name: number2, type: int, _: 10}
+    parameter: {name: number2, type: int, _: 10}
   - name: depend_param_set1
-    parameter:
-      - {name: number2, type: int, _: 20}
+    parameter: {name: number2, type: int, _: 20}
