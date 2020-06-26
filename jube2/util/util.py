@@ -92,6 +92,7 @@ class WorkStat(object):
         """Check if work queue is empty"""
         return self._work_list.empty()
 
+
 def valid_tags(tag_string, tags):
     """Check if tag_string contains only valid tags"""
     if tags is None:

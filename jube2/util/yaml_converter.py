@@ -81,8 +81,8 @@ class YAML_Converter(object):
         old_tags = set(self._tags)
         changed = True
         counter = 0
-        # It is possible to add new tags by including external files into a 
-        # selection block therefore the input must be scanned multiple times 
+        # It is possible to add new tags by including external files into a
+        # selection block therefore the input must be scanned multiple times
         # to gather all available tags
         while changed and counter < jube2.conf.PREPROCESS_MAX_ITERATION:
             self._include_path = list(include_path) + \
@@ -140,7 +140,8 @@ class YAML_Converter(object):
                     data["selection"]["tag"] = [data["selection"]["tag"]]
                 for tag in data["selection"]["tag"]:
                     if not tag.startswith("!include "):
-                        tags.update(set(tag.split(jube2.conf.DEFAULT_SEPARATOR)))
+                        tags.update(
+                            set(tag.split(jube2.conf.DEFAULT_SEPARATOR)))
         return tags
 
     def __search_for_include_pathes(self):
@@ -148,7 +149,7 @@ class YAML_Converter(object):
         include_pathes = []
         with open(self._path, "r") as file_handle:
             data = yaml.load(file_handle.read())
-            #include-path is only allowed on the top level of the tree
+            # include-path is only allowed on the top level of the tree
             if "include-path" in data:
                 if type(data["include-path"]) is not list:
                     data["include-path"] = [data["include-path"]]
@@ -243,6 +244,7 @@ class YAML_Converter(object):
                         # Create attribute
                         new_node.set(key, str(val))
         else:
+            tag_value = ""
             if type(data) is not dict:
                 # standard tag value
                 tag_value = data
