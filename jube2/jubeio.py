@@ -96,9 +96,16 @@ class Parser(object):
         try:
             tree = self._tree_from_file(self._filename)
         except Exception as parseerror:
-            raise IOError(("XML parse error in \"{0}\": {1}\n" +
-                           "XML is not valid, use validation tool.")
-                          .format(self._filename, str(parseerror)))
+            org_trace = sys.exc_info()[2]
+            try:
+                raise IOError(
+                    ("Parse error in \"{0}\": {1}\n")
+                    .format(self._filename, str(parseerror))).with_traceback(
+                        org_trace)
+            except AttributeError:
+                # Hacky way to allow Python2 traceback re-raising in Python3
+                exec('raise IOError, IOError(("Parse error in {0}: {1}\\n")' +
+                     '.format(self._filename, str(parseerror))), org_trace')
 
         # Check compatible terminal encoding: In some cases, the terminal env.
         # only allow ascii based encoding, print and filesystem operation will
@@ -262,7 +269,7 @@ class Parser(object):
     @staticmethod
     def _check_valid_tags(element, tags):
         """Check if element contains only valid tags"""
-        return jube2.util.util.valid_tags(element.get("tag"),tags)
+        return jube2.util.util.valid_tags(element.get("tag"), tags)
 
     @staticmethod
     def _remove_invalid_tags(etree, tags):
@@ -1079,7 +1086,7 @@ class Parser(object):
         else:
             raise ValueError("Empty <use> found")
 
-    def _tree_from_file(self,file_path):
+    def _tree_from_file(self, file_path):
         """Extract a XML tree from a file (doing implicit YAML conversion)"""
         if file_path.endswith(".xml"):
             return ET.parse(file_path)
@@ -1088,7 +1095,8 @@ class Parser(object):
                 file_path):
             include_path = list(self._include_path)
             include_path += Parser._read_envvar_include_path()
-            file_handle = jube2.util.yaml_converter.YAML_Converter(file_path,include_path,self._tags)
+            file_handle = jube2.util.yaml_converter.YAML_Converter(
+                file_path, include_path, self._tags)
             data = file_handle.read()
             tree = ET.ElementTree(ET.fromstring(data))
             file_handle.close()
