@@ -283,6 +283,8 @@ not matched by ``.``).
 
 .. index:: restart workpackage
 
+.. _restart_workpackage:
+
 Restart a workpackage execution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

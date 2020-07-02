@@ -21,6 +21,20 @@
 Release notes
 =============
 
+Version 2.4.0
+~~~~~~~~~~~~~
+Release: 2020-07-03
+
+* New *YAML* based *JUBE* input format. The existing *XML* format still stays available. Both
+  formats cover the same amount of features. If you plan to use *YAML* based *JUBE* input files, you have to 
+  add the `pyyaml-module <https://pyyaml.org>`_ to your *Python* module library. See also :ref:`input_format`
+* New ``<do>`` attribute: ``error_file="..."``. In contrast to the existing ``done_file`` this file handle can be used to mark
+  a broken asynchronous execution (the job templates in the ``platform`` folder were updated accordingly)
+* The ``analyse`` step is now automatically called when a result is shown and if it was not executed before (instead of showing an error message).
+* New option ``--workpackage`` for ``remove`` command line sub command. Allows to remove an individual 
+  workpackage from a benchmark. See also: :ref:`restart_workpackage`
+* New ``table`` output format: ``aligned``
+
 Version 2.3.0
 ~~~~~~~~~~~~~
 Release: 2019-11-07

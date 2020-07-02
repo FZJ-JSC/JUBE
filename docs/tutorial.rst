@@ -91,6 +91,8 @@ settings if needed.
 
 .. index:: input format
 
+.. _input_format:
+
 Input format
 ~~~~~~~~~~~~
 
