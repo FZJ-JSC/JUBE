@@ -2,6 +2,33 @@ Release notes
 *************
 
 
+Version 2.4.0
+=============
+
+Release: 2020-07-03
+
+* New *YAML* based *JUBE* input format. The existing *XML* format
+  still stays available. Both formats cover the same amount of
+  features. If you plan to use *YAML* based *JUBE* input files, you
+  have to add the pyyaml-module to your *Python* module library. See
+  also Input format
+
+* New "<do>" attribute: "error_file="..."". In contrast to the
+  existing "done_file" this file handle can be used to mark a broken
+  asynchronous execution (the job templates in the "platform" folder
+  were updated accordingly)
+
+* The "analyse" step is now automatically called when a result is
+  shown and if it was not executed before (instead of showing an error
+  message).
+
+* New option "--workpackage" for "remove" command line sub command.
+  Allows to remove an individual workpackage from a benchmark. See
+  also: Restart a workpackage execution
+
+* New "table" output format: "aligned"
+
+
 Version 2.3.0
 =============
 
@@ -17,11 +44,11 @@ Release: 2019-11-07
 
 * New parameter modes: "env" and "tag"
 
-     * "mode="env": include the content of an available environment
-       variable
+  * "mode="env": include the content of an available environment
+    variable
 
-     * "mode="tag": include the tag name if the tag was set during
-       execution, otherwise the content is empty
+  * "mode="tag": include the tag name if the tag was set during
+    execution, otherwise the content is empty
 
 * New option "dotall=true" in "<pattern>" (default: "false") allows
   that "." within a regular expression also matches newline
@@ -142,7 +169,7 @@ Release: 2016-12-20
 * "directory" attribute in "<link>" and "<copy>" was renamed to
   "source_dir" (old attribute name is still possible)
 
-     * "source_dir" now allows parameter substitution
+  * "source_dir" now allows parameter substitution
 
 * New attribute "target_dir" in "<link>" and "<copy>" to specify the
   target directory path prefix
@@ -160,23 +187,23 @@ Release: 2016-09-01
 
 * Added new optional argument "suffix="..."" to the "<step>" tag
 
-     * Parameter are allowed inside this argument string.
+  * Parameter are allowed inside this argument string.
 
-     * The evaluated string will be attached to the default
-       workpackage directory name to allow users to find specific
-       directories in an easier way (e.g. "000001_stepname_suffix" ).
+  * The evaluated string will be attached to the default workpackage
+    directory name to allow users to find specific directories in an
+    easier way (e.g. "000001_stepname_suffix" ).
 
 * The *XML* schema files can now be found inside the "contrib"
   folder
 
 * Added new advanced error handling
 
-     * JUBE will not stop any more if an error occurs inside a "run"
-       or "continue". The error will be marked and the corresponding
-       workpackage will not be touched anymore.
+  * JUBE will not stop any more if an error occurs inside a "run" or
+    "continue". The error will be marked and the corresponding
+    workpackage will not be touched anymore.
 
-     * There is also a "-e"/"--exit" option to overwrite this
-       behaviour to directly exit if there is an error.
+  * There is also a "-e"/"--exit" option to overwrite this behaviour
+    to directly exit if there is an error.
 
 
 Version 2.1.2
