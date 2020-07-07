@@ -103,7 +103,7 @@ class YAML_Converter(object):
         with open(self._path, "r") as file_handle:
             xmltree = etree.Element('jube')
             YAML_Converter.create_headtags(
-                yaml.load(file_handle.read()), xmltree)
+                yaml.load(file_handle.read(), Loader=yaml.Loader), xmltree)
             xml = jube2.util.output.element_tree_tostring(
                 xmltree, encoding="UTF-8")
             dom = DOM.parseString(xml.encode('UTF-8'))
@@ -134,7 +134,7 @@ class YAML_Converter(object):
         """Search a YAML file for stored tag information"""
         tags = set()
         with open(self._path, "r") as file_handle:
-            data = yaml.load(file_handle.read())
+            data = yaml.load(file_handle.read(), Loader=yaml.Loader)
             if "selection" in data and "tag" in data["selection"]:
                 if type(data["selection"]["tag"]) is not list:
                     data["selection"]["tag"] = [data["selection"]["tag"]]
@@ -148,7 +148,7 @@ class YAML_Converter(object):
         """Search a YAML file for stored include-path information"""
         include_pathes = []
         with open(self._path, "r") as file_handle:
-            data = yaml.load(file_handle.read())
+            data = yaml.load(file_handle.read(), Loader=yaml.Loader)
             # include-path is only allowed on the top level of the tree
             if "include-path" in data:
                 if type(data["include-path"]) is not list:
