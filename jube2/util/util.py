@@ -101,7 +101,8 @@ def valid_tags(tag_string, tags):
     if tag_tags_str is not None:
         # Check for old tag format
         if "," in tag_tags_str:
-            tag_tags_str = Parser._convert_old_tag_format(tag_tags_str)
+            tag_tags_str = jube2.jubeio.Parser._convert_old_tag_format(
+                tag_tags_str)
         tag_tags_str = tag_tags_str.replace(' ', '')
         tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
                      if len(i) > 0]
