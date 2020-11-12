@@ -31,6 +31,7 @@ import jube2.log
 import jube2.conf
 import jube2.util.output
 import os
+import copy
 import jube2.util.util
 try:
     from StringIO import StringIO as IOStream
@@ -259,7 +260,7 @@ class YAML_Converter(object):
             if type(tag_value) is list:
                 new_node.text = str(tag_value.pop(0))
                 while len(tag_value) > 0:
-                    new_node = new_node.copy()
+                    new_node = copy.deepcopy(new_node)
                     parent_node.append(new_node)
                     new_node.text = str(tag_value.pop(0))
             else:
