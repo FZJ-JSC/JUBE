@@ -570,10 +570,10 @@ class Benchmark(object):
         # Move parse logfile into benchmark folder
         if os.path.isfile(os.path.join(self._file_path_ref,
                                        jube2.conf.DEFAULT_LOGFILE_NAME)):
-            os.rename(os.path.join(self._file_path_ref,
-                                   jube2.conf.DEFAULT_LOGFILE_NAME),
-                      os.path.join(self.bench_dir,
-                                   jube2.conf.LOGFILE_PARSE_NAME))
+            shutil.move(os.path.join(self._file_path_ref,
+                                     jube2.conf.DEFAULT_LOGFILE_NAME),
+                        os.path.join(self.bench_dir,
+                                     jube2.conf.LOGFILE_PARSE_NAME))
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
