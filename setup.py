@@ -74,7 +74,7 @@ config = {'name': 'JUBE',
                          rel_path("examples", SHARE_PATH) +
                          rel_path("contrib", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),
-          'scripts': ['bin/jube', 'bin/jube-autorun'],
+          'scripts': ['bin/jube', 'bin/jube-python2', 'bin/jube-autorun'],
           'long_description': (
               "Automating benchmarks is important for reproducibility and "
               "hence comparability which is the major intent when "
