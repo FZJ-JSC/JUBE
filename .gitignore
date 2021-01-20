@@ -3,6 +3,7 @@
 .pydevproject
 JUBE.egg-info
 *.pyc
+examples/**/bench_run
 jube-parse.log
 jube-debug.log
 docs/_build
