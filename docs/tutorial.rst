@@ -193,9 +193,9 @@ This benchmark will produce the follwing output:
    Running workpackages (#=done, 0=wait, E=error):
    ############################################################ (  1/  1)
 
-      stepname | all | open | wait | error | done
-     ----------+-----+------+------+-------+-----
-     say_hello |   1 |    0 |    0 |     0 |    1
+     |  stepname | all | open | wait | error | done |
+     |-----------|-----|------|------|-------|------|
+     | say_hello |   1 |    0 |    0 |     0 |    1 |
 
    >>>> Benchmark information and further useful commands:
    >>>>       id: 0
@@ -315,9 +315,9 @@ all possible parameter combinations. In this example the step ``say_hello`` will
 
 .. code-block:: none
 
-    stepname | all | open | wait | error | done
-   ----------+-----+------+------+-------+-----
-   say_hello |   6 |    0 |    0 |     0 |    6
+   |  stepname | all | open | wait | error | done |
+   |-----------|-----|------|------|-------|------|
+   | say_hello |   6 |    0 |    0 |     0 |    6 |
 
 
 Every parameter combination will run in its own sandbox directory.
@@ -363,10 +363,10 @@ three ``second_step`` runs each pointing to different ``first_step``-directories
 
 .. code-block:: none
 
-      stepname | all | open | wait | error | done
-   ------------+-----+------+------+-------+-----
-    first_step |   3 |    0 |    0 |     0 |    3
-   second_step |   3 |    0 |    0 |     0 |    3
+   |    stepname | all | open | wait | error | done |
+   |-------------|-----|------|------|-------|------|
+   |  first_step |   3 |    0 |    0 |     0 |    3 |
+   | second_step |   3 |    0 |    0 |     0 |    3 |
 
 .. index:: substitution, loading files, external files, files
 
@@ -509,11 +509,11 @@ Output of the given example:
 
 .. code-block:: none
 
-   number | number_pat
-   -------+-----------
-        1 |          1
-        2 |          2
-        4 |          4
+   | number | number_pat |
+   |--------|------------|
+   |      1 |          1 |
+   |      2 |          2 |
+   |      4 |          4 |
 
 The analyse and result instructions can be combined within one single command:
 
