@@ -26,6 +26,7 @@
       <use>analyse</use> <!-- use existing analyser -->
       <table name="result" style="pretty">
         <column>number_pat</column> <!-- first match -->
+        <column>number_pat_first</column> <!-- first match -->
         <column>number_pat_last</column> <!-- last match -->
         <column>number_pat_min</column> <!-- min of all matches -->
         <column>number_pat_max</column> <!-- max of all matches -->

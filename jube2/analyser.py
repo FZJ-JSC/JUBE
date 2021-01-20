@@ -289,6 +289,7 @@ class Analyser(object):
                             default = float(default)
                         new_result_dict[pattern.name] = default
                         new_result_dict[pattern.name + "_cnt"] = 0
+                        new_result_dict[pattern.name + "_first"] = default
                         new_result_dict[pattern.name + "_last"] = default
                         if pattern.content_type in ["int", "float"]:
                             new_result_dict.update(
@@ -483,9 +484,8 @@ class Analyser(object):
         for pattern_name in match_dict:
             for option in match_dict[pattern_name]:
                 if option == "first":
-                    name = pattern_name
-                else:
-                    name = "{0}_{1}".format(pattern_name, option)
+                    result_dict[pattern_name] = match_dict[pattern_name][option]
+                name = "{0}_{1}".format(pattern_name, option)
                 result_dict[name] = match_dict[pattern_name][option]
 
         return result_dict, match_dict
