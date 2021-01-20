@@ -141,7 +141,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
             for i, cell_length in enumerate(max_length):
                 table_str += "-" * cell_length
                 if i < len(max_length) - 1:
-                    table_str += "-+-"
+                    table_str += "-|-"
             table_str += "\n"
             header_line_used = True
     return table_str
