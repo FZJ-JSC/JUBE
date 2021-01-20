@@ -28,6 +28,7 @@ result:
     style: pretty
     column:
       - number_pat #first match
+      - number_pat_first #first match
       - number_pat_last #last match
       - number_pat_min #min of all matches
       - number_pat_max #max of all matches
