@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2021
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -179,11 +179,11 @@ It will create the following output:
 
 .. code-block:: none
 
-   value | value_pat | dep_pat | missing_pat | missing_dep_pat | missing_pat_def | missing_def_dep_pat
-   ------+-----------+---------+-------------+-----------------+-----------------+--------------------
-       0 |         0 |       0 |             |             nan |               0 |                   0
-       1 |         1 |       2 |             |             nan |               0 |                   0
-       2 |         2 |       4 |             |             nan |               0 |                   0
+   | value | value_pat | dep_pat | missing_pat | missing_dep_pat | missing_pat_def | missing_def_dep_pat |
+   |-------|-----------|---------|-------------|-----------------|-----------------|---------------------|
+   |     0 |         0 |       0 |             |             nan |               0 |                   0 |
+   |     1 |         1 |       2 |             |             nan |               0 |                   0 |
+   |     2 |         2 |       4 |             |             nan |               0 |                   0 |
 
 .. index:: statistic values
 
@@ -215,9 +215,9 @@ It will create the following output:
 
 .. code-block:: none
 
-   number_pat | number_pat_last | number_pat_min | number_pat_max | number_pat_sum | number_pat_cnt | number_pat_avg | number_pat_std
-   -----------+-----------------+----------------+----------------+----------------+----------------+----------------+---------------
-            1 |              10 |              1 |             10 |             55 |             10 |            5.5 |           3.03
+   | number_pat | number_pat_last | number_pat_min | number_pat_max | number_pat_sum | number_pat_cnt | number_pat_avg | number_pat_std |
+   |------------|-----------------|----------------|----------------|----------------|----------------|----------------|----------------|
+   |          1 |              10 |              1 |             10 |             55 |             10 |            5.5 |           3.03 |
 
 .. index:: jobsystem
 
@@ -267,17 +267,17 @@ You will see this Output after running the benchmark:
 
 .. code-block:: none
 
-   stepname | all | open | wait | error | done
-   ---------+-----+------+------+-------+-----
-     submit |   3 |    0 |    3 |     0 |    0
+   | stepname | all | open | wait | error | done |
+   |----------|-----|------|------|-------|------|
+   |   submit |   3 |    0 |    3 |     0 |    0 |
 
 and this output after running the ``continue`` command (after the jobs where executed):
 
 .. code-block:: none
 
-   stepname | all | open | wait | error | done
-   ---------+-----+------+------+-------+-----
-     submit |   3 |    0 |    0 |     0 |    3
+   | stepname | all | open | wait | error | done |
+   |----------|-----|------|------|-------|------|
+   |   submit |   3 |    0 |    0 |     0 |    3 |
 
 You have to run ``continue`` multiple times if not all ``done_file`` were written when running ``continue`` for the first time.
 
@@ -710,26 +710,26 @@ before applying the statistical patterns.
 
 .. code-block:: none
 
-   jube_res_analyser | jube_wp_id_first_step | jube_wp_id | jube_wp_iteration_first_step | jube_wp_iteration | foo
-   ------------------+-----------------------+------------+------------------------------+-------------------+----
-   analyse_no_reduce |                     0 |          6 |                            0 |                 0 |   1
-   analyse_no_reduce |                     0 |          7 |                            0 |                 1 |   1
-   analyse_no_reduce |                     1 |          8 |                            1 |                 2 |   1
-   analyse_no_reduce |                     1 |          9 |                            1 |                 3 |   1
-   analyse_no_reduce |                     2 |         10 |                            0 |                 0 |   2
-   analyse_no_reduce |                     2 |         11 |                            0 |                 1 |   2
-   analyse_no_reduce |                     3 |         12 |                            1 |                 2 |   2
-   analyse_no_reduce |                     3 |         13 |                            1 |                 3 |   2
-   analyse_no_reduce |                     4 |         14 |                            0 |                 0 |   4
-   analyse_no_reduce |                     4 |         15 |                            0 |                 1 |   4
-   analyse_no_reduce |                     5 |         16 |                            1 |                 2 |   4
-   analyse_no_reduce |                     5 |         17 |                            1 |                 3 |   4
-             analyse |                     5 |         16 |                            1 |                 2 |   4
-             analyse |                     0 |          7 |                            0 |                 1 |   1
-             analyse |                     1 |          8 |                            1 |                 2 |   1
-             analyse |                     2 |         10 |                            0 |                 0 |   2
-             analyse |                     3 |         12 |                            1 |                 2 |   2
-             analyse |                     4 |         15 |                            0 |                 1 |   4
+   | jube_res_analyser | jube_wp_id_first_step | jube_wp_id | jube_wp_iteration_first_step | jube_wp_iteration | foo |
+   |-------------------|-----------------------|------------|------------------------------|-------------------|-----|
+   | analyse_no_reduce |                     0 |          6 |                            0 |                 0 |   1 |
+   | analyse_no_reduce |                     0 |          7 |                            0 |                 1 |   1 |
+   | analyse_no_reduce |                     1 |          8 |                            1 |                 2 |   1 |
+   | analyse_no_reduce |                     1 |          9 |                            1 |                 3 |   1 |
+   | analyse_no_reduce |                     2 |         10 |                            0 |                 0 |   2 |
+   | analyse_no_reduce |                     2 |         11 |                            0 |                 1 |   2 |
+   | analyse_no_reduce |                     3 |         12 |                            1 |                 2 |   2 |
+   | analyse_no_reduce |                     3 |         13 |                            1 |                 3 |   2 |
+   | analyse_no_reduce |                     4 |         14 |                            0 |                 0 |   4 |
+   | analyse_no_reduce |                     4 |         15 |                            0 |                 1 |   4 |
+   | analyse_no_reduce |                     5 |         16 |                            1 |                 2 |   4 |
+   | analyse_no_reduce |                     5 |         17 |                            1 |                 3 |   4 |
+   |           analyse |                     5 |         16 |                            1 |                 2 |   4 |
+   |           analyse |                     0 |          7 |                            0 |                 1 |   1 |
+   |           analyse |                     1 |          8 |                            1 |                 2 |   1 |
+   |           analyse |                     2 |         10 |                            0 |                 0 |   2 |
+   |           analyse |                     3 |         12 |                            1 |                 2 |   2 |
+   |           analyse |                     4 |         15 |                            0 |                 1 |   4 |
 
 .. index:: cycle
 

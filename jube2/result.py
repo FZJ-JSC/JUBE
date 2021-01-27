@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2021
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -208,7 +208,7 @@ class Result(object):
 
         alt_pattern_names = list(pattern_names)
         for i, pattern_name in enumerate(alt_pattern_names):
-            for option in ["last", "min", "max", "avg", "sum", "std"]:
+            for option in ["first", "last", "min", "max", "avg", "sum", "std"]:
                 matcher = re.match("^(.+)_{0}$".format(option), pattern_name)
                 if matcher:
                     alt_pattern_names[i] = matcher.group(1)

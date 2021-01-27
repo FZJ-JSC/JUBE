@@ -215,7 +215,7 @@ Release: 2016-07-29
   a large number of parameter is used within the same step.
 
 * Fix critical bug when storing environment variables. Environment
-  variables wasn't read correctly inside a step if this step was only
+  variables wasn’t read correctly inside a step if this step was only
   executed after a "jube continue" run.
 
 * Fix bug inside a "<sub>" if it contains any linebreak
@@ -235,7 +235,7 @@ Release: 2016-07-29
   columns instead of a keyword list
 
 * "<pattern>" can now contain a "default=..." attribute which set
-  their default value if the pattern can't be found or if it can't be
+  their default value if the pattern can’t be found or if it can’t be
   evaluated
 
 * "null_value=..." was removed from the "<column>" and "<key>"-tag
@@ -520,7 +520,7 @@ Release: 2015-01-29
   will run at the same time (default: 0, means no limitation)
 
 * switch "<analyzer>" to "<analyser>" (also "<analyzer>" will be
-  available) to avoid mixing of "s" and "z" versions
+  available) to avoid mixing of “s” and “z” versions
 
 * fix bug when using "," inside of a "<pattern>"
 

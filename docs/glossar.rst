@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2021
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -503,7 +503,7 @@ Glossary
         <do work_dir="...">...</do>
 
 
-     * ``do`` can contain any *Shell*-syntax-snippet (:term:`parameter <parameter_tag>` will be replaced ... $nameofparameter ...)
+     * ``do`` can contain any *Shell*-syntax-snippet (:term:`parameter <parameter_tag>` will be replaced ``... $nameofparameter ...``)
      * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
      * ``work_dir`` is optional, it can be used to change the work directory of this single command (relativly seen towards
        the original work directory)
@@ -617,7 +617,7 @@ Glossary
 
      * ``colw`` is optional: column width
      * ``title`` is optional: column title
-     * ``format`` can contain a C like format string: e.g. format=".2f"
+     * ``format`` can contain a C like format string: e.g. ``format=".2f"``
 
    syslog_tag
      A syslog result type
@@ -645,12 +645,12 @@ Glossary
         <key format="..." title="...">...</key>
 
      * ``title`` is optional: alternative key title
-     * ``format`` can contain a C like format string: e.g. format=".2f"
+     * ``format`` can contain a C like format string: e.g. ``format=".2f"``
 
    parameter_space
      The parameter space for a specific benchmark run is the bundle of all possible parameter combinations.
      E.g. there are to different parameter: a = 1,2 and b= "p","q" then you will get four different parameter
-     combinations: a=1, b="p"; a=1, b="q"; a=2, b="p"; a=2, b="q".
+     combinations: ``a=1``, ``b="p"``; ``a=1``, ``b="q"``; ``a=2``, ``b="p"``; ``a=2``, ``b="q"``.
 
      The parameter space of a specific step will be one of these parameter combinations. To fulfill all combinations
      the step will be executed multible times (each time using a new combination). The specific combination of a step and

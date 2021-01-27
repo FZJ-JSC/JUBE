@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2021
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -218,14 +218,14 @@ Due to the independet result_entries, you will end up with the following result 
 
 .. code-block:: none
 
-   pattern1_of_A | pattern2_of_A | pattern1_of_B
-   --------------+---------------+--------------
-               1 |             A |
-               2 |             B |
-                 |               |           10
-                 |               |           11
-                 |               |           12
-                 |               |           13
+   | pattern1_of_A | pattern2_of_A | pattern1_of_B |
+   |---------------+---------------+---------------|
+   |             1 |             A |               |
+   |             2 |             B |               |
+   |               |               |            10 |
+   |               |               |            11 |
+   |               |               |            12 |
+   |               |               |            13 |
 
 The different ``<analyse>`` were not combined. So you end up with independet result lines for each workpackage. *JUBE*
 does not see possible step dependencies in this point the user has to set the dependcies manually:
@@ -244,12 +244,12 @@ correct result:
 
 .. code-block:: none
 
-   pattern1_of_A | pattern2_of_A | pattern1_of_B
-   --------------+---------------+--------------
-              1  |             A |           10
-              2  |             B |           11
-              1  |             A |           12
-              2  |             B |           13
+   | pattern1_of_A | pattern2_of_A | pattern1_of_B |
+   |---------------|---------------|---------------|
+   |            1  |             A |            10 |
+   |            2  |             B |            11 |
+   |            1  |             A |            12 |
+   |            2  |             B |            13 |
 
 .. index:: extract specifc block
 

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2021
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -114,6 +114,8 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
         while grow:
             grow = False
             line_str = " " * indent
+            if style == "pretty":
+                line_str += "| "
             for i, wrap in enumerate(wraps):
                 grow = grow or len(wrap) > height + 1
                 if len(wrap) > height:
@@ -131,18 +133,20 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                         line_str += " | " if style == "pretty" else ","
                     else:
                         line_str += separator
+            if style == "pretty":
+                line_str += " |"
             line_str += "\n"
             table_str += line_str
             height += 1
 
         if not header_line_used:
             # Create title separator line
-            table_str += " " * indent
+            table_str += " " * indent + "|-"
             for i, cell_length in enumerate(max_length):
                 table_str += "-" * cell_length
                 if i < len(max_length) - 1:
-                    table_str += "-+-"
-            table_str += "\n"
+                    table_str += "-|-"
+            table_str += "-|\n"
             header_line_used = True
     return table_str
 

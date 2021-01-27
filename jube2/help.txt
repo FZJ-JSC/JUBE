@@ -84,7 +84,8 @@ column_tag
 
    * "title" is optional: column title
 
-   * "format" can contain a C like format string: e.g. format=".2f"
+   * "format" can contain a C like format string: e.g.
+     "format=".2f""
 
 comment
    Add or manipulate the comment string.
@@ -202,7 +203,7 @@ do_tag
       <do work_dir="...">...</do>
 
    * "do" can contain any *Shell*-syntax-snippet (*parameter* will
-     be replaced ... $nameofparameter ...)
+     be replaced "... $nameofparameter ...")
 
    * "stdout"- and "stderr"-filename are optional (default: "stdout"
      and "stderr")
@@ -491,7 +492,8 @@ key_tag
 
    * "title" is optional: alternative key title
 
-   * "format" can contain a C like format string: e.g. format=".2f"
+   * "format" can contain a C like format string: e.g.
+     "format=".2f""
 
 link_tag
    A link can be used to create a symbolic link from your sandbox work
@@ -544,9 +546,9 @@ log
 parameter_space
    The parameter space for a specific benchmark run is the bundle of
    all possible parameter combinations. E.g. there are to different
-   parameter: a = 1,2 and b= "p","q" then you will get four different
-   parameter combinations: a=1, b="p"; a=1, b="q"; a=2, b="p"; a=2,
-   b="q".
+   parameter: a = 1,2 and b= “p”,”q” then you will get four different
+   parameter combinations: "a=1", "b="p""; "a=1", "b="q""; "a=2",
+   "b="p""; "a=2", "b="q"".
 
    The parameter space of a specific step will be one of these
    parameter combinations. To fulfill all combinations the step will
@@ -1027,7 +1029,7 @@ tagging
      a tag-attribute
 
    * The tag-attribute can contain a list of names: "tag="a,b,c"" or
-     "not" names: "tag="a,!b,c""
+     “not” names: "tag="a,!b,c""
 
    * When running *JUBE*, multiple tags can be send to the input-
      file parser:
@@ -1040,7 +1042,7 @@ tagging
      * <tags> which does not contain any tag-attribute will stay
        inside the include file
 
-   * "not" tags are more important than normal tags: "tag="a,!b,c""
+   * “not” tags are more important than normal tags: "tag="a,!b,c""
      and running with "a b" will hide the "<tag>" because the "!b" is
      more important than the "a"
 
