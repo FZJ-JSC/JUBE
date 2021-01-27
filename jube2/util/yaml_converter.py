@@ -208,7 +208,7 @@ class YAML_Converter(object):
     @staticmethod
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
-        if isinstance(data, list): data = {'benchmark': data} 
+        if type(data) is list: data {'benchmark': data}
         for tag in data.keys():
 	        if type(data[tag]) is not list:
 	            data[tag] = [data[tag]]
