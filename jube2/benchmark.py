@@ -742,12 +742,9 @@ class Benchmark(object):
             workpackages_etree, encoding="UTF-8")
         # Using dom for pretty-print
         dom = DOM.parseString(xml.encode("UTF-8"))
-        #write template file to avoid broken intermediat files
-        fout = open("workpackages_tmp.xml", "wb")
+        fout = open(filename, "wb")
         fout.write(dom.toprettyxml(indent="  ", encoding="UTF-8"))
         fout.close()
-        #move template file into real file
-        shutil.move("workpackages_tmp.xml", filename)
 
     def set_workpackage_information(self, workpackages, work_stat):
         """Set new workpackage information"""
