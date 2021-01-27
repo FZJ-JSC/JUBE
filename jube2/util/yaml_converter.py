@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2021
+# Copyright (C) 2008-2020
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -208,22 +208,23 @@ class YAML_Converter(object):
     @staticmethod
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
+        if isinstance(data, list): data = {'benchmark': data} 
         for tag in data.keys():
-            if type(data[tag]) is not list:
-                data[tag] = [data[tag]]
-            if "benchmark" in data and \
-                    tag in YAML_Converter.allowed_tags["/benchmark"]:
-                for attr_and_tags in data[tag]:
-                    YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
-            elif "benchmark" not in data and \
-                    tag in YAML_Converter.allowed_tags["/"]:
-                if tag not in YAML_Converter.allowed_tags["benchmark"]:
-                    for attr_and_tags in data[tag]:
-                        YAML_Converter.create_tag(
-                            tag, attr_and_tags, parent_node)
-                    del(data[tag])
+	        if type(data[tag]) is not list:
+	            data[tag] = [data[tag]]
+	        if "benchmark" in data and \
+	                tag in YAML_Converter.allowed_tags["/benchmark"]:
+	            for attr_and_tags in data[tag]:
+	                YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
+	        elif "benchmark" not in data and \
+	                tag in YAML_Converter.allowed_tags["/"]:
+	            if tag not in YAML_Converter.allowed_tags["benchmark"]:
+	                for attr_and_tags in data[tag]:
+	                    YAML_Converter.create_tag(
+	                        tag, attr_and_tags, parent_node)
+	                del(data[tag])
         if "benchmark" not in data:
-            YAML_Converter.create_tag("benchmark", data, parent_node)
+	        YAML_Converter.create_tag("benchmark", data, parent_node)
 
     @staticmethod
     def create_tag(new_node_name, data, parent_node):
