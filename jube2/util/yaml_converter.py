@@ -207,23 +207,23 @@ class YAML_Converter(object):
 
     @staticmethod
     def create_headtags(data, parent_node):
-        """ Search for the headtags in given dictionary """
+        """ Search for the headtags in given dictionary """ 
         for tag in data.keys():
-            if type(data[tag]) is not list:
-                data[tag] = [data[tag]]
-            if "benchmark" in data and \
-                    tag in YAML_Converter.allowed_tags["/benchmark"]:
-                for attr_and_tags in data[tag]:
-                    YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
-            elif "benchmark" not in data and \
-                    tag in YAML_Converter.allowed_tags["/"]:
-                if tag not in YAML_Converter.allowed_tags["benchmark"]:
-                    for attr_and_tags in data[tag]:
-                        YAML_Converter.create_tag(
-                            tag, attr_and_tags, parent_node)
-                    del(data[tag])
+	        if type(data[tag]) is not list:
+	            data[tag] = [data[tag]]
+	        if "benchmark" in data and \
+	                tag in YAML_Converter.allowed_tags["/benchmark"]:
+	            for attr_and_tags in data[tag]:
+	                YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
+	        elif "benchmark" not in data and \
+	                tag in YAML_Converter.allowed_tags["/"]:
+	            if tag not in YAML_Converter.allowed_tags["benchmark"]:
+	                for attr_and_tags in data[tag]:
+	                    YAML_Converter.create_tag(
+	                        tag, attr_and_tags, parent_node)
+	                del(data[tag])
         if "benchmark" not in data:
-            YAML_Converter.create_tag("benchmark", data, parent_node)
+	        YAML_Converter.create_tag("benchmark", data, parent_node)
 
     @staticmethod
     def create_tag(new_node_name, data, parent_node):
@@ -242,21 +242,35 @@ class YAML_Converter(object):
                         # Create new subtag
                         YAML_Converter.create_tag(key, val, new_node)
                     else:
+                        if type(val) is dict:
+                            val = {val_key:str(val_value or '') for val_key, val_value in val.items()}
                         # Create attribute
-                        new_node.set(key, str(val))
+                        if val is not None:
+                        	new_node.set(key, str(val))
+                        else:
+                            new_node.set(key, "")
         else:
             tag_value = ""
             if type(data) is not dict:
                 # standard tag value
-                tag_value = data
+                if data is not None:
+                    tag_value = data
+                else:
+                	tag_value = ""
             else:
                 for key, value in data.items():
                     if key == "_":
                         # _ represents the standard tag value
-                        tag_value = value
+                        if value is not None:
+                            tag_value = value
+                        else:
+                        	tag_value = ""
                     else:
                         # Create attribute
-                        new_node.set(key, str(value))
+                        if value is not None:
+                        	new_node.set(key, str(value))
+                        else:
+                            new_node.set(key, "")
             if type(tag_value) is list:
                 new_node.text = str(tag_value.pop(0))
                 while len(tag_value) > 0:
