@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2021
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -208,7 +208,7 @@ class YAML_Converter(object):
     @staticmethod
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
-        if type(data) is not dict: data = {'benchmark': data} 
+        if type(data) is not dict: data = {'benchmark': data}
         for tag in data.keys():
 	        if type(data[tag]) is not list:
 	            data[tag] = [data[tag]]
