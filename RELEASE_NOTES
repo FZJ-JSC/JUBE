@@ -18,7 +18,7 @@ Release: 2021-02-09
   different filesystem then the one which was configured within
   *outpath*.
 
-* The *jube* base script wihtin *bin* will now use *python3* by
+* The *jube* base script within *bin* will now use *python3* by
   default. This is necessary as many newer systems does not have a
   "standard" *python* defined by default. In addition the additional
   script *jube-python2* is now available, which utilizes *python2*. So

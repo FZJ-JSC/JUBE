@@ -29,7 +29,7 @@ Release: 2021-02-09
 * A warning message in context of newer *YAML* versions was removed.
 * A Python3 problem inside the *YAML* parser was solved.
 * A bug was solved, which was raised if the benchmark was started on a different filesystem then the one which was configured within `outpath`.
-* The `jube` base script wihtin `bin` will now use `python3` by default. This is necessary as many newer systems does not have a "standard" `python`
+* The `jube` base script within `bin` will now use `python3` by default. This is necessary as many newer systems does not have a "standard" `python`
   defined by default. In addition the additional script `jube-python2` is now available, which utilizes `python2`. 
   So far Python 2 is still fully supported but can be seen deprecated and future versions of *JUBE* might break 
   the Python 2 backwards compatibility.
