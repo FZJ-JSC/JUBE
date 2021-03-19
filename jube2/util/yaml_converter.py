@@ -192,7 +192,12 @@ class YAML_Converter(object):
             else:
                 loader = yaml.Loader
             with open(file) as inputfile:
-                _ = yaml.load(inputfile.read(), Loader=loader)
+                try:
+                    _ = yaml.load(inputfile.read(), Loader=loader)
+                except yaml.parser.ParserError:
+                    LOGGER.error(("Including data from \"{0}\" into \"{1}\" " +
+                                  "raised an error.").format(file,self._path))
+                    raise
                 inputfile.close()
                 if len(yaml_node_data) > 1:
                     _ = eval("_" + yaml_node_data[1])

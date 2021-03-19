@@ -1096,7 +1096,7 @@ class Parser(object):
                 return tree
             else:
                 return ET.parse(file_path)
-        except ET.ParseError:
+        except Exception:
             LOGGER.error("Error while parsing {0}:".format(file_path))
             raise
 
