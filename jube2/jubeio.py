@@ -40,6 +40,7 @@ import jube2.util.output
 import jube2.conf
 import jube2.result_types.syslog
 import jube2.result_types.table
+import jube2.result_types.database
 import jube2.util.yaml_converter
 import sys
 import re
@@ -948,7 +949,7 @@ class Parser(object):
         """Extract all results from etree"""
         results = dict()
         results_order = list()
-        valid_tags = ["use", "table", "syslog"]
+        valid_tags = ["use", "table", "syslog", "database"]
         for result_etree in etree.findall("result"):
             result_dir = result_etree.get("result_dir")
             if result_dir is not None:
@@ -965,7 +966,10 @@ class Parser(object):
                     result.result_dir = result_dir
                 elif element.tag == "syslog":
                     result = Parser._extract_syslog(element)
-                if element.tag in ["table", "syslog"]:
+                elif element.tag == "database":
+                    result = Parser._extract_database(element)
+                    result.result_dir = result_dir
+                if element.tag in ["table", "syslog", "database"]:
                     if result.name in sub_results:
                         raise ValueError(
                             ("Result name \"{0}\" is used " +
@@ -1030,6 +1034,29 @@ class Parser(object):
                 format_string = format_string.strip()
             table.add_column(column_name, colw, format_string, title)
         return table
+
+    @staticmethod
+    def _extract_database(etree_database):
+        """Extract a database result infos from etree"""
+        name = Parser._attribute_from_element(etree_database, "name").strip()
+        res_filter = etree_database.get("filter")
+        if res_filter is not None:
+            res_filter = res_filter.strip()
+        database = jube2.result_types.database.Database(name, res_filter)
+        for element in etree_database:
+            Parser._check_tag(element, ["key"])
+            key_name = element.text
+            if key_name is None:
+                key_name = ""
+            key_name = key_name.strip()
+            if key_name == "":
+                raise ValueError("Empty <key> not allowed")
+            title = element.get("title")
+            format_string = element.get("format")
+            if format_string is not None:
+                format_string = format_string.strip()
+            database.add_key(key_name, format_string, title)
+        return database
 
     @staticmethod
     def _extract_syslog(etree_syslog):
