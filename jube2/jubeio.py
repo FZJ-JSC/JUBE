@@ -93,19 +93,8 @@ class Parser(object):
         if not os.path.isfile(self._filename):
             raise IOError("Benchmark configuration file not found: \"{0}\""
                           .format(self._filename))
-        try:
-            tree = self._tree_from_file(self._filename)
-        except Exception as parseerror:
-            org_trace = sys.exc_info()[2]
-            try:
-                raise IOError(
-                    ("Parse error in \"{0}\": {1}\n")
-                    .format(self._filename, str(parseerror))).with_traceback(
-                        org_trace)
-            except AttributeError:
-                # Hacky way to allow Python2 traceback re-raising in Python3
-                exec('raise IOError, IOError(("Parse error in {0}: {1}\\n")' +
-                     '.format(self._filename, str(parseerror))), org_trace')
+
+        tree = self._tree_from_file(self._filename)
 
         # Check compatible terminal encoding: In some cases, the terminal env.
         # only allow ascii based encoding, print and filesystem operation will
@@ -302,6 +291,9 @@ class Parser(object):
                     includes = include_tree.findall(path)
                 except ValueError:
                     includes = list()
+                except ET.ParseError:
+                    LOGGER.error("Error while parsing {0}:".format(file_path))
+                    raise
                 if len(includes) > 0:
                     # Remove include-node
                     etree.remove(child)
@@ -1088,21 +1080,25 @@ class Parser(object):
 
     def _tree_from_file(self, file_path):
         """Extract a XML tree from a file (doing implicit YAML conversion)"""
-        if file_path.endswith(".xml"):
-            return ET.parse(file_path)
-        elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
-            jube2.util.yaml_converter.YAML_Converter.is_parseable_yaml_file(
-                file_path):
-            include_path = list(self._include_path)
-            include_path += Parser._read_envvar_include_path()
-            file_handle = jube2.util.yaml_converter.YAML_Converter(
-                file_path, include_path, self._tags)
-            data = file_handle.read()
-            tree = ET.ElementTree(ET.fromstring(data))
-            file_handle.close()
-            return tree
-        else:
-            return ET.parse(file_path)
+        try:
+            if file_path.endswith(".xml"):
+                return ET.parse(file_path)
+            elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
+                jube2.util.yaml_converter.YAML_Converter.is_parseable_yaml_file(
+                    file_path):
+                include_path = list(self._include_path)
+                include_path += Parser._read_envvar_include_path()
+                file_handle = jube2.util.yaml_converter.YAML_Converter(
+                    file_path, include_path, self._tags)
+                data = file_handle.read()
+                tree = ET.ElementTree(ET.fromstring(data))
+                file_handle.close()
+                return tree
+            else:
+                return ET.parse(file_path)
+        except ET.ParseError:
+            LOGGER.error("Error while parsing {0}:".format(file_path))
+            raise
 
     def _extract_extern_set(self, filename, set_type, name, search_name=None):
         """Load a parameter-/file-/substitutionset from a given file"""
