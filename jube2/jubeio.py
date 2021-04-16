@@ -1331,7 +1331,7 @@ class Parser(object):
             content_type = pattern.get("type", default="string").strip()
             unit = pattern.get("unit", "").strip()
             dotall = \
-                pattern.get("dotall", "true").strip().lower() == "true"
+                pattern.get("dotall", "false").strip().lower() == "true"
             default = pattern.get("default")
             if default is not None:
                 default = default.strip()
