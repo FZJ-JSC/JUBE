@@ -20,6 +20,7 @@
 from __future__ import (print_function,
                         unicode_literals,
                         division)
+import sqlite3
 
 from jube2.result_types.keyvaluesresult import KeyValuesResult
 from jube2.result import Result
@@ -52,8 +53,40 @@ class Database(KeyValuesResult):
             # only into file)
             # filename = name of standard output/datbase file
             # All keys: print([key.name for key in self._keys])
+            print('create_result')
+            col_names = [key.name for key in self._keys]
+            print(tuple(col_names))
             # All data: print(self.data)
-            pass
+            print('ALL DATA:', self.data)
+            print('self.name:', self.name)
+
+            # create database and insert the data
+            if filename is not None:
+                print('filename: {}'.format(filename))
+
+                con = sqlite3.connect(filename)
+                cur = con.cursor()
+                # create new table with a name of stored in variable self.name if it does not exists
+                cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, tuple(col_names)))   #(my_val, my_txt)
+
+                # compare self._keys with columns in db and exit on mismatch
+                cur.execute("SELECT * FROM {}".format(self.name))
+                col_name_list = [tup[0] for tup in cur.description]
+                difference = set(col_name_list).symmetric_difference(set(col_names))
+                list_difference = list(difference)
+                if len(list_difference) != 0:
+                    print("diff list: ", list_difference)
+                    print("key and db col mismatch")
+                    exit(1)
+
+                # insert self.data in database
+                #print([tuple(d) for d in self.data])
+                print("INSERT INTO {} VALUES (".format(self.name) + "{}".format('?,'*len(col_names))[:-1] + ");")
+                cur.executemany("INSERT INTO {} VALUES (".format(self.name) + "{}".format('?,'*len(col_names))[:-1] + ");", [tuple(d) for d in self.data])
+
+                con.commit()
+                con.close()
+
 
     def __init__(self, name, res_filter=None):
         KeyValuesResult.__init__(self, name, None, res_filter)
