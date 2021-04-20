@@ -21,6 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 import sqlite3
+import ast
 
 from jube2.result_types.keyvaluesresult import KeyValuesResult
 from jube2.result import Result
@@ -47,6 +48,22 @@ class Database(KeyValuesResult):
             else:
                 KeyValuesResult.KeyValuesData.__init__(self, name_or_other)
 
+        def get_datatype(self, key):
+                try:
+                    key_type = ast.literal_eval(key)
+                except ValueError:
+                    return 'TEXT'
+                except SyntaxError:
+                    return 'TEXT'
+
+                else:
+                    if type(key_type) is int:
+                        return 'INT'
+                    elif type(key_type) is float:
+                        return 'FLOAT'
+                    else:
+                        return 'TEXT'
+
         def create_result(self, show=True, filename=None, **kwargs):
             # Place for the magic #
             # show = If False do not show something on screen (result
@@ -66,8 +83,15 @@ class Database(KeyValuesResult):
 
                 con = sqlite3.connect(filename)
                 cur = con.cursor()
+
+                # create a string of keys and their data type
+                key_dtypes = {key: self.get_datatype(data) for key,data in zip(col_names, self.data[0])}
+                print("key_dtypes: ", key_dtypes)
+                db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
+
                 # create new table with a name of stored in variable self.name if it does not exists
-                cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, tuple(col_names)))   #(my_val, my_txt)
+                print("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
+                cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))   #(my_val, my_txt)
 
                 # compare self._keys with columns in db and exit on mismatch
                 cur.execute("SELECT * FROM {}".format(self.name))
