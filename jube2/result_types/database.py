@@ -107,10 +107,11 @@ class Database(KeyValuesResult):
                     print("key and db col mismatch")
                     exit(1)
 
-                # insert self.data in database
+                # insert or replace self.data in database
                 #print([tuple(d) for d in self.data])
-                print("INSERT INTO {} VALUES (".format(self.name) + "{}".format('?,'*len(col_names))[:-1] + ");")
-                cur.executemany("INSERT INTO {} VALUES (".format(self.name) + "{}".format('?,'*len(col_names))[:-1] + ");", [tuple(d) for d in self.data])
+                replace_query = "REPLACE INTO {} {} VALUES (".format(self.name, tuple(col_names)) + "{}".format('?,'*len(col_names))[:-1] + ");"
+                print(replace_query)
+                cur.executemany(replace_query, [tuple(d) for d in self.data])
 
                 con.commit()
                 con.close()
