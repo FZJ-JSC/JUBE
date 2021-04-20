@@ -165,7 +165,8 @@ database_tag
 
    * "primekeys" is optional: can contain a list of parameter or
      pattern names (separated by ,). Given parameters or patterns
-     will be used as primary keys of the database table
+     will be used as primary keys of the database table. That is
+     why they have to be listed as a "<key>" as well.
 
    * "filter" is not tested (so don't use it because it is optional!);
 
