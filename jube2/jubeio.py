@@ -1042,7 +1042,11 @@ class Parser(object):
         res_filter = etree_database.get("filter")
         if res_filter is not None:
             res_filter = res_filter.strip()
-        database = jube2.result_types.database.Database(name, res_filter)
+        primekeys = etree_database.get("primekeys", "")
+        primekeys = primekeys.replace('[', '').replace(']', '').replace("'", '').split(jube2.conf.DEFAULT_SEPARATOR)
+        primekeys = [primekey.strip() for primekey in primekeys]
+        primekeys = [primekey for primekey in primekeys if len(primekey) > 0]
+        database = jube2.result_types.database.Database(name, res_filter, primekeys)
         for element in etree_database:
             Parser._check_tag(element, ["key"])
             key_name = element.text

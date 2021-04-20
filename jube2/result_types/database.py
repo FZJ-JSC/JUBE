@@ -39,7 +39,7 @@ class Database(KeyValuesResult):
 
         """Database data"""
 
-        def __init__(self, name_or_other):
+        def __init__(self, name_or_other, primekeys):
             if type(name_or_other) is KeyValuesResult.KeyValuesData:
                 self._name = name_or_other.name
                 self._keys = name_or_other.keys
@@ -47,6 +47,7 @@ class Database(KeyValuesResult):
                 self._benchmark_ids = name_or_other.benchmark_ids
             else:
                 KeyValuesResult.KeyValuesData.__init__(self, name_or_other)
+            self._primekeys = primekeys
 
         def get_datatype(self, key):
                 try:
@@ -76,6 +77,7 @@ class Database(KeyValuesResult):
             # All data: print(self.data)
             print('ALL DATA:', self.data)
             print('self.name:', self.name)
+            print("primekeys: ", self._primekeys)
 
             # create database and insert the data
             if filename is not None:
@@ -89,9 +91,11 @@ class Database(KeyValuesResult):
                 print("key_dtypes: ", key_dtypes)
                 db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
 
+                if len(self._primekeys) > 0:
+                    db_col_insert_types = db_col_insert_types[:-1] + ", PRIMARY KEY {})".format(tuple(self._primekeys))
                 # create new table with a name of stored in variable self.name if it does not exists
                 print("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
-                cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))   #(my_val, my_txt)
+                cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
 
                 # compare self._keys with columns in db and exit on mismatch
                 cur.execute("SELECT * FROM {}".format(self.name))
@@ -112,13 +116,14 @@ class Database(KeyValuesResult):
                 con.close()
 
 
-    def __init__(self, name, res_filter=None):
+    def __init__(self, name, res_filter=None, primekeys=None):
         KeyValuesResult.__init__(self, name, None, res_filter)
+        self._primekeys = primekeys
 
     def create_result_data(self, style=None):
         """Create result data"""
         result_data = KeyValuesResult.create_result_data(self)
-        return Database.DatabaseData(result_data)
+        return Database.DatabaseData(result_data, self._primekeys)
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -129,4 +134,5 @@ class Database(KeyValuesResult):
             database_etree.attrib["filter"] = self._res_filter
         for key in self._keys:
             database_etree.append(key.etree_repr())
+        database_etree.attrib["primekeys"] = str(self._primekeys)
         return result_etree
