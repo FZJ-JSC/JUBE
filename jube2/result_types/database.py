@@ -79,6 +79,11 @@ class Database(KeyValuesResult):
             print('self.name:', self.name)
             print("primekeys: ", self._primekeys)
 
+            # check if all primekeys are in keys
+            if not set(self._primekeys).issubset(set(col_names)):
+                print("primekeys are not in keys!")
+                exit(1)
+
             # create database and insert the data
             if filename is not None:
                 print('filename: {}'.format(filename))
