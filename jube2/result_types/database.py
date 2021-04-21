@@ -72,15 +72,8 @@ class Database(KeyValuesResult):
             # only into file)
             # filename = name of standard output/datbase file
             # All keys: print([key.name for key in self._keys])
-            print('create_result')
             col_names = [key.name for key in self._keys]
-            print(tuple(col_names))
             # All data: print(self.data)
-            print('ALL DATA:', self.data)
-            print('self.name:', self.name)
-            print("primekeys: ", self._primekeys)
-            print("db_file: ", self._db_file)
-            print('filename: {}'.format(filename))
 
             # check if all primekeys are in keys
             if not set(self._primekeys).issubset(set(col_names)):
@@ -109,13 +102,12 @@ class Database(KeyValuesResult):
 
             # create a string of keys and their data type to create the database table
             key_dtypes = {key: self.get_datatype(data) for key,data in zip(col_names, self.data[0])}
-            print("key_dtypes: ", key_dtypes)
             db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
 
             if len(self._primekeys) > 0:
                 db_col_insert_types = db_col_insert_types[:-1] + ", PRIMARY KEY {})".format(tuple(self._primekeys))
             # create new table with a name of stored in variable self.name if it does not exists
-            print("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
+            LOGGER.debug("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
             cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
 
             # check for primary keys in database table
@@ -129,16 +121,14 @@ class Database(KeyValuesResult):
             cur.execute("SELECT * FROM {}".format(self.name))
             db_col_names = [tup[0] for tup in cur.description]
             diff_col_list = list(set(col_names).difference(db_col_names))
-            print('my diff list: ', diff_col_list)
             if len(diff_col_list) != 0:
                 for col in diff_col_list:
-                    print("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, self.get_datatype(col)))
+                    LOGGER.debug("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, self.get_datatype(col)))
                     cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, self.get_datatype(col)))
 
             # insert or replace self.data in database
-            #print([tuple(d) for d in self.data])
             replace_query = "REPLACE INTO {} {} VALUES (".format(self.name, tuple(col_names)) + "{}".format('?,'*len(col_names))[:-1] + ");"
-            print(replace_query)
+            LOGGER.debug(replace_query)
             cur.executemany(replace_query, [tuple(d) for d in self.data])
 
             con.commit()
