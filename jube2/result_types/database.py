@@ -81,8 +81,7 @@ class Database(KeyValuesResult):
 
             # check if all primekeys are in keys
             if not set(self._primekeys).issubset(set(col_names)):
-                print("primekeys are not in keys!")
-                exit(1)
+                raise ValueError("primekeys are not in keys!")
 
             # create database and insert the data
             if filename is not None:
@@ -109,8 +108,7 @@ class Database(KeyValuesResult):
                 list_difference = list(difference)
                 if len(list_difference) != 0:
                     print("diff list: ", list_difference)
-                    print("key and db col mismatch")
-                    exit(1)
+                    raise ValueError("key and db col mismatch")
 
                 # insert or replace self.data in database
                 #print([tuple(d) for d in self.data])
