@@ -21,7 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 import sqlite3
-import ast
+import ast, os
 
 from jube2.result_types.keyvaluesresult import KeyValuesResult
 from jube2.result import Result
@@ -39,7 +39,7 @@ class Database(KeyValuesResult):
 
         """Database data"""
 
-        def __init__(self, name_or_other, primekeys):
+        def __init__(self, name_or_other, primekeys, db_file):
             if type(name_or_other) is KeyValuesResult.KeyValuesData:
                 self._name = name_or_other.name
                 self._keys = name_or_other.keys
@@ -48,6 +48,7 @@ class Database(KeyValuesResult):
             else:
                 KeyValuesResult.KeyValuesData.__init__(self, name_or_other)
             self._primekeys = primekeys
+            self._db_file = db_file
 
         def get_datatype(self, key):
                 try:
@@ -78,56 +79,72 @@ class Database(KeyValuesResult):
             print('ALL DATA:', self.data)
             print('self.name:', self.name)
             print("primekeys: ", self._primekeys)
+            print("db_file: ", self._db_file)
+            print('filename: {}'.format(filename))
 
             # check if all primekeys are in keys
             if not set(self._primekeys).issubset(set(col_names)):
                 raise ValueError("primekeys are not in keys!")
 
+            # define database file
+            if self._db_file is not None and filename is not None:
+                file_handle = open(filename, "w")
+                file_handle.write(self._db_file)
+                file_handle.close()
+                # create directory path to db file, if it does not exist
+                file_path_ind = self._db_file.rfind('/')
+                if file_path_ind != -1:
+                    if not os.path.exists(os.path.expanduser(self._db_file[:file_path_ind])):
+                        os.makedirs(os.path.expanduser(self._db_file[:file_path_ind]))
+                db_file = os.path.expanduser(self._db_file)
+            elif filename is not None:
+                db_file = filename
+            else:
+                return None
+
             # create database and insert the data
-            if filename is not None:
-                print('filename: {}'.format(filename))
+            con = sqlite3.connect(db_file)
+            cur = con.cursor()
 
-                con = sqlite3.connect(filename)
-                cur = con.cursor()
+            # create a string of keys and their data type
+            key_dtypes = {key: self.get_datatype(data) for key,data in zip(col_names, self.data[0])}
+            print("key_dtypes: ", key_dtypes)
+            db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
 
-                # create a string of keys and their data type
-                key_dtypes = {key: self.get_datatype(data) for key,data in zip(col_names, self.data[0])}
-                print("key_dtypes: ", key_dtypes)
-                db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
+            if len(self._primekeys) > 0:
+                db_col_insert_types = db_col_insert_types[:-1] + ", PRIMARY KEY {})".format(tuple(self._primekeys))
+            # create new table with a name of stored in variable self.name if it does not exists
+            print("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
+            cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
 
-                if len(self._primekeys) > 0:
-                    db_col_insert_types = db_col_insert_types[:-1] + ", PRIMARY KEY {})".format(tuple(self._primekeys))
-                # create new table with a name of stored in variable self.name if it does not exists
-                print("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
-                cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
+            # compare self._keys with columns in db and exit on mismatch
+            cur.execute("SELECT * FROM {}".format(self.name))
+            col_name_list = [tup[0] for tup in cur.description]
+            difference = set(col_name_list).symmetric_difference(set(col_names))
+            list_difference = list(difference)
+            if len(list_difference) != 0:
+                print("diff list: ", list_difference)
+                raise ValueError("key and db col mismatch")
 
-                # compare self._keys with columns in db and exit on mismatch
-                cur.execute("SELECT * FROM {}".format(self.name))
-                col_name_list = [tup[0] for tup in cur.description]
-                difference = set(col_name_list).symmetric_difference(set(col_names))
-                list_difference = list(difference)
-                if len(list_difference) != 0:
-                    print("diff list: ", list_difference)
-                    raise ValueError("key and db col mismatch")
+            # insert or replace self.data in database
+            #print([tuple(d) for d in self.data])
+            replace_query = "REPLACE INTO {} {} VALUES (".format(self.name, tuple(col_names)) + "{}".format('?,'*len(col_names))[:-1] + ");"
+            print(replace_query)
+            cur.executemany(replace_query, [tuple(d) for d in self.data])
 
-                # insert or replace self.data in database
-                #print([tuple(d) for d in self.data])
-                replace_query = "REPLACE INTO {} {} VALUES (".format(self.name, tuple(col_names)) + "{}".format('?,'*len(col_names))[:-1] + ");"
-                print(replace_query)
-                cur.executemany(replace_query, [tuple(d) for d in self.data])
-
-                con.commit()
-                con.close()
+            con.commit()
+            con.close()
 
 
-    def __init__(self, name, res_filter=None, primekeys=None):
+    def __init__(self, name, res_filter=None, primekeys=None, db_file=None):
         KeyValuesResult.__init__(self, name, None, res_filter)
         self._primekeys = primekeys
+        self._db_file = db_file
 
     def create_result_data(self, style=None):
         """Create result data"""
         result_data = KeyValuesResult.create_result_data(self)
-        return Database.DatabaseData(result_data, self._primekeys)
+        return Database.DatabaseData(result_data, self._primekeys, self._db_file)
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -139,4 +156,5 @@ class Database(KeyValuesResult):
         for key in self._keys:
             database_etree.append(key.etree_repr())
         database_etree.attrib["primekeys"] = str(self._primekeys)
+        database_etree.attrib["file"] = str(self._db_file)
         return result_etree
