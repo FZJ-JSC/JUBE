@@ -84,7 +84,7 @@ class Database(KeyValuesResult):
 
             # check if all primekeys are in keys
             if not set(self._primekeys).issubset(set(col_names)):
-                raise ValueError("primekeys are not in keys!")
+                raise ValueError("primekeys are not included in <key>!")
 
             # define database file
             if self._db_file is not None and filename is not None:
@@ -94,6 +94,7 @@ class Database(KeyValuesResult):
                 # create directory path to db file, if it does not exist
                 file_path_ind = self._db_file.rfind('/')
                 if file_path_ind != -1:
+                    # modify when Python2.7 support is dropped (potential race condition)
                     if not os.path.exists(os.path.expanduser(self._db_file[:file_path_ind])):
                         os.makedirs(os.path.expanduser(self._db_file[:file_path_ind]))
                 db_file = os.path.expanduser(self._db_file)
@@ -124,14 +125,15 @@ class Database(KeyValuesResult):
                 raise ValueError("Modification of primary values is not supported. " +
                                  "Primary keys of table {} are {}".format(self.name, db_primary_keys))
 
-            # compare self._keys with columns in db and exit on mismatch
+            # compare self._keys with columns in db and add new column in the database if it does not exist
             cur.execute("SELECT * FROM {}".format(self.name))
-            col_name_list = [tup[0] for tup in cur.description]
-            difference = set(col_name_list).symmetric_difference(set(col_names))
-            list_difference = list(difference)
-            if len(list_difference) != 0:
-                print("diff list: ", list_difference)
-                raise ValueError("key and db col mismatch")
+            db_col_names = [tup[0] for tup in cur.description]
+            diff_col_list = list(set(col_names).difference(db_col_names))
+            print('my diff list: ', diff_col_list)
+            if len(diff_col_list) != 0:
+                for col in diff_col_list:
+                    print("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, self.get_datatype(col)))
+                    cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, self.get_datatype(col)))
 
             # insert or replace self.data in database
             #print([tuple(d) for d in self.data])
@@ -142,6 +144,8 @@ class Database(KeyValuesResult):
             con.commit()
             con.close()
 
+            # Print database location to screen and result.log
+            LOGGER.info("Database location: {}".format(db_file))
 
     def __init__(self, name, res_filter=None, primekeys=None, db_file=None):
         KeyValuesResult.__init__(self, name, None, res_filter)
