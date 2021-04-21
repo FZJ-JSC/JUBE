@@ -154,7 +154,7 @@ copy_tag
 database_tag
    Create sqlite3 database
 
-      <database name="..." primekeys="..." filter="...">
+      <database name="..." primekeys="..." file="..." filter="...">
         <key>...</key>
         ...
       </database>
@@ -167,6 +167,10 @@ database_tag
      pattern names (separated by ,). Given parameters or patterns
      will be used as primary keys of the database table. That is
      why they have to be listed as a "<key>" as well.
+
+   * "file" is optional. The given value should hold the full path
+     to the database file. If the file including the path does not
+     exists it will be created. Absolute and relative paths are supported.
 
    * "filter" is not tested (so don't use it because it is optional!);
 
