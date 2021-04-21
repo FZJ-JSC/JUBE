@@ -106,7 +106,7 @@ class Database(KeyValuesResult):
             con = sqlite3.connect(db_file)
             cur = con.cursor()
 
-            # create a string of keys and their data type
+            # create a string of keys and their data type to create the database table
             key_dtypes = {key: self.get_datatype(data) for key,data in zip(col_names, self.data[0])}
             print("key_dtypes: ", key_dtypes)
             db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
@@ -116,6 +116,13 @@ class Database(KeyValuesResult):
             # create new table with a name of stored in variable self.name if it does not exists
             print("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
             cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
+
+            # check for primary keys in database table
+            cur.execute('PRAGMA TABLE_INFO({})'.format(self.name))
+            db_primary_keys = [i[1] for i in cur.fetchall() if i[5] != 0]
+            if not set(self._primekeys)==set(db_primary_keys):
+                raise ValueError("Modification of primary values is not supported. " +
+                                 "Primary keys of table {} are {}".format(self.name, db_primary_keys))
 
             # compare self._keys with columns in db and exit on mismatch
             cur.execute("SELECT * FROM {}".format(self.name))
