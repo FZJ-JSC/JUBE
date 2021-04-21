@@ -137,7 +137,6 @@ class Database(KeyValuesResult):
             # Print database location to screen and result.log
             LOGGER.info("Database location of id {}: {}".format(self._benchmark_ids[0], db_file))
 
-
     def __init__(self, name, res_filter=None, primekeys=None, db_file=None):
         KeyValuesResult.__init__(self, name, None, res_filter)
         self._primekeys = primekeys

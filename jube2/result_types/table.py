@@ -93,6 +93,7 @@ class Table(KeyValuesResult):
             data = list()
             data.append([column.resulting_name for column in self._columns])
             data += self._data
+            data = [['' if c is None else c for c in r] for r in data]
             if self._style == "pretty":
                 output = "{0}:\n".format(self.name)
             else:
