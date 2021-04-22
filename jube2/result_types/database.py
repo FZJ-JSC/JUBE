@@ -23,7 +23,7 @@ from __future__ import (print_function,
 import sqlite3
 import ast, os
 
-from jube2.result_types.keyvaluesresult import KeyValuesResult
+from jube2.result_types.genericresult import GenericResult
 from jube2.result import Result
 import xml.etree.ElementTree as ET
 import jube2.log
@@ -31,40 +31,24 @@ import jube2.log
 LOGGER = jube2.log.get_logger(__name__)
 
 
-class Database(KeyValuesResult):
+class Database(GenericResult):
 
     """A database result"""
 
-    class DatabaseData(KeyValuesResult.KeyValuesData):
+    class DatabaseData(GenericResult.KeyValuesData):
 
         """Database data"""
 
         def __init__(self, name_or_other, primekeys, db_file):
-            if type(name_or_other) is KeyValuesResult.KeyValuesData:
+            if type(name_or_other) is GenericResult.KeyValuesData:
                 self._name = name_or_other.name
-                self._keys = name_or_other.keys
+                #self._keys = name_or_other.keys
                 self._data = name_or_other.data
                 self._benchmark_ids = name_or_other.benchmark_ids
             else:
-                KeyValuesResult.KeyValuesData.__init__(self, name_or_other)
+                GenericResult.KeyValuesData.__init__(self, name_or_other)
             self._primekeys = primekeys
             self._db_file = db_file
-
-        def get_datatype(self, key):
-                try:
-                    key_type = ast.literal_eval(key)
-                except ValueError:
-                    return 'TEXT'
-                except SyntaxError:
-                    return 'TEXT'
-
-                else:
-                    if type(key_type) is int:
-                        return 'INT'
-                    elif type(key_type) is float:
-                        return 'FLOAT'
-                    else:
-                        return 'TEXT'
 
         def create_result(self, show=True, filename=None, **kwargs):
             # Place for the magic #
@@ -72,11 +56,12 @@ class Database(KeyValuesResult):
             # only into file)
             # filename = name of standard output/datbase file
             # All keys: print([key.name for key in self._keys])
-            col_names = [key.name for key in self._keys]
+            #col_names = [key.name for key in self._keys]
             # All data: print(self.data)
+            keys = [k.name for k in self._data.keys()]
 
             # check if all primekeys are in keys
-            if not set(self._primekeys).issubset(set(col_names)):
+            if not set(self._primekeys).issubset(set(keys)):
                 raise ValueError("primekeys are not included in <key>!")
 
             # define database file
@@ -101,7 +86,7 @@ class Database(KeyValuesResult):
             cur = con.cursor()
 
             # create a string of keys and their data type to create the database table
-            key_dtypes = {key: self.get_datatype(data) for key,data in zip(col_names, self.data[0])}
+            key_dtypes = {k.name: type(v[0]).__name__.replace('str', 'text') for (k,v) in self._data.items()}
             db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
 
             if len(self._primekeys) > 0:
@@ -120,16 +105,16 @@ class Database(KeyValuesResult):
             # compare self._keys with columns in db and add new column in the database if it does not exist
             cur.execute("SELECT * FROM {}".format(self.name))
             db_col_names = [tup[0] for tup in cur.description]
-            diff_col_list = list(set(col_names).difference(db_col_names))
+            diff_col_list = list(set(keys).difference(db_col_names))
             if len(diff_col_list) != 0:
                 for col in diff_col_list:
-                    LOGGER.debug("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, self.get_datatype(col)))
-                    cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, self.get_datatype(col)))
+                    LOGGER.debug("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, type(col).__name__.replace('str', 'text')))
+                    cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, type(col).__name__.replace('str', 'text')))
 
             # insert or replace self.data in database
-            replace_query = "REPLACE INTO {} {} VALUES (".format(self.name, tuple(col_names)) + "{}".format('?,'*len(col_names))[:-1] + ");"
+            replace_query = "REPLACE INTO {} {} VALUES (".format(self.name, tuple(keys)) + "{}".format('?,'*len(keys))[:-1] + ");"
             LOGGER.debug(replace_query)
-            cur.executemany(replace_query, [tuple(d) for d in self.data])
+            cur.executemany(replace_query, [d for d in list(zip(*self._data.values()))])
 
             con.commit()
             con.close()
@@ -138,13 +123,13 @@ class Database(KeyValuesResult):
             LOGGER.info("Database location of id {}: {}".format(self._benchmark_ids[0], db_file))
 
     def __init__(self, name, res_filter=None, primekeys=None, db_file=None):
-        KeyValuesResult.__init__(self, name, None, res_filter)
+        GenericResult.__init__(self, name, res_filter)
         self._primekeys = primekeys
         self._db_file = db_file
 
     def create_result_data(self, style=None):
         """Create result data"""
-        result_data = KeyValuesResult.create_result_data(self)
+        result_data = GenericResult.create_result_data(self)
         return Database.DatabaseData(result_data, self._primekeys, self._db_file)
 
     def etree_repr(self):
