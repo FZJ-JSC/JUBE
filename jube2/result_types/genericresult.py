@@ -30,6 +30,7 @@ import jube2.util.output
 
 LOGGER = jube2.log.get_logger(__name__)
 
+
 class GenericResult(Result):
 
     """A generic result type"""
@@ -49,7 +50,7 @@ class GenericResult(Result):
         @property
         def keys(self):
             """Return keys"""
-            return self._data.keys()
+            return list(self._data.keys())
 
         @property
         def data(self):
@@ -66,28 +67,26 @@ class GenericResult(Result):
             """Return benchmark ids"""
             return self._benchmark_ids
 
-        def add_key_value_data(self, keys, data, benchmark_ids):
+        def add_key_value_data(self, data, benchmark_ids):
             """Add a list of additional rows to current result data"""
-            order = list()
             # Add new keys to for old rows
-            for key in keys:
+            for key in data.keys():
                 if key not in self._data.keys():
                     if len(self._benchmark_ids) > 0:
-                        self._data[key] = [None]*len(self._benchmark_ids)
+                        self._data[key] = [None] * len(self._benchmark_ids)
                     else:
                         self._data[key] = list()
 
-            if len(list(self._data.values())[0]) != 0:
-                return
+            number_of_new_values = len(list(data.values())[0])
             # Add new rows
             for key in self._data.keys():
-                if key in keys:
-                    self._data[key] += [row[keys.index(key)] for row in data]
+                if key in data.keys():
+                    self._data[key] += data[key]
                 else:
-                    self._data[key] += [None] * len(data)
+                    self._data[key] += [None] * number_of_new_values
 
             if type(benchmark_ids) is int:
-                self._benchmark_ids += [benchmark_ids] * len(data)
+                self._benchmark_ids += [benchmark_ids] * number_of_new_values
             if type(benchmark_ids) is list:
                 self._benchmark_ids += benchmark_ids
 
@@ -95,7 +94,7 @@ class GenericResult(Result):
             """Add additional result data"""
             if self.name != result_data.name:
                 raise RuntimeError("Cannot combine to different result sets.")
-            self.add_key_value_data(result_data.keys, result_data.data,
+            self.add_key_value_data(result_data.data,
                                     result_data.benchmark_ids)
 
         def create_result(self, show=True, filename=None, **kwargs):
@@ -174,23 +173,25 @@ class GenericResult(Result):
                 key.unit = units[key.name]
 
         # Create result data
-        data = list()
+        data = dict()
         for dataset in self._analyse_data():
-            row = list()
+            new_data = dict()
             cnt = 0
             for key in self._keys:
                 if key.name in dataset:
                     # Cnt number of final entries to avoid complete empty
                     # result entries
                     cnt += 1
-                    row.append(dataset[key.name])
+                    new_data[key] = dataset[key.name]
                 else:
-                    row.append(None)
-
+                    new_data[key] = None
             if cnt > 0:
-                data.append(row)
+                for key in new_data:
+                    if key not in data:
+                        data[key] = list()
+                    data[key].append(new_data[key])
 
         # Add data to the result set
-        result_data.add_key_value_data(self._keys, data, self._benchmark.id)
+        result_data.add_key_value_data(data, self._benchmark.id)
 
         return result_data
