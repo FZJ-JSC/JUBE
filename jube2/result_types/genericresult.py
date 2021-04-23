@@ -50,7 +50,7 @@ class GenericResult(Result):
         @property
         def keys(self):
             """Return keys"""
-            return list(self._data.keys())
+            return self._data.keys()
 
         @property
         def data(self):
