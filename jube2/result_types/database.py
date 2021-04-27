@@ -48,7 +48,7 @@ class Database(GenericResult):
             else:
                 GenericResult.KeyValuesData.__init__(self, name_or_other)
             self._primekeys = primekeys
-            self._db_file = db_file
+            self._db_file = None if db_file == "None" else db_file
 
         def create_result(self, show=True, filename=None, **kwargs):
             # Place for the magic #
