@@ -151,30 +151,6 @@ copy_tag
    * in the execution step the given files or directories will be
      copied
 
-database_tag
-   Create sqlite3 database
-
-      <database name="..." primekeys="..." file="..." filter="...">
-        <key>...</key>
-        ...
-      </database>
-
-   * "name": name of the table in the database
-
-   * "<key>" must contain an single parameter or pattern name
-
-   * "primekeys" is optional: can contain a list of parameter or
-     pattern names (separated by ,). Given parameters or patterns
-     will be used as primary keys of the database table. All
-     primekeys have to be listed as a "<key>" as well. Modification
-     of primary keys of an existing table is not supported.
-
-   * "file" is optional. The given value should hold the full path
-     to the database file. If the file including the path does not
-     exists it will be created. Absolute and relative paths are supported.
-
-   * "filter" is not tested (so don't use it because it is optional!);
-
 directory_structure
    * every (new) benchmark run will create its own directory structure
 
