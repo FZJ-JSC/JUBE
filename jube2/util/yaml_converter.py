@@ -196,7 +196,7 @@ class YAML_Converter(object):
                     _ = yaml.load(inputfile.read(), Loader=loader)
                 except yaml.parser.ParserError:
                     LOGGER.error(("Including data from \"{0}\" into \"{1}\" " +
-                                  "raised an error.").format(file,self._path))
+                                  "raised an error.").format(file, self._path))
                     raise
                 inputfile.close()
                 if len(yaml_node_data) > 1:
@@ -213,11 +213,13 @@ class YAML_Converter(object):
     @staticmethod
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
+        to_delete = list()
         for tag in data.keys():
             if type(data[tag]) is not list:
                 data[tag] = [data[tag]]
-            if "benchmark" in data and \
-                    tag in YAML_Converter.allowed_tags["/benchmark"]:
+            # benchmark is optional on the top level, but if it is used only a limited number of
+            # options are allowed on top level (listed in "/benchmark")
+            if "benchmark" in data and tag in YAML_Converter.allowed_tags["/benchmark"]:
                 for attr_and_tags in data[tag]:
                     YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
             elif "benchmark" not in data and \
@@ -226,7 +228,9 @@ class YAML_Converter(object):
                     for attr_and_tags in data[tag]:
                         YAML_Converter.create_tag(
                             tag, attr_and_tags, parent_node)
-                    del(data[tag])
+                    to_delete.append(tag)
+        for tag in to_delete:
+            del(data[tag])
         if "benchmark" not in data:
             YAML_Converter.create_tag("benchmark", data, parent_node)
 
