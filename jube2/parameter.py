@@ -167,6 +167,8 @@ class Parameterset(object):
             set(parameterset.all_parameter_names)
         for name in intersection:
             if (not (self[name].update_allowed(update_mode) or
+                     # In case of the USE_MODE (in the beginning of a new step) only the actual
+                     # new parameterset and its mode is relevant
                      parameterset[name].update_allowed(
                          NEVER_MODE if (update_mode == USE_MODE) else
                          update_mode)) and
