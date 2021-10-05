@@ -184,7 +184,7 @@ class Parameterset(object):
         for name in intersection:
             if (not (self[name].update_allowed(update_mode) or
                      parameterset[name].update_allowed(
-                         STEP_MODE if (update_mode == USE_MODE) else
+                         NEVER_MODE if (update_mode == USE_MODE) else
                          update_mode)) and
                     not self[name].is_equivalent(parameterset[name])):
                 result.add(name)
