@@ -43,7 +43,7 @@ class Step(object):
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
-                 active="true", suffix="", cycles=1):
+                 active="true", suffix="", cycles=1, procs=0):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -56,6 +56,7 @@ class Step(object):
         self._active = active
         self._suffix = suffix
         self._cycles = cycles
+        self._procs = procs
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -80,6 +81,8 @@ class Step(object):
             step_etree.attrib["iterations"] = str(self._iterations)
         if self._cycles > 1:
             step_etree.attrib["cycles"] = str(self._cycles)
+        if self._procs != 0:
+            step_etree.attrib["procs"] = str(self._procs)
         for use in self._use:
             use_etree = ET.SubElement(step_etree, "use")
             use_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(use)
@@ -126,6 +129,11 @@ class Step(object):
     def cycles(self):
         """Return number of cycles"""
         return self._cycles
+
+    @property
+    def procs(self):
+        """Return number of procs"""
+        return self._procs
 
     @property
     def shared_link_name(self):
