@@ -23,10 +23,7 @@ from __future__ import (print_function,
 
 import xml.etree.ElementTree as ET
 import os
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from jube2.util.util import Queue
 import jube2.benchmark
 import jube2.substitute
 import jube2.parameter
@@ -475,7 +472,7 @@ class Parser(object):
         # parents_tmp: Dict workpackage_id => list of parent_workpackage_ids
         parents_tmp = dict()
         iteration_siblings_tmp = dict()
-        work_list = queue.Queue()
+        work_list = Queue()
         LOGGER.debug("Parsing {0}".format(self._filename))
         if not os.path.isfile(self._filename):
             raise IOError("Workpackage configuration file not found: \"{0}\""
