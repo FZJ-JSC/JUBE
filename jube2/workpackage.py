@@ -830,6 +830,7 @@ class Workpackage(object):
                 else:
                     LOGGER.debug(
                         "{0}\n{1}\n{2}".format(40 * "-", str(e), 40 * "-"))
+        return self
 
     @staticmethod
     def reduce_workpackage_id_counter():
