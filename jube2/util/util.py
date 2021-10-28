@@ -57,6 +57,13 @@ class Queue:
 
         self._queue.appendleft(item)
 
+    def put_first(self, item):
+        '''
+        Add this item to the left of this queue.
+        '''
+
+        self._queue.append(item)
+
     def get_nowait(self):
         '''
         Dequeues (i.e., removes) the item from the right side of this queue *and*
