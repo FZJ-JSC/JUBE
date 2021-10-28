@@ -21,6 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+import multiprocessing as mp
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as DOM
 import os
@@ -609,31 +610,66 @@ class Benchmark(object):
         # Handle all workpackages in given order
         while not self._work_stat.empty():
             workpackage = self._work_stat.get()
+            run_parallel = False
+            parallel_list = list()
+            def collect_result(val):
+                parallel_list.append(val)
+            ## TODO just for debugging
+            init_list = list()
+
+            ## TODO cycle, max_async, shared, logger
             if not workpackage.done:
-                workpackage.run()
-            self._create_new_workpackages_for_workpackage(workpackage)
+                # execute wps in parallel which have the same name
+                if workpackage.step.procs > 1:
+                    run_parallel = True
+                    procs = workpackage.step.procs
+                    name = workpackage.step.name
+                    pool = mp.Pool(processes=procs)
+                    # add wps to the parallel pool as long as they have the same name
+                    while True:
+                        init_list.append(workpackage)
+                        pool.apply_async(workpackage.run, callback=collect_result)
 
-            # Update queues (move waiting workpackages to work queue
-            # if possible)
-            self._work_stat.update_queues(workpackage)
+                        if not self._work_stat.empty():
+                            workpackage = self._work_stat.get()
+                            # push back as first element of _work_stat and terminate parallel loop
+                            if workpackage.step.name != name:
+                                self._work_stat.put_first(workpackage)
+                                break 
+                        else:
+                            break
+                    pool.close()
+                    pool.join()
+                else:
+                    workpackage.run()
+            # compare wp before and after pool.apply
+            """
+            print("\n\n ####################")
+            for a,b in zip(init_list, parallel_list):
+                print("{}".format(a.id))
+                #if a.env != b.env:
+                print("{} \n {} \n {}".format(a.id, len(sorted(a.env.keys())), sorted(a.env.keys())))
+                print("{} \n {} \n {}".format(b.id, len(sorted(b.env.keys())), sorted(b.env.keys())))
+                #for key in a.env.keys():
+                #    print(key)
+                #    if not key in list(b.env.keys()):
+                #        print("DIFF: {}".format(key))
+                    #print(set(set(a.env.keys())))
+                diff = set(set(b.env.keys()))-set(set(a.env.keys()))
+                print("DIFF \n {}".format(diff))
+            """
+            if run_parallel == True:
+                for mod_wp in parallel_list:
+                    print("in my loop0: {}".format(self._workpackages[mod_wp.step.name]))
+                    for i, old_wp in enumerate(self._workpackages[mod_wp.step.name]):
+                        if old_wp.id == mod_wp.id:
+                            self._workpackages[mod_wp.step.name][i] = mod_wp
+                    self.wp_post_run_config(mod_wp)
+                run_parallel = False
+                print("after my loop0: {}".format(self._workpackages))
+            else:
+                self.wp_post_run_config(workpackage)
 
-            if not jube2.conf.HIDE_ANIMATIONS:
-                status = self.benchmark_status
-                jube2.util.output.print_loading_bar(
-                    status["done"], status["all"], status["wait"],
-                    status["error"])
-            workpackage.queued = False
-
-            for mode in ("only_started", "all"):
-                for child in workpackage.children:
-                    all_done = True
-                    for parent in child.parents:
-                        all_done = all_done and parent.done
-                    if all_done:
-                        if (mode == "only_started" and child.started) or \
-                           (mode == "all" and (not child.queued)):
-                            child.queued = True
-                            self._work_stat.put(child)
         # Store workpackage information
         self.write_workpackage_information(
             os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
@@ -668,6 +704,35 @@ class Benchmark(object):
         LOGGER.info((">>>>      log: jube log {0} " +
                      "--id {1}").format(self._outpath, self._id))
         LOGGER.info(jube2.util.output.text_line() + "\n")
+
+    def wp_post_run_config(self, workpackage):
+        """additional processing of workpackage:
+        - update status bar
+        - build up queue after restart
+        """
+        self._create_new_workpackages_for_workpackage(workpackage)
+
+        # Update queues (move waiting workpackages to work queue
+        # if possible)
+        self._work_stat.update_queues(workpackage)
+
+        if not jube2.conf.HIDE_ANIMATIONS:
+            status = self.benchmark_status
+            jube2.util.output.print_loading_bar(
+                status["done"], status["all"], status["wait"],
+                status["error"])
+        workpackage.queued = False
+
+        for mode in ("only_started", "all"):
+            for child in workpackage.children:
+                all_done = True
+                for parent in child.parents:
+                    all_done = all_done and parent.done
+                if all_done:
+                    if (mode == "only_started" and child.started) or \
+                        (mode == "all" and (not child.queued)):
+                        child.queued = True
+                        self._work_stat.put(child)
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""
@@ -735,8 +800,10 @@ class Benchmark(object):
         using xml representation"""
         # Create root-tag and append workpackages
         workpackages_etree = ET.Element("workpackages")
+        print("in write: {} \n".format(self._workpackages))
         for workpackages in self._workpackages.values():
             for workpackage in workpackages:
+                print("in write: {} {} \n{}\n".format(workpackage.id, workpackage.step.name, sorted(workpackage.env.keys())))
                 workpackages_etree.append(workpackage.etree_repr())
         xml = jube2.util.output.element_tree_tostring(
             workpackages_etree, encoding="UTF-8")
