@@ -617,7 +617,7 @@ class Benchmark(object):
             ## TODO just for debugging
             init_list = list()
 
-            ## TODO cycle, max_async, shared, logger
+            ## TODO cycle, max_async, shared, iteration, logger
             if not workpackage.done:
                 # execute wps in parallel which have the same name
                 if workpackage.step.procs > 1:
@@ -627,6 +627,16 @@ class Benchmark(object):
                     pool = mp.Pool(processes=procs)
                     # add wps to the parallel pool as long as they have the same name
                     while True:
+                        """
+                        print("in mp loop")
+                        print(" ID: {}; Name: {}".format(workpackage.id, workpackage.step.name))
+                        if self._workpackages["scen_prep"][0] is workpackage.parents[0]:
+                            print("YES: \n {} is {}".format(self._workpackages["scen_prep"][0], workpackage.parents[0]))
+                        else:
+                            print("NO: \n {} is {}".format(self._workpackages["scen_prep"][0], workpackage.parents[0]))
+                        """
+
+
                         init_list.append(workpackage)
                         pool.apply_async(workpackage.run, callback=collect_result)
 
@@ -642,8 +652,8 @@ class Benchmark(object):
                     pool.join()
                 else:
                     workpackage.run()
-            # compare wp before and after pool.apply
             """
+            # compare wp before and after pool.apply
             print("\n\n ####################")
             for a,b in zip(init_list, parallel_list):
                 print("{}".format(a.id))
@@ -659,14 +669,43 @@ class Benchmark(object):
                 print("DIFF \n {}".format(diff))
             """
             if run_parallel == True:
+                # sort push back list to keep original order of wps
+                parallel_list.sort(key=lambda x: x.id)
+                # run postprocessing of each wp
                 for mod_wp in parallel_list:
-                    print("in my loop0: {}".format(self._workpackages[mod_wp.step.name]))
-                    for i, old_wp in enumerate(self._workpackages[mod_wp.step.name]):
-                        if old_wp.id == mod_wp.id:
-                            self._workpackages[mod_wp.step.name][i] = mod_wp
-                    self.wp_post_run_config(mod_wp)
+                    for i, wp in enumerate(self._workpackages[mod_wp.step.name]):
+                        if wp.id == mod_wp.id:
+                            # update corresponding wp in self._workpackage with modified wp
+                            wp.replace_env(mod_wp)
+                            self.wp_post_run_config(wp)
+                            break
                 run_parallel = False
-                print("after my loop0: {}".format(self._workpackages))
+                # TODO START debugging
+                print("\n after push_back loop: \n {}".format(self._workpackages))
+                for st in self._workpackages.keys():
+                    for wp in self._workpackages[st]:
+                        print("\n ID: {} - Name: {}".format(wp.id, wp.step.name))
+                        print(" Parents: {}".format(wp.parents))
+                        print(" Childs: {}".format(wp.children))
+                        print(" iter_sibl: {}".format(wp.iteration_siblings))
+                        if wp.step.name == "scen_gen":
+                            print("Parents Check:")
+                            for j, pa in enumerate(wp.parents):
+                                if self._workpackages[pa.step.name][j] is pa:
+                                    print("YES: \n {} is {}".format(self._workpackages[pa.step.name][j], pa))
+                                else:
+                                    print("NO: \n {} is {}".format(self._workpackages[pa.step.name][j], pa))
+                        elif wp.step.name == "scen_prep":
+                            print("Children Check:")
+                            for k, ch in enumerate(wp.children):
+                                if self._workpackages[ch.step.name][k] is ch:
+                                    print("YES: \n {} is {}".format(self._workpackages[ch.step.name][k], ch))
+                                else:
+                                    print("NO: \n {} is {}".format(self._workpackages[ch.step.name][k], ch))
+
+                        
+                print("\n")
+                # TODO END debugging
             else:
                 self.wp_post_run_config(workpackage)
 
@@ -800,10 +839,12 @@ class Benchmark(object):
         using xml representation"""
         # Create root-tag and append workpackages
         workpackages_etree = ET.Element("workpackages")
-        print("in write: {} \n".format(self._workpackages))
+        # TODO rm print
+        #print("in write: {} \n".format(self._workpackages))
         for workpackages in self._workpackages.values():
             for workpackage in workpackages:
-                print("in write: {} {} \n{}\n".format(workpackage.id, workpackage.step.name, sorted(workpackage.env.keys())))
+                # TODO rm print
+                #print("in write: {} {} \n{}\n".format(workpackage.id, workpackage.step.name, sorted(workpackage.env.keys())))
                 workpackages_etree.append(workpackage.etree_repr())
         xml = jube2.util.output.element_tree_tostring(
             workpackages_etree, encoding="UTF-8")
