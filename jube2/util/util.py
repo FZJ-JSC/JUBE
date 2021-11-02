@@ -137,6 +137,9 @@ class WorkStat(object):
         """Check if work queue is empty"""
         return self._work_list.empty()
 
+    def push_back(self, wp):
+        """push element to the first position of the queue"""
+        self._work_list.put_first(wp)
 
 def valid_tags(tag_string, tags):
     """Check if tag_string contains only valid tags"""
