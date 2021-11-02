@@ -133,6 +133,10 @@ class Workpackage(object):
         """Return workpackage environment"""
         return self._env
 
+    def replace_env(self, workpackage):
+        """Replace own environment by workpackage environment"""
+        self._env = workpackage.env
+
     @property
     def cycle(self):
         """Return current loop cycle"""
