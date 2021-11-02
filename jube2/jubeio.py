@@ -815,7 +815,7 @@ class Parser(object):
         active = etree_step.get("active", "true").strip()
         suffix = etree_step.get("suffix", "").strip()
         cycles = int(etree_step.get("cycles", "1").strip())
-        procs = int(etree_step.get("procs", "0").strip())
+        procs = int(etree_step.get("procs", "1").strip())
         shared_name = etree_step.get("shared")
         if shared_name is not None:
             shared_name = shared_name.strip()
@@ -856,6 +856,9 @@ class Parser(object):
                         raise ValueError("<do shared=\"true\"> only allowed "
                                          "inside a <step> which has a shared "
                                          "region")
+                    if procs != 1:
+                        raise ValueError("<do shared=\"true\"> not allowed "
+                                         "inside a parallel <step>")
                     shared = True
                 elif shared_str == "false":
                     shared = False
