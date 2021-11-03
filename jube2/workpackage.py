@@ -675,7 +675,7 @@ class Workpackage(object):
 
         # Workpackage already done or error?
         if self.done or self.error:
-            return
+            return self
 
         continue_op = True
         continue_cycle = True
