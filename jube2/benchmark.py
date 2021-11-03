@@ -614,8 +614,6 @@ class Benchmark(object):
             parallel_list = list()
             def collect_result(val):
                 parallel_list.append(val)
-            ## TODO just for debugging
-            init_list = list()
 
             ## TODO cycle, max_async, shared, iteration, logger
             if not workpackage.done:
@@ -627,24 +625,13 @@ class Benchmark(object):
                     pool = mp.Pool(processes=procs)
                     # add wps to the parallel pool as long as they have the same name
                     while True:
-                        """
-                        print("in mp loop")
-                        print(" ID: {}; Name: {}".format(workpackage.id, workpackage.step.name))
-                        if self._workpackages["scen_prep"][0] is workpackage.parents[0]:
-                            print("YES: \n {} is {}".format(self._workpackages["scen_prep"][0], workpackage.parents[0]))
-                        else:
-                            print("NO: \n {} is {}".format(self._workpackages["scen_prep"][0], workpackage.parents[0]))
-                        """
-
-
-                        init_list.append(workpackage)
                         pool.apply_async(workpackage.run, callback=collect_result)
 
                         if not self._work_stat.empty():
                             workpackage = self._work_stat.get()
                             # push back as first element of _work_stat and terminate parallel loop
                             if workpackage.step.name != name:
-                                self._work_stat.put_first(workpackage)
+                                self._work_stat.push_back(workpackage)
                                 break 
                         else:
                             break
@@ -652,22 +639,7 @@ class Benchmark(object):
                     pool.join()
                 else:
                     workpackage.run()
-            """
-            # compare wp before and after pool.apply
-            print("\n\n ####################")
-            for a,b in zip(init_list, parallel_list):
-                print("{}".format(a.id))
-                #if a.env != b.env:
-                print("{} \n {} \n {}".format(a.id, len(sorted(a.env.keys())), sorted(a.env.keys())))
-                print("{} \n {} \n {}".format(b.id, len(sorted(b.env.keys())), sorted(b.env.keys())))
-                #for key in a.env.keys():
-                #    print(key)
-                #    if not key in list(b.env.keys()):
-                #        print("DIFF: {}".format(key))
-                    #print(set(set(a.env.keys())))
-                diff = set(set(b.env.keys()))-set(set(a.env.keys()))
-                print("DIFF \n {}".format(diff))
-            """
+
             if run_parallel == True:
                 # sort push back list to keep original order of wps
                 parallel_list.sort(key=lambda x: x.id)
@@ -681,7 +653,7 @@ class Benchmark(object):
                             break
                 run_parallel = False
                 # TODO START debugging
-                print("\n after push_back loop: \n {}".format(self._workpackages))
+                print("\n after update loop: \n {}".format(self._workpackages))
                 for st in self._workpackages.keys():
                     for wp in self._workpackages[st]:
                         print("\n ID: {} - Name: {}".format(wp.id, wp.step.name))
@@ -702,8 +674,6 @@ class Benchmark(object):
                                     print("YES: \n {} is {}".format(self._workpackages[ch.step.name][k], ch))
                                 else:
                                     print("NO: \n {} is {}".format(self._workpackages[ch.step.name][k], ch))
-
-                        
                 print("\n")
                 # TODO END debugging
             else:
