@@ -822,6 +822,10 @@ class Parser(object):
             if shared_name == "":
                 raise ValueError("Empty \"shared\" attribute in " +
                                  "<step> found.")
+            if procs != 1:
+                raise ValueError("\"shared\" attribute in " +
+                                 "<step> is not supported in " +
+                                 "combination with \"procs\".")
         depend = set(val.strip() for val in
                      tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
@@ -857,7 +861,7 @@ class Parser(object):
                                          "inside a <step> which has a shared "
                                          "region")
                     if procs != 1:
-                        raise ValueError("<do shared=\"true\"> not allowed "
+                        raise ValueError("<do shared=\"true\"> not allowed " +
                                          "inside a parallel <step>")
                     shared = True
                 elif shared_str == "false":
