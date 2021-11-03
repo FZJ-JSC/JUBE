@@ -670,8 +670,17 @@ class Workpackage(object):
                 break
         return continue_op, continue_cycle
 
-    def run(self):
-        """Run step and use current parameter space"""
+    def run(self, mode='s'):
+        """Run step and use current parameter space
+            mode: s = seriell (default); p = parallel
+        """
+
+        # create individual log files for each processor in a parallel run
+        if mode == "p":
+            import multiprocessing as mp
+            jube2.log.change_logfile_name(os.path.join(
+                self.benchmark.bench_dir,
+                "run_{}.log".format(mp.current_process()._identity[0])))
 
         # Workpackage already done or error?
         if self.done or self.error:
