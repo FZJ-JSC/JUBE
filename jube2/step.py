@@ -43,7 +43,7 @@ class Step(object):
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
-                 active="true", suffix="", cycles=1, procs=0):
+                 active="true", suffix="", cycles=1, procs=1):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -81,7 +81,7 @@ class Step(object):
             step_etree.attrib["iterations"] = str(self._iterations)
         if self._cycles > 1:
             step_etree.attrib["cycles"] = str(self._cycles)
-        if self._procs != 0:
+        if self._procs != 1:
             step_etree.attrib["procs"] = str(self._procs)
         for use in self._use:
             use_etree = ET.SubElement(step_etree, "use")
