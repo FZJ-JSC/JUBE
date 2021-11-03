@@ -25,6 +25,7 @@ import multiprocessing as mp
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as DOM
 import os
+import re
 import stat
 import pprint
 import shutil
@@ -615,7 +616,11 @@ class Benchmark(object):
             def collect_result(val):
                 parallel_list.append(val)
 
-            ## TODO cycle, max_async, shared, iteration, logger
+            ## TODO
+            ## writeXML position(y) - replace by database
+            ## max_async() test with done_file
+            ## do/step: work_dir:  Lock!!!
+            ## TODO END
             if not workpackage.done:
                 # execute wps in parallel which have the same name
                 if workpackage.step.procs > 1:
@@ -625,7 +630,7 @@ class Benchmark(object):
                     pool = mp.Pool(processes=procs)
                     # add wps to the parallel pool as long as they have the same name
                     while True:
-                        pool.apply_async(workpackage.run, callback=collect_result)
+                        pool.apply_async(workpackage.run, args=('p',), callback=collect_result)
 
                         if not self._work_stat.empty():
                             workpackage = self._work_stat.get()
@@ -641,6 +646,18 @@ class Benchmark(object):
                     workpackage.run()
 
             if run_parallel == True:
+                # merge parallel run log files into the main run log file and delete the parallel logs
+                filenames = [file for file in os.listdir(self.bench_dir)
+                                if file.startswith("run") and file != jube2.conf.LOGFILE_RUN_NAME]
+                filenames.sort(key=lambda o: int(re.split('_|\.',o)[1]))
+                with open(os.path.join(self.bench_dir,
+                                       jube2.conf.LOGFILE_RUN_NAME), 'a') as outfile:
+                    for fname in filenames:
+                        with open(os.path.join(self.bench_dir, fname), 'r') as infile:
+                            contents = infile.read()
+                            outfile.write(contents)
+                        os.remove(os.path.join(self.bench_dir, fname))
+
                 # sort push back list to keep original order of wps
                 parallel_list.sort(key=lambda x: x.id)
                 # run postprocessing of each wp
@@ -652,39 +669,14 @@ class Benchmark(object):
                             self.wp_post_run_config(wp)
                             break
                 run_parallel = False
-                # TODO START debugging
-                print("\n after update loop: \n {}".format(self._workpackages))
-                for st in self._workpackages.keys():
-                    for wp in self._workpackages[st]:
-                        print("\n ID: {} - Name: {}".format(wp.id, wp.step.name))
-                        print(" Parents: {}".format(wp.parents))
-                        print(" Childs: {}".format(wp.children))
-                        print(" iter_sibl: {}".format(wp.iteration_siblings))
-                        if wp.step.name == "scen_gen":
-                            print("Parents Check:")
-                            for j, pa in enumerate(wp.parents):
-                                if self._workpackages[pa.step.name][j] is pa:
-                                    print("YES: \n {} is {}".format(self._workpackages[pa.step.name][j], pa))
-                                else:
-                                    print("NO: \n {} is {}".format(self._workpackages[pa.step.name][j], pa))
-                        elif wp.step.name == "scen_prep":
-                            print("Children Check:")
-                            for k, ch in enumerate(wp.children):
-                                if self._workpackages[ch.step.name][k] is ch:
-                                    print("YES: \n {} is {}".format(self._workpackages[ch.step.name][k], ch))
-                                else:
-                                    print("NO: \n {} is {}".format(self._workpackages[ch.step.name][k], ch))
-                print("\n")
-                # TODO END debugging
             else:
                 self.wp_post_run_config(workpackage)
 
-        # Store workpackage information
-        self.write_workpackage_information(
-            os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
+            # Store workpackage information
+            self.write_workpackage_information(
+                os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
         print("\n")
-
         status_data = [("stepname", "all", "open", "wait", "error", "done")]
         status_data += [(stepname, str(_status["all"]), str(_status["open"]),
                          str(_status["wait"]), str(_status["error"]),
@@ -809,12 +801,8 @@ class Benchmark(object):
         using xml representation"""
         # Create root-tag and append workpackages
         workpackages_etree = ET.Element("workpackages")
-        # TODO rm print
-        #print("in write: {} \n".format(self._workpackages))
         for workpackages in self._workpackages.values():
             for workpackage in workpackages:
-                # TODO rm print
-                #print("in write: {} {} \n{}\n".format(workpackage.id, workpackage.step.name, sorted(workpackage.env.keys())))
                 workpackages_etree.append(workpackage.etree_repr())
         xml = jube2.util.output.element_tree_tostring(
             workpackages_etree, encoding="UTF-8")
