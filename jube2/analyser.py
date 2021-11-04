@@ -495,6 +495,8 @@ class Analyser(object):
         stepname -> workpackage_id -> filename -> patternname -> value
         """
         etree = list()
+        if self._analyse_result is None:
+            return etree
         for stepname in self._analyse_result:
             step_etree = ET.Element("step")
             step_etree.attrib["name"] = stepname

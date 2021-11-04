@@ -39,8 +39,8 @@ analyser_tag
 
    * each file using each workpackage will be scanned seperatly
 
-   * the "use" argument inside the "<file>" tag is optional and can
-     be used to specify a file specific patternset;
+   * the "use" argument inside the "<file>" tag is optional and can be
+     used to specify a file specific patternset;
 
      * the global "<use>" and this local use will be combined and
        evaluated at the same time
@@ -64,8 +64,7 @@ benchmark_tag
 
    * benchmark-name must be unique inside input file
 
-   * "outpath" contains the path to the root folder for benchmark
-     runs
+   * "outpath" contains the path to the root folder for benchmark runs
 
      * multiple benchmarks can use the same folder
 
@@ -84,8 +83,7 @@ column_tag
 
    * "title" is optional: column title
 
-   * "format" can contain a C like format string: e.g.
-     "format=".2f""
+   * "format" can contain a C like format string: e.g. "format=".2f""
 
 comment
    Add or manipulate the comment string.
@@ -114,15 +112,15 @@ copy_tag
 
       <copy source_dir="..." target_dir="..." name="..." rel_path_ref="..." separator="..." active="...">...</copy>
 
-   * "source_dir" is optional, will be used as a prefix for the
-     source filenames
+   * "source_dir" is optional, will be used as a prefix for the source
+     filenames
 
-   * "target_dir" is optional, will be used as a prefix for the
-     target filenames
+   * "target_dir" is optional, will be used as a prefix for the target
+     filenames
 
-   * "name" is optional, it can be used to rename the file inside
-     your work directory (will be ignored if you use shell extensions
-     in your pathname)
+   * "name" is optional, it can be used to rename the file inside your
+     work directory (will be ignored if you use shell extensions in
+     your pathname)
 
    * "rel_path_ref" is optional
 
@@ -130,8 +128,8 @@ copy_tag
 
      * "external": rel.-paths based on position of xml-file
 
-     * "internal": rel.-paths based on current work directory (e.g.
-       to link files of another step)
+     * "internal": rel.-paths based on current work directory (e.g. to
+       link files of another step)
 
    * "active" is optional
 
@@ -146,8 +144,7 @@ copy_tag
 
      * if "name" is present, the lists must have the same length
 
-   * you can copy all files inside a directory by using
-     "directory/*"
+   * you can copy all files inside a directory by using "directory/*"
 
      * this cannot be mixed using "name"
 
@@ -155,11 +152,9 @@ copy_tag
      copied
 
 directory_structure
-   * every (new) benchmark run will create its own directory
-     structure
+   * every (new) benchmark run will create its own directory structure
 
-   * every single workpackage will create its own directory
-     structure
+   * every single workpackage will create its own directory structure
 
    * user can add files (or links) to the workpackage dir, but the
      real position in filesystem will be seen as a blackbox
@@ -202,8 +197,8 @@ do_tag
       <do shared="true">...</do>
       <do work_dir="...">...</do>
 
-   * "do" can contain any *Shell*-syntax-snippet (*parameter* will
-     be replaced "... $nameofparameter ...")
+   * "do" can contain any *Shell*-syntax-snippet (*parameter* will be
+     replaced "... $nameofparameter ...")
 
    * "stdout"- and "stderr"-filename are optional (default: "stdout"
      and "stderr")
@@ -225,16 +220,16 @@ do_tag
        operation will stop until the script will create the named file
        inside the work directory.
 
-     * by using "error_file" the operation will produce a error if
-       the named file can be found inside the work directory. This
-       feature can be used together with the "done_file" to signalise
-       broken async-steps.
+     * by using "error_file" the operation will produce a error if the
+       named file can be found inside the work directory. This feature
+       can be used together with the "done_file" to signalise broken
+       async-steps.
 
    * "break_file"-filename is optional
 
-     * by using "break_file" the user can stop further cycle runs.
-       the current step will be directly marked with finalized and
-       further "<do>" will be ignored.
+     * by using "break_file" the user can stop further cycle runs. the
+       current step will be directly marked with finalized and further
+       "<do>" will be ignored.
 
    * "shared="true""
 
@@ -385,8 +380,8 @@ include_tag
 
    * can be used at every position (inside the "<jube>"-tag)
 
-   * path is optional and can be used to give an alternative xml-
-     path inside the include-file (default: root-node)
+   * path is optional and can be used to give an alternative xml-path
+     inside the include-file (default: root-node)
 
 info
    Show info for the given benchmark directory, a given benchmark or a
@@ -452,8 +447,7 @@ jube_variables
 
      * "$jube_step_name": current step name
 
-     * "$jube_step_iterations": number of step iterations (default:
-       1)
+     * "$jube_step_iterations": number of step iterations (default: 1)
 
      * "$jube_step_cycles": number of step cycles (default: 1)
 
@@ -465,14 +459,13 @@ jube_variables
 
      * "$jube_wp_iteration": current iteration number (default: 0)
 
-     * "$jube_wp_parent_<parent_name>_id": workpackage id of
-       selected parent step
+     * "$jube_wp_parent_<parent_name>_id": workpackage id of selected
+       parent step
 
-     * "$jube_wp_relpath": relative path to workpackage work
-       directory (relative towards configuration file)
+     * "$jube_wp_relpath": relative path to workpackage work directory
+       (relative towards configuration file)
 
-     * "$jube_wp_abspath": absolute path to workpackage work
-       directory
+     * "$jube_wp_abspath": absolute path to workpackage work directory
 
      * "$jube_wp_envstr": a string containing all exported parameter
        in shell syntax:
@@ -492,8 +485,7 @@ key_tag
 
    * "title" is optional: alternative key title
 
-   * "format" can contain a C like format string: e.g.
-     "format=".2f""
+   * "format" can contain a C like format string: e.g. "format=".2f""
 
 link_tag
    A link can be used to create a symbolic link from your sandbox work
@@ -501,15 +493,15 @@ link_tag
 
       <link source_dir="..." target_dir="..." name="..." rel_path_ref="..." separator="..." active="...">...</link>
 
-   * "source_dir" is optional, will be used as a prefix for the
-     source filenames
+   * "source_dir" is optional, will be used as a prefix for the source
+     filenames
 
-   * "target_dir" is optional, will be used as a prefix for the
-     target filenames
+   * "target_dir" is optional, will be used as a prefix for the target
+     filenames
 
-   * "name" is optional, it can be used to rename the file inside
-     your work directory (will be ignored if you use shell extensions
-     in your pathname)
+   * "name" is optional, it can be used to rename the file inside your
+     work directory (will be ignored if you use shell extensions in
+     your pathname)
 
    * "rel_path_ref" is optional
 
@@ -517,8 +509,8 @@ link_tag
 
      * "external": rel.-paths based on position of xml-file
 
-     * "internal": rel.-paths based on current work directory (e.g.
-       to link files of another step)
+     * "internal": rel.-paths based on current work directory (e.g. to
+       link files of another step)
 
    * "active" is optional
 
@@ -546,7 +538,7 @@ log
 parameter_space
    The parameter space for a specific benchmark run is the bundle of
    all possible parameter combinations. E.g. there are to different
-   parameter: a = 1,2 and b= “p”,”q” then you will get four different
+   parameter: a = 1,2 and b= "p","q" then you will get four different
    parameter combinations: "a=1", "b="p""; "a=1", "b="q""; "a=2",
    "b="p""; "a=2", "b="q"".
 
@@ -564,9 +556,8 @@ parameter_tag
 
       <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="...">...</parameter>
 
-   * a parameter can be seen as variable: Name is the name to use
-     the variable, and the text between the tags will be the real
-     content
+   * a parameter can be seen as variable: Name is the name to use the
+     variable, and the text between the tags will be the real content
 
    * name must be unique inside the given parameterset
 
@@ -654,12 +645,12 @@ parameterset_tag
 
    * parametersets can be used inside the step-command
 
-   * parametersets can be combined inside the step-tag, but they
-     must be compatible:
+   * parametersets can be combined inside the step-tag, but they must
+     be compatible:
 
-     * Two parametersets are compatible if the parameter
-       intersection (given by the parameter-name), only contains
-       parameter based on the same definition
+     * Two parametersets are compatible if the parameter intersection
+       (given by the parameter-name), only contains parameter based on
+       the same definition
 
      * These two sets are compatible:
 
@@ -709,13 +700,13 @@ pattern_tag
 
      * allowed: "int", "float" or "string"
 
-   * "default" is optional: Specify default value if pattern cannot
-     be found or if it cannot be evaluated
+   * "default" is optional: Specify default value if pattern cannot be
+     found or if it cannot be evaluated
 
-   * "dotall" is optional (default: "false"): Can be set to "true"
-     or "false" to specify if a "." within the regular expression
-     should also match newline characters, which can be very helpfull
-     to extract a line only after a specific header was mentioned.
+   * "dotall" is optional (default: "false"): Can be set to "true" or
+     "false" to specify if a "." within the regular expression should
+     also match newline characters, which can be very helpfull to
+     extract a line only after a specific header was mentioned.
 
 patternset_tag
    A patternset is a container to store a bundle of patterns.
@@ -740,8 +731,8 @@ patternset_tag
 
    * patternsets can be used inside the analyser tag
 
-   * different sets, which are used inside the same analyser, must
-     be compatible
+   * different sets, which are used inside the same analyser, must be
+     compatible
 
 prepare_tag
    The prepare can contain any *Shell* command you want. It will be
@@ -822,8 +813,7 @@ selection_tag
 
    * select or unselect a benchmark by name
 
-   * only selected benchmarks will run (when using the "run"
-     command)
+   * only selected benchmarks will run (when using the "run" command)
 
    * multiple "<only>" and "<not>" are allowed
 
@@ -890,8 +880,8 @@ step_tag
    * "depend" is optional and can contain a list of other step names
      which must be executed before the current step
 
-   * "max_async" is optional and can contain a number (or a
-     parameter) which describe how many *workpackages* can be executed
+   * "max_async" is optional and can contain a number (or a parameter)
+     which describe how many *workpackages* can be executed
      asynchronously (default: 0 means no limitation). This option is
      only important if a *do* inside the step contains a "done_file"
      attribute and should be executed in the background (or managed by
@@ -903,8 +893,8 @@ step_tag
    * "work_dir" is optional and can be used to switch to an
      alternative work directory
 
-     * the user had to handle **uniqueness of this directory** by
-       his own
+     * the user had to handle **uniqueness of this directory** by his
+       own
 
      * no automatic parent/children link creation
 
@@ -925,19 +915,19 @@ step_tag
      * a link, named by the attribute content, is used to access the
        shared folder
 
-     * the shared folder link will not be automatically created in
-       an alternative working directory!
+     * the shared folder link will not be automatically created in an
+       alternative working directory!
 
    * "export="true""
 
      * the environment of the current step will be exported to an
        dependent step
 
-   * "iterations" is optional. All workpackages within this step
-     will be executed multiple times if the iterations value is used.
+   * "iterations" is optional. All workpackages within this step will
+     be executed multiple times if the iterations value is used.
 
-   * "cycles" is optional. All "<do>" commands within the step will
-     be executed "cycles"-times
+   * "cycles" is optional. All "<do>" commands within the step will be
+     executed "cycles"-times
 
 sub_tag
    A substition expression.
@@ -1005,8 +995,8 @@ table_tag
         ...
       </table>
 
-   * "style" is optional; allowed styles: "csv", "pretty",
-     "aligned"; default: "csv"
+   * "style" is optional; allowed styles: "csv", "pretty", "aligned";
+     default: "csv"
 
    * "separator" is optional; only used in csv-style, default: ","
 
@@ -1025,14 +1015,14 @@ tagging
    Tagging is a simple way to mark parts of your input file to be
    includable or excludable.
 
-   * Every available "<tag>" (not the root "<jube>"-tag) can contain
-     a tag-attribute
+   * Every available "<tag>" (not the root "<jube>"-tag) can contain a
+     tag-attribute
 
    * The tag-attribute can contain a list of names: "tag="a,b,c"" or
-     “not” names: "tag="a,!b,c""
+     "not" names: "tag="a,!b,c""
 
-   * When running *JUBE*, multiple tags can be send to the input-
-     file parser:
+   * When running *JUBE*, multiple tags can be send to the input-file
+     parser:
 
         jube run <filename> --tag a b
 
@@ -1042,7 +1032,7 @@ tagging
      * <tags> which does not contain any tag-attribute will stay
        inside the include file
 
-   * “not” tags are more important than normal tags: "tag="a,!b,c""
+   * "not" tags are more important than normal tags: "tag="a,!b,c""
      and running with "a b" will hide the "<tag>" because the "!b" is
      more important than the "a"
 
@@ -1077,8 +1067,8 @@ update_mode
 
    * "step": reevaluation in each new step
 
-   * "cycle": reevaluation in each cycle (number of workpackages
-     will stay unchanged)
+   * "cycle": reevaluation in each cycle (number of workpackages will
+     stay unchanged)
 
    * "always": reevaluation in each step and cycle
 
