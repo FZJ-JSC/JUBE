@@ -463,12 +463,12 @@ class Analyser(object):
                              match_dict[pattern.name]["cnt"])
 
                     if match_dict[pattern.name]["cnt"] > 1:
-                    	try:
-		                    match_dict[pattern.name]["std"] = math.sqrt(
-		                              (abs(match_dict[pattern.name]["sum2"] - 
-		                              (match_dict[pattern.name]["sum"] ** 2 /
-		                              match_dict[pattern.name]["cnt"])) /
-		                              (match_dict[pattern.name]["cnt"] - 1)))
+                        try:
+                            match_dict[pattern.name]["std"] = math.sqrt(
+                                      (abs(match_dict[pattern.name]["sum2"] - 
+                                      (match_dict[pattern.name]["sum"] ** 2 /
+                                      match_dict[pattern.name]["cnt"])) /
+                                      (match_dict[pattern.name]["cnt"] - 1)))
                         except OverflowError:
                             match_dict[pattern.name]["std"] = 0
                     else:
