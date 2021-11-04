@@ -252,20 +252,20 @@ class YAML_Converter(object):
                         YAML_Converter.create_tag(key, val, new_node)
                     else:
                         # Create attribute
-                        new_node.set(key, str(val))
+                        new_node.set(key, str(val) if val is not None else "")
         else:
             tag_value = ""
             if type(data) is not dict:
                 # standard tag value
-                tag_value = data
+                tag_value = data if data is not None else ""
             else:
                 for key, value in data.items():
                     if key == "_":
                         # _ represents the standard tag value
-                        tag_value = value
+                        tag_value = value if value is not None else ""
                     else:
                         # Create attribute
-                        new_node.set(key, str(value))
+                        new_node.set(key, str(value) if value is not None else "")
             if type(tag_value) is list:
                 new_node.text = str(tag_value.pop(0))
                 while len(tag_value) > 0:
