@@ -759,3 +759,43 @@ itself is still executed). In the given example the output will be:
    3
 
 In contrast to the iterations, all executions for the cycle feature take place inside of the same folder.
+
+
+.. index:: parallel
+
+.. _parallel_workpackage:
+
+Parallel workpackages
+~~~~~~~~~~~~~~~~~~~~~
+
+In a standard ``jube run`` a queue is filled with workpackages and this queue is
+processed serially. To enable parallel execution of independent workpackages, 
+which belong to the expansions of a step, the argument ``procs`` of ``<step>`` 
+can be used.  
+
+The files used for this example can be found inside ``examples/parallel_workpackages``.
+The input file ``parallel_workpackages.xml``:
+
+.. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.xml
+   :language: xml
+
+In the example above the expansion of the parameter ``i`` will leads to the 
+creation of 10 workpackages of the step ``parallel_execution``. Due to the 
+given argument ``procs="4"`` JUBE will start 4 worker processes which will 
+distribute the execution of the workpackages among themselves. 
+
+**Important hints:**
+
+* ``<do shared="true">`` is not supported if ``procs`` is set for the 
+  corresponding step.
+* If ``<step shared="...">`` is set, then the user is responsible to avoid data 
+  races within the shared directory.
+* Switching to an alternative ``work_dir`` for a step can also lead to data 
+  races if all expansions of the step access the same ``work_dir``. 
+  Recommendation: Don't use a shared ``work_dir`` in combination with ``procs``.
+* This feature is implemented based on the Python package ``multiprocessing`` 
+  and doesn't support inter-node communication. That's why the parallelisation 
+  is limited to a single shared memory compute node.
+* Be considerate when working on a multi-user system with shared resources. 
+  The parallel feature of JUBE can easily exploid a whole compute node. 
+  
