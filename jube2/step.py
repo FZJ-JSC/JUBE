@@ -525,7 +525,10 @@ class Operation(object):
 
             # Create directory if it does not exist
             if not jube2.conf.DEBUG_MODE and not os.path.exists(work_dir):
-                os.makedirs(work_dir)
+                try:
+                    os.makedirs(work_dir)
+                except FileExistsError:
+                    pass
 
         if not only_check_pending:
 
