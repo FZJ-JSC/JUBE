@@ -464,7 +464,7 @@ class Operation(object):
         return jube2.util.util.eval_bool(active_str)
 
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
-                environment=None):
+                environment=None, pid=None):
         """Execute the operation. work_dir must be set to the given context
         path. The parameter_dict used for inline substitution.
         If only_check_pending is set to True, the operation will not be
@@ -529,9 +529,12 @@ class Operation(object):
 
         if not only_check_pending:
 
+            if pid is not None:
+                env_file_name = jube2.conf.ENVIRONMENT_INFO.replace('.', '_{}.'.format(pid))
+            else:
+                env_file_name = jube2.conf.ENVIRONMENT_INFO
             abs_info_file_path = \
-                os.path.abspath(os.path.join(work_dir,
-                                             jube2.conf.ENVIRONMENT_INFO))
+                os.path.abspath(os.path.join(work_dir, env_file_name))
 
             # Select unix shell
             shell = jube2.conf.STANDARD_SHELL
@@ -598,7 +601,7 @@ class Operation(object):
                 stdout.close()
                 stderr.close()
 
-                env = Operation.read_process_environment(work_dir)
+                env = Operation.read_process_environment(work_dir, pid=pid)
 
                 # Read and store new environment
                 if (environment is not None) and (returncode == 0):
@@ -705,11 +708,15 @@ class Operation(object):
         return self._do
 
     @staticmethod
-    def read_process_environment(work_dir, remove_after_read=True):
+    def read_process_environment(work_dir, remove_after_read=True, pid=None):
         """Read standard environment info file in given directory."""
         env = dict()
         last = None
-        env_file_path = os.path.join(work_dir, jube2.conf.ENVIRONMENT_INFO)
+        if pid is not None:
+            env_file_name = jube2.conf.ENVIRONMENT_INFO.replace('.', '_{}.'.format(pid))
+        else:
+            env_file_name = jube2.conf.ENVIRONMENT_INFO
+        env_file_path = os.path.join(work_dir, env_file_name)
         if os.path.isfile(env_file_path):
             env_file = open(env_file_path, "r")
             for line in env_file:

@@ -564,7 +564,7 @@ class Workpackage(object):
         else:
             return None
 
-    def _run_operations(self, parameter, work_dir):
+    def _run_operations(self, parameter, work_dir, pid=None):
         """Run all available operations"""
         continue_op = True
         continue_cycle = True
@@ -668,7 +668,7 @@ class Workpackage(object):
                         parameter_dict=parameter, work_dir=work_dir,
                         environment=self._env,
                         only_check_pending=self.operation_done(
-                            operation_number))
+                            operation_number), pid=pid)
                     self.operation_done(operation_number, True)
             if not continue_op or not continue_cycle:
                 break
@@ -830,7 +830,7 @@ class Workpackage(object):
                 #     others in shared operation
                 # continue_cycle = false -> loop cycle was interrupted
                 continue_op, continue_cycle = \
-                    self._run_operations(parameter, work_dir)
+                    self._run_operations(parameter, work_dir, pid=proc_id)
 
                 # --- Check cycle limit ---
                 if self._cycle + 1 >= self._step.cycles:
