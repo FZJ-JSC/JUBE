@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="parallel_workpackages" outpath="bench_run">
+    <comment>A parallel workpackages demo</comment>
+
+    <parameterset name="param_set">
+      <parameter name="i" type="int">0,1,2,3,4,5,6,7,8,9</parameter>
+    </parameterset>
+
+    <step name="parallel_execution" suffix="${i}" procs="4">
+      <use>param_set</use>
+      <do>echo "${i}"</do>
+    </step>
+  </benchmark>
+</jube>
