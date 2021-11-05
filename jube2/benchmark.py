@@ -614,12 +614,13 @@ class Benchmark(object):
             run_parallel = False
             parallel_list = list()
             def collect_result(val):
+                """used collect return values from pool.apply_async"""
                 parallel_list.append(val)
-
+            def log_e(e):
+                """used to print error_callback from pool.apply_async"""
+                print(e)
             ## TODO
             ## writeXML position(y) - replace by database
-            ## max_async() test with done_file
-            ## do/step: work_dir:  Lock!!!
             ## TODO END
             if not workpackage.done:
                 # execute wps in parallel which have the same name
@@ -630,7 +631,7 @@ class Benchmark(object):
                     pool = mp.Pool(processes=procs)
                     # add wps to the parallel pool as long as they have the same name
                     while True:
-                        pool.apply_async(workpackage.run, args=('p',), callback=collect_result)
+                        pool.apply_async(workpackage.run, args=('p',), callback=collect_result, error_callback=log_e)
 
                         if not self._work_stat.empty():
                             workpackage = self._work_stat.get()
