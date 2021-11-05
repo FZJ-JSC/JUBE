@@ -195,7 +195,10 @@ class Parser(object):
             changed = self._preprocessor(tree.getroot())
             if changed:
                 LOGGER.debug("  New tags might be included, start " +
-                             "additional run.")
+                             "additional include-preprocess run.")
+            else:
+                LOGGER.debug("  No preprocessing changes were detected, stop" +
+                             " additional include-preprocess runs.")
 
         # Rerun removing invalid tags
         LOGGER.debug("  Remove invalid tags")
@@ -308,7 +311,7 @@ class Parser(object):
                 new_children.append(child)
             include_index += 1
         for child in new_children:
-            self._preprocessor(child)
+            changed = self._preprocessor(child) or changed
         return changed
 
     def _benchmark_preprocessor(self, benchmark_etree):
@@ -1084,8 +1087,8 @@ class Parser(object):
             if file_path.endswith(".xml"):
                 return ET.parse(file_path)
             elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
-                jube2.util.yaml_converter.YAML_Converter.is_parseable_yaml_file(
-                    file_path):
+                jube2.util.yaml_converter.\
+                    YAML_Converter.is_parseable_yaml_file(file_path):
                 include_path = list(self._include_path)
                 include_path += Parser._read_envvar_include_path()
                 file_handle = jube2.util.yaml_converter.YAML_Converter(
