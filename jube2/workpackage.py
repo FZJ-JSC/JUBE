@@ -21,6 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+import multiprocessing as mp
 import xml.etree.ElementTree as ET
 import jube2.util.util
 import jube2.util.output
@@ -499,7 +500,10 @@ class Workpackage(object):
                 self._benchmark.bench_dir, parameter_dict)
             # Create shared folder (if it not already exists)
             if not os.path.exists(shared_folder):
-                os.mkdir(shared_folder)
+                try:
+                    os.mkdir(shared_folder)
+                except FileExistsError:
+                    pass
 
             # Create shared folder link
             if parameter_dict is not None:
@@ -675,12 +679,12 @@ class Workpackage(object):
             mode: s = seriell (default); p = parallel
         """
 
+        proc_id = None
         # create individual log files for each processor in a parallel run
         if mode == "p":
-            import multiprocessing as mp
+            proc_id = mp.current_process()._identity[0]
             jube2.log.change_logfile_name(os.path.join(
-                self.benchmark.bench_dir,
-                "run_{}.log".format(mp.current_process()._identity[0])))
+                self.benchmark.bench_dir, "run_{}.log".format(proc_id)))
 
         # Workpackage already done or error?
         if self.done or self.error:
@@ -768,9 +772,13 @@ class Workpackage(object):
                                   .format(alt_work_dir))
                 LOGGER.debug("  switch to alternativ work dir: \"{0}\""
                              .format(alt_work_dir))
+
                 if not jube2.conf.DEBUG_MODE and \
                         not os.path.exists(alt_work_dir):
-                    os.makedirs(alt_work_dir)
+                    try:
+                        os.makedirs(alt_work_dir)
+                    except FileExistsError:
+                        pass
                     # Get group_id if available (given by JUBE_GROUP_NAME)
                     group_id = jube2.util.util.check_and_get_group_id()
                     if group_id is not None:
