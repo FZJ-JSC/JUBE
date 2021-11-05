@@ -768,8 +768,8 @@ In contrast to the iterations, all executions for the cycle feature take place i
 Parallel workpackages
 ~~~~~~~~~~~~~~~~~~~~~
 
-In a standard ``jube run`` a queue is filled with workpackages and this queue is
-processed serially. To enable parallel execution of independent workpackages, 
+In a standard ``jube run`` a queue is filled with workpackages and then 
+processed in serial. To enable parallel execution of independent workpackages, 
 which belong to the expansions of a step, the argument ``procs`` of ``<step>`` 
 can be used.  
 
@@ -779,7 +779,7 @@ The input file ``parallel_workpackages.xml``:
 .. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.xml
    :language: xml
 
-In the example above the expansion of the parameter ``i`` will leads to the 
+In the example above the expansion of the parameter ``i`` will lead to the 
 creation of 10 workpackages of the step ``parallel_execution``. Due to the 
 given argument ``procs="4"`` JUBE will start 4 worker processes which will 
 distribute the execution of the workpackages among themselves. 
@@ -797,5 +797,4 @@ distribute the execution of the workpackages among themselves.
   and doesn't support inter-node communication. That's why the parallelisation 
   is limited to a single shared memory compute node.
 * Be considerate when working on a multi-user system with shared resources. 
-  The parallel feature of JUBE can easily exploid a whole compute node. 
-  
+  The parallel feature of JUBE can easily exploit a whole compute node. 
