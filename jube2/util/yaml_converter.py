@@ -217,9 +217,11 @@ class YAML_Converter(object):
         for tag in data.keys():
             if type(data[tag]) is not list:
                 data[tag] = [data[tag]]
-            # benchmark is optional on the top level, but if it is used only a limited number of
-            # options are allowed on top level (listed in "/benchmark")
-            if "benchmark" in data and tag in YAML_Converter.allowed_tags["/benchmark"]:
+            # benchmark is optional on the top level, but if it is used only
+            # a limited number of options are allowed on top level
+            # (listed in "/benchmark")
+            if "benchmark" in data and tag in YAML_Converter.allowed_tags[
+                    "/benchmark"]:
                 for attr_and_tags in data[tag]:
                     YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
             elif "benchmark" not in data and \
@@ -265,7 +267,8 @@ class YAML_Converter(object):
                         tag_value = value if value is not None else ""
                     else:
                         # Create attribute
-                        new_node.set(key, str(value) if value is not None else "")
+                        new_node.set(key, str(value)
+                                     if value is not None else "")
             if type(tag_value) is list:
                 new_node.text = str(tag_value.pop(0))
                 while len(tag_value) > 0:
