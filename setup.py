@@ -27,15 +27,14 @@ add_opt = dict()
 try:
     from setuptools import setup
     import sys
-    SHARE_PATH = ""
     add_opt["install_requires"] = ['pyyaml']
     if sys.hexversion < 0x02070000:
         add_opt["install_requires"].append("argparse")
 except ImportError:
     from distutils.core import setup
-    SHARE_PATH = "share/jube"
 import os
 
+SHARE_PATH = "share/jube"
 
 def rel_path(directory, new_root=""):
     """Return list of tuples (directory, list of files)
@@ -62,8 +61,8 @@ def rel_path(directory, new_root=""):
 config = {'name': 'JUBE',
           'description': 'JUBE Benchmarking Environment',
           'author': 'Forschungszentrum Juelich GmbH',
-          'url': 'www.fz-juelich.de/jube',
-          'download_url': 'www.fz-juelich.de/jube',
+          'url': 'www.fz-juelich.de/ias/jsc/jube',
+          'download_url': 'www.fz-juelich.de/ias/jsc/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
           'version': '2.4.1',
           'packages': ['jube2','jube2.result_types','jube2.util'],
