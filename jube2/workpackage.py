@@ -683,8 +683,10 @@ class Workpackage(object):
         # create individual log files for each processor in a parallel run
         if mode == "p":
             proc_id = mp.current_process()._identity[0]
+            log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
             jube2.log.change_logfile_name(os.path.join(
-                self.benchmark.bench_dir, "run_{}.log".format(proc_id)))
+                self.benchmark.bench_dir,
+                log_fname.replace('.', '_{}.').format(proc_id)))
 
         # Workpackage already done or error?
         if self.done or self.error:

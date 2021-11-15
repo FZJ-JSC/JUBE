@@ -20,6 +20,7 @@
 from __future__ import (print_function,
                         unicode_literals,
                         division)
+import logging
 
 import multiprocessing as mp
 import xml.etree.ElementTree as ET
@@ -651,9 +652,10 @@ class Benchmark(object):
             if run_parallel == True:
                 # merge parallel run log files into the main run log file and
                 # delete the parallel logs
+                log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
                 filenames = [file for file in os.listdir(self.bench_dir)
-                                if file.startswith("run") and \
-                                    file != jube2.conf.LOGFILE_RUN_NAME]
+                                if file.startswith(log_fname.split('.')[0]) and\
+                                    file != log_fname]
                 filenames.sort(key=lambda o: int(re.split('_|\.',o)[1]))
                 with open(os.path.join(self.bench_dir,
                                        jube2.conf.LOGFILE_RUN_NAME), 'a') as outfile:
