@@ -33,13 +33,15 @@ Installation
 
 Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher version)
 
-You also can use **Python 2.6** to run *JUBE*. In this case you have to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
+**Python 3.x** is the preferred option to utilize *JUBE*. Newer upcoming versions of *JUBE* might not be compatible towards **Python2.x** any longer. 
+
+It is possible to use **Python 2.6** to run *JUBE*. In this case you have to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
 your *Python* module library on your own.
 
 If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml-module <https://pyyaml.org>`_ to
 your *Python* module library.
 
-To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in three different ways:
+To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in different ways:
 
 * You can use the **installation script** to copy all files to the right position (preferred)::
 
@@ -48,6 +50,14 @@ To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the positio
   This will install the *JUBE* package files and executables to your ``$HOME/.local`` directory. Instead of ``--user`` also a user
   specific ``--prefix`` option is available. Here you might have to set the ``PYTHONPATH`` environment variable first
   (this will be mentioned during the install process).
+
+* You can utilize ``pip[3]`` to take care of the installation process (including the download) ::
+
+   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --user
+   # or
+   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --prefix=...
+
+  You might have to adjust your ``PYTHONPATH``.
 
 * You can add the **parent folder path** of the *JUBE* package-folder (``jube2`` directory) to the ``PYTHONPATH`` environment variable::
 
