@@ -24,6 +24,8 @@ JUBE version 2 is written in the Python programming language.
 
 You need Python 2.7 or Python 3.2 (or a higher version) to run the program.
 
+Python 3.x is the preferred option to utilize JUBE. Newer upcoming versions of JUBE might not be compatible towards Python2.x any longer.
+
 You also can use Python 2.6 to run JUBE. In this case you had to add the argparse-module (https://pypi.python.org/pypi/argparse) to your Python module library on your own.
 
 # Installation
@@ -41,7 +43,6 @@ cd JUBE-<version>
 python setup.py install --user
 ```
 
-
 `$HOME/.local/bin` must be inside your `$PATH` environment variable to use JUBE in an easy way.
 
 Instead you can also specify a self defined path prefix:
@@ -52,9 +53,16 @@ python setup.py install --prefix=<some_path>
 
 You might be asked during the installation to add your path (and some subfolders) to the `$PYTHONPATH` environment variable (this should be stored in your profile settings):
 
-
 ```bash
 export PYTHONPATH=<needed_path>:$PYTHONPATH
+```
+
+Another option is to use `pip[3]` for installation (including download):
+
+```bash
+pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --user
+# or
+pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --prefix=<some_path>
 ```
 
 In addition it is useful to also set the `$PATH` variable again.
