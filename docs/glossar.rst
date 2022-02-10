@@ -80,8 +80,8 @@ Glossary
    result
       Create a result table.
 
-      If no benchmark id is given, a combined result view of all available benchmarks in given directory will be created. 
-      If benchmark directory is missing, current directory will be used.
+      If no benchmark id is given, last benchmark found in directory will be used. If multiple benchmarks are selected (e.g. by using ``--id all``), a combined result 
+      view of all available benchmarks in the given directory will be created. If benchmark directory is missing, current directory will be used.
 
    benchmark_tag
       The main benchmark definition
