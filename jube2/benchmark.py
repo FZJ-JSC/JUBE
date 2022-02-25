@@ -612,11 +612,18 @@ class Benchmark(object):
         # Handle all workpackages in given order
         while not self._work_stat.empty():
             workpackage = self._work_stat.get()
+
             run_parallel = False
-            parallel_list = list()
             def collect_result(val):
                 """used collect return values from pool.apply_async"""
-                parallel_list.append(val)
+                ## run postprocessing of each wp
+                for i, wp in enumerate(self._workpackages[val.step.name]):
+                    if wp.id == val.id:
+                        # update corresponding wp in self._workpackage with modified wp
+                        wp.replace_env(val)
+                        self.wp_post_run_config(wp)
+                        break
+
             def log_e(e):
                 """used to print error_callback from pool.apply_async"""
                 print(e)
@@ -630,6 +637,7 @@ class Benchmark(object):
                     procs = workpackage.step.procs
                     name = workpackage.step.name
                     pool = mp.Pool(processes=procs)
+
                     # add wps to the parallel pool as long as they have the same name
                     while True:
                         pool.apply_async(workpackage.run, args=('p',), \
@@ -644,6 +652,7 @@ class Benchmark(object):
                                 break 
                         else:
                             break
+
                     pool.close()
                     pool.join()
                 else:
@@ -665,16 +674,6 @@ class Benchmark(object):
                             outfile.write(contents)
                         os.remove(os.path.join(self.bench_dir, fname))
 
-                # sort push back list to keep original order of wps
-                parallel_list.sort(key=lambda x: x.id)
-                # run postprocessing of each wp
-                for mod_wp in parallel_list:
-                    for i, wp in enumerate(self._workpackages[mod_wp.step.name]):
-                        if wp.id == mod_wp.id:
-                            # update corresponding wp in self._workpackage with modified wp
-                            wp.replace_env(mod_wp)
-                            self.wp_post_run_config(wp)
-                            break
                 run_parallel = False
             else:
                 self.wp_post_run_config(workpackage)
