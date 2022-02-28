@@ -686,7 +686,7 @@ class Workpackage(object):
             log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
             jube2.log.change_logfile_name(os.path.join(
                 self.benchmark.bench_dir,
-                log_fname.replace('.', '_{}.').format(proc_id)))
+                log_fname.replace('.', '_{}.').format(proc_id) if ( ('_'+str(proc_id)) not in log_fname )  else log_fname))
 
         # Workpackage already done or error?
         if self.done or self.error:
