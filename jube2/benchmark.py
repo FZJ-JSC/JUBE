@@ -621,6 +621,8 @@ class Benchmark(object):
                     if wp.id == val.id:
                         # update corresponding wp in self._workpackage with modified wp
                         wp.replace_env(val)
+                        wp.parameterset = val.parameterset
+                        wp.cycle = val.cycle
                         self.wp_post_run_config(wp)
                         break
 
