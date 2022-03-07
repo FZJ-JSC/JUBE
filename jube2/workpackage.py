@@ -134,9 +134,10 @@ class Workpackage(object):
         """Return workpackage environment"""
         return self._env
 
-    def replace_env(self, workpackage):
-        """Replace own environment by workpackage environment"""
-        self._env = workpackage.env
+    @env.setter
+    def env(self, set_env):
+        """Replace own environment by set_env"""
+        self._env = set_env
 
     @property
     def cycle(self):
@@ -863,7 +864,9 @@ class Workpackage(object):
                 else:
                     LOGGER.debug(
                         "{0}\n{1}\n{2}".format(40 * "-", str(e), 40 * "-"))
-        return self
+
+        return {"id": self._id, "step_name": self._step.name, "env": self._env,
+                "cycle": self._cycle, "parameterset": self._parameterset}
 
     @staticmethod
     def reduce_workpackage_id_counter():
