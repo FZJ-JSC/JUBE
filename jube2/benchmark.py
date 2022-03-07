@@ -617,12 +617,12 @@ class Benchmark(object):
             def collect_result(val):
                 """used collect return values from pool.apply_async"""
                 ## run postprocessing of each wp
-                for i, wp in enumerate(self._workpackages[val.step.name]):
-                    if wp.id == val.id:
+                for i, wp in enumerate(self._workpackages[val["step_name"]]):
+                    if wp.id == val["id"]:
                         # update corresponding wp in self._workpackage with modified wp
-                        wp.replace_env(val)
-                        wp.parameterset = val.parameterset
-                        wp.cycle = val.cycle
+                        wp.env = val["env"]
+                        wp.parameterset = val["parameterset"]
+                        wp.cycle = val["cycle"]
                         self.wp_post_run_config(wp)
                         break
 
