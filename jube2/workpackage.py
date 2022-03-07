@@ -143,6 +143,11 @@ class Workpackage(object):
         """Return current loop cycle"""
         return self._cycle
 
+    @cycle.setter
+    def cycle(self, set_cycle):
+        """Update loop cycle counter"""
+        self._cycle = set_cycle
+
     def allow_workpackage_dir_caching(self):
         """Enable workpackage dir cache"""
         self._workpackage_dir_caching_enabled = True
@@ -307,6 +312,11 @@ class Workpackage(object):
     def parameterset(self):
         """Return parameterset"""
         return self._parameterset
+
+    @parameterset.setter
+    def parameterset(self, set_parameterset):
+        """Set/overwrite parameterset"""
+        self._parameterset.add_parameterset(set_parameterset)
 
     def add_children(self, workpackage):
         """Add a children workpackage"""
