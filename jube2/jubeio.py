@@ -1111,8 +1111,8 @@ class Parser(object):
                      .format(set_type, search_name, filename))
         file_path = self._find_include_file(filename)
         etree = self._tree_from_file(file_path).getroot()
-        self._preprocessor(etree)
         Parser._remove_invalid_tags(etree, self._tags)
+        self._preprocessor(etree)
         result_set = None
 
         # Find element in XML-tree
