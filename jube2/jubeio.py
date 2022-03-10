@@ -1111,6 +1111,7 @@ class Parser(object):
                      .format(set_type, search_name, filename))
         file_path = self._find_include_file(filename)
         etree = self._tree_from_file(file_path).getroot()
+        self._preprocessor(etree)
         Parser._remove_invalid_tags(etree, self._tags)
         result_set = None
 
@@ -1544,4 +1545,6 @@ class Parser(object):
         """
         if element.tag not in valid_tags:
             raise ValueError(("Unknown tag or tag used in wrong " +
-                              "position: <{0}>").format(element.tag))
+                              "position:\n{0}").format(
+                jube2.util.output.element_tree_tostring(
+                    element, encoding="UTF-8")))
