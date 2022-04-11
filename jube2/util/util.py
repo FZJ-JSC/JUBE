@@ -118,7 +118,7 @@ def valid_tags(tag_string, tags):
             return eval(tag_tags_str)
         except SyntaxError:
             raise ValueError("Tag string '{0}' not parseable."
-                             .format(element.get("tag")))
+                             .format(tag_string))
     else:
         return True
 
