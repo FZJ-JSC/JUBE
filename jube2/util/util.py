@@ -214,8 +214,16 @@ def script_evaluation(cmd, script_type):
     elif script_type in ["perl", "shell"]:
         if script_type == "perl":
             cmd = "perl -e \"print " + cmd + "\""
-        sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, shell=True)
+
+        # Select unix shell
+        shell = jube2.conf.STANDARD_SHELL
+        if "JUBE_EXEC_SHELL" in os.environ:
+            alt_shell = os.environ["JUBE_EXEC_SHELL"].strip()
+            if len(alt_shell) > 0:
+                shell = alt_shell
+        sub = subprocess.Popen([shell, "-c", cmd], stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=False)
+
         stdout, stderr = sub.communicate()
         stdout = stdout.decode(errors="ignore")
         # Check command execution error code
