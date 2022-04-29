@@ -2,17 +2,17 @@
 <jube>
   <benchmark name="files_and_sub" outpath="bench_run">
     <comment>A file copy and substitution example</comment>
-    
+
     <!-- Configuration -->
     <parameterset name="param_set">
       <parameter name="number" type="int">1,2,4</parameter>
     </parameterset>
-    
+
     <!-- Files -->
     <fileset name="files">
       <copy>file.in</copy>
     </fileset>
-    
+
     <!-- Substitute -->
     <substituteset name="substitute">
       <!-- Substitute files -->
@@ -20,13 +20,13 @@
       <!-- Substitute commands -->
       <sub source="#NUMBER#" dest="$number" />
     </substituteset>
-            
+
     <!-- Operation -->
     <step name="sub_step">
       <use>param_set</use> <!-- use existing parameterset -->
       <use>files</use>        <!-- use existing fileset -->
       <use>substitute</use>   <!-- use existing substituteset -->
       <do>cat file.out</do>   <!-- shell command -->
-    </step>    
+    </step>
   </benchmark>
 </jube>

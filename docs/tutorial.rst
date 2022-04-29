@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -33,18 +33,31 @@ Installation
 
 Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher version)
 
-You also can use **Python 2.6** to run *JUBE*. In this case you have to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
+**Python 3.x** is the preferred option to utilize *JUBE*. Newer upcoming versions of *JUBE* might not be compatible towards **Python2.x** any longer. 
+
+It is possible to use **Python 2.6** to run *JUBE*. In this case you have to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
 your *Python* module library on your own.
 
-To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in three different ways:
+If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml-module <https://pyyaml.org>`_ to
+your *Python* module library.
 
-* You can use the **installation tool** to copy all files to the right position (preferred)::
+To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in different ways:
+
+* You can use the **installation script** to copy all files to the right position (preferred)::
 
    >>> python setup.py install --user
 
-  This will install the *JUBE* package and the binary to your ``$HOME/.local`` directory. Instead of ``--user`` also a user
+  This will install the *JUBE* package files and executables to your ``$HOME/.local`` directory. Instead of ``--user`` also a user
   specific ``--prefix`` option is available. Here you might have to set the ``PYTHONPATH`` environment variable first
   (this will be mentioned during the install process).
+
+* You can utilize ``pip[3]`` to take care of the installation process (including the download) ::
+
+   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --user
+   # or
+   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --prefix=...
+
+  You might have to adjust your ``PYTHONPATH``.
 
 * You can add the **parent folder path** of the *JUBE* package-folder (``jube2`` directory) to the ``PYTHONPATH`` environment variable::
 
@@ -86,6 +99,27 @@ shell environment variables are available which can be used to set system specif
 *BASH* autocompletion can be enabled by using the ``eval "$(jube complete)"`` command. You can store the command in your bash profile
 settings if needed.
 
+.. index:: input format
+
+.. _input_format:
+
+Input format
+~~~~~~~~~~~~
+
+*JUBE* supports two different types of input formats: *XML* based files and *YAML* based files. Both formats support the same amount of *JUBE*
+features and you can select your more preffered input format.
+
+The following sections will always show all examples using both formats. However the explanations will mostly stick to the *XML* format but can be easily transfered 
+to the *YAML* solution.
+
+Both formats depends on a specifc special scharacter handling. More details can be found in the following FAQ sections:
+
+* :ref:`XML_character_handling`
+* :ref:`YAML_character_handling`
+
+Internally *JUBE* always uses the *XML* based format, by converting *YAML* based configuration files into *XML* if necessary. This is why parsing error messages might point 
+to *XML* errors even if the *YAML* format was used.
+
 .. index:: hello world
 
 Hello World
@@ -101,7 +135,12 @@ The input file ``hello_world.xml``:
 .. literalinclude:: ../examples/hello_world/hello_world.xml
    :language: xml
 
-Every *JUBE* input file starts (after the general *XML* header line) with the root tag ``<jube>``.
+The input file ``hello_world.yaml``:
+
+.. literalinclude:: ../examples/hello_world/hello_world.yaml
+   :language: yaml
+
+Every *JUBE* *XML* based input file starts (after the general *XML* header line) with the root tag ``<jube>``.
 This root tag must be unique. *XML* does not allow multiple root tags.
 
 The first tag which contains benchmark specific information is ``<benchmark>``. ``hello_world`` is
@@ -164,9 +203,9 @@ This benchmark will produce the follwing output:
    Running workpackages (#=done, 0=wait, E=error):
    ############################################################ (  1/  1)
 
-      stepname | all | open | wait | error | done
-     ----------+-----+------+------+-------+-----
-     say_hello |   1 |    0 |    0 |     0 |    1
+     |  stepname | all | open | wait | error | done |
+     |-----------|-----|------|------|-------|------|
+     | say_hello |   1 |    0 |    0 |     0 |    1 |
 
    >>>> Benchmark information and further useful commands:
    >>>>       id: 0
@@ -275,15 +314,20 @@ The input file ``parameterspace.xml``:
 .. literalinclude:: ../examples/parameterspace/parameterspace.xml
    :language: xml
 
+The input file ``parameterspace.yaml``:
+
+.. literalinclude:: ../examples/parameterspace/parameterspace.yaml
+   :language: yaml
+
 Whenever a parameter contains a ``,`` (this can be changed using the ``separator`` attribute) this parameter becomes
 a **template**. A step which **uses the parameterset** containing this parameter will run multiple times to iterate over
 all possible parameter combinations. In this example the step ``say_hello`` will run 6 times:
 
 .. code-block:: none
 
-    stepname | all | open | wait | error | done
-   ----------+-----+------+------+-------+-----
-   say_hello |   6 |    0 |    0 |     0 |    6
+   |  stepname | all | open | wait | error | done |
+   |-----------|-----|------|------|-------|------|
+   | say_hello |   6 |    0 |    0 |     0 |    6 |
 
 
 Every parameter combination will run in its own sandbox directory.
@@ -308,6 +352,11 @@ The input file ``dependencies.xml``:
 .. literalinclude:: ../examples/dependencies/dependencies.xml
    :language: xml
 
+The input file ``dependencies.yaml``:
+
+.. literalinclude:: ../examples/dependencies/dependencies.yaml
+   :language: yaml
+
 In this example we create a dependency between ``first_step`` and ``second_step``. After ``first_step`` is finished, the
 corresponding ``second_step`` will start. Steps can also have multiple dependencies (separated by ``,`` in the definition), but
 circular definitions will not be resolved. A dependency is a unidirectional link!
@@ -324,10 +373,10 @@ three ``second_step`` runs each pointing to different ``first_step``-directories
 
 .. code-block:: none
 
-      stepname | all | open | wait | error | done
-   ------------+-----+------+------+-------+-----
-    first_step |   3 |    0 |    0 |     0 |    3
-   second_step |   3 |    0 |    0 |     0 |    3
+   |    stepname | all | open | wait | error | done |
+   |-------------|-----|------|------|-------|------|
+   |  first_step |   3 |    0 |    0 |     0 |    3 |
+   | second_step |   3 |    0 |    0 |     0 |    3 |
 
 .. index:: substitution, loading files, external files, files
 
@@ -344,6 +393,11 @@ The input file ``files_and_sub.xml``:
 
 .. literalinclude:: ../examples/files_and_sub/files_and_sub.xml
    :language: xml
+
+The input file ``files_and_sub.yaml``:
+
+.. literalinclude:: ../examples/files_and_sub/files_and_sub.yaml
+   :language: yaml
 
 The content of file ``file.in``:
 
@@ -412,6 +466,11 @@ The input file ``result_creation.xml``:
 .. literalinclude:: ../examples/result_creation/result_creation.xml
    :language: xml
 
+The input file ``result_creation.yaml``:
+
+.. literalinclude:: ../examples/result_creation/result_creation.yaml
+   :language: yaml
+
 Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``stdout``.
 
 Now we want to parse these ``stdout`` files to extract information (in this example case the written number). First of all we have to declare a
@@ -428,14 +487,14 @@ E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
    <pattern name="jube_pat_int" type="int">([+-]?\d+)</pattern>
    <pattern name="jube_pat_fp" type="float">([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)</pattern>
 
-If there are multiple matches inside a single file you can add a :term:`reduce option <pattern_tag>`. Normally only the first match will be extracted.
+If there are multiple matches inside a single file you can add a :term:`reduce option <analyser_tag>`. By default, only the first match will be extracted.
 
 To use your ``<patternset>`` you have to specify the files which should be parsed. This can be done using the ``<analyser>``.
 It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
 will create its own result entry.
 
-The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to additionally add complete new
-parametersets.
+The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to include additional ``<parameterset>`` 
+that have not been already used within the analysed ``<step>``.
 
 To run the anlayse you have to write::
 
@@ -444,24 +503,31 @@ To run the anlayse you have to write::
 The analyse data will be stored inside the benchmark directory.
 
 The last part is the result table creation. Here you have to use an existing analyser. The ``<column>`` contains a pattern or a parameter name. ``sort`` is
-the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv`` or ``pretty`` to get different ASCII representations.
+the optional sorting order (separated by ``,``). The ``style`` attribute can be ``csv``, ``pretty`` or ``aligned`` to get different ASCII representations.
 
 To create the result table you have to write::
 
    >>> jube result bench_run -i last
 
-The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` can also be replaced by a specific benchmark id.
+If you run the ``result`` command for the first time, the ``analyse`` step will be executed automatically, if it wasn't executed before. So it is not necessary to run the separate ``analyse`` step all the time. However you need the separate ``analyse`` 
+if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the first ``analyse`` will be used in the ``result`` step.
+
+The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` is the default option and can also be replaced by a specific benchmark id.
 If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
 
 Output of the given example:
 
 .. code-block:: none
 
-   number | number_pat
-   -------+-----------
-        1 |          1
-        2 |          2
-        4 |          4
+   | number | number_pat |
+   |--------|------------|
+   |      1 |          1 |
+   |      2 |          2 |
+   |      4 |          4 |
+
+The analyse and result instructions can be combined within one single command:
+
+   >>> jube result bench_run -a
 
 This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about
 including external sets, jobsystem representation and scripting parameter.

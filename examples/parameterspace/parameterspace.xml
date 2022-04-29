@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
   <benchmark name="parameterspace" outpath="bench_run">
-    <comment>A parameterspace creation example</comment>
+    <comment>A parameterspace example</comment>
     
     <!-- Configuration -->
     <parameterset name="param_set">

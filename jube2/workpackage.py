@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -28,6 +28,7 @@ import jube2.conf
 import jube2.log
 import jube2.parameter
 import os
+import re
 import stat
 import shutil
 
@@ -746,6 +747,12 @@ class Workpackage(object):
             # --- Create alternativ working dir ---
             alt_work_dir = self.alt_work_dir(parameter)
             if alt_work_dir is not None:
+                # Check if given work directory contains any remaining variable
+                if re.search(jube2.parameter.Parameter.parameter_regex,
+                             alt_work_dir):
+                    raise IOError(("Given work directory {0} contains a " +
+                                   "unknown JUBE or environment variable.")
+                                  .format(alt_work_dir))
                 LOGGER.debug("  switch to alternativ work dir: \"{0}\""
                              .format(alt_work_dir))
                 if not jube2.conf.DEBUG_MODE and \
@@ -815,14 +822,14 @@ class Workpackage(object):
                 elif continue_op:
                     # --- Write information file to mark end of work ---
                     self.done = True
-            except RuntimeError as re:
-                self.set_error(True, str(re))
+            except RuntimeError as e:
+                self.set_error(True, str(e))
                 continue_cycle = False
                 if jube2.conf.EXIT_ON_ERROR:
-                    raise(RuntimeError(str(re)))
+                    raise(RuntimeError(str(e)))
                 else:
                     LOGGER.debug(
-                        "{0}\n{1}\n{2}".format(40 * "-", str(re), 40 * "-"))
+                        "{0}\n{1}\n{2}".format(40 * "-", str(e), 40 * "-"))
 
     @staticmethod
     def reduce_workpackage_id_counter():

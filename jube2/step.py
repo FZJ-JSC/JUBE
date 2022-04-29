@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -29,6 +29,7 @@ import xml.etree.ElementTree as ET
 import jube2.util.util
 import jube2.conf
 import jube2.log
+import jube2.parameter
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -509,6 +510,11 @@ class Operation(object):
                 self._work_dir, parameter_dict)
             new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
             work_dir = os.path.join(work_dir, new_work_dir)
+            if re.search(jube2.parameter.Parameter.parameter_regex, work_dir):
+                raise IOError(("Given work directory {0} contains a unknown " +
+                               "JUBE or environment variable.").format(
+                    work_dir))
+
             # Create directory if it does not exist
             if not jube2.conf.DEBUG_MODE and not os.path.exists(work_dir):
                 os.makedirs(work_dir)
@@ -561,11 +567,20 @@ class Operation(object):
                         if (not read_out):
                             break
                         else:
-                            print(read_out.decode(errors="ignore"), end="")
+                            try:
+                                print(read_out.decode(errors="ignore"), end="")
+                            except TypeError:
+                                print(read_out.decode("utf-8", "ignore"),
+                                      end="")
                             try:
                                 stdout.write(read_out)
                             except TypeError:
-                                stdout.write(read_out.decode(errors="ignore"))
+                                try:
+                                    stdout.write(read_out.decode(
+                                        errors="ignore"))
+                                except TypeError:
+                                    stdout.write(read_out.decode("utf-8",
+                                                                 "ignore"))
                             time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
                     sub.communicate()
 
@@ -637,7 +652,7 @@ class Operation(object):
                 else:
                     continue_op = False
 
-        #Search for error file
+        # Search for error file
         if self._error_filename is not None:
             error_filename = jube2.util.util.substitution(
                 self._error_filename, parameter_dict)

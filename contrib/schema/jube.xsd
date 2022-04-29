@@ -271,6 +271,7 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="csv" />
       <xs:enumeration value="pretty" />
+      <xs:enumeration value="aligned" />
     </xs:restriction>
   </xs:simpleType>
   
@@ -360,7 +361,7 @@
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
-  <xs:complexType name="includePathType">
+  <xs:complexType name="includePathType" mixed="true">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="path" type="stringTagType" />
     </xs:choice>

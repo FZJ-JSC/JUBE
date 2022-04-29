@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -108,10 +108,12 @@ use it within a path definition.
 
 .. index:: XML character handling
 
+.. _XML_character_handling:
+
 XML character handling
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The *JUBE* input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
+The *JUBE* *XML* based input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
 
 Linebreaks are not allowed inside a tag-option (e.g. ``<sub ... dest="...\n...">`` is not possible). Inside a tag
 multiple lines are no problem (e.g. inside of ``<parameter>...</parameter>``). Often multiple lines are also needed
@@ -133,6 +135,42 @@ Some characters are not allowed inside an *XML* script or at least not inside a 
 * ``&`` : ``&amp;``
 * ``"`` : ``&quot;``
 * ``'`` : ``&apos;``
+
+.. index:: YAML character handling
+
+.. _YAML_character_handling:
+
+YAML character handling
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The *JUBE* *YAML* based input format bases on the general *YAML* rules.
+   
+Instead of tags in the *XML* format the *YAML* format uses keys which values are a list of elements or other keys.
+
+The files used for this example can be found inside ``examples/yaml``.
+
+The input file ``hello_world.yaml``:
+
+.. literalinclude:: ../examples/yaml/hello_world.yaml
+   :language: yaml
+
+You can use different styles of writing key value pairs:
+In the example, the ``parameter`` is declared in one line using ``{}``.
+Mutliple key value pairs can be stored per element. The main content attribute is marked by using ``_``.
+As an alternative you can write the key value pairs amongst multiple lines using the same indent as the preceding line, 
+like the key ``do`` in the example.
+If a key like ``use`` has only a value, you can write it in one line without using the special ``_`` key.
+
+Is list of elements can be specifiec by using ``[]`` or by using ``-`` amongst multiple lines (always keeping the same indent).
+
+*YAML* also has a number of spcial characters which can be integrated by using quotation marks:
+
+The input file ``special_values.yaml``:
+
+.. literalinclude:: ../examples/yaml/special_values.yaml
+   :language: yaml
+   
+Anytime you have a symbol like ``#``, ``'``, ``,``, ``:`` or ``{}`` you have to enclose the entire value in quotation marks. 
 
 .. index:: analyse multiple files
 
@@ -180,14 +218,14 @@ Due to the independet result_entries, you will end up with the following result 
 
 .. code-block:: none
 
-   pattern1_of_A | pattern2_of_A | pattern1_of_B
-   --------------+---------------+--------------
-               1 |             A |
-               2 |             B |
-                 |               |           10
-                 |               |           11
-                 |               |           12
-                 |               |           13
+   | pattern1_of_A | pattern2_of_A | pattern1_of_B |
+   |---------------+---------------+---------------|
+   |             1 |             A |               |
+   |             2 |             B |               |
+   |               |               |            10 |
+   |               |               |            11 |
+   |               |               |            12 |
+   |               |               |            13 |
 
 The different ``<analyse>`` were not combined. So you end up with independet result lines for each workpackage. *JUBE*
 does not see possible step dependencies in this point the user has to set the dependcies manually:
@@ -206,12 +244,12 @@ correct result:
 
 .. code-block:: none
 
-   pattern1_of_A | pattern2_of_A | pattern1_of_B
-   --------------+---------------+--------------
-              1  |             A |           10
-              2  |             B |           11
-              1  |             A |           12
-              2  |             B |           13
+   | pattern1_of_A | pattern2_of_A | pattern1_of_B |
+   |---------------|---------------|---------------|
+   |            1  |             A |            10 |
+   |            2  |             B |            11 |
+   |            1  |             A |            12 |
+   |            2  |             B |            13 |
 
 .. index:: extract specifc block
 
@@ -244,6 +282,8 @@ This only extracts ``30`` from ``blockB``. Setting ``dotall="true"`` allows to u
 not matched by ``.``).
 
 .. index:: restart workpackage
+
+.. _restart_workpackage:
 
 Restart a workpackage execution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,0 +1,24 @@
+name: environment
+outpath: bench_run
+comment: An environment handling example
+
+#Configuration
+parameterset:
+  name: param_set
+  parameter: {name: EXPORT_ME, export: true, _: VALUE}
+
+step:
+  #Operation
+  - name: first_step
+    export: true
+    do:
+      - export SHELL_VAR=Hello #export a Shell var
+      - echo "$$SHELL_VAR world" #use exported Shell var
+
+   #Create a dependency between both steps    
+  - name: second_step
+    depend: first_step
+    use: param_set
+    do:
+      - echo $$EXPORT_ME
+      - echo "$$SHELL_VAR again" #use exported Shell var out of privious step

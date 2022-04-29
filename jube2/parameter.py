@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -162,29 +162,22 @@ class Parameterset(object):
                       update_mode=NEVER_MODE):
         """Two Parametersets are compatible, if the intersection only contains
         equivilant parameters"""
-        # Find parameternames which exists in both parametersets
-        intersection = set(self.all_parameter_names) & \
-            set(parameterset.all_parameter_names)
-        for name in intersection:
-            if (not (self[name].update_allowed(update_mode) or
-                     parameterset[name].update_allowed(
-                         NEVER_MODE if (update_mode == USE_MODE) else
-                         update_mode)) and
-                    not self[name].is_equivalent(parameterset[name])):
-                return False
-        return True
+        return len(self.get_incompatible_parameter(parameterset, update_mode)) == 0
 
     def get_incompatible_parameter(self, parameterset,
                                    update_mode=NEVER_MODE):
         """Return a set of incompatible parameter names between the current
         and the given parameterset"""
         result = set()
+        # Find parameternames which exists in both parametersets
         intersection = set(self.all_parameter_names) & \
             set(parameterset.all_parameter_names)
         for name in intersection:
             if (not (self[name].update_allowed(update_mode) or
+                     # In case of the USE_MODE (in the beginning of a new step) only the actual
+                     # new parameterset and its mode is relevant
                      parameterset[name].update_allowed(
-                         STEP_MODE if (update_mode == USE_MODE) else
+                         NEVER_MODE if (update_mode == USE_MODE) else
                          update_mode)) and
                     not self[name].is_equivalent(parameterset[name])):
                 result.add(name)
@@ -627,7 +620,8 @@ class StaticParameter(Parameter):
             # $$$ -> $$$ -> $
             # $$$$ -> $$$$$$$$ -> $$$$
             # $$$$$ -> $$$$$$$ -> $$$
-            value = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", value)
+            value = re.sub(r"(^(?=\$)|[^$])((?:\$\$)*?)((?:\${3})?(?:[^$]|$))",
+                           r"\1\2\2\3", value)
         parameter_dict = dict()
         if parametersets is not None:
             for parameterset in parametersets:

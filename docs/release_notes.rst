@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -21,25 +21,67 @@
 Release notes
 =============
 
+Version 2.4.2
+~~~~~~~~~~~~~
+Release: 2021-11-30
+
+* JUBE will raise an error if an changed `work_dir` contains unknown variables.
+* A bug was solved which enabled `dotall="true"` by default for all pattern, which can make those costly to evaluate.
+* Fixes a bug in result data processing.
+* Fixes a bug in YAML input format if `benchmark` key is not used.
+* A empty value in YAML input format will now be treated liek an empty String not as a `None` value.
+* Avoid crash due to overflow error for huge pattern values.
+* Fixes a bug, which blocked `include` blocks to include other `include` blocks.
+* `setup.py` now moves all additional non-code data to `.../share/jube`, which allows better utilization of `pip` based installation
+
+Version 2.4.1
+~~~~~~~~~~~~~
+Release: 2021-02-09
+
+* A bug was solved, if a benchmark used the older `,`-separated `tag=` format in contrast to the new layout introduced in *version 2.2.2*.
+* A warning message in context of newer *YAML* versions was removed.
+* A Python3 problem inside the *YAML* parser was solved.
+* A bug was solved, which was raised if the benchmark was started on a different filesystem then the one which was configured within `outpath`.
+* The `jube` base script within `bin` will now use `python3` by default. This is necessary as many newer systems does not have a "standard" `python`
+  defined by default. In addition the additional script `jube-python2` is now available, which utilizes `python2`. 
+  So far Python 2 is still fully supported but can be seen deprecated and future versions of *JUBE* might break 
+  the Python 2 backwards compatibility.
+* All `style=pretty` tables in *JUBE* will now use a markdown like format to allow easier integration within other tools.
+
+Version 2.4.0
+~~~~~~~~~~~~~
+Release: 2020-07-03
+
+* New *YAML* based *JUBE* input format. The existing *XML* format still stays available. Both
+  formats cover the same amount of features. If you plan to use *YAML* based *JUBE* input files, you have to 
+  add the `pyyaml-module <https://pyyaml.org>`_ to your *Python* module library. See also :ref:`input_format`
+* New ``<do>`` attribute: ``error_file="..."``. In contrast to the existing ``done_file`` this file handle can be used to mark
+  a broken asynchronous execution (the job templates in the ``platform`` folder were updated accordingly)
+* The ``analyse`` step is now automatically called when a result is shown and if it was not executed before (instead of showing an error message).
+* New option ``--workpackage`` for ``remove`` command line sub command. Allows to remove an individual 
+  workpackage from a benchmark. See also: :ref:`restart_workpackage`
+* New ``table`` output format: ``aligned``
+
 Version 2.3.0
 ~~~~~~~~~~~~~
 Release: 2019-11-07
 
-* New command line option ``-s {pretty,csv}, --style {pretty,csv}`` for the ``result`` 
-  command allows to overwrite the selected table style
-* New command line option ``-o OUTPATH, --outpath OUTPATH`` for the ``run``
-  command allows to overwrite the selected outpath for the benchmark run
+* New command line option ``-s {pretty,csv}, --style {pretty,csv}`` for the ``result`` command
+  allows to overwrite the selected table style
+* New command line option ``-o OUTPATH, --outpath OUTPATH`` for the ``run`` command allows
+  to overwrite the selected outpath for the benchmark run
 * New parameter modes: ``env`` and ``tag``
 
-   * ``mode="env``: include the content of an available environment variable
-   * ``mode="tag``: include the tag name if the tag was set during execution, otherwise the content is empty
+  * ``mode="env``: include the content of an available environment variable
+  * ``mode="tag``: include the tag name if the tag was set during execution, otherwise the content is empty
 
-* New option ``dotall=true`` in ``<pattern>`` (default: ``false``) allows that ``.`` within a regular
-  expression also matches newline characters. This can be very helpfull to extract a line only after a specific header was mentioned. See :ref:`extract_specifc_block`
-* ``--tags`` used in combination with the ``--update`` option will now be added to the 
-  existing tags of the original run instead of overwriting the old tags. If no new tags need to be added within
-  an update ``--tags`` can now be skipped.
-* ``parse.log`` is now automatically moved into the specifc job run folder and is also available within the ``jube log`` command
+* New option ``dotall=true`` in ``<pattern>`` (default: ``false``) allows that ``.`` within a
+  regular expression also matches newline characters. This can be very helpfull to extract a
+  line only after a specific header was mentioned. See :ref:`extract_specifc_block`
+* ``--tags`` used in combination with the ``--update`` option will now be added to the existing
+  tags of the original run instead of overwriting the old tags. If no new tags need to be added within an update ``--tags`` can now be skipped.
+* ``parse.log`` is now automatically moved into the specifc job run folder and is also available 
+  within the ``jube log`` command
 
 
 Version 2.2.2
@@ -95,7 +137,7 @@ Release: 2016-12-20
 * ``<do>`` specfic ``work_dir`` is now created automatically if needed
 * ``directory`` attribute in ``<link>`` and ``<copy>`` was renamed to ``source_dir`` (old attribute name is still possible)
 
-   * ``source_dir`` now allows parameter substitution
+  * ``source_dir`` now allows parameter substitution
 
 * New attribute ``target_dir`` in ``<link>`` and ``<copy>`` to specify the target directory path prefix
 
@@ -108,14 +150,14 @@ Release: 2016-09-01
 * Fix ``jube_wp_...`` parameter handling bug, if these parameter are used inside another script parameter
 * Added new optional argument ``suffix="..."`` to the ``<step>`` tag
 
-   * Parameter are allowed inside this argument string.
-   * The evaluated string will be attached to the default workpackage directory name to allow users to find specific directories in an easier way (e.g. ``000001_stepname_suffix`` ).
+  * Parameter are allowed inside this argument string.
+  * The evaluated string will be attached to the default workpackage directory name to allow users to find specific directories in an easier way (e.g. ``000001_stepname_suffix`` ).
 
 * The *XML* schema files can now be found inside the ``contrib`` folder
 * Added new advanced error handling
 
-   * JUBE will not stop any more if an error occurs inside a ``run`` or ``continue``. The error will be marked and the corresponding workpackage will not be touched anymore.
-   * There is also a ``-e``/``--exit`` option to overwrite this behaviour to directly exit if there is an error.
+  * JUBE will not stop any more if an error occurs inside a ``run`` or ``continue``. The error will be marked and the corresponding workpackage will not be touched anymore.
+  * There is also a ``-e``/``--exit`` option to overwrite this behaviour to directly exit if there is an error.
 
 
 Version 2.1.2
@@ -316,8 +358,3 @@ Release: 2014-11-14
 * complete new **Python** kernel
 * new input file format
 * please see new documentation to get further information
-
-Older JUBE Version
-~~~~~~~~~~~~~~~~~~
-
-* please see our website `www.fz-juelich.de/jsc/jube <http://www.fz-juelich.de/jsc/jube>`_ to get further information concerning *JUBE* 1.

@@ -2,12 +2,12 @@
 <jube>
   <benchmark name="include" outpath="bench_run">
     <comment>A include example</comment>
-    
+
     <!-- use parameterset out of an external file and add a additional parameter -->
     <parameterset name="param_set" init_with="include_data.xml">
       <parameter name="foo">bar</parameter>
     </parameterset>
-    
+
     <!-- Operation -->
     <step name="say_hello">
       <use>param_set</use> <!-- use existing parameterset -->

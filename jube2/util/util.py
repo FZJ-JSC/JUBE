@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -93,6 +93,36 @@ class WorkStat(object):
         return self._work_list.empty()
 
 
+def valid_tags(tag_string, tags):
+    """Check if tag_string contains only valid tags"""
+    if tags is None:
+        tags = set()
+    tag_tags_str = tag_string
+    if tag_tags_str is not None:
+        # Check for old tag format
+        if "," in tag_tags_str:
+            tag_tags_str = jube2.jubeio.Parser._convert_old_tag_format(
+                tag_tags_str)
+        tag_tags_str = tag_tags_str.replace(' ', '')
+        tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
+                     if len(i) > 0]
+        tag_state = {}
+        for tag in tag_array:
+            tag_state.update({tag: str(tag in tags)})
+        for tag in tag_array:
+            tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + '(?=\W|$)',
+                                  tag_state[tag], tag_tags_str)
+        tag_tags_str = tag_tags_str.replace('|', ' or ')\
+            .replace('+', ' and ').replace('!', ' not ')
+        try:
+            return eval(tag_tags_str)
+        except SyntaxError:
+            raise ValueError("Tag string '{0}' not parseable."
+                             .format(tag_string))
+    else:
+        return True
+
+
 def get_current_id(base_dir):
     """Return the highest id found in directory 'base_dir'."""
     try:
@@ -127,6 +157,10 @@ def substitution(text, substitution_dict):
         str_substitution_dict = \
             dict([(k, str(v).decode("utf-8", errors="ignore")) for k, v in
                   substitution_dict.items()])
+    except TypeError:
+        str_substitution_dict = \
+            dict([(k, str(v).decode("utf-8", "ignore")) for k, v in
+                  substitution_dict.items()])
     except AttributeError:
         str_substitution_dict = dict([(k, str(v)) for k, v in
                                       substitution_dict.items()])
@@ -140,8 +174,8 @@ def substitution(text, substitution_dict):
         count += 1
         orig_text = text
         # Save double $$
-        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text) \
-            if "$" in text else text
+        text = re.sub(r"(^(?=\$)|[^$])((?:\$\$)*?)((?:\${3})?(?:[^$]|$))",
+                      r"\1\2\2\3", text) if "$" in text else text
         tmp = string.Template(text)
         new_text = tmp.safe_substitute(local_substitution_dict)
         changed = new_text != orig_text
@@ -180,8 +214,16 @@ def script_evaluation(cmd, script_type):
     elif script_type in ["perl", "shell"]:
         if script_type == "perl":
             cmd = "perl -e \"print " + cmd + "\""
-        sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, shell=True)
+
+        # Select unix shell
+        shell = jube2.conf.STANDARD_SHELL
+        if "JUBE_EXEC_SHELL" in os.environ:
+            alt_shell = os.environ["JUBE_EXEC_SHELL"].strip()
+            if len(alt_shell) > 0:
+                shell = alt_shell
+        sub = subprocess.Popen([shell, "-c", cmd], stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=False)
+
         stdout, stderr = sub.communicate()
         stdout = stdout.decode(errors="ignore")
         # Check command execution error code

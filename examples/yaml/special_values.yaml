@@ -1,0 +1,16 @@
+name: special values
+outpath: bench_run
+comment: An example for values that need to be in quotations
+
+parameterset:
+  name: special_parameters
+  parameter:
+    - {name: integer, type: int,  _: "1,2,4"} #comma seperated values need to be quoted
+    - {name: "NUMBER", _: "#3"} #values with # need to be quoted
+
+patternset:
+  name: special_pattern
+  pattern:
+    - {name: result, type: int, _: "Result: test"} #values with : need to be quoted
+    - {name: integers, type: int, _: "Integers = {$integer}"} #values with {} need to be quoted
+    - {name: integer, type: int, _: "'Integer' = $NUMBER"} #values with ' need to be quoted

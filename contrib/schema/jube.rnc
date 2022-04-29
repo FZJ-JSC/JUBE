@@ -22,7 +22,7 @@ not = element not { attlist.not, text }
 attlist.not &= attribute tag { text }?
 tag = element tag { attlist.tag, text }
 attlist.tag &= attribute tag { text }?
-include-path = element include-path { attlist.include-path, path* }
+include-path = element include-path { attlist.include-path, mixed { path* } }
 attlist.include-path &= attribute tag { text }?
 path = element path { attlist.path, text }
 attlist.path &= attribute tag { text }?
@@ -180,7 +180,7 @@ attlist.result &=
 table = element table { attlist.table, (column | \include)* }
 attlist.table &=
   attribute name { text },
-  attribute style { "csv" | "pretty" }?,
+  attribute style { "csv" | "pretty" | "aligned" }?,
   attribute separator { text }?,
   attribute transpose { "true" | "false" | "True" | "False" }?,
   attribute sort { text }?,

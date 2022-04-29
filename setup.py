@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -27,15 +27,14 @@ add_opt = dict()
 try:
     from setuptools import setup
     import sys
-    SHARE_PATH = ""
-    add_opt["install_requires"] = list()
+    add_opt["install_requires"] = ['pyyaml']
     if sys.hexversion < 0x02070000:
         add_opt["install_requires"].append("argparse")
 except ImportError:
     from distutils.core import setup
-    SHARE_PATH = "share/jube"
 import os
 
+SHARE_PATH = "share/jube"
 
 def rel_path(directory, new_root=""):
     """Return list of tuples (directory, list of files)
@@ -62,10 +61,10 @@ def rel_path(directory, new_root=""):
 config = {'name': 'JUBE',
           'description': 'JUBE Benchmarking Environment',
           'author': 'Forschungszentrum Juelich GmbH',
-          'url': 'www.fz-juelich.de/jube',
-          'download_url': 'www.fz-juelich.de/jube',
+          'url': 'www.fz-juelich.de/ias/jsc/jube',
+          'download_url': 'www.fz-juelich.de/ias/jsc/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
-          'version': '2.3.0',
+          'version': '2.4.2',
           'packages': ['jube2','jube2.result_types','jube2.util'],
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
@@ -74,7 +73,7 @@ config = {'name': 'JUBE',
                          rel_path("examples", SHARE_PATH) +
                          rel_path("contrib", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),
-          'scripts': ['bin/jube', 'bin/jube-autorun'],
+          'scripts': ['bin/jube', 'bin/jube-python2', 'bin/jube-autorun'],
           'long_description': (
               "Automating benchmarks is important for reproducibility and "
               "hence comparability which is the major intent when "

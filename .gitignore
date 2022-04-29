@@ -1,8 +1,12 @@
 .settings
 .project
 .pydevproject
+.vscode
 JUBE.egg-info
+build
 *.pyc
+examples/**/bench_run
 jube-parse.log
 jube-debug.log
 docs/_build
+tests/benchmark_runs

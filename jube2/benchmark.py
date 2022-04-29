@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -341,14 +341,18 @@ class Benchmark(object):
                     workpackage.queued = True
                     self._work_stat.put(workpackage)
 
-    def analyse(self, show_info=True):
+    def analyse(self, show_info=True, specific_analyser_name=None):
         """Run analyser"""
 
         if show_info:
             LOGGER.info(">>> Start analyse")
 
-        for analyser in self._analyser.values():
-            analyser.analyse()
+        if specific_analyser_name is not None and \
+                specific_analyser_name in self._analyser:
+            self._analyser[specific_analyser_name].analyse()
+        else:
+            for analyser in self._analyser.values():
+                analyser.analyse()
         if ((not jube2.conf.DEBUG_MODE) and
                 (os.access(self.bench_dir, os.W_OK))):
             self.write_analyse_data(os.path.join(self.bench_dir,
@@ -564,10 +568,12 @@ class Benchmark(object):
         jube2.log.change_logfile_name(os.path.join(
             self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
         # Move parse logfile into benchmark folder
-        if os.path.isfile(jube2.conf.DEFAULT_LOGFILE_NAME):
-            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME,
-                      os.path.join(self.bench_dir,
-                                   jube2.conf.LOGFILE_PARSE_NAME))
+        if os.path.isfile(os.path.join(self._file_path_ref,
+                                       jube2.conf.DEFAULT_LOGFILE_NAME)):
+            shutil.move(os.path.join(self._file_path_ref,
+                                     jube2.conf.DEFAULT_LOGFILE_NAME),
+                        os.path.join(self.bench_dir,
+                                     jube2.conf.LOGFILE_PARSE_NAME))
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0

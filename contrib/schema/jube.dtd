@@ -10,7 +10,7 @@
 <!ATTLIST not           tag CDATA #IMPLIED>
 <!ELEMENT tag (#PCDATA)>
 <!ATTLIST tag           tag CDATA #IMPLIED>
-<!ELEMENT include-path (path*)>
+<!ELEMENT include-path (#PCDATA|path)*>
 <!ATTLIST include-path  tag CDATA #IMPLIED>
 <!ELEMENT path (#PCDATA)>
 <!ATTLIST path          tag CDATA #IMPLIED>
@@ -128,7 +128,7 @@
                         tag CDATA #IMPLIED>
 <!ELEMENT table ((column|include)*)>
 <!ATTLIST table         name CDATA #REQUIRED
-                        style (csv|pretty) #IMPLIED
+                        style (csv|pretty|aligned) #IMPLIED
                         separator CDATA #IMPLIED
                         transpose (true|false|True|False) #IMPLIED
                         sort CDATA #IMPLIED
