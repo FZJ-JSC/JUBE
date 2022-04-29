@@ -306,16 +306,21 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
 
 def print_benchmark_status(benchmark):
-    """Print FINISHED, RUNNING or ERROR dependign on the workpackage status"""
+    """Print overall workpackage status in the following order
+        RUNNING: At least one WP is still active
+        ERROR: At least one WP raised an errror
+        FINISHED: All WPs are finalized and no error was raised
+    """
     error = False
     running = False
     for step_name in benchmark.workpackages:
         for workpackage in benchmark.workpackages[step_name]:
-	    running = (not workpackage.done and not workpackage.error) or running
-	    error = workpackage.error or error
+            running = \
+                (not workpackage.done and not workpackage.error) or running
+            error = workpackage.error or error
     if running:
         print("RUNNING")
     elif error:
-	print("ERROR")
+        print("ERROR")
     else:
-	print("FINISHED")
+        print("FINISHED")
