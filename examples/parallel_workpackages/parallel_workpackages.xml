@@ -10,6 +10,7 @@
     <step name="parallel_execution" suffix="${i}" procs="4">
       <use>param_set</use>
       <do>echo "${i}"</do>
+      <do>N=1000000 ; a=1 ; for (( k = 0 ; k &lt; $N ; ++k )); do a=$(( 2*k + 1 + $a )) ; done</do>
     </step>
   </benchmark>
 </jube>

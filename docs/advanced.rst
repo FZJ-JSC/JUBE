@@ -782,7 +782,11 @@ The input file ``parallel_workpackages.xml``:
 In the example above the expansion of the parameter ``i`` will lead to the 
 creation of 10 workpackages of the step ``parallel_execution``. Due to the 
 given argument ``procs="4"`` JUBE will start 4 worker processes which will 
-distribute the execution of the workpackages among themselves. 
+distribute the execution of the workpackages among themselves. ``N`` 
+within the JUBE script represents the number of computation iterations to 
+simulate a computational workload at hand. Both, ``N`` and ``procs``, 
+within this prototypical example can be alternated to study runtime, 
+memory usage and load of CPUs.
 
 **Important hints:**
 
@@ -798,3 +802,6 @@ distribute the execution of the workpackages among themselves.
   is limited to a single shared memory compute node.
 * Be considerate when working on a multi-user system with shared resources. 
   The parallel feature of JUBE can easily exploit a whole compute node. 
+* Parallel execution of a JUBE script can lead to much higher memory demand 
+  compared to serial execution with ``procs=1``. In this case it is advised to 
+  reduce ``procs`` leading to reduced memory usage.

@@ -865,8 +865,22 @@ class Workpackage(object):
                     LOGGER.debug(
                         "{0}\n{1}\n{2}".format(40 * "-", str(e), 40 * "-"))
 
-        return {"id": self._id, "step_name": self._step.name, "env": self._env,
-                "cycle": self._cycle, "parameterset": self._parameterset}
+        # Deleting for the parallel case the reference to self._benchmark
+        # because it in turn contains a reference to all other workpackages
+        # leading to a quadratic increase of occupied memory when the data 
+        # is sent back to the main thread. This lead to major performance 
+        # degradations for a small amount of processes. Since the reference 
+        # to the benchmark is deleted within a parallel thread containing 
+        # a copy of the data the original reference within the original 
+        # thread is not lost. The use of 'del' is not recommended here 
+        # because the data really needs to be deleted at THIS POINT to not 
+        # be sent back to the original thread and 'del' in python does not 
+        # assure the contents of an object to be deleted instantaneously.
+        if mode=='p':
+            self._benchmark = None
+            self._parents = None
+        
+        return self       
 
     @staticmethod
     def reduce_workpackage_id_counter():

@@ -617,12 +617,18 @@ class Benchmark(object):
             def collect_result(val):
                 """used collect return values from pool.apply_async"""
                 ## run postprocessing of each wp
-                for i, wp in enumerate(self._workpackages[val["step_name"]]):
-                    if wp.id == val["id"]:
+                for i, wp in enumerate(self._workpackages[val._step.name]):
+                    if wp.id == val._id:
+                        # Update the references to parents and benchmark within val,
+                        # which were deleted for the parallel case within the thread
+                        # execution to avoid quadratic memory usage, when sending all
+                        # data back to the main thread.
+                        val._parents = wp._parents
+                        val._benchmark = wp._benchmark
                         # update corresponding wp in self._workpackage with modified wp
-                        wp.env = val["env"]
-                        wp.parameterset = val["parameterset"]
-                        wp.cycle = val["cycle"]
+                        wp.env = val._env
+                        wp.parameterset = val._parameterset
+                        wp.cycle = val._cycle
                         self.wp_post_run_config(wp)
                         break
 
