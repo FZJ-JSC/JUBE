@@ -31,6 +31,7 @@ import stat
 import pprint
 import shutil
 import itertools
+import inspect
 import jube2.parameter
 import jube2.util.util
 import jube2.util.output
@@ -617,18 +618,18 @@ class Benchmark(object):
             def collect_result(val):
                 """used collect return values from pool.apply_async"""
                 ## run postprocessing of each wp
-                for i, wp in enumerate(self._workpackages[val._step.name]):
-                    if wp.id == val._id:
-                        # Update the references to parents and benchmark within val,
-                        # which were deleted for the parallel case within the thread
-                        # execution to avoid quadratic memory usage, when sending all
-                        # data back to the main thread.
-                        val._parents = wp._parents
-                        val._benchmark = wp._benchmark
+                for i, wp in enumerate(self._workpackages[val["step_name"]]):
+                    if wp.id == val["id"]:
                         # update corresponding wp in self._workpackage with modified wp
-                        wp.env = val._env
-                        wp.parameterset = val._parameterset
-                        wp.cycle = val._cycle
+                        wp.env = val["env"]
+                        # restore the parameters containing a method of a class,
+                        # which needed to be deleted within the multiprocess
+                        # execution to avoid excessive memory usage
+                        for p in wp._parameterset.all_parameters:
+                            if(p.check_property_condition("eval_helper",inspect.ismethod,"based_on")):
+                                val["parameterset"].add_parameter(p)
+                        wp.parameterset = val["parameterset"]
+                        wp.cycle = val["cycle"]
                         self.wp_post_run_config(wp)
                         break
 

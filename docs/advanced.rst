@@ -784,9 +784,9 @@ creation of 10 workpackages of the step ``parallel_execution``. Due to the
 given argument ``procs="4"`` JUBE will start 4 worker processes which will 
 distribute the execution of the workpackages among themselves. ``N`` 
 within the JUBE script represents the number of computation iterations to 
-simulate a computational workload at hand. Both, ``N`` and ``procs``, 
-within this prototypical example can be alternated to study runtime, 
-memory usage and load of CPUs.
+simulate a computational workload at hand. The parameters ``N``, ``procs`` 
+and the upper bound of ``range`` within this prototypical example can be 
+alternated to study runtime, memory usage and load of CPUs.
 
 **Important hints:**
 

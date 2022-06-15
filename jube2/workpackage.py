@@ -32,6 +32,7 @@ import os
 import re
 import stat
 import shutil
+import inspect
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -865,22 +866,21 @@ class Workpackage(object):
                     LOGGER.debug(
                         "{0}\n{1}\n{2}".format(40 * "-", str(e), 40 * "-"))
 
-        # Deleting for the parallel case the reference to self._benchmark
-        # because it in turn contains a reference to all other workpackages
-        # leading to a quadratic increase of occupied memory when the data 
-        # is sent back to the main thread. This lead to major performance 
-        # degradations for a small amount of processes. Since the reference 
-        # to the benchmark is deleted within a parallel thread containing 
-        # a copy of the data the original reference within the original 
-        # thread is not lost. The use of 'del' is not recommended here 
-        # because the data really needs to be deleted at THIS POINT to not 
-        # be sent back to the original thread and 'del' in python does not 
-        # assure the contents of an object to be deleted instantaneously.
-        if mode=='p':
-            self._benchmark = None
-            self._parents = None
-        
-        return self       
+        # Delete parameters, which contain a method being
+        # a function of a class. This avoids excessive memory 
+        # usage when the data is sent back to the main process.
+        # It happens here, that these parameters are static and
+        # therefore not changed within this workpackage execution.
+        parameterDeletionList=list()
+        for p in self._parameterset.all_parameters:
+            if(p.check_property_condition("eval_helper",inspect.ismethod,"based_on")):
+                parameterDeletionList.append(p)
+        for p in parameterDeletionList:
+            self._parameterset.delete_parameter(p)
+        parameterDeletionList=None
+
+        return {"id": self._id, "step_name": self._step.name, "env": self._env,
+                "cycle": self._cycle, "parameterset": self._parameterset}
 
     @staticmethod
     def reduce_workpackage_id_counter():

@@ -402,6 +402,15 @@ class Parameter(object):
         """Returns Parameter copy (flat copy)"""
         return copy.copy(self)
 
+    def check_property_condition(self,propertyString,condition,recursiveProperty=None):
+        """ Checks potentially recursively, whether a condition given by a function is true """
+        if(condition(self[propertyString])):    
+            return True
+        elif(recursiveProperty and self[recursiveProperty]):
+            return self[recursiveProperty].check_property_condition(propertyString,condition,recursiveProperty)
+        else:
+            return False
+
     @property
     def eval_helper(self):
         """Return evaluation helper function"""
@@ -571,6 +580,9 @@ class Parameter(object):
 
     def __repr__(self):
         return "Parameter({0})".format(self.__dict__)
+
+    def __getitem__(self, propertyString):
+        return getattr(self, propertyString) 
 
 
 class StaticParameter(Parameter):
