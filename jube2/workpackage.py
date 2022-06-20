@@ -871,13 +871,16 @@ class Workpackage(object):
         # usage when the data is sent back to the main process.
         # It happens here, that these parameters are static and
         # therefore not changed within this workpackage execution.
-        parameterDeletionList=list()
-        for p in self._parameterset.all_parameters:
-            if(p.check_property_condition("eval_helper",inspect.ismethod,"based_on")):
-                parameterDeletionList.append(p)
-        for p in parameterDeletionList:
-            self._parameterset.delete_parameter(p)
-        parameterDeletionList=None
+        if mode=='p':
+            parameterDeletionList=list()
+            for p in self._parameterset.all_parameters:
+                if(p.check_property_condition(  propertyString="eval_helper",
+                                                condition=inspect.ismethod,
+                                                recursiveProperty="based_on")):  
+                    parameterDeletionList.append(p)
+            for p in parameterDeletionList:
+                self._parameterset.delete_parameter(p)
+            parameterDeletionList=None
 
         return {"id": self._id, "step_name": self._step.name, "env": self._env,
                 "cycle": self._cycle, "parameterset": self._parameterset}

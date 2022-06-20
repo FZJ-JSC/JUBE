@@ -626,7 +626,9 @@ class Benchmark(object):
                         # which needed to be deleted within the multiprocess
                         # execution to avoid excessive memory usage
                         for p in wp._parameterset.all_parameters:
-                            if(p.check_property_condition("eval_helper",inspect.ismethod,"based_on")):
+                            if(p.check_property_condition(  propertyString="eval_helper",
+                                                            condition=inspect.ismethod,
+                                                            recursiveProperty="based_on")):
                                 val["parameterset"].add_parameter(p)
                         wp.parameterset = val["parameterset"]
                         wp.cycle = val["cycle"]
