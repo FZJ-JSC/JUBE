@@ -701,8 +701,10 @@ class Workpackage(object):
                 log_fname.replace('.', '_{}.').format(proc_id) if ( ('_'+str(proc_id)) not in log_fname )  else log_fname))
 
         # Workpackage already done or error?
-        if self.done or self.error:
-            return None 
+        if self.done or self.error: 
+            # the return value is only relevant for the parallel case, for now
+            # for the serial case the return value is not used at all
+            return {"id": self._id, "step_name": self._step.name}
 
         continue_op = True
         continue_cycle = True

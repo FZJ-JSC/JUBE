@@ -617,12 +617,12 @@ class Benchmark(object):
             run_parallel = False
             def collect_result(val):
                 """used collect return values from pool.apply_async"""
-                if(val==None): # parallel continue, where this workpackage was already processed
-                    pass
-                else:
-                    ## run postprocessing of each wp
-                    for i, wp in enumerate(self._workpackages[val["step_name"]]):
-                        if wp.id == val["id"]:
+                ## run postprocessing of each wp
+                for i, wp in enumerate(self._workpackages[val["step_name"]]):
+                    if wp.id == val["id"]:
+                        if(len(val)==2): # this is the case for the parallel continue execution
+                            pass
+                        else:
                             # update corresponding wp in self._workpackage with modified wp
                             wp.env = val["env"]
                             # restore the parameters containing a method of a class,
@@ -635,8 +635,8 @@ class Benchmark(object):
                                     val["parameterset"].add_parameter(p)
                             wp.parameterset = val["parameterset"]
                             wp.cycle = val["cycle"]
-                            self.wp_post_run_config(wp)
-                            break
+                        self.wp_post_run_config(wp)
+                        break
 
             def log_e(e):
                 """used to print error_callback from pool.apply_async"""
