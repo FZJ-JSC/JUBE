@@ -779,6 +779,9 @@ The input file ``parallel_workpackages.xml``:
 .. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.xml
    :language: xml
 
+.. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.yaml
+   :language: yaml
+
 In the example above the expansion of the parameter ``i`` will lead to the 
 creation of 10 workpackages of the step ``parallel_execution``. Due to the 
 given argument ``procs="4"`` JUBE will start 4 worker processes which will 
