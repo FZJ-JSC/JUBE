@@ -702,7 +702,10 @@ class Workpackage(object):
 
         # Workpackage already done or error?
         if self.done or self.error:
-            return self
+            if mode=='s':
+                return self
+            else: # parallel mode
+                return None 
 
         continue_op = True
         continue_cycle = True
