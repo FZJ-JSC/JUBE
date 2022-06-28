@@ -402,12 +402,12 @@ class Parameter(object):
         """Returns Parameter copy (flat copy)"""
         return copy.copy(self)
 
-    def check_property_condition(self,propertyString,condition,recursiveProperty=None):
+    def check_property(self, propertyString, condition, recursiveProperty=None):
         """ Checks potentially recursively, whether a condition given by a function is true """
         if(condition(self[propertyString])):    
             return True
         elif(recursiveProperty and self[recursiveProperty]):
-            return self[recursiveProperty].check_property_condition(propertyString,condition,recursiveProperty)
+            return self[recursiveProperty].check_property(propertyString, condition, recursiveProperty)
         else:
             return False
 

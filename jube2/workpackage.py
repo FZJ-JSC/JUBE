@@ -876,9 +876,9 @@ class Workpackage(object):
         if mode=='p':
             parameterDeletionList=list()
             for p in self._parameterset.all_parameters:
-                if(p.check_property_condition(  propertyString="eval_helper",
-                                                condition=inspect.ismethod,
-                                                recursiveProperty="based_on")):  
+                if(p.check_property(propertyString="eval_helper",
+                                    condition=inspect.ismethod,
+                                    recursiveProperty="based_on")):  
                     parameterDeletionList.append(p)
             for p in parameterDeletionList:
                 self._parameterset.delete_parameter(p)
