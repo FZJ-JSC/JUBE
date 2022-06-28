@@ -29,6 +29,7 @@ import jube2.util.util
 import jube2.conf
 import jube2.log
 import re
+import inspect
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -402,12 +403,12 @@ class Parameter(object):
         """Returns Parameter copy (flat copy)"""
         return copy.copy(self)
 
-    def check_property(self, propertyString, condition, recursiveProperty=None):
-        """ Checks potentially recursively, whether a condition given by a function is true """
-        if(condition(self[propertyString])):    
+    def search_method(self, propertyString, recursiveProperty=None):
+        """ Searches, potentially recursively, for a method and returns True in case of a success """
+        if(inspect.ismethod(self[propertyString])):    
             return True
         elif(recursiveProperty and self[recursiveProperty]):
-            return self[recursiveProperty].check_property(propertyString, condition, recursiveProperty)
+            return self[recursiveProperty].search_method(propertyString, recursiveProperty)
         else:
             return False
 

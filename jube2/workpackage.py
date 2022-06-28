@@ -32,7 +32,6 @@ import os
 import re
 import stat
 import shutil
-import inspect
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -876,8 +875,7 @@ class Workpackage(object):
         if mode=='p':
             parameterDeletionList=list()
             for p in self._parameterset.all_parameters:
-                if(p.check_property(propertyString="eval_helper",
-                                    condition=inspect.ismethod,
+                if(p.search_method( propertyString="eval_helper",
                                     recursiveProperty="based_on")):  
                     parameterDeletionList.append(p)
             for p in parameterDeletionList:

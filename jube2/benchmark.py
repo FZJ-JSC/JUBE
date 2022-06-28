@@ -31,7 +31,6 @@ import stat
 import pprint
 import shutil
 import itertools
-import inspect
 import jube2.parameter
 import jube2.util.util
 import jube2.util.output
@@ -629,8 +628,7 @@ class Benchmark(object):
                             # which needed to be deleted within the multiprocess
                             # execution to avoid excessive memory usage
                             for p in wp._parameterset.all_parameters:
-                                if(p.check_property(propertyString="eval_helper",
-                                                    condition=inspect.ismethod,
+                                if(p.search_method( propertyString="eval_helper",
                                                     recursiveProperty="based_on")):
                                     val["parameterset"].add_parameter(p)
                             wp.parameterset = val["parameterset"]
