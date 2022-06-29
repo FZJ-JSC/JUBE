@@ -1,0 +1,33 @@
+name: result_database
+outpath: bench_run
+comment: result database creation
+
+parameterset:
+  name: param_set
+  parameter: {name: number, type: int, _: "1,2,4"}
+
+patternset:
+  name: pattern
+  pattern: {name: number_pat, type: int, _: "Number: $jube_pat_int"}
+
+step:
+  name: write_number
+  use: param_set
+  do: "echo \"Number: $number\""
+
+analyser:
+  name: analyse
+  use: pattern
+  analyse:
+    step: write_number
+    file: stdout
+
+result:
+  use: analyse
+  database:
+    name: results
+    file: result_database.sqlite3
+    primekeys: "number,number_pat"
+    key:
+    - number
+    - number_pat
