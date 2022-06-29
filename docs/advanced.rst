@@ -777,33 +777,7 @@ The input file ``result_database.yaml``:
 .. literalinclude:: ../examples/result_database/result_database.yaml
    :language: yaml
 
-The ``database`` tag takes the argument ``name``. ``name`` is also the name of the table created within a database. The argument ``file`` states the full path of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.sqlite3`` is created within the current working directory in which ``jube result`` was invoked. Another copy of the database is created within the ``result`` directory of this benchmark iteration and has the same name as the name of this ``database`` tag with the appendix ``.dat``. The ``key`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern`` stated as keys. Without the parameter ``primekeys`` a second invocation of ``jube result`` would add the result to the database. ``primekeys`` makes sure, that only if the corresponding column values are not exactly the same within the database table, a new line is added to the table. All the ``primekeys`` also need to be stated as a ``key``.
-
-If sqlite3 is installed the contents of the database can be shown with the following command line.
-
-.. code-block:: none
-
-   >>> sqlite3 -header -table result_database.sqlite3 'SELECT * FROM results'
-   +--------+------------+
-   | number | number_pat |
-   +--------+------------+
-   | 1      | 1          |
-   | 2      | 2          |
-   | 4      | 4          |
-   +--------+------------+
-
-Information of the database table columns can be shown as follows. They contain the type of the corresponding column.
-
-.. code-block:: none
-   >>> sqlite3 -header -table result_database.sqlite3 'PRAGMA table_info(results)'
-   +-----+------------+------+---------+------------+----+
-   | cid |    name    | type | notnull | dflt_value | pk |
-   +-----+------------+------+---------+------------+----+
-   | 0   | number     | int  | 0       |            | 1  |
-   | 1   | number_pat | int  | 0       |            | 2  |
-   +-----+------------+------+---------+------------+----+
-
-The default database will be located here and has the ``database`` tag as root name with the appendix ``.dat``:
+The default database will be located as follows and has the ``database`` tag name, which is here ``results``, as root name concatenated with the appendix ``.dat``:
 
 .. code-block:: none
 
@@ -814,3 +788,32 @@ The default database will be located here and has the ``database`` tag as root n
       +- result
          |
          +- results.dat
+
+The ``database`` tag takes the argument ``name``. ``name`` is also the name of the table created within a database. If sqlite3 is installed the contents of the database can be shown with the following command line when the current working directory is located in ``bench_run/000000/result``.
+
+.. code-block:: none
+
+   >>> sqlite3 -header -table results.dat 'SELECT * FROM results'
+   +--------+------------+
+   | number | number_pat |
+   +--------+------------+
+   | 1      | 1          |
+   | 2      | 2          |
+   | 4      | 4          |
+   +--------+------------+
+
+The argument ``file`` states the full path of a second copy of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.sqlite3`` is created within the current working directory in which ``jube result`` was invoked. 
+
+In this case, because of ``primekeys``, a second invocation of ``jube result`` would not change the database stated with ``file``. Without the parameter ``primekeys`` a second invocation of ``jube result`` would add three additional lines to the result. Adding the argument ``primekeys`` ensures that only if the corresponding column values are not exactly the same within the database table, a new line is added to the database table. All the ``primekeys`` also need to be stated as ``key``.
+
+The ``key`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern``. Information of columns of the database table ``results`` can be shown as follows if the current working directory is given by ``bench_run/000000/result``. The information contain the data types.
+
+.. code-block:: none
+
+   >>> sqlite3 -header -table results.dat 'PRAGMA table_info(results)'
+   +-----+------------+------+---------+------------+----+
+   | cid |    name    | type | notnull | dflt_value | pk |
+   +-----+------------+------+---------+------------+----+
+   | 0   | number     | int  | 0       |            | 1  |
+   | 1   | number_pat | int  | 0       |            | 2  |
+   +-----+------------+------+---------+------------+----+
