@@ -789,11 +789,11 @@ The default database will be located as follows and has the ``database`` tag nam
          |
          +- results.dat
 
-The ``database`` tag takes the argument ``name``. ``name`` is also the name of the table created within a database. If sqlite3 is installed the contents of the database can be shown with the following command line when the current working directory is located in ``bench_run/000000/result``.
+The ``database`` tag takes the argument ``name``. ``name`` is also the name of the table created within a database. If ``sqlite3`` is installed the contents of the database can be shown with the following command line.
 
 .. code-block:: none
 
-   >>> sqlite3 -header -table results.dat 'SELECT * FROM results'
+   >>> sqlite3 -header -table bench_run/000000/result/results.dat 'SELECT * FROM results'
    +--------+------------+
    | number | number_pat |
    +--------+------------+
@@ -802,15 +802,15 @@ The ``database`` tag takes the argument ``name``. ``name`` is also the name of t
    | 4      | 4          |
    +--------+------------+
 
-The argument ``file`` states the full path of a second copy of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.sqlite3`` is created within the current working directory in which ``jube result`` was invoked. 
+The argument ``file`` states the full path of a second copy of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.dat`` is created within the current working directory in which ``jube result`` was invoked. 
 
-In this case, because of ``primekeys``, a second invocation of ``jube result`` would not change the database stated with ``file``. Without the parameter ``primekeys`` a second invocation of ``jube result`` would add three additional lines to the result. Adding the argument ``primekeys`` ensures that only if the corresponding column values are not exactly the same within the database table, a new line is added to the database table. All the ``primekeys`` also need to be stated as ``key``.
+Invocating ``jube result`` a second time updates the database given by the ``file`` parameter. Without the parameter ``primekeys`` three additional lines to the ``results`` table would have been added which are completely identical to the previous three lines. Adding the argument ``primekeys`` ensures that only if the column values stated within ``primekeys`` are not exactly the same in the database table, a new line is added to the database table. In this example no new lines are added. All the ``primekeys`` also need to be stated as ``key``. Updating the ``primekeys`` is not supported.
 
-The ``key`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern``. Information of columns of the database table ``results`` can be shown as follows if the current working directory is given by ``bench_run/000000/result``. The information contain the data types.
+The ``key`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern``. Information of columns of the database table ``results`` can be shown as follows.
 
 .. code-block:: none
 
-   >>> sqlite3 -header -table results.dat 'PRAGMA table_info(results)'
+   >>> sqlite3 -header -table bench_run/000000/result/results.dat 'PRAGMA table_info(results)'
    +-----+------------+------+---------+------------+----+
    | cid |    name    | type | notnull | dflt_value | pk |
    +-----+------------+------+---------+------------+----+
