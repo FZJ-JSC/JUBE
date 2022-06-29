@@ -759,3 +759,16 @@ itself is still executed). In the given example the output will be:
    3
 
 In contrast to the iterations, all executions for the cycle feature take place inside of the same folder.
+
+Result database
+~~~~~~~~~~~~~~~
+
+Results can also be stored into a database to simplify result management.
+
+The files used for this example can be found inside ``examples/result_database``.
+
+The input file ``result_database.xml``:
+
+.. literalinclude:: ../examples/result_database/result_database.xml
+   :language: xml
+
