@@ -772,3 +772,28 @@ The input file ``result_database.xml``:
 .. literalinclude:: ../examples/result_database/result_database.xml
    :language: xml
 
+The ``<database>`` tag takes the argument ``name``. ``name`` is also the name of the table created within a database. The argument ``file`` states the full path of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.sqlite3`` is created within the current working directory in which ``jube result`` was invoked. Another copy of the database is created within the ``result`` directory of this benchmark iteration and has the same name as the name of this ``<database>`` tag with the appendix ``.dat``. The ``<key>`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern`` stated as keys. Without the parameter ``primekeys`` a second invocation of ``jube result`` would add the result to the database. ``primekeys`` makes sure, that only if the corresponding column values are not exactly the same within the database table, a new line is added to the table. All the ``primekeys`` also need to be stated as a ``<key>``.
+
+If sqlite3 is installed the contents of the database can be shown with the following command line.
+
+.. code-block:: none
+
+   >>> sqlite3 -header -table result_database.sqlite3 'SELECT * FROM results'
+   +--------+------------+
+   | number | number_pat |
+   +--------+------------+
+   | 1      | 1          |
+   | 2      | 2          |
+   | 4      | 4          |
+   +--------+------------+
+
+Information of the database table columns can be shown as follows. They contain the type of the corresponding column.
+
+.. code-block:: none
+   >>> sqlite3 -header -table result_database.sqlite3 'PRAGMA table_info(results)'
+   +-----+------------+------+---------+------------+----+
+   | cid |    name    | type | notnull | dflt_value | pk |
+   +-----+------------+------+---------+------------+----+
+   | 0   | number     | int  | 0       |            | 1  |
+   | 1   | number_pat | int  | 0       |            | 2  |
+   +-----+------------+------+---------+------------+----+
