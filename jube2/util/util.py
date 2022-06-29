@@ -166,7 +166,7 @@ def valid_tags(tag_string, tags):
             return eval(tag_tags_str)
         except SyntaxError:
             raise ValueError("Tag string '{0}' not parseable."
-                             .format(element.get("tag")))
+                             .format(tag_string))
     else:
         return True
 
@@ -222,8 +222,8 @@ def substitution(text, substitution_dict):
         count += 1
         orig_text = text
         # Save double $$
-        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text) \
-            if "$" in text else text
+        text = re.sub(r"(^(?=\$)|[^$])((?:\$\$)*?)((?:\${3})?(?:[^$]|$))",
+                      r"\1\2\2\3", text) if "$" in text else text
         tmp = string.Template(text)
         new_text = tmp.safe_substitute(local_substitution_dict)
         changed = new_text != orig_text
@@ -262,8 +262,16 @@ def script_evaluation(cmd, script_type):
     elif script_type in ["perl", "shell"]:
         if script_type == "perl":
             cmd = "perl -e \"print " + cmd + "\""
-        sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, shell=True)
+
+        # Select unix shell
+        shell = jube2.conf.STANDARD_SHELL
+        if "JUBE_EXEC_SHELL" in os.environ:
+            alt_shell = os.environ["JUBE_EXEC_SHELL"].strip()
+            if len(alt_shell) > 0:
+                shell = alt_shell
+        sub = subprocess.Popen([shell, "-c", cmd], stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, shell=False)
+
         stdout, stderr = sub.communicate()
         stdout = stdout.decode(errors="ignore")
         # Check command execution error code

@@ -163,7 +163,7 @@ class Parameterset(object):
                       update_mode=NEVER_MODE):
         """Two Parametersets are compatible, if the intersection only contains
         equivilant parameters"""
-        return len(self.get_incompatible_parameter(parameterset,update_mode)) == 0
+        return len(self.get_incompatible_parameter(parameterset, update_mode)) == 0
 
     def get_incompatible_parameter(self, parameterset,
                                    update_mode=NEVER_MODE):
@@ -633,7 +633,8 @@ class StaticParameter(Parameter):
             # $$$ -> $$$ -> $
             # $$$$ -> $$$$$$$$ -> $$$$
             # $$$$$ -> $$$$$$$ -> $$$
-            value = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", value)
+            value = re.sub(r"(^(?=\$)|[^$])((?:\$\$)*?)((?:\${3})?(?:[^$]|$))",
+                           r"\1\2\2\3", value)
         parameter_dict = dict()
         if parametersets is not None:
             for parameterset in parametersets:
