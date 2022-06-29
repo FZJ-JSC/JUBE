@@ -619,7 +619,7 @@ class Benchmark(object):
                 ## run postprocessing of each wp
                 for i, wp in enumerate(self._workpackages[val["step_name"]]):
                     if wp.id == val["id"]:
-                        if(len(val)==2): # this is the case for the parallel continue execution
+                        if(len(val)==2): # workpackage is done or its execution was erroneous
                             pass
                         else:
                             # update corresponding wp in self._workpackage with modified wp
