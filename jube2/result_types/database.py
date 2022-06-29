@@ -21,7 +21,8 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 import sqlite3
-import ast, os
+import ast
+import os
 
 from jube2.result_types.genericresult import GenericResult
 from jube2.result import Result
