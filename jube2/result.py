@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2021
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -128,40 +128,27 @@ class Result(object):
             all_wps = set()
             for ids in [analyse[stepname].keys() for stepname in analyse]:
                 all_wps.update(set(map(int, ids)))
-            # Create copy of all wps to reduce this list while wps are sorted
-            # into the chains
-            all_wps_tmp = all_wps.copy()
 
-            while (len(all_wps_tmp) > 0):
-                next_id = all_wps_tmp.pop()
+            # Find workpackages without children (or at least no childen in
+            # the given analyser)
+            last_wps = set()
+            for id in all_wps:
+                child_ids = set([wp.id for wp in self._benchmark.
+                                 workpackage_by_id(id).children_future])
+                if not child_ids.intersection(all_wps):
+                    last_wps.add(id)
+
+            while (len(last_wps) > 0):
+                next_id = last_wps.pop()
                 # Create new chain
                 wp_chains.append(list())
                 # Add all parents to the chain
                 for wp in self._benchmark.workpackage_by_id(next_id).\
                         parent_history:
-                    if wp.id in all_wps:
+                    if wp.id not in wp_chains[-1]:
                         wp_chains[-1].append(wp.id)
-                        all_wps_tmp.discard(wp.id)
-                # Add wp itself to the cahin
+                # Add wp itself to the chain
                 wp_chains[-1].append(next_id)
-                steps_in_list = set()
-                # Add children to the chain, each step can only be added once)
-                for wp in self._benchmark.workpackage_by_id(next_id).\
-                        children_future:
-                    if wp.step.name not in steps_in_list:
-                        if wp.id in all_wps:
-                            steps_in_list.add(wp.step.name)
-                            wp_chains[-1].append(wp.id)
-                            all_wps_tmp.discard(wp.id)
-
-            # Add all parent WPs which might be missing in the chain, by
-            # using the last WP as a reference. This WPs does not provide any
-            # analyse data but, their parameter will be available
-            for i, chain in enumerate(wp_chains):
-                for wp in self._benchmark.workpackage_by_id(chain[-1]).\
-                        parent_history:
-                    if wp.id not in chain:
-                        wp_chains[i] = [wp.id] + chain
 
             # Create output datasets by combining analyse and parameter data
             for chain in wp_chains:
@@ -183,7 +170,7 @@ class Result(object):
                                 not in parameter_dict):
                             parameter_dict[par.name + "_" +
                                            workpackage.step.name] = value
-                        # parmater without suffix si used for the last WP in
+                        # parmater without suffix is used for the last WP in
                         # the chain
                         if wp_id == chain[-1]:
                             parameter_dict[par.name] = value

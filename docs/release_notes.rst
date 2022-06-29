@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2021
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -20,6 +20,19 @@
 
 Release notes
 =============
+
+Version 2.4.2
+~~~~~~~~~~~~~
+Release: 2021-11-30
+
+* JUBE will raise an error if an changed `work_dir` contains unknown variables.
+* A bug was solved which enabled `dotall="true"` by default for all pattern, which can make those costly to evaluate.
+* Fixes a bug in result data processing.
+* Fixes a bug in YAML input format if `benchmark` key is not used.
+* A empty value in YAML input format will now be treated liek an empty String not as a `None` value.
+* Avoid crash due to overflow error for huge pattern values.
+* Fixes a bug, which blocked `include` blocks to include other `include` blocks.
+* `setup.py` now moves all additional non-code data to `.../share/jube`, which allows better utilization of `pip` based installation
 
 Version 2.4.1
 ~~~~~~~~~~~~~
@@ -345,8 +358,3 @@ Release: 2014-11-14
 * complete new **Python** kernel
 * new input file format
 * please see new documentation to get further information
-
-Older JUBE Version
-~~~~~~~~~~~~~~~~~~
-
-* please see our website `www.fz-juelich.de/jsc/jube <http://www.fz-juelich.de/jsc/jube>`_ to get further information concerning *JUBE* 1.

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2021
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -94,19 +94,8 @@ class Parser(object):
         if not os.path.isfile(self._filename):
             raise IOError("Benchmark configuration file not found: \"{0}\""
                           .format(self._filename))
-        try:
-            tree = self._tree_from_file(self._filename)
-        except Exception as parseerror:
-            org_trace = sys.exc_info()[2]
-            try:
-                raise IOError(
-                    ("Parse error in \"{0}\": {1}\n")
-                    .format(self._filename, str(parseerror))).with_traceback(
-                        org_trace)
-            except AttributeError:
-                # Hacky way to allow Python2 traceback re-raising in Python3
-                exec('raise IOError, IOError(("Parse error in {0}: {1}\\n")' +
-                     '.format(self._filename, str(parseerror))), org_trace')
+
+        tree = self._tree_from_file(self._filename)
 
         # Check compatible terminal encoding: In some cases, the terminal env.
         # only allow ascii based encoding, print and filesystem operation will
@@ -207,7 +196,10 @@ class Parser(object):
             changed = self._preprocessor(tree.getroot())
             if changed:
                 LOGGER.debug("  New tags might be included, start " +
-                             "additional run.")
+                             "additional include-preprocess run.")
+            else:
+                LOGGER.debug("  No preprocessing changes were detected, stop" +
+                             " additional include-preprocess runs.")
 
         # Rerun removing invalid tags
         LOGGER.debug("  Remove invalid tags")
@@ -303,6 +295,9 @@ class Parser(object):
                     includes = include_tree.findall(path)
                 except ValueError:
                     includes = list()
+                except ET.ParseError:
+                    LOGGER.error("Error while parsing {0}:".format(file_path))
+                    raise
                 if len(includes) > 0:
                     # Remove include-node
                     etree.remove(child)
@@ -317,7 +312,7 @@ class Parser(object):
                 new_children.append(child)
             include_index += 1
         for child in new_children:
-            self._preprocessor(child)
+            changed = self._preprocessor(child) or changed
         return changed
 
     def _benchmark_preprocessor(self, benchmark_etree):
@@ -1120,21 +1115,25 @@ class Parser(object):
 
     def _tree_from_file(self, file_path):
         """Extract a XML tree from a file (doing implicit YAML conversion)"""
-        if file_path.endswith(".xml"):
-            return ET.parse(file_path)
-        elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
-            jube2.util.yaml_converter.YAML_Converter.is_parseable_yaml_file(
-                file_path):
-            include_path = list(self._include_path)
-            include_path += Parser._read_envvar_include_path()
-            file_handle = jube2.util.yaml_converter.YAML_Converter(
-                file_path, include_path, self._tags)
-            data = file_handle.read()
-            tree = ET.ElementTree(ET.fromstring(data))
-            file_handle.close()
-            return tree
-        else:
-            return ET.parse(file_path)
+        try:
+            if file_path.endswith(".xml"):
+                return ET.parse(file_path)
+            elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
+                jube2.util.yaml_converter.\
+                    YAML_Converter.is_parseable_yaml_file(file_path):
+                include_path = list(self._include_path)
+                include_path += Parser._read_envvar_include_path()
+                file_handle = jube2.util.yaml_converter.YAML_Converter(
+                    file_path, include_path, self._tags)
+                data = file_handle.read()
+                tree = ET.ElementTree(ET.fromstring(data))
+                file_handle.close()
+                return tree
+            else:
+                return ET.parse(file_path)
+        except Exception:
+            LOGGER.error("Error while parsing {0}:".format(file_path))
+            raise
 
     def _extract_extern_set(self, filename, set_type, name, search_name=None):
         """Load a parameter-/file-/substitutionset from a given file"""
@@ -1145,6 +1144,7 @@ class Parser(object):
         file_path = self._find_include_file(filename)
         etree = self._tree_from_file(file_path).getroot()
         Parser._remove_invalid_tags(etree, self._tags)
+        self._preprocessor(etree)
         result_set = None
 
         # Find element in XML-tree
@@ -1367,7 +1367,7 @@ class Parser(object):
             content_type = pattern.get("type", default="string").strip()
             unit = pattern.get("unit", "").strip()
             dotall = \
-                pattern.get("dotall", "true").strip().lower() == "true"
+                pattern.get("dotall", "false").strip().lower() == "true"
             default = pattern.get("default")
             if default is not None:
                 default = default.strip()
@@ -1577,4 +1577,6 @@ class Parser(object):
         """
         if element.tag not in valid_tags:
             raise ValueError(("Unknown tag or tag used in wrong " +
-                              "position: <{0}>").format(element.tag))
+                              "position:\n{0}").format(
+                jube2.util.output.element_tree_tostring(
+                    element, encoding="UTF-8")))

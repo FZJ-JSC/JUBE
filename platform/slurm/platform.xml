@@ -32,12 +32,12 @@
         <parameter name="account_slurm" mode="python">
             "#SBATCH --account=$account" if "$account" else ""
         </parameter>
-        <parameter name="gres"></parameter>
+        <parameter name="gres">NONE</parameter>
         <parameter name="executable"></parameter>
         <parameter name="args_exec"></parameter>
         <parameter name="mail"></parameter>
         <parameter name="env" separator=";">$jube_wp_envstr</parameter>
-        <parameter name="notification">ALL</parameter>
+        <parameter name="notification">NONE</parameter>
         <parameter name="outlogfile">job.out</parameter>
         <parameter name="errlogfile">job.err</parameter>
         <parameter name="timelimit">00:30:00</parameter>

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2021
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -192,7 +192,12 @@ class YAML_Converter(object):
             else:
                 loader = yaml.Loader
             with open(file) as inputfile:
-                _ = yaml.load(inputfile.read(), Loader=loader)
+                try:
+                    _ = yaml.load(inputfile.read(), Loader=loader)
+                except yaml.parser.ParserError:
+                    LOGGER.error(("Including data from \"{0}\" into \"{1}\" " +
+                                  "raised an error.").format(file, self._path))
+                    raise
                 inputfile.close()
                 if len(yaml_node_data) > 1:
                     _ = eval("_" + yaml_node_data[1])
@@ -208,11 +213,15 @@ class YAML_Converter(object):
     @staticmethod
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
+        to_delete = list()
         for tag in data.keys():
             if type(data[tag]) is not list:
                 data[tag] = [data[tag]]
-            if "benchmark" in data and \
-                    tag in YAML_Converter.allowed_tags["/benchmark"]:
+            # benchmark is optional on the top level, but if it is used only
+            # a limited number of options are allowed on top level
+            # (listed in "/benchmark")
+            if "benchmark" in data and tag in YAML_Converter.allowed_tags[
+                    "/benchmark"]:
                 for attr_and_tags in data[tag]:
                     YAML_Converter.create_tag(tag, attr_and_tags, parent_node)
             elif "benchmark" not in data and \
@@ -221,7 +230,9 @@ class YAML_Converter(object):
                     for attr_and_tags in data[tag]:
                         YAML_Converter.create_tag(
                             tag, attr_and_tags, parent_node)
-                    del(data[tag])
+                    to_delete.append(tag)
+        for tag in to_delete:
+            del(data[tag])
         if "benchmark" not in data:
             YAML_Converter.create_tag("benchmark", data, parent_node)
 
@@ -243,20 +254,21 @@ class YAML_Converter(object):
                         YAML_Converter.create_tag(key, val, new_node)
                     else:
                         # Create attribute
-                        new_node.set(key, str(val))
+                        new_node.set(key, str(val) if val is not None else "")
         else:
             tag_value = ""
             if type(data) is not dict:
                 # standard tag value
-                tag_value = data
+                tag_value = data if data is not None else ""
             else:
                 for key, value in data.items():
                     if key == "_":
                         # _ represents the standard tag value
-                        tag_value = value
+                        tag_value = value if value is not None else ""
                     else:
                         # Create attribute
-                        new_node.set(key, str(value))
+                        new_node.set(key, str(value)
+                                     if value is not None else "")
             if type(tag_value) is list:
                 new_node.text = str(tag_value.pop(0))
                 while len(tag_value) > 0:

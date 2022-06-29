@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2021
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -19,7 +19,8 @@
 .. index:: commandline
 
 .. |ID_DESCRIPTION| replace:: select benchmark id, negative ids count backwards
-   from the end, default: last found inside the benchmarks directory
+   from the end; default: last found benchmark inside the benchmark directory;
+   special ids `all` or `last` can be used
 
 Command line documentation
 ==========================
@@ -207,7 +208,7 @@ Run the result creation.
    show command help information
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
-   select benchmark id, if no id is given, output of all available benchmarks will be shown
+   |ID_DESCRIPTION|
 
 ``-a``, ``--analyse``
    run analyse before running result command
