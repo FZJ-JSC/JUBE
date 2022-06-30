@@ -106,6 +106,15 @@ class Database(GenericResult):
             # compare self._keys with columns in db and add new column in the database if it does not exist
             cur.execute("SELECT * FROM {}".format(self.name))
             db_col_names = [tup[0] for tup in cur.description]
+
+            # delete columns, which were removed as keys in this execution
+            diff_col_list = list(set(db_col_names).difference(keys))
+            if len(diff_col_list) != 0:
+                for col in diff_col_list:
+                    LOGGER.debug("ALTER TABLE {} DROP COLUMN {}".format(self.name, col))
+                    cur.execute("ALTER TABLE {} DROP COLUMN {}".format(self.name, col))
+
+            # add columns, which were added as keys in this execution
             diff_col_list = list(set(keys).difference(db_col_names))
             if len(diff_col_list) != 0:
                 for col in diff_col_list:
