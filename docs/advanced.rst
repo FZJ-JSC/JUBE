@@ -817,3 +817,5 @@ The ``key`` tag adds columns to the database table having the same type as the c
    | 0   | number     | int  | 0       |            | 1  |
    | 1   | number_pat | int  | 0       |            | 2  |
    +-----+------------+------+---------+------------+----+
+
+To have a look into a database within a python script the python modules `sqalchemy <https://www.sqlalchemy.org/>`_ or `pandas <https://pandas.pydata.org>`_ can be used.
