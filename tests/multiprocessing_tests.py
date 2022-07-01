@@ -16,17 +16,29 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Collection of all tests"""
+"""Multiprocessing related tests"""
 
 from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+import re
+
 import unittest
-from parameter_tests import TestParameter, TestParameterSet
-from multiprocessing_tests import TestMultiprocessing
-from pattern_tests import TestPattern
-#from examples_test import TestExamples
+import jube2.benchmark
+import jube2.workpackage
+
+
+class TestMultiprocessing(unittest.TestCase):
+
+    """Multiprocessing test class"""
+
+    def setUp(self):
+        pass
+
+    def test_multiprocessing(self):
+        """Test multiprocessing execution"""
+        pass
 
 
 if __name__ == "__main__":
