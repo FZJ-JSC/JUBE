@@ -586,7 +586,7 @@ Glossary
        to the database file. If the file including the path does not
        exists it will be created. Absolute and relative paths are supported.
 
-     * "filter" is not tested (so don't use it because it is optional!).
+     * "filter" is optional. It can contain a bool expression to show only specific result entries.
 
    result_tag
      The result tag is used to handle different visualisation types of your analysed data.
