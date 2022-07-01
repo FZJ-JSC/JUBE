@@ -89,10 +89,6 @@ folder ``htmlcov`` with html files visualizing the code coverage by
 adding colors for covered and uncovered regions of the code. The
 summary can be viewed in ``index.html``.
 
-You might want to replace ``python`` with ``python2`` or ``python3``
-respectively to explicitly test different python versions and make
-sure both versions are still working.
-
 
 Documentation creation
 ~~~~~~~~~~~~~~~~~~~~~~
