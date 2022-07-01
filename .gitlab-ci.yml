@@ -1,8 +1,5 @@
 before_script:
 - export PYTHONPATH=jube2:$PYTHONPATH
-test_python2:
-    script:
-    - python2 tests/run_all_tests.py
 test_python3:
     script:
     - python3 tests/run_all_tests.py
