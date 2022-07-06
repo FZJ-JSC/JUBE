@@ -60,7 +60,6 @@ class TestExamples(unittest.TestCase):
             examples_tasks.append(ExampleChecker("parameter_update", "parameter_update"+i))
 
         for checker in examples_tasks:
-            print("!!!!!!!check!!!!!!!:", checker._bench_name)
             self.assertTrue(checker.run())
 
 
