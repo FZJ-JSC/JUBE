@@ -164,6 +164,18 @@ class ExampleChecker(object):
         file1.seek(0)
         file2.seek(0)
 
+        print("===========================================================")
+        print("first file")
+        for i in file1:
+            print(i)
+        file1.seek(0)
+        print("===========================================================")
+        print("second file")
+        for i in file2:
+            print(i)
+        file2.seek(0)
+        print("===========================================================")
+
         return success
 
 
