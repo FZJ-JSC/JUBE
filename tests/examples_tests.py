@@ -107,14 +107,14 @@ class ExampleChecker(object):
             check=open(os.path.join(os.path.dirname(__file__), "examples_output", self._bench_name, "run.log"), 'r')
             success = ExampleChecker._tabfinder(ausgabe, check)
             for l1, l2 in zip(ausgabe, check):
-                print("check l1",l1)
-                print("check l2",l2)
                 if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1:
                     ausgabeMatcher = re.match('^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l1)
                     checkMatcher = re.match('^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l2)
                     if ausgabeMatcher.group(1) != checkMatcher.group(1):
                         check.close()
                         ausgabe.close()
+                        print("check l1",l1)
+                        print("check l2",l2)
                         return False
             check.close()
             ausgabe.close()
@@ -132,8 +132,8 @@ class ExampleChecker(object):
         checkDic = {}
         
         for l1,l2 in zip(file1, file2):
-            print("tabfinder l1",l1)
-            print("tabfinder l2",l2)
+            #print("tabfinder l1",l1)
+            #print("tabfinder l2",l2)
             if re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1):
                 ausgabe += l1
             if re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l2):
