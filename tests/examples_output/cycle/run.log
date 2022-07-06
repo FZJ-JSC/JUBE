@@ -1,69 +1,64 @@
-[2022-07-06 16:01:07,960]:DEBUG: Create initial workpackages
-[2022-07-06 16:01:07,964]:DEBUG: Store initial workpackage information
-[2022-07-06 16:01:07,965]:DEBUG: Start benchmark run
-[2022-07-06 16:01:07,965]:INFO: ######################################################################
-[2022-07-06 16:01:07,965]:INFO: # benchmark: cycle
-[2022-07-06 16:01:07,965]:INFO: # id: 0
-[2022-07-06 16:01:07,965]:INFO: #
-[2022-07-06 16:01:07,965]:INFO: # A cycle example
-[2022-07-06 16:01:07,965]:INFO: ######################################################################
-[2022-07-06 16:01:07,966]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:0 ) -----
-[2022-07-06 16:01:07,966]:DEBUG:   available parameter:
-[2022-07-06 16:01:07,966]:DEBUG:          | parameter             | value                                    |
-[2022-07-06 16:01:07,966]:DEBUG:          |-----------------------|------------------------------------------|
-[2022-07-06 16:01:07,966]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unit |
-[2022-07-06 16:01:07,966]:DEBUG:          |                       | test/jube/examples/cycle                 |
-[2022-07-06 16:01:07,966]:DEBUG:          | jube_benchmark_id     | 0                                        |
-[2022-07-06 16:01:07,966]:DEBUG:          | jube_benchmark_name   | cycle                                    |
-[2022-07-06 16:01:07,966]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unit |
-[2022-07-06 16:01:07,967]:DEBUG:          |                       | test/jube/examples/cycle/bench_run/00000 |
-[2022-07-06 16:01:07,967]:DEBUG:          |                       | 0                                        |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_benchmark_start  | 2022-07-06T16:01:07                      |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_step_cycles      | 5                                        |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_step_iterations  | 1                                        |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_step_name        | a_step                                   |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unit |
-[2022-07-06 16:01:07,967]:DEBUG:          |                       | test/jube/examples/cycle/bench_run/00000 |
-[2022-07-06 16:01:07,967]:DEBUG:          |                       | 0/000000_a_step/work                     |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_cycle         | 0                                        |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_envlist       |                                          |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_envstr        |                                          |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_id            | 0                                        |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_iteration     | 0                                        |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_padid         | 000000                                   |
-[2022-07-06 16:01:07,967]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_a_step/work      |
-[2022-07-06 16:01:07,968]:DEBUG: >>> echo 0
-[2022-07-06 16:01:07,968]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
-[2022-07-06 16:01:07,968]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
-[2022-07-06 16:01:08,015]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:1 ) -----
-[2022-07-06 16:01:08,015]:DEBUG: >>> echo 1
-[2022-07-06 16:01:08,015]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
-[2022-07-06 16:01:08,019]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
-[2022-07-06 16:01:08,063]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:2 ) -----
-[2022-07-06 16:01:08,064]:DEBUG: >>> echo 2
-[2022-07-06 16:01:08,064]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
-[2022-07-06 16:01:08,064]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
-[2022-07-06 16:01:08,108]:DEBUG: >>> touch done
-[2022-07-06 16:01:08,108]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
-[2022-07-06 16:01:08,108]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
-[2022-07-06 16:01:08,170]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:3 ) -----
-[2022-07-06 16:01:08,171]:DEBUG: >>> echo 3
-[2022-07-06 16:01:08,171]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
-[2022-07-06 16:01:08,171]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
-[2022-07-06 16:01:08,214]:DEBUG: "done" was found, workpackage execution and  further loop continuation was stopped.
-[2022-07-06 16:01:08,215]:DEBUG: Create new workpackages for workpackage a_step(0)
-[2022-07-06 16:01:08,215]:DEBUG:   0 new workpackages created
-[2022-07-06 16:01:08,217]:INFO:   | stepname | all | open | wait | error | done |
-[2022-07-06 16:01:08,217]:INFO:   |----------|-----|------|------|-------|------|
-[2022-07-06 16:01:08,217]:INFO:   |   a_step |   1 |    0 |    0 |     0 |    1 |
-[2022-07-06 16:01:08,217]:INFO: 
-[2022-07-06 16:01:08,217]:INFO: >>>> Benchmark information and further useful commands:
-[2022-07-06 16:01:08,217]:INFO: >>>>       id: 0
-[2022-07-06 16:01:08,217]:INFO: >>>>   handle: bench_run
-[2022-07-06 16:01:08,217]:INFO: >>>>      dir: bench_run/000000
-[2022-07-06 16:01:08,217]:INFO: >>>>  analyse: jube analyse bench_run --id 0
-[2022-07-06 16:01:08,217]:INFO: >>>>   result: jube result bench_run --id 0
-[2022-07-06 16:01:08,217]:INFO: >>>>     info: jube info bench_run --id 0
-[2022-07-06 16:01:08,217]:INFO: >>>>      log: jube log bench_run --id 0
-[2022-07-06 16:01:08,217]:INFO: ######################################################################
+[2022-07-06 17:37:23,115]:DEBUG: Create initial workpackages
+[2022-07-06 17:37:23,119]:DEBUG: Store initial workpackage information
+[2022-07-06 17:37:23,120]:DEBUG: Start benchmark run
+[2022-07-06 17:37:23,120]:INFO: ####################################################################################################################################################################################
+[2022-07-06 17:37:23,120]:INFO: # benchmark: cycle
+[2022-07-06 17:37:23,120]:INFO: # id: 0
+[2022-07-06 17:37:23,120]:INFO: #
+[2022-07-06 17:37:23,120]:INFO: # A cycle example
+[2022-07-06 17:37:23,120]:INFO: ####################################################################################################################################################################################
+[2022-07-06 17:37:23,120]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:0 ) -----
+[2022-07-06 17:37:23,121]:DEBUG:   available parameter:
+[2022-07-06 17:37:23,121]:DEBUG:          | parameter             | value                                                                                                |
+[2022-07-06 17:37:23,121]:DEBUG:          |-----------------------|------------------------------------------------------------------------------------------------------|
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle                                     |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_benchmark_id     | 0                                                                                                    |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_benchmark_name   | cycle                                                                                                |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                               |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000                    |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_benchmark_start  | 2022-07-06T17:37:23                                                                                  |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_step_cycles      | 5                                                                                                    |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_step_iterations  | 1                                                                                                    |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_step_name        | a_step                                                                                               |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_wp_cycle         | 0                                                                                                    |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_wp_envlist       |                                                                                                      |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_wp_envstr        |                                                                                                      |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_wp_id            | 0                                                                                                    |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_wp_iteration     | 0                                                                                                    |
+[2022-07-06 17:37:23,121]:DEBUG:          | jube_wp_padid         | 000000                                                                                               |
+[2022-07-06 17:37:23,125]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_a_step/work                                                                  |
+[2022-07-06 17:37:23,126]:DEBUG: >>> echo 0
+[2022-07-06 17:37:23,126]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
+[2022-07-06 17:37:23,126]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
+[2022-07-06 17:37:23,172]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:1 ) -----
+[2022-07-06 17:37:23,173]:DEBUG: >>> echo 1
+[2022-07-06 17:37:23,173]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
+[2022-07-06 17:37:23,173]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
+[2022-07-06 17:37:23,218]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:2 ) -----
+[2022-07-06 17:37:23,219]:DEBUG: >>> echo 2
+[2022-07-06 17:37:23,219]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
+[2022-07-06 17:37:23,219]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
+[2022-07-06 17:37:23,266]:DEBUG: >>> touch done
+[2022-07-06 17:37:23,266]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
+[2022-07-06 17:37:23,266]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
+[2022-07-06 17:37:23,332]:DEBUG: ----- a_step ( iter:0 | id:0 | parents: | cycle:3 ) -----
+[2022-07-06 17:37:23,333]:DEBUG: >>> echo 3
+[2022-07-06 17:37:23,333]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stdout
+[2022-07-06 17:37:23,333]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/cycle/bench_run/000000/000000_a_step/work/stderr
+[2022-07-06 17:37:23,379]:DEBUG: "done" was found, workpackage execution and  further loop continuation was stopped.
+[2022-07-06 17:37:23,380]:DEBUG: Create new workpackages for workpackage a_step(0)
+[2022-07-06 17:37:23,380]:DEBUG:   0 new workpackages created
+[2022-07-06 17:37:23,382]:INFO:   | stepname | all | open | wait | error | done |
+[2022-07-06 17:37:23,382]:INFO:   |----------|-----|------|------|-------|------|
+[2022-07-06 17:37:23,382]:INFO:   |   a_step |   1 |    0 |    0 |     0 |    1 |
+[2022-07-06 17:37:23,382]:INFO: 
+[2022-07-06 17:37:23,382]:INFO: >>>> Benchmark information and further useful commands:
+[2022-07-06 17:37:23,382]:INFO: >>>>       id: 0
+[2022-07-06 17:37:23,382]:INFO: >>>>   handle: bench_run
+[2022-07-06 17:37:23,382]:INFO: >>>>      dir: bench_run/000000
+[2022-07-06 17:37:23,382]:INFO: >>>>  analyse: jube analyse bench_run --id 0
+[2022-07-06 17:37:23,383]:INFO: >>>>   result: jube result bench_run --id 0
+[2022-07-06 17:37:23,383]:INFO: >>>>     info: jube info bench_run --id 0
+[2022-07-06 17:37:23,383]:INFO: >>>>      log: jube log bench_run --id 0
+[2022-07-06 17:37:23,383]:INFO: ####################################################################################################################################################################################

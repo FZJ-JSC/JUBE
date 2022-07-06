@@ -113,8 +113,6 @@ class ExampleChecker(object):
                     if ausgabeMatcher.group(1) != checkMatcher.group(1):
                         check.close()
                         ausgabe.close()
-                        print("check l1",l1)
-                        print("check l2",l2)
                         return False
             check.close()
             ausgabe.close()
@@ -132,8 +130,6 @@ class ExampleChecker(object):
         checkDic = {}
         
         for l1,l2 in zip(file1, file2):
-            #print("tabfinder l1",l1)
-            #print("tabfinder l2",l2)
             if re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1):
                 ausgabe += l1
             if re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l2):
@@ -163,18 +159,6 @@ class ExampleChecker(object):
         # remove to beginning of the files
         file1.seek(0)
         file2.seek(0)
-
-        print("===========================================================")
-        print("first file")
-        for i in file1:
-            print(i)
-        file1.seek(0)
-        print("===========================================================")
-        print("second file")
-        for i in file2:
-            print(i)
-        file2.seek(0)
-        print("===========================================================")
 
         return success
 
