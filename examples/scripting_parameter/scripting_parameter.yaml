@@ -1,6 +1,6 @@
 name: scripting_parameter
 outpath: bench_run
-comment: A scripting_parameter example
+comment: A scripting parameter example
 
 #Configuration
 parameterset:

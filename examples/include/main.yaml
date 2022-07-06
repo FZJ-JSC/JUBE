@@ -15,4 +15,6 @@ step:
    - param_set #use existing parameterset
    - from: include_data.yaml
      _: param_set2  #out of an external file
-  do: !include include_data.yaml:["dos"]  #include all available tag
+  do: 
+    - echo $foo
+    - !include include_data.yaml:["dos"]  #include all available tag

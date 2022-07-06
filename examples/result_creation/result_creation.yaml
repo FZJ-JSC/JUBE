@@ -1,6 +1,6 @@
 name: result_creation
 outpath: bench_run
-comment: A result_creation creation example
+comment: A result creation example
 
 #Configuration
 parameterset:

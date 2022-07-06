@@ -1,0 +1,123 @@
+[2022-07-06 16:01:16,778]:DEBUG: Create initial workpackages
+[2022-07-06 16:01:16,779]:DEBUG: Expand parameter templates:
+[2022-07-06 16:01:16,779]:DEBUG:     "number": 1,2,4
+[2022-07-06 16:01:16,791]:DEBUG: Store initial workpackage information
+[2022-07-06 16:01:16,794]:DEBUG: Start benchmark run
+[2022-07-06 16:01:16,794]:INFO: ######################################################################
+[2022-07-06 16:01:16,794]:INFO: # benchmark: result_creation
+[2022-07-06 16:01:16,794]:INFO: # id: 0
+[2022-07-06 16:01:16,794]:INFO: #
+[2022-07-06 16:01:16,795]:INFO: # A result creation example
+[2022-07-06 16:01:16,795]:INFO: ######################################################################
+[2022-07-06 16:01:16,795]:DEBUG: ----- write_number ( iter:0 | id:0 | parents: | cycle:0 ) -----
+[2022-07-06 16:01:16,797]:DEBUG:   available parameter:
+[2022-07-06 16:01:16,797]:DEBUG:          | parameter             | value                                    |
+[2022-07-06 16:01:16,797]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,797]:DEBUG:          |                       | test/jube/examples/result_creation       |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_benchmark_name   | result_creation                          |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,797]:DEBUG:          |                       | test/jube/examples/result_creation/bench |
+[2022-07-06 16:01:16,797]:DEBUG:          |                       | _run/000000                              |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_benchmark_start  | 2022-07-06T16:01:16                      |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_step_name        | write_number                             |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,797]:DEBUG:          |                       | test/jube/examples/result_creation/bench |
+[2022-07-06 16:01:16,797]:DEBUG:          |                       | _run/000000/000000_write_number/work     |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_id            | 0                                        |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_padid         | 000000                                   |
+[2022-07-06 16:01:16,797]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_write_number/wor |
+[2022-07-06 16:01:16,798]:DEBUG:          |                       | k                                        |
+[2022-07-06 16:01:16,798]:DEBUG:          | number                | 1                                        |
+[2022-07-06 16:01:16,799]:DEBUG: >>> echo "Number: 1"
+[2022-07-06 16:01:16,800]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/result_creation/bench_run/000000/000000_write_number/work/stdout
+[2022-07-06 16:01:16,800]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/result_creation/bench_run/000000/000000_write_number/work/stderr
+[2022-07-06 16:01:16,852]:DEBUG: Create new workpackages for workpackage write_number(0)
+[2022-07-06 16:01:16,852]:DEBUG:   0 new workpackages created
+[2022-07-06 16:01:16,852]:DEBUG: ----- write_number ( iter:0 | id:1 | parents: | cycle:0 ) -----
+[2022-07-06 16:01:16,854]:DEBUG:   available parameter:
+[2022-07-06 16:01:16,854]:DEBUG:          | parameter             | value                                    |
+[2022-07-06 16:01:16,855]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,855]:DEBUG:          |                       | test/jube/examples/result_creation       |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_benchmark_name   | result_creation                          |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,855]:DEBUG:          |                       | test/jube/examples/result_creation/bench |
+[2022-07-06 16:01:16,855]:DEBUG:          |                       | _run/000000                              |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_benchmark_start  | 2022-07-06T16:01:16                      |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_step_name        | write_number                             |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,855]:DEBUG:          |                       | test/jube/examples/result_creation/bench |
+[2022-07-06 16:01:16,855]:DEBUG:          |                       | _run/000000/000001_write_number/work     |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_id            | 1                                        |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_padid         | 000001                                   |
+[2022-07-06 16:01:16,855]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000001_write_number/wor |
+[2022-07-06 16:01:16,855]:DEBUG:          |                       | k                                        |
+[2022-07-06 16:01:16,855]:DEBUG:          | number                | 2                                        |
+[2022-07-06 16:01:16,857]:DEBUG: >>> echo "Number: 2"
+[2022-07-06 16:01:16,857]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/result_creation/bench_run/000000/000001_write_number/work/stdout
+[2022-07-06 16:01:16,857]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/result_creation/bench_run/000000/000001_write_number/work/stderr
+[2022-07-06 16:01:16,905]:DEBUG: Create new workpackages for workpackage write_number(1)
+[2022-07-06 16:01:16,905]:DEBUG:   0 new workpackages created
+[2022-07-06 16:01:16,905]:DEBUG: ----- write_number ( iter:0 | id:2 | parents: | cycle:0 ) -----
+[2022-07-06 16:01:16,907]:DEBUG:   available parameter:
+[2022-07-06 16:01:16,907]:DEBUG:          | parameter             | value                                    |
+[2022-07-06 16:01:16,907]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-07-06 16:01:16,907]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,907]:DEBUG:          |                       | test/jube/examples/result_creation       |
+[2022-07-06 16:01:16,907]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-07-06 16:01:16,907]:DEBUG:          | jube_benchmark_name   | result_creation                          |
+[2022-07-06 16:01:16,907]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-07-06 16:01:16,907]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,907]:DEBUG:          |                       | test/jube/examples/result_creation/bench |
+[2022-07-06 16:01:16,908]:DEBUG:          |                       | _run/000000                              |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_benchmark_start  | 2022-07-06T16:01:16                      |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_step_name        | write_number                             |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unit |
+[2022-07-06 16:01:16,908]:DEBUG:          |                       | test/jube/examples/result_creation/bench |
+[2022-07-06 16:01:16,908]:DEBUG:          |                       | _run/000000/000002_write_number/work     |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_id            | 2                                        |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_padid         | 000002                                   |
+[2022-07-06 16:01:16,908]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000002_write_number/wor |
+[2022-07-06 16:01:16,908]:DEBUG:          |                       | k                                        |
+[2022-07-06 16:01:16,908]:DEBUG:          | number                | 4                                        |
+[2022-07-06 16:01:16,911]:DEBUG: >>> echo "Number: 4"
+[2022-07-06 16:01:16,911]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/result_creation/bench_run/000000/000002_write_number/work/stdout
+[2022-07-06 16:01:16,911]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/result_creation/bench_run/000000/000002_write_number/work/stderr
+[2022-07-06 16:01:16,957]:DEBUG: Create new workpackages for workpackage write_number(2)
+[2022-07-06 16:01:16,957]:DEBUG:   0 new workpackages created
+[2022-07-06 16:01:16,960]:INFO:   |     stepname | all | open | wait | error | done |
+[2022-07-06 16:01:16,960]:INFO:   |--------------|-----|------|------|-------|------|
+[2022-07-06 16:01:16,960]:INFO:   | write_number |   3 |    0 |    0 |     0 |    3 |
+[2022-07-06 16:01:16,960]:INFO: 
+[2022-07-06 16:01:16,960]:INFO: >>>> Benchmark information and further useful commands:
+[2022-07-06 16:01:16,960]:INFO: >>>>       id: 0
+[2022-07-06 16:01:16,961]:INFO: >>>>   handle: bench_run
+[2022-07-06 16:01:16,961]:INFO: >>>>      dir: bench_run/000000
+[2022-07-06 16:01:16,961]:INFO: >>>>  analyse: jube analyse bench_run --id 0
+[2022-07-06 16:01:16,961]:INFO: >>>>   result: jube result bench_run --id 0
+[2022-07-06 16:01:16,961]:INFO: >>>>     info: jube info bench_run --id 0
+[2022-07-06 16:01:16,961]:INFO: >>>>      log: jube log bench_run --id 0
+[2022-07-06 16:01:16,961]:INFO: ######################################################################

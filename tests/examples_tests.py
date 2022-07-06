@@ -40,26 +40,27 @@ class TestExamples(unittest.TestCase):
 
     def test_examples(self):
         """Main function"""
-        examples_tasks = [
-            ExampleChecker("environment", "environment.xml"),
-            #ExampleChecker("jobsystem", "jobsystem.xml", debug=True),
-            #ExampleChecker("result_creation", "result_creation.xml"),
-            #ExampleChecker("files_and_sub", "files_and_sub.xml"),
-            #ExampleChecker("dependencies", "dependencies.xml"),
-            #ExampleChecker("tagging", "tagging.xml"),
-            #ExampleChecker("parameterspace", "parameterspace.xml"),
-            #ExampleChecker("parameter_dependencies", "parameter_dependencies.xml"),
-            #ExampleChecker("scripting_parameter", "scripting_parameter.xml"),
-            #ExampleChecker("scripting_pattern", "scripting_pattern.xml"),
-            #ExampleChecker("statistic", "statistic.xml"),
-            #ExampleChecker("include", "main.xml"),
-            #ExampleChecker("shared", "shared.xml"),
-            #ExampleChecker("hello_world", "hello_world.xml"),
-            #ExampleChecker("iterations", "iterations.xml"),
-            #ExampleChecker("cycle", "cycle.xml"),
-        ]
+        examples_tasks=[]
+        for i in [".xml",".yaml"]:
+            examples_tasks.append(ExampleChecker("environment", "environment"+i))
+            examples_tasks.append(ExampleChecker("result_creation", "result_creation"+i))
+            examples_tasks.append(ExampleChecker("files_and_sub", "files_and_sub"+i))
+            examples_tasks.append(ExampleChecker("dependencies", "dependencies"+i))
+            examples_tasks.append(ExampleChecker("tagging", "tagging"+i))
+            examples_tasks.append(ExampleChecker("parameterspace", "parameterspace"+i))
+            examples_tasks.append(ExampleChecker("parameter_dependencies", "parameter_dependencies"+i))
+            examples_tasks.append(ExampleChecker("scripting_parameter", "scripting_parameter"+i))
+            examples_tasks.append(ExampleChecker("scripting_pattern", "scripting_pattern"+i))
+            examples_tasks.append(ExampleChecker("statistic", "statistic"+i))
+            examples_tasks.append(ExampleChecker("include", "main"+i))
+            examples_tasks.append(ExampleChecker("shared", "shared"+i))
+            examples_tasks.append(ExampleChecker("hello_world", "hello_world"+i))
+            examples_tasks.append(ExampleChecker("iterations", "iterations"+i))
+            examples_tasks.append(ExampleChecker("cycle", "cycle"+i))
+            examples_tasks.append(ExampleChecker("parameter_update", "parameter_update"+i))
 
         for checker in examples_tasks:
+            print("!!!!!!!check!!!!!!!:", checker._bench_name)
             self.assertTrue(checker.run())
 
 
@@ -107,7 +108,7 @@ class ExampleChecker(object):
             check=open(os.path.join(os.path.dirname(__file__), "examples_output", self._bench_name, "run.log"), 'r')
             success = ExampleChecker._tabfinder(ausgabe, check)
             for l1, l2 in zip(ausgabe, check):
-                if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1:
+                if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1:
                     ausgabeMatcher = re.match('^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l1)
                     checkMatcher = re.match('^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l2)
                     if ausgabeMatcher.group(1) != checkMatcher.group(1):
