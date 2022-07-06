@@ -65,7 +65,7 @@ class TestBenchmark(unittest.TestCase):
             results_order=[])
 
     def test_benchmark_execution(self):
-        """Test multiprocessing execution"""
+        """Test benchmark execution"""
         if os.path.isdir("bench_run"):
             shutil.rmtree('bench_run')
         self.benchmark.new_run()
