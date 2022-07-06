@@ -26,7 +26,7 @@ import unittest
 from parameter_tests import TestParameter, TestParameterSet
 from pattern_tests import TestPattern
 from benchmark_tests import TestBenchmark
-#from examples_test import TestExamples
+from examples_tests import TestExamples
 
 
 if __name__ == "__main__":
