@@ -26,6 +26,7 @@ import re
 
 import unittest
 import shutil
+import os
 import jube2.step
 import jube2.parameter
 import jube2.benchmark
@@ -63,9 +64,14 @@ class TestMultiprocessing(unittest.TestCase):
             results={},
             results_order=[])
 
-    def test_multiprocessing(self):
+    def test_multiprocess_benchmark(self):
         """Test multiprocessing execution"""
+        if os.path.isdir("bench_run"):
+            shutil.rmtree('bench_run')
         self.parallelBenchmark.new_run()
+        for i in ["000000","000001","000002","000003"]:
+            for j in ["stdout","stderr"]:
+                self.assertTrue(os.path.isfile("bench_run/000000/"+i+"_parallel_execution/work/"+j))
         shutil.rmtree('bench_run')
 
 
