@@ -22,11 +22,9 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 
 JUBE version 2 is written in the Python programming language.
 
-You need Python 2.7 or Python 3.2 (or a higher version) to run the program.
+You need Python 3.2 (or a higher version) to run the program.
 
-Python 3.x is the preferred option to utilize JUBE. Newer upcoming versions of JUBE might not be compatible towards Python2.x any longer.
-
-You also can use Python 2.6 to run JUBE. In this case you had to add the argparse-module (https://pypi.python.org/pypi/argparse) to your Python module library on your own.
+JUBE is not compatible to Python2.x any longer.
 
 # Installation
 
