@@ -29,6 +29,7 @@ import jube2.util.util
 import jube2.conf
 import jube2.log
 import re
+import inspect
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -402,6 +403,15 @@ class Parameter(object):
         """Returns Parameter copy (flat copy)"""
         return copy.copy(self)
 
+    def search_method(self, propertyString, recursiveProperty=None):
+        """ Searches, potentially recursively, for a method and returns True in case of a success """
+        if(inspect.ismethod(self[propertyString])):    
+            return True
+        elif(recursiveProperty and self[recursiveProperty]):
+            return self[recursiveProperty].search_method(propertyString, recursiveProperty)
+        else:
+            return False
+
     @property
     def eval_helper(self):
         """Return evaluation helper function"""
@@ -571,6 +581,9 @@ class Parameter(object):
 
     def __repr__(self):
         return "Parameter({0})".format(self.__dict__)
+
+    def __getitem__(self, propertyString):
+        return getattr(self, propertyString) 
 
 
 class StaticParameter(Parameter):

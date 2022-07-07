@@ -52,6 +52,21 @@ class TestParameter(unittest.TestCase):
         self.para_error = \
             jube2.parameter.Parameter.create_parameter("error", "2+'test'",
                                                        parameter_mode="python")
+        self.para_search_method_3 = \
+            jube2.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
+                                                       parameter_mode="python")
+        self.para_search_method_2 = \
+            jube2.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
+                                                       parameter_mode="python")
+        self.para_search_method_1 = \
+            jube2.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
+                                                       parameter_mode="python")
+        self.para_search_method_3.eval_helper=self.para_search_method_1.search_method
+        self.para_search_method_3.based_on=None
+        self.para_search_method_2.eval_helper="not a method"
+        self.para_search_method_2.based_on=self.para_search_method_3
+        self.para_search_method_1.eval_helper="not a method"
+        self.para_search_method_1.based_on=self.para_search_method_2
 
     def test_constant(self):
         """Test Constants"""
@@ -116,6 +131,15 @@ class TestParameter(unittest.TestCase):
         self.assertFalse(self.para_cons.export)
         etree = self.para_export.etree_repr()
         self.assertEqual(etree.get("export"), "true")
+
+    def test_search_method(self):
+        """ Test the searching of method method """
+        self.assertEqual(self.para_search_method_1.search_method( \
+            propertyString="eval_helper",
+            recursiveProperty="based_on"),True)
+        self.assertEqual(self.para_search_method_3.search_method( \
+            propertyString="name",
+            recursiveProperty="based_on"),False)
 
 
 class TestParameterSet(unittest.TestCase):

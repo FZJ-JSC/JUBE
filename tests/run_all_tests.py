@@ -24,6 +24,7 @@ from __future__ import (print_function,
 
 import unittest
 from parameter_tests import TestParameter, TestParameterSet
+from multiprocessing_tests import TestMultiprocessing
 from pattern_tests import TestPattern
 from benchmark_tests import TestBenchmark
 from examples_tests import TestExamples

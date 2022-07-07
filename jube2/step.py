@@ -43,7 +43,7 @@ class Step(object):
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
-                 active="true", suffix="", cycles=1):
+                 active="true", suffix="", cycles=1, procs=1):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -56,6 +56,7 @@ class Step(object):
         self._active = active
         self._suffix = suffix
         self._cycles = cycles
+        self._procs = procs
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -80,6 +81,8 @@ class Step(object):
             step_etree.attrib["iterations"] = str(self._iterations)
         if self._cycles > 1:
             step_etree.attrib["cycles"] = str(self._cycles)
+        if self._procs != 1:
+            step_etree.attrib["procs"] = str(self._procs)
         for use in self._use:
             use_etree = ET.SubElement(step_etree, "use")
             use_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(use)
@@ -126,6 +129,11 @@ class Step(object):
     def cycles(self):
         """Return number of cycles"""
         return self._cycles
+
+    @property
+    def procs(self):
+        """Return number of procs"""
+        return self._procs
 
     @property
     def shared_link_name(self):
@@ -456,7 +464,7 @@ class Operation(object):
         return jube2.util.util.eval_bool(active_str)
 
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
-                environment=None):
+                environment=None, pid=None):
         """Execute the operation. work_dir must be set to the given context
         path. The parameter_dict used for inline substitution.
         If only_check_pending is set to True, the operation will not be
@@ -517,13 +525,19 @@ class Operation(object):
 
             # Create directory if it does not exist
             if not jube2.conf.DEBUG_MODE and not os.path.exists(work_dir):
-                os.makedirs(work_dir)
+                try:
+                    os.makedirs(work_dir)
+                except FileExistsError:
+                    pass
 
         if not only_check_pending:
 
+            if pid is not None:
+                env_file_name = jube2.conf.ENVIRONMENT_INFO.replace('.', '_{}.'.format(pid))
+            else:
+                env_file_name = jube2.conf.ENVIRONMENT_INFO
             abs_info_file_path = \
-                os.path.abspath(os.path.join(work_dir,
-                                             jube2.conf.ENVIRONMENT_INFO))
+                os.path.abspath(os.path.join(work_dir, env_file_name))
 
             # Select unix shell
             shell = jube2.conf.STANDARD_SHELL
@@ -590,7 +604,7 @@ class Operation(object):
                 stdout.close()
                 stderr.close()
 
-                env = Operation.read_process_environment(work_dir)
+                env = Operation.read_process_environment(work_dir, pid=pid)
 
                 # Read and store new environment
                 if (environment is not None) and (returncode == 0):
@@ -697,11 +711,15 @@ class Operation(object):
         return self._do
 
     @staticmethod
-    def read_process_environment(work_dir, remove_after_read=True):
+    def read_process_environment(work_dir, remove_after_read=True, pid=None):
         """Read standard environment info file in given directory."""
         env = dict()
         last = None
-        env_file_path = os.path.join(work_dir, jube2.conf.ENVIRONMENT_INFO)
+        if pid is not None:
+            env_file_name = jube2.conf.ENVIRONMENT_INFO.replace('.', '_{}.'.format(pid))
+        else:
+            env_file_name = jube2.conf.ENVIRONMENT_INFO
+        env_file_path = os.path.join(work_dir, env_file_name)
         if os.path.isfile(env_file_path):
             env_file = open(env_file_path, "r")
             for line in env_file:

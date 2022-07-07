@@ -23,10 +23,7 @@ from __future__ import (print_function,
 
 import xml.etree.ElementTree as ET
 import os
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from jube2.util.util import Queue
 import jube2.benchmark
 import jube2.substitute
 import jube2.parameter
@@ -478,7 +475,7 @@ class Parser(object):
         # parents_tmp: Dict workpackage_id => list of parent_workpackage_ids
         parents_tmp = dict()
         iteration_siblings_tmp = dict()
-        work_list = queue.Queue()
+        work_list = Queue()
         LOGGER.debug("Parsing {0}".format(self._filename))
         if not os.path.isfile(self._filename):
             raise IOError("Workpackage configuration file not found: \"{0}\""
@@ -821,6 +818,7 @@ class Parser(object):
         active = etree_step.get("active", "true").strip()
         suffix = etree_step.get("suffix", "").strip()
         cycles = int(etree_step.get("cycles", "1").strip())
+        procs = int(etree_step.get("procs", "1").strip())
         shared_name = etree_step.get("shared")
         if shared_name is not None:
             shared_name = shared_name.strip()
@@ -832,7 +830,7 @@ class Parser(object):
 
         step = jube2.step.Step(name, depend, iterations, alt_work_dir,
                                shared_name, export, max_wps, active, suffix,
-                               cycles)
+                               cycles, procs)
         for element in etree_step:
             Parser._check_tag(element, valid_tags)
             if element.tag == "do":
@@ -861,6 +859,9 @@ class Parser(object):
                         raise ValueError("<do shared=\"true\"> only allowed "
                                          "inside a <step> which has a shared "
                                          "region")
+                    if procs != 1:
+                        raise ValueError("<do shared=\"true\"> not allowed " +
+                                         "inside a parallel <step>")
                     shared = True
                 elif shared_str == "false":
                     shared = False

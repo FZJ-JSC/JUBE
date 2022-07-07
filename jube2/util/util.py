@@ -21,10 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from collections import deque
 import re
 import string
 import operator
@@ -40,12 +37,60 @@ import pwd
 LOGGER = jube2.log.get_logger(__name__)
 
 
+class Queue:
+    '''
+    Queue based on collections.dequeue
+    '''
+
+    def __init__(self):
+        '''
+        Initialize this queue to the empty queue.
+        '''
+
+        self._queue = deque()
+
+
+    def put(self, item):
+        '''
+        Add this item to the left of this queue.
+        '''
+
+        self._queue.appendleft(item)
+
+    def put_first(self, item):
+        '''
+        Add this item to the left of this queue.
+        '''
+
+        self._queue.append(item)
+
+    def get_nowait(self):
+        '''
+        Dequeues (i.e., removes) the item from the right side of this queue *and*
+        returns this item.
+
+        Raises
+        ----------
+        IndexError
+            If this queue is empty.
+        '''
+
+        return self._queue.pop()
+
+    def empty(self):
+        '''
+        Return True if the queue is empty, False otherwise
+        '''
+
+        return False if len(self._queue) > 0 else True
+
+
 class WorkStat(object):
 
     """Workpackage queuing handler"""
 
     def __init__(self):
-        self._work_list = queue.Queue()
+        self._work_list = Queue()
         self._cnt_work = dict()
         self._wait_lists = dict()
 
@@ -67,7 +112,7 @@ class WorkStat(object):
                 self._cnt_work[workpackage.step.name] += 1
         else:
             if workpackage.step.name not in self._wait_lists:
-                self._wait_lists[workpackage.step.name] = queue.Queue()
+                self._wait_lists[workpackage.step.name] = Queue()
             self._wait_lists[workpackage.step.name].put(workpackage)
 
     def update_queues(self, last_workpackage):
@@ -92,6 +137,9 @@ class WorkStat(object):
         """Check if work queue is empty"""
         return self._work_list.empty()
 
+    def push_back(self, wp):
+        """push element to the first position of the queue"""
+        self._work_list.put_first(wp)
 
 def valid_tags(tag_string, tags):
     """Check if tag_string contains only valid tags"""
