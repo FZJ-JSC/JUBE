@@ -58,6 +58,7 @@ class TestExamples(unittest.TestCase):
             examples_tasks.append(ExampleChecker("iterations", "iterations"+i))
             examples_tasks.append(ExampleChecker("cycle", "cycle"+i))
             examples_tasks.append(ExampleChecker("parameter_update", "parameter_update"+i))
+            examples_tasks.append(ExampleChecker("result_database", "result_database"+i))
 
         for checker in examples_tasks:
             self.assertTrue(checker.run())
@@ -95,7 +96,9 @@ class ExampleChecker(object):
             success = self._check()
     
         shutil.rmtree(os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name,"bench_run")))
- 
+        if self._bench_name=='result_database':
+            os.remove('result_database.dat')
+
         return success
 
     # compare the output line-wise with check file

@@ -26,13 +26,9 @@ import unittest
 from parameter_tests import TestParameter, TestParameterSet
 from multiprocessing_tests import TestMultiprocessing
 from pattern_tests import TestPattern
-<<<<<<< HEAD
 from benchmark_tests import TestBenchmark
-from examples_tests import TestExamples
-=======
 from result_database_tests import TestResultDatabase
-#from examples_test import TestExamples
->>>>>>> DEV-AS-database
+from examples_tests import TestExamples
 
 
 if __name__ == "__main__":
