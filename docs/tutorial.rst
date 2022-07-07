@@ -31,12 +31,7 @@ This tutorial is meant to give you an overview about the basic usage of *JUBE*.
 Installation
 ~~~~~~~~~~~~
 
-Requirements: *JUBE* needs **Python 2.7** or **Python 3.2** (or any higher version)
-
-**Python 3.x** is the preferred option to utilize *JUBE*. Newer upcoming versions of *JUBE* might not be compatible towards **Python2.x** any longer. 
-
-It is possible to use **Python 2.6** to run *JUBE*. In this case you have to add the `argparse-module <https://pypi.python.org/pypi/argparse>`_ to
-your *Python* module library on your own.
+Requirements: *JUBE* needs **Python 3.2** (or any higher version)
 
 If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml-module <https://pyyaml.org>`_ to
 your *Python* module library.
