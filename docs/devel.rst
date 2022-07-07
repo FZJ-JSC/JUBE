@@ -32,6 +32,7 @@ Coding standards
 * use ``format`` instead of ``%``
 * avoid very long methods
 * use multiple files for completely different classes
+* try to stay **Python3.2** conform
 * ``import`` of package files should use the complete path (avoid ``from``)
 * all files must include the **Python3** compatible header:
 
