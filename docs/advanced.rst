@@ -760,7 +760,6 @@ itself is still executed). In the given example the output will be:
 
 In contrast to the iterations, all executions for the cycle feature take place inside of the same folder.
 
-
 .. index:: parallel
 
 .. _parallel_workpackage:
@@ -808,3 +807,67 @@ alternated to study runtime, memory usage and load of CPUs.
 * Parallel execution of a JUBE script can lead to much higher memory demand 
   compared to serial execution with ``procs=1``. In this case it is advised to 
   reduce ``procs`` leading to reduced memory usage.
+
+.. index:: database
+
+.. _result_database:
+
+Result database
+~~~~~~~~~~~~~~~
+
+Results can also be stored into a database to simplify result management.
+
+The files used for this example can be found inside ``examples/result_database``.
+
+The input file ``result_database.xml``:
+
+.. literalinclude:: ../examples/result_database/result_database.xml
+   :language: xml
+
+The input file ``result_database.yaml``:
+
+.. literalinclude:: ../examples/result_database/result_database.yaml
+   :language: yaml
+
+The default database will be located as follows and has the ``database`` tag name, which is here ``results``, as root name concatenated with the appendix ``.dat``:
+
+.. code-block:: none
+
+   bench_run
+   |
+   +- 000000
+      |
+      +- result
+         |
+         +- results.dat
+
+The ``database`` tag takes the argument ``name``. ``name`` is also the name of the table created within a database. If ``sqlite3`` is installed the contents of the database can be shown with the following command line.
+
+.. code-block:: none
+
+   >>> sqlite3 -header -table bench_run/000000/result/results.dat 'SELECT * FROM results'
+   +--------+------------+
+   | number | number_pat |
+   +--------+------------+
+   | 1      | 1          |
+   | 2      | 2          |
+   | 4      | 4          |
+   +--------+------------+
+
+The argument ``file`` states the full path of a second copy of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.dat`` is created within the current working directory in which ``jube result`` was invoked. 
+
+Invocating ``jube result`` a second time updates the database given by the ``file`` parameter. Without the parameter ``primekeys`` three additional lines to the ``results`` table would have been added which are completely identical to the previous three lines. Adding the argument ``primekeys`` ensures that only if the column values stated within ``primekeys`` are not exactly the same in the database table, a new line is added to the database table. In this example no new lines are added. All the ``primekeys`` also need to be stated as ``key``. Updating the ``primekeys`` is not supported.
+
+The ``key`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern``. Information of columns of the database table ``results`` can be shown as follows.
+
+.. code-block:: none
+
+   >>> sqlite3 -header -table bench_run/000000/result/results.dat 'PRAGMA table_info(results)'
+   +-----+------------+------+---------+------------+----+
+   | cid |    name    | type | notnull | dflt_value | pk |
+   +-----+------------+------+---------+------------+----+
+   | 0   | number     | int  | 0       |            | 1  |
+   | 1   | number_pat | int  | 0       |            | 2  |
+   +-----+------------+------+---------+------------+----+
+
+To have a look into a database within a python script the python modules `sqalchemy <https://www.sqlalchemy.org/>`_ or `pandas <https://pandas.pydata.org>`_ can be used.

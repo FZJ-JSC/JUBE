@@ -57,10 +57,10 @@ class YAML_Converter(object):
          "analyse": ["file"], "analyser": ["use", "analyse"],
          "fileset": ["link", "copy", "prepare"],
          "include-path": ["path"], "parameterset": ["parameter"],
-         "patternset": ["pattern"], "result": ["use", "table", "syslog"],
+         "patternset": ["pattern"], "result": ["use", "table", "syslog", "database"],
          "selection": ["not", "only", "tag"], "step": ["use", "do"],
          "substituteset": ["iofile", "sub"], "syslog": ["key"],
-         "table": ["column"]}
+         "table": ["column"], "database": ["key"]}
 
     def __init__(self, path, include_path=None, tags=None):
         self._path = path

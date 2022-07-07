@@ -10,3 +10,4 @@ jube-parse.log
 jube-debug.log
 docs/_build
 tests/benchmark_runs
+examples/result_database/result_database.sqlite3

@@ -561,6 +561,34 @@ Glossary
        * ``true`` : Combine result lines if iteration-option is used
        * ``false`` : Create single line for each iteration
 
+   database_tag
+     Create sqlite3 database
+
+     .. code-block:: xml
+
+        <database name="..." primekeys="..." file="..." filter="...">
+          <key>...</key>
+          ...
+        </database>
+
+     * "name": name of the table in the database
+
+     * "<key>" must contain an single parameter or pattern name
+
+     * "primekeys" is optional: can contain a list of parameter or
+       pattern names (separated by ,). Given parameters or patterns
+       will be used as primary keys of the database table. All
+       primekeys have to be listed as a "<key>" as well. Modification
+       of primary keys of an existing table is not supported.
+       If no primekeys are set then each `jube result` will add new rows
+       to the database. Otherwise rows with matching primekeys will be updated.
+
+     * "file" is optional. The given value should hold the full path
+       to the database file. If the file including the path does not
+       exists it will be created. Absolute and relative paths are supported.
+
+     * "filter" is optional. It can contain a bool expression to show only specific result entries.
+
    result_tag
      The result tag is used to handle different visualisation types of your analysed data.
 

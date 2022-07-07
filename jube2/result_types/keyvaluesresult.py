@@ -255,7 +255,7 @@ class KeyValuesResult(Result):
                             value = str(dataset[key.name])
                     row.append(value)
                 else:
-                    row.append("")
+                    row.append(None)
 
             if cnt > 0:
                 table_data.append(row)

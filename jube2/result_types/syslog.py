@@ -37,7 +37,7 @@ class SysloggedResult(KeyValuesResult):
 
     class SyslogData(KeyValuesResult.KeyValuesData):
 
-        """Table data"""
+        """Syslog data"""
 
         def __init__(self, name_or_other, syslog_address=None,
                      syslog_host=None, syslog_port=None,
@@ -112,7 +112,7 @@ class SysloggedResult(KeyValuesResult):
         else:
             self._syslog_fmt_string = syslog_fmt_string
 
-    def create_result_data(self):
+    def create_result_data(self, style=None):
         """Create result data"""
         result_data = KeyValuesResult.create_result_data(self)
         return SysloggedResult.SyslogData(result_data, self._syslog_address,
