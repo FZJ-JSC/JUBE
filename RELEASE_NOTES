@@ -19,7 +19,7 @@ Release: *FIXME*
 * A couple of unittests were added which now include the testing of most of 
   the examples.
 	
-*  Sample *run.log*s of most examples were added to *tests/examples_output*.
+* Sample *run.log* of most examples were added to *tests/examples_output*.
 
 * The *DEFAULT_WIDTH* was changed from 70 to 180.
 

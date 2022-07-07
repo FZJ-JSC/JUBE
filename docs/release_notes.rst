@@ -21,6 +21,19 @@
 Release notes
 =============
 
+Version 2.5.0
+=============
+Release: *FIXME*
+
+* Several independent workpackages within a step can be executed by multiple processes in parallel by stating `procs=#number_of_parallel_processes#` within the `step` tag. An example and a documentation entry was added.
+* A result database can be produced by use of the `database` tag. An example and a documentation entry was added.
+* `python2`-support was removed.
+* A couple of unittests were added which now include the testing of most of the examples.
+* Sample `run.log` of most examples were added to `tests/examples_output`.
+* The `DEFAULT_WIDTH` was changed from 70 to 180.
+* The `MAX_TABLE_CELL_WIDTH` was changed from 40 to 180.
+* Some yaml example scripts were corrected.
+
 Version 2.4.2
 ~~~~~~~~~~~~~
 Release: 2021-11-30
