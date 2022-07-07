@@ -27,6 +27,20 @@ Release: *FIXME*
 
 * Some yaml example scripts were corrected.
 
+* The SLURM gres default and notification type were changed.
+
+* The MANIFEST file was removed.
+
+* A typo in the error message was fixed.
+
+* Fix result command documentation.
+
+* *JUBE_EXEC_SHELL* is now taken into account during parameter evaluation.
+
+* A wrong result entry in the glossary was fixed.
+
+* Add the inclusion of the preprocessor also in case of init_with configuration.
+
 
 Version 2.4.2
 =============
