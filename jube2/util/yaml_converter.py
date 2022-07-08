@@ -107,9 +107,7 @@ class YAML_Converter(object):
                 yaml.load(file_handle.read(), Loader=yaml.Loader), xmltree)
             xml = jube2.util.output.element_tree_tostring(
                 xmltree, encoding="UTF-8")
-            dom = DOM.parseString(xml.encode('UTF-8'))
-            self._int_file.write(dom.toprettyxml(
-                indent="  ", encoding="UTF-8"))
+            self._int_file.write(xml.encode('UTF-8'))
         LOGGER.debug("  YAML Conversion finalized")
 
     def read(self):

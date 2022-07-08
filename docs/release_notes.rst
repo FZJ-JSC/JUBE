@@ -40,7 +40,7 @@ Release: *FIXME*
 * `JUBE_EXEC_SHELL` is now taken into account during parameter evaluation.
 * A wrong result entry in the glossary was fixed.
 * Add the inclusion of the preprocessor also in case of init_with configuration.
-
+* A bug for the usage of a newline separator within yaml scripts is resolved.
 
 Version 2.4.2
 ~~~~~~~~~~~~~

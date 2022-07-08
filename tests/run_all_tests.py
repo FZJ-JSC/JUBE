@@ -29,6 +29,7 @@ from pattern_tests import TestPattern
 from benchmark_tests import TestBenchmark
 from result_database_tests import TestResultDatabase
 from examples_tests import TestExamples
+from yaml_tests import TestYAMLScripts
 
 
 if __name__ == "__main__":
