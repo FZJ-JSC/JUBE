@@ -127,6 +127,7 @@ class YAML_Converter(object):
         else:
             raise ValueError(("\"{0}\" not found in possible " +
                               "include pathes").format(filename))
+
         return file_path
 
     def __search_for_tags(self):
@@ -212,6 +213,11 @@ class YAML_Converter(object):
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
         to_delete = list()
+        # If the benchmark tag is left out and just a list of benchmarks was stated, 
+        # data is a list. In this case extend data to a dictionary with the key 
+        # "benchmark" to enable execution of all of the benchmarks
+        if isinstance(data,list):
+            data={"benchmark": data}
         for tag in data.keys():
             if type(data[tag]) is not list:
                 data[tag] = [data[tag]]

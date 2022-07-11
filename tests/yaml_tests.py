@@ -41,7 +41,7 @@ class TestYAMLScripts(unittest.TestCase):
         thisfiledir=os.path.dirname(__file__)
         if os.path.exists(os.path.join(thisfiledir,'yaml_test_scripts','bench_run')):
             shutil.rmtree(os.path.join(os.path.dirname(__file__),'yaml_test_scripts','bench_run')) 
-        jube2.main.main(('run '+os.path.join(thisfiledir,'yaml_test_scripts/newline_separator.yaml')).split())
+        jube2.main.main(('run -e '+os.path.join(thisfiledir,'yaml_test_scripts/newline_separator.yaml')).split())
         errorFileExistent=False
         if os.path.exists(os.path.join(thisfiledir,'yaml_test_scripts','bench_run','000000','000000_execute','error')):
             errorFileExistent=True
@@ -49,6 +49,23 @@ class TestYAMLScripts(unittest.TestCase):
             errorFileExistent=True
         self.assertFalse(errorFileExistent)
         shutil.rmtree(os.path.join(os.path.dirname(__file__),'yaml_test_scripts','bench_run'))
+
+    def test_multiple_benchmarks(self):
+        thisfiledir=os.path.dirname(__file__)
+        if os.path.exists(os.path.join(thisfiledir,'yaml_test_scripts','bench_run_1')):
+            shutil.rmtree(os.path.join(os.path.dirname(__file__),'yaml_test_scripts','bench_run_1')) 
+        if os.path.exists(os.path.join(thisfiledir,'yaml_test_scripts','bench_run_2')):
+            shutil.rmtree(os.path.join(os.path.dirname(__file__),'yaml_test_scripts','bench_run_2')) 
+        jube2.main.main(('run -e '+os.path.join(thisfiledir,'yaml_test_scripts/multiple_benchmarks.yaml')).split())
+        stdoutFileExistent=True
+        if not os.path.exists(os.path.join(thisfiledir,'yaml_test_scripts','bench_run_1','000000','000000_execute','work','stdout')):
+            stdoutFileExistent=False
+        if not os.path.exists(os.path.join(thisfiledir,'yaml_test_scripts','bench_run_2','000000','000000_execute','work','stdout')):
+            stdoutFileExistent=False
+        self.assertTrue(stdoutFileExistent)
+        shutil.rmtree(os.path.join(os.path.dirname(__file__),'yaml_test_scripts','bench_run_1'))
+        shutil.rmtree(os.path.join(os.path.dirname(__file__),'yaml_test_scripts','bench_run_2'))
+
 
 
 if __name__ == "__main__":
