@@ -43,6 +43,8 @@ Release: *FIXME*
 
 * A bug for the usage of a newline separator within yaml scripts is resolved.
 
+* A bug leading to an error when multiple benchmarks within a yaml script are stated without the benchmark tag is removed.
+
 
 Version 2.4.2
 =============

@@ -41,6 +41,7 @@ Release: *FIXME*
 * A wrong result entry in the glossary was fixed.
 * Add the inclusion of the preprocessor also in case of init_with configuration.
 * A bug for the usage of a newline separator within yaml scripts is resolved.
+* A bug leading to an error when multiple benchmarks within a yaml script are stated without the benchmark tag is removed.
 
 Version 2.4.2
 ~~~~~~~~~~~~~
