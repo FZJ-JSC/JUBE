@@ -23,7 +23,6 @@ from __future__ import (print_function,
                         division)
 
 import re
-
 import unittest
 import jube2.pattern
 
