@@ -731,6 +731,7 @@ Glossary
               +- 000000_compile (step: just an example, can be arbitrary chosen)
                  |
                  +- work (user environment)
+                 +- do_log (script mimicking the execution of dos of the workpackage)
                  +- done (workpackage finished information file)
                  +- ...  (more jube internal information files)
               +- 000001_execute
