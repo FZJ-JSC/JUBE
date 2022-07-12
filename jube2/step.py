@@ -558,6 +558,7 @@ class Operation(object):
                         stdout_handle = subprocess.PIPE
                     else:
                         stdout_handle = stdout
+                    self.storeToDoLog(do, work_dir, env, shell)
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > \"{1}\"".format(do,
@@ -709,6 +710,22 @@ class Operation(object):
 
     def __repr__(self):
         return self._do
+
+    def storeToDoLog(self, do, work_dir, env, shell):
+        """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
+        do_log_path = os.path.join(os.path.dirname(work_dir), 
+            jube2.conf.WORKPACKAGE_DO_LOG_FILENAME)
+        initializeDoLog=True
+        if os.path.exists(do_log_path):
+            initializeDoLog=False   
+        fdologout=open(do_log_path,"a")
+        if initializeDoLog:
+            fdologout.write('#!'+shell+'\n\n') 
+            for envVarName,envVarValue in env.items():
+                fdologout.write("set "+envVarName+"='"+envVarValue.replace('\n','\\n')+"'\n")
+            fdologout.write('\n')
+        fdologout.write(do+'\n')
+        fdologout.close()
 
     @staticmethod
     def read_process_environment(work_dir, remove_after_read=True, pid=None):
