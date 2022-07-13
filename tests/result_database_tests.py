@@ -35,17 +35,23 @@ class TestResultDatabase(unittest.TestCase):
     """Result database test class"""
 
     def setUp(self):
-        self.databaseFileName="database.dat"
-        self.dataKeyNames=["dataKeyName1","dataKeyName2"]
-        self.dataKeys=[[2,4],[8,4]]
-        self.dataBaseTableName="databaseKeyValuesData"
-        keyValuesDataInstance=jube2.result_types.genericresult.GenericResult.KeyValuesData(self.dataBaseTableName)
-        databaseDataInstance=jube2.result_types.database.Database.DatabaseData(keyValuesDataInstance, [], None)
-        datakey1=jube2.result_types.genericresult.GenericResult.DataKey(self.dataKeyNames[0], None, None)
-        datakey2=jube2.result_types.genericresult.GenericResult.DataKey(self.dataKeyNames[1], None, None)
-        databaseDataInstance._data= {datakey1: self.dataKeys[0], datakey2: self.dataKeys[1]}
-        databaseDataInstance._benchmark_ids=[0]
-        databaseDataInstance.create_result(True,self.databaseFileName,reverse=False)
+        self.databaseFileName = "database.dat"
+        self.dataKeyNames = ["dataKeyName1", "dataKeyName2"]
+        self.dataKeys = [[2, 4], [8, 4]]
+        self.dataBaseTableName = "databaseKeyValuesData"
+        keyValuesDataInstance = jube2.result_types.genericresult.GenericResult.KeyValuesData(
+            self.dataBaseTableName)
+        databaseDataInstance = jube2.result_types.database.Database.DatabaseData(
+            keyValuesDataInstance, [], None)
+        datakey1 = jube2.result_types.genericresult.GenericResult.DataKey(
+            self.dataKeyNames[0], None, None)
+        datakey2 = jube2.result_types.genericresult.GenericResult.DataKey(
+            self.dataKeyNames[1], None, None)
+        databaseDataInstance._data = {
+            datakey1: self.dataKeys[0], datakey2: self.dataKeys[1]}
+        databaseDataInstance._benchmark_ids = [0]
+        databaseDataInstance.create_result(
+            True, self.databaseFileName, reverse=False)
 
     def test_database(self):
         """Test database"""
@@ -55,14 +61,14 @@ class TestResultDatabase(unittest.TestCase):
         # check column names and database table content of database file
         con = sqlite3.connect(self.databaseFileName)
         cur = con.cursor()
-        cur.execute("SELECT * FROM {}".format(self.dataBaseTableName)) 
-        db_col_names = [tup[0] for tup in cur.description] 
-        db_content=cur.fetchall()
-        db_content=[list(i) for i in db_content]
-        db_content=list(map(list, zip(*db_content)))
+        cur.execute("SELECT * FROM {}".format(self.dataBaseTableName))
+        db_col_names = [tup[0] for tup in cur.description]
+        db_content = cur.fetchall()
+        db_content = [list(i) for i in db_content]
+        db_content = list(map(list, zip(*db_content)))
         con.close()
-        self.assertEqual(db_col_names,self.dataKeyNames)
-        self.assertEqual(db_content,self.dataKeys)
+        self.assertEqual(db_col_names, self.dataKeyNames)
+        self.assertEqual(db_content, self.dataKeys)
 
         # delete database file
         os.remove(self.databaseFileName)

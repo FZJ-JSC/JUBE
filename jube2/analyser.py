@@ -448,7 +448,8 @@ class Analyser(object):
                             else:
                                 match_dict[pattern.name]["sum2"] = match ** 2
                         except OverflowError:
-                            LOGGER.warning("Squared sum cannot be represented, numerical result out of range.")
+                            LOGGER.warning(
+                                "Squared sum cannot be represented, numerical result out of range.")
                             match_dict[pattern.name]["sum2"] = math.nan
 
                     if "cnt" in match_dict[pattern.name]:
@@ -465,10 +466,10 @@ class Analyser(object):
                     if match_dict[pattern.name]["cnt"] > 1:
                         try:
                             match_dict[pattern.name]["std"] = math.sqrt(
-                                      (abs(match_dict[pattern.name]["sum2"] - 
-                                      (match_dict[pattern.name]["sum"] ** 2 /
+                                (abs(match_dict[pattern.name]["sum2"] -
+                                     (match_dict[pattern.name]["sum"] ** 2 /
                                       match_dict[pattern.name]["cnt"])) /
-                                      (match_dict[pattern.name]["cnt"] - 1)))
+                                 (match_dict[pattern.name]["cnt"] - 1)))
                         except OverflowError:
                             match_dict[pattern.name]["std"] = 0
                     else:

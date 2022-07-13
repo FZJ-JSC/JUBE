@@ -697,10 +697,10 @@ class Workpackage(object):
             log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
             jube2.log.change_logfile_name(os.path.join(
                 self.benchmark.bench_dir,
-                log_fname.replace('.', '_{}.').format(proc_id) if ( ('_'+str(proc_id)) not in log_fname )  else log_fname))
+                log_fname.replace('.', '_{}.').format(proc_id) if (('_'+str(proc_id)) not in log_fname) else log_fname))
 
         # Workpackage already done or error?
-        if self.done or self.error: 
+        if self.done or self.error:
             # the return value is only relevant for the parallel case, for now
             # for the serial case the return value is not used at all
             return {"id": self._id, "step_name": self._step.name}
@@ -868,19 +868,19 @@ class Workpackage(object):
                         "{0}\n{1}\n{2}".format(40 * "-", str(e), 40 * "-"))
 
         # Delete parameters, which contain a method being
-        # a function of a class. This avoids excessive memory 
+        # a function of a class. This avoids excessive memory
         # usage when the data is sent back to the main process.
         # It happens here, that these parameters are static and
         # therefore not changed within this workpackage execution.
-        if mode=='p':
-            parameterDeletionList=list()
+        if mode == 'p':
+            parameterDeletionList = list()
             for p in self._parameterset.all_parameters:
-                if(p.search_method( propertyString="eval_helper",
-                                    recursiveProperty="based_on")):  
+                if(p.search_method(propertyString="eval_helper",
+                                   recursiveProperty="based_on")):
                     parameterDeletionList.append(p)
             for p in parameterDeletionList:
                 self._parameterset.delete_parameter(p)
-            parameterDeletionList=None
+            parameterDeletionList = None
 
         return {"id": self._id, "step_name": self._step.name, "env": self._env,
                 "cycle": self._cycle, "parameterset": self._parameterset}

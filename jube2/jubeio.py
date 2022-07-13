@@ -1039,11 +1039,13 @@ class Parser(object):
         if res_filter is not None:
             res_filter = res_filter.strip()
         primekeys = etree_database.get("primekeys", "")
-        primekeys = primekeys.replace('[', '').replace(']', '').replace("'", '').split(jube2.conf.DEFAULT_SEPARATOR)
+        primekeys = primekeys.replace('[', '').replace(']', '').replace(
+            "'", '').split(jube2.conf.DEFAULT_SEPARATOR)
         primekeys = [primekey.strip() for primekey in primekeys]
         primekeys = [primekey for primekey in primekeys if len(primekey) > 0]
         db_file = etree_database.get("file")
-        database = jube2.result_types.database.Database(name, res_filter, primekeys, db_file)
+        database = jube2.result_types.database.Database(
+            name, res_filter, primekeys, db_file)
         for element in etree_database:
             Parser._check_tag(element, ["key"])
             key_name = element.text

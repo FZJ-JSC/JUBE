@@ -533,7 +533,8 @@ class Operation(object):
         if not only_check_pending:
 
             if pid is not None:
-                env_file_name = jube2.conf.ENVIRONMENT_INFO.replace('.', '_{}.'.format(pid))
+                env_file_name = jube2.conf.ENVIRONMENT_INFO.replace(
+                    '.', '_{}.'.format(pid))
             else:
                 env_file_name = jube2.conf.ENVIRONMENT_INFO
             abs_info_file_path = \
@@ -713,16 +714,17 @@ class Operation(object):
 
     def storeToDoLog(self, do, work_dir, env, shell):
         """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
-        do_log_path = os.path.join(os.path.dirname(work_dir), 
-            jube2.conf.WORKPACKAGE_DO_LOG_FILENAME)
-        initializeDoLog=True
+        do_log_path = os.path.join(os.path.dirname(work_dir),
+                                   jube2.conf.WORKPACKAGE_DO_LOG_FILENAME)
+        initializeDoLog = True
         if os.path.exists(do_log_path):
-            initializeDoLog=False   
-        fdologout=open(do_log_path,"a")
+            initializeDoLog = False
+        fdologout = open(do_log_path, "a")
         if initializeDoLog:
-            fdologout.write('#!'+shell+'\n\n') 
-            for envVarName,envVarValue in env.items():
-                fdologout.write("set "+envVarName+"='"+envVarValue.replace('\n','\\n')+"'\n")
+            fdologout.write('#!'+shell+'\n\n')
+            for envVarName, envVarValue in env.items():
+                fdologout.write("set "+envVarName+"='" +
+                                envVarValue.replace('\n', '\\n')+"'\n")
             fdologout.write('\n')
         fdologout.write(do+'\n')
         fdologout.close()
@@ -733,7 +735,8 @@ class Operation(object):
         env = dict()
         last = None
         if pid is not None:
-            env_file_name = jube2.conf.ENVIRONMENT_INFO.replace('.', '_{}.'.format(pid))
+            env_file_name = jube2.conf.ENVIRONMENT_INFO.replace(
+                '.', '_{}.'.format(pid))
         else:
             env_file_name = jube2.conf.ENVIRONMENT_INFO
         env_file_path = os.path.join(work_dir, env_file_name)

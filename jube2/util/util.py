@@ -49,7 +49,6 @@ class Queue:
 
         self._queue = deque()
 
-
     def put(self, item):
         '''
         Add this item to the left of this queue.
@@ -140,6 +139,7 @@ class WorkStat(object):
     def push_back(self, wp):
         """push element to the first position of the queue"""
         self._work_list.put_first(wp)
+
 
 def valid_tags(tag_string, tags):
     """Check if tag_string contains only valid tags"""
@@ -270,7 +270,7 @@ def script_evaluation(cmd, script_type):
             if len(alt_shell) > 0:
                 shell = alt_shell
         sub = subprocess.Popen([shell, "-c", cmd], stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, shell=False)
+                               stderr=subprocess.PIPE, shell=False)
 
         stdout, stderr = sub.communicate()
         stdout = stdout.decode(errors="ignore")

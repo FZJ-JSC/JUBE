@@ -614,12 +614,13 @@ class Benchmark(object):
             workpackage = self._work_stat.get()
 
             run_parallel = False
+
             def collect_result(val):
                 """used collect return values from pool.apply_async"""
-                ## run postprocessing of each wp
+                # run postprocessing of each wp
                 for i, wp in enumerate(self._workpackages[val["step_name"]]):
                     if wp.id == val["id"]:
-                        if(len(val)==2): # workpackage is done or its execution was erroneous
+                        if(len(val) == 2):  # workpackage is done or its execution was erroneous
                             pass
                         else:
                             # update corresponding wp in self._workpackage with modified wp
@@ -628,8 +629,8 @@ class Benchmark(object):
                             # which needed to be deleted within the multiprocess
                             # execution to avoid excessive memory usage
                             for p in wp._parameterset.all_parameters:
-                                if(p.search_method( propertyString="eval_helper",
-                                                    recursiveProperty="based_on")):
+                                if(p.search_method(propertyString="eval_helper",
+                                                   recursiveProperty="based_on")):
                                     val["parameterset"].add_parameter(p)
                             wp.parameterset = val["parameterset"]
                             wp.cycle = val["cycle"]
@@ -639,9 +640,9 @@ class Benchmark(object):
             def log_e(e):
                 """used to print error_callback from pool.apply_async"""
                 print(e)
-            ## TODO
-            ## writeXML position(y) - replace by database
-            ## TODO END
+            # TODO
+            # writeXML position(y) - replace by database
+            # TODO END
             if not workpackage.done:
                 # execute wps in parallel which have the same name
                 if workpackage.step.procs > 1:
@@ -652,8 +653,8 @@ class Benchmark(object):
 
                     # add wps to the parallel pool as long as they have the same name
                     while True:
-                        pool.apply_async(workpackage.run, args=('p',), \
-                            callback=collect_result, error_callback=log_e)
+                        pool.apply_async(workpackage.run, args=('p',),
+                                         callback=collect_result, error_callback=log_e)
 
                         if not self._work_stat.empty():
                             workpackage = self._work_stat.get()
@@ -661,7 +662,7 @@ class Benchmark(object):
                             # terminate parallel loop
                             if workpackage.step.name != name:
                                 self._work_stat.push_back(workpackage)
-                                break 
+                                break
                         else:
                             break
 
@@ -675,9 +676,9 @@ class Benchmark(object):
                 # delete the parallel logs
                 log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
                 filenames = [file for file in os.listdir(self.bench_dir)
-                                if file.startswith(log_fname.split('.')[0]) and\
-                                    file != log_fname]
-                filenames.sort(key=lambda o: int(re.split('_|\.',o)[1]))
+                             if file.startswith(log_fname.split('.')[0]) and
+                             file != log_fname]
+                filenames.sort(key=lambda o: int(re.split('_|\.', o)[1]))
                 with open(os.path.join(self.bench_dir,
                                        jube2.conf.LOGFILE_RUN_NAME), 'a') as outfile:
                     for fname in filenames:
@@ -749,7 +750,7 @@ class Benchmark(object):
                     all_done = all_done and parent.done
                 if all_done:
                     if (mode == "only_started" and child.started) or \
-                        (mode == "all" and (not child.queued)):
+                            (mode == "all" and (not child.queued)):
                         child.queued = True
                         self._work_stat.put(child)
 

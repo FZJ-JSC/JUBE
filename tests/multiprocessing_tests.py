@@ -37,21 +37,23 @@ class TestMultiprocessing(unittest.TestCase):
     """Multiprocessing test class"""
 
     def setUp(self):
-        self.parallelParameter=jube2.parameter.StaticParameter(
+        self.parallelParameter = jube2.parameter.StaticParameter(
             name='i',
-            value= '",".join(str(i) for i in range(4))',
+            value='",".join(str(i) for i in range(4))',
             separator=',',
             parameter_type='int',
             parameter_mode='python')
-        self.parallelParameterset=jube2.parameter.Parameterset(name='paramet_set')
+        self.parallelParameterset = jube2.parameter.Parameterset(
+            name='paramet_set')
         self.parallelParameterset.add_parameter(self.parallelParameter)
-        self.parallelStep=jube2.step.Step(name='parallel_execution', depend=set(), procs=2)
+        self.parallelStep = jube2.step.Step(
+            name='parallel_execution', depend=set(), procs=2)
         self.parallelStep.add_uses(['param_set'])
-        self.parallelOperation=jube2.step.Operation('echo "$i"', stdout_filename='stdout',
-            stderr_filename='stderr',
-            work_dir='.', error_filename='error')
+        self.parallelOperation = jube2.step.Operation('echo "$i"', stdout_filename='stdout',
+                                                      stderr_filename='stderr',
+                                                      work_dir='.', error_filename='error')
         self.parallelStep.add_operation(self.parallelOperation)
-        self.parallelBenchmark=jube2.benchmark.Benchmark(
+        self.parallelBenchmark = jube2.benchmark.Benchmark(
             name='parallel_workpackages',
             outpath='bench_run',
             parametersets={'param_set': self.parallelParameterset},
@@ -68,9 +70,10 @@ class TestMultiprocessing(unittest.TestCase):
         if os.path.isdir("bench_run"):
             shutil.rmtree('bench_run')
         self.parallelBenchmark.new_run()
-        for i in ["000000","000001","000002","000003"]:
-            for j in ["stdout","stderr"]:
-                self.assertTrue(os.path.isfile("bench_run/000000/"+i+"_parallel_execution/work/"+j))
+        for i in ["000000", "000001", "000002", "000003"]:
+            for j in ["stdout", "stderr"]:
+                self.assertTrue(os.path.isfile(
+                    "bench_run/000000/"+i+"_parallel_execution/work/"+j))
         shutil.rmtree('bench_run')
 
 

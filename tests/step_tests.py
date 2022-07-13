@@ -30,87 +30,99 @@ import sys
 import jube2.step
 import subprocess
 
+
 class TestOperation(unittest.TestCase):
 
     """Operation test class"""
 
     def setUp(self):
-        self.echoPath=subprocess.check_output(['which','echo']).decode(sys.stdout.encoding)#os.popen('which echo').read()
-        self.echoPath=self.echoPath.replace('\n','')
-        self.currWorkDir=os.getcwd()
-        self.operation=jube2.step.Operation(self.echoPath+' Test', stdout_filename='stdout',
-            stderr_filename='stderr', work_dir='.', error_filename='error')
-        self.parameter_dict={
-            'param': 'p1', 
-            'jube_benchmark_id': '0', 
-            'jube_benchmark_padid': '000000', 
-            'jube_benchmark_name': 'do_log_test', 
-            'jube_benchmark_home': self.currWorkDir, 
-            'jube_benchmark_rundir': self.currWorkDir+'/bench_run/000000', 
-            'jube_benchmark_start': '2022-07-12T16:23:32', 
-            'jube_step_name': 'execute', 
-            'jube_step_iterations': '1', 
-            'jube_step_cycles': '1', 
-            'jube_wp_cycle': '0', 
-            'jube_wp_id': '0', 
-            'jube_wp_padid': '000000', 
-            'jube_wp_iteration': '0', 
-            'jube_wp_relpath': 'bench_run/000000/000000_execute/work', 
-            'jube_wp_abspath': self.currWorkDir+'/bench_run/000000/000000_execute/work', 
-            'jube_wp_envstr': '', 
+        self.echoPath = subprocess.check_output(['which', 'echo']).decode(
+            sys.stdout.encoding)  # os.popen('which echo').read()
+        self.echoPath = self.echoPath.replace('\n', '')
+        self.currWorkDir = os.getcwd()
+        self.operation = jube2.step.Operation(self.echoPath+' Test', stdout_filename='stdout',
+                                              stderr_filename='stderr', work_dir='.', error_filename='error')
+        self.parameter_dict = {
+            'param': 'p1',
+            'jube_benchmark_id': '0',
+            'jube_benchmark_padid': '000000',
+            'jube_benchmark_name': 'do_log_test',
+            'jube_benchmark_home': self.currWorkDir,
+            'jube_benchmark_rundir': self.currWorkDir+'/bench_run/000000',
+            'jube_benchmark_start': '2022-07-12T16:23:32',
+            'jube_step_name': 'execute',
+            'jube_step_iterations': '1',
+            'jube_step_cycles': '1',
+            'jube_wp_cycle': '0',
+            'jube_wp_id': '0',
+            'jube_wp_padid': '000000',
+            'jube_wp_iteration': '0',
+            'jube_wp_relpath': 'bench_run/000000/000000_execute/work',
+            'jube_wp_abspath': self.currWorkDir+'/bench_run/000000/000000_execute/work',
+            'jube_wp_envstr': '',
             'jube_wp_envlist': ''}
-        self.work_dir="bench_run/000000/000000_execute/work"
-        self.environment={'TEST': 'test'}
+        self.work_dir = "bench_run/000000/000000_execute/work"
+        self.environment = {'TEST': 'test'}
 
     def test_operation_execution(self):
         """Test operation execution"""
-        if os.path.exists(os.path.join(self.currWorkDir,'bench_run')):
-            shutil.rmtree(os.path.join(self.currWorkDir,'bench_run')) 
-        os.makedirs(os.path.join(self.currWorkDir,'bench_run/000000/000000_execute/work'))
+        if os.path.exists(os.path.join(self.currWorkDir, 'bench_run')):
+            shutil.rmtree(os.path.join(self.currWorkDir, 'bench_run'))
+        os.makedirs(os.path.join(self.currWorkDir,
+                    'bench_run/000000/000000_execute/work'))
 
-        self.operation.execute(self.parameter_dict, self.work_dir, environment=self.environment)
+        self.operation.execute(self.parameter_dict,
+                               self.work_dir, environment=self.environment)
 
-        self.assertTrue(os.path.exists(os.path.join(self.currWorkDir,'bench_run/000000/000000_execute/work/stdout')))
-        self.assertTrue(os.path.exists(os.path.join(self.currWorkDir,'bench_run/000000/000000_execute/work/stderr')))
-        self.assertTrue(os.stat(os.path.join(self.currWorkDir,'bench_run/000000/000000_execute/work/stderr')).st_size == 0)
+        self.assertTrue(os.path.exists(os.path.join(
+            self.currWorkDir, 'bench_run/000000/000000_execute/work/stdout')))
+        self.assertTrue(os.path.exists(os.path.join(
+            self.currWorkDir, 'bench_run/000000/000000_execute/work/stderr')))
+        self.assertTrue(os.stat(os.path.join(
+            self.currWorkDir, 'bench_run/000000/000000_execute/work/stderr')).st_size == 0)
 
         # check the content of the stdout file
-        stdoutFileHandle=open(os.path.join(self.currWorkDir,'bench_run/000000/000000_execute/work/stdout'), mode='r')
-        line=stdoutFileHandle.readline()
-        self.assertTrue(line=='Test\n')
-        line=stdoutFileHandle.readline()
-        self.assertTrue(line=='')
+        stdoutFileHandle = open(os.path.join(
+            self.currWorkDir, 'bench_run/000000/000000_execute/work/stdout'), mode='r')
+        line = stdoutFileHandle.readline()
+        self.assertTrue(line == 'Test\n')
+        line = stdoutFileHandle.readline()
+        self.assertTrue(line == '')
         stdoutFileHandle.close()
 
-        shutil.rmtree(os.path.join(self.currWorkDir,'bench_run'))
+        shutil.rmtree(os.path.join(self.currWorkDir, 'bench_run'))
 
     def test_do_log_creation(self):
         """Test do log creation"""
-        if os.path.exists(os.path.join(self.currWorkDir,'do_log')):
-            os.remove(os.path.join(self.currWorkDir,'do_log')) 
-        self.operation.storeToDoLog(do=self.echoPath+" Test1", work_dir=os.path.join(self.currWorkDir,'bench_run'), env=self.environment, shell='/bin/sh')
-        self.operation.storeToDoLog(do=self.echoPath+" $TEST", work_dir=os.path.join(self.currWorkDir,'bench_run'), env=self.environment, shell='/bin/sh')
-        self.assertTrue(os.path.exists(os.path.join(self.currWorkDir,'do_log')))
+        if os.path.exists(os.path.join(self.currWorkDir, 'do_log')):
+            os.remove(os.path.join(self.currWorkDir, 'do_log'))
+        self.operation.storeToDoLog(do=self.echoPath+" Test1", work_dir=os.path.join(
+            self.currWorkDir, 'bench_run'), env=self.environment, shell='/bin/sh')
+        self.operation.storeToDoLog(do=self.echoPath+" $TEST", work_dir=os.path.join(
+            self.currWorkDir, 'bench_run'), env=self.environment, shell='/bin/sh')
+        self.assertTrue(os.path.exists(
+            os.path.join(self.currWorkDir, 'do_log')))
 
         # Check the content of the do_log file
-        dologFileHandle=open(os.path.join(self.currWorkDir,'do_log'), mode='r')
-        line=dologFileHandle.readline()
-        self.assertTrue(line=='#!/bin/sh\n')
-        line=dologFileHandle.readline()
-        self.assertTrue(line=='\n')
-        line=dologFileHandle.readline()
-        self.assertTrue(line=="set TEST='test'\n")
-        line=dologFileHandle.readline()
-        self.assertTrue(line=="\n")
-        line=dologFileHandle.readline()
-        self.assertTrue(line==self.echoPath+" Test1\n")
-        line=dologFileHandle.readline()
-        self.assertTrue(line==self.echoPath+" $TEST\n")
-        line=dologFileHandle.readline()
-        self.assertTrue(line=='')
+        dologFileHandle = open(os.path.join(
+            self.currWorkDir, 'do_log'), mode='r')
+        line = dologFileHandle.readline()
+        self.assertTrue(line == '#!/bin/sh\n')
+        line = dologFileHandle.readline()
+        self.assertTrue(line == '\n')
+        line = dologFileHandle.readline()
+        self.assertTrue(line == "set TEST='test'\n")
+        line = dologFileHandle.readline()
+        self.assertTrue(line == "\n")
+        line = dologFileHandle.readline()
+        self.assertTrue(line == self.echoPath+" Test1\n")
+        line = dologFileHandle.readline()
+        self.assertTrue(line == self.echoPath+" $TEST\n")
+        line = dologFileHandle.readline()
+        self.assertTrue(line == '')
         dologFileHandle.close()
 
-        os.remove(os.path.join(self.currWorkDir,'do_log')) 
+        os.remove(os.path.join(self.currWorkDir, 'do_log'))
 
 
 if __name__ == "__main__":

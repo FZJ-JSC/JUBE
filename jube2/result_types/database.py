@@ -75,7 +75,8 @@ class Database(GenericResult):
                 if file_path_ind != -1:
                     # modify when Python2.7 support is dropped (potential race condition)
                     if not os.path.exists(os.path.expanduser(self._db_file[:file_path_ind])):
-                        os.makedirs(os.path.expanduser(self._db_file[:file_path_ind]))
+                        os.makedirs(os.path.expanduser(
+                            self._db_file[:file_path_ind]))
                 db_file = os.path.expanduser(self._db_file)
             elif filename is not None:
                 db_file = filename
@@ -87,19 +88,24 @@ class Database(GenericResult):
             cur = con.cursor()
 
             # create a string of keys and their data type to create the database table
-            key_dtypes = {k.name: type(v[0]).__name__.replace('str', 'text') for (k,v) in self._data.items()}
-            db_col_insert_types = str(key_dtypes).replace('{', '(').replace('}', ')').replace("'", '').replace(':', '')
+            key_dtypes = {k.name: type(v[0]).__name__.replace(
+                'str', 'text') for (k, v) in self._data.items()}
+            db_col_insert_types = str(key_dtypes).replace(
+                '{', '(').replace('}', ')').replace("'", '').replace(':', '')
 
             if len(self._primekeys) > 0:
-                db_col_insert_types = db_col_insert_types[:-1] + ", PRIMARY KEY {})".format(tuple(self._primekeys))
+                db_col_insert_types = db_col_insert_types[:-1] + \
+                    ", PRIMARY KEY {})".format(tuple(self._primekeys))
             # create new table with a name of stored in variable self.name if it does not exists
-            LOGGER.debug("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
-            cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(self.name, db_col_insert_types))
+            LOGGER.debug("CREATE TABLE IF NOT EXISTS {} {};".format(
+                self.name, db_col_insert_types))
+            cur.execute("CREATE TABLE IF NOT EXISTS {} {};".format(
+                self.name, db_col_insert_types))
 
             # check for primary keys in database table
             cur.execute('PRAGMA TABLE_INFO({})'.format(self.name))
             db_primary_keys = [i[1] for i in cur.fetchall() if i[5] != 0]
-            if not set(self._primekeys)==set(db_primary_keys):
+            if not set(self._primekeys) == set(db_primary_keys):
                 raise ValueError("Modification of primary values is not supported. " +
                                  "Primary keys of table {} are {}".format(self.name, db_primary_keys))
 
@@ -111,26 +117,33 @@ class Database(GenericResult):
             diff_col_list = list(set(db_col_names).difference(keys))
             if len(diff_col_list) != 0:
                 for col in diff_col_list:
-                    LOGGER.debug("ALTER TABLE {} DROP COLUMN {}".format(self.name, col))
-                    cur.execute("ALTER TABLE {} DROP COLUMN {}".format(self.name, col))
+                    LOGGER.debug(
+                        "ALTER TABLE {} DROP COLUMN {}".format(self.name, col))
+                    cur.execute(
+                        "ALTER TABLE {} DROP COLUMN {}".format(self.name, col))
 
             # add columns, which were added as keys in this execution
             diff_col_list = list(set(keys).difference(db_col_names))
             if len(diff_col_list) != 0:
                 for col in diff_col_list:
-                    LOGGER.debug("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, type(col).__name__.replace('str', 'text')))
-                    cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(self.name, col, type(col).__name__.replace('str', 'text')))
+                    LOGGER.debug("ALTER TABLE {} ADD COLUMN {} {}".format(
+                        self.name, col, type(col).__name__.replace('str', 'text')))
+                    cur.execute("ALTER TABLE {} ADD COLUMN {} {}".format(
+                        self.name, col, type(col).__name__.replace('str', 'text')))
 
             # insert or replace self.data in database
-            replace_query = "REPLACE INTO {} {} VALUES (".format(self.name, tuple(keys)) + "{}".format('?,'*len(keys))[:-1] + ");"
+            replace_query = "REPLACE INTO {} {} VALUES (".format(
+                self.name, tuple(keys)) + "{}".format('?,'*len(keys))[:-1] + ");"
             LOGGER.debug(replace_query)
-            cur.executemany(replace_query, [d for d in list(zip(*self._data.values()))])
+            cur.executemany(
+                replace_query, [d for d in list(zip(*self._data.values()))])
 
             con.commit()
             con.close()
 
             # Print database location to screen and result.log
-            LOGGER.info("Database location of id {}: {}".format(self._benchmark_ids[0], db_file))
+            LOGGER.info("Database location of id {}: {}".format(
+                self._benchmark_ids[0], db_file))
 
     def __init__(self, name, res_filter=None, primekeys=None, db_file=None):
         GenericResult.__init__(self, name, res_filter)

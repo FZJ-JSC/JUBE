@@ -23,6 +23,7 @@
 # to install it into your .local folder. .local/bin must be inside your $PATH.
 # You can also change the folder by using --prefix instead of --user
 
+import os
 add_opt = dict()
 try:
     from setuptools import setup
@@ -32,9 +33,9 @@ try:
         add_opt["install_requires"].append("argparse")
 except ImportError:
     from distutils.core import setup
-import os
 
 SHARE_PATH = "share/jube"
+
 
 def rel_path(directory, new_root=""):
     """Return list of tuples (directory, list of files)
@@ -58,6 +59,7 @@ def rel_path(directory, new_root=""):
         os.chdir(cwd)
     return result
 
+
 config = {'name': 'JUBE',
           'description': 'JUBE Benchmarking Environment',
           'author': 'Forschungszentrum Juelich GmbH',
@@ -65,11 +67,11 @@ config = {'name': 'JUBE',
           'download_url': 'www.fz-juelich.de/ias/jsc/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
           'version': '2.5.0',
-          'packages': ['jube2','jube2.result_types','jube2.util'],
+          'packages': ['jube2', 'jube2.result_types', 'jube2.util'],
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
                            ['docs/JUBE.pdf']),
-                          (SHARE_PATH, ['LICENSE','RELEASE_NOTES'])] +
+                          (SHARE_PATH, ['LICENSE', 'RELEASE_NOTES'])] +
                          rel_path("examples", SHARE_PATH) +
                          rel_path("contrib", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),

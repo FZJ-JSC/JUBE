@@ -405,7 +405,7 @@ class Parameter(object):
 
     def search_method(self, propertyString, recursiveProperty=None):
         """ Searches, potentially recursively, for a method and returns True in case of a success """
-        if(inspect.ismethod(self[propertyString])):    
+        if(inspect.ismethod(self[propertyString])):
             return True
         elif(recursiveProperty and self[recursiveProperty]):
             return self[recursiveProperty].search_method(propertyString, recursiveProperty)
@@ -583,7 +583,7 @@ class Parameter(object):
         return "Parameter({0})".format(self.__dict__)
 
     def __getitem__(self, propertyString):
-        return getattr(self, propertyString) 
+        return getattr(self, propertyString)
 
 
 class StaticParameter(Parameter):
