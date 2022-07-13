@@ -559,7 +559,8 @@ class Operation(object):
                         stdout_handle = subprocess.PIPE
                     else:
                         stdout_handle = stdout
-                    self.storeToDoLog(do, raw_work_dir, env, shell)
+                    if raw_work_dir!=None:
+                        self.storeToDoLog(do, raw_work_dir, env, shell)
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > \"{1}\"".format(do,
