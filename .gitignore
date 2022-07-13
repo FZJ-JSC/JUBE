@@ -10,4 +10,6 @@ jube-parse.log
 jube-debug.log
 docs/_build
 tests/benchmark_runs
+tests/.coverage
+tests/htmlcov
 examples/result_database/result_database.sqlite3
