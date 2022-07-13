@@ -464,7 +464,7 @@ class Operation(object):
         return jube2.util.util.eval_bool(active_str)
 
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
-                environment=None, pid=None):
+                environment=None, pid=None, raw_work_dir=None):
         """Execute the operation. work_dir must be set to the given context
         path. The parameter_dict used for inline substitution.
         If only_check_pending is set to True, the operation will not be
@@ -559,7 +559,7 @@ class Operation(object):
                         stdout_handle = subprocess.PIPE
                     else:
                         stdout_handle = stdout
-                    self.storeToDoLog(do, work_dir, env, shell)
+                    self.storeToDoLog(do, raw_work_dir, env, shell)
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > \"{1}\"".format(do,
