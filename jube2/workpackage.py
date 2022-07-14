@@ -653,7 +653,7 @@ class Workpackage(object):
                             environment=self._env,
                             only_check_pending=self.operation_done(
                                 operation_number),
-                            raw_work_dir=self.work_dir)
+                            do_log_work_dir=self.work_dir)
 
                         # update all workpackages
                         for workpackage in self._benchmark.workpackages[
@@ -681,7 +681,7 @@ class Workpackage(object):
                         environment=self._env,
                         only_check_pending=self.operation_done(
                             operation_number), pid=pid,
-                        raw_work_dir=self.work_dir)
+                        do_log_work_dir=self.work_dir)
                     self.operation_done(operation_number, True)
             if not continue_op or not continue_cycle:
                 break
