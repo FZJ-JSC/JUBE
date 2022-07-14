@@ -37,7 +37,7 @@ class TestOperation(unittest.TestCase):
 
     def setUp(self):
         self.echoPath = subprocess.check_output(['which', 'echo']).decode(
-            sys.stdout.encoding)  # os.popen('which echo').read()
+            sys.stdout.encoding)
         self.echoPath = self.echoPath.replace('\n', '')
         self.currWorkDir = os.getcwd()
         self.operation = jube2.step.Operation(self.echoPath+' Test', stdout_filename='stdout',
@@ -92,14 +92,32 @@ class TestOperation(unittest.TestCase):
 
         shutil.rmtree(os.path.join(self.currWorkDir, 'bench_run'))
 
+
+class TestDoLog(unittest.TestCase):
+
+    """DoLog test class"""
+
+    def setUp(self):
+        self.currWorkDir = os.getcwd()
+        self.environment = {'TEST': 'test'}
+        self.dolog=jube2.step.DoLog(log_dir=os.path.join(self.currWorkDir, 'work'), initial_env=self.environment)
+        self.echoPath = subprocess.check_output(['which', 'echo']).decode(
+            sys.stdout.encoding)
+        self.echoPath = self.echoPath.replace('\n', '')
+
+
     def test_do_log_creation(self):
         """Test do log creation"""
         if os.path.exists(os.path.join(self.currWorkDir, 'do_log')):
             os.remove(os.path.join(self.currWorkDir, 'do_log'))
-        self.operation.storeToDoLog(do=self.echoPath+" Test1", work_dir=os.path.join(
-            self.currWorkDir, 'bench_run'), env=self.environment, shell='/bin/sh')
-        self.operation.storeToDoLog(do=self.echoPath+" $TEST", work_dir=os.path.join(
-            self.currWorkDir, 'bench_run'), env=self.environment, shell='/bin/sh')
+
+        self.dolog.store_do(do=self.echoPath+' Test1', shell='/bin/sh', work_dir=os.path.join(
+            self.currWorkDir, 'work'))
+        self.dolog.store_do(do=self.echoPath+' $TEST', shell='/bin/sh', work_dir=os.path.join(
+            self.currWorkDir, 'work'))
+        self.dolog.store_do(do=self.echoPath+' Test2', shell='/bin/sh', work_dir=os.path.join(
+            self.currWorkDir, 'misc'))
+
         self.assertTrue(os.path.exists(
             os.path.join(self.currWorkDir, 'do_log')))
 
@@ -115,9 +133,17 @@ class TestOperation(unittest.TestCase):
         line = dologFileHandle.readline()
         self.assertTrue(line == "\n")
         line = dologFileHandle.readline()
-        self.assertTrue(line == self.echoPath+" Test1\n")
+        self.assertTrue(line == 'cd '+os.path.join(
+            self.currWorkDir, 'work')+'\n')
         line = dologFileHandle.readline()
-        self.assertTrue(line == self.echoPath+" $TEST\n")
+        self.assertTrue(line == self.echoPath+' Test1\n')
+        line = dologFileHandle.readline()
+        self.assertTrue(line == self.echoPath+' $TEST\n')
+        line = dologFileHandle.readline()
+        self.assertTrue(line == 'cd '+os.path.join(
+            self.currWorkDir, 'misc')+'\n')
+        line = dologFileHandle.readline()
+        self.assertTrue(line == self.echoPath+' Test2\n')
         line = dologFileHandle.readline()
         self.assertTrue(line == '')
         dologFileHandle.close()

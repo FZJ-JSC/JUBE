@@ -464,7 +464,7 @@ class Operation(object):
         return jube2.util.util.eval_bool(active_str)
 
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
-                environment=None, pid=None, do_log_work_dir=None):
+                environment=None, pid=None, dolog=None):
         """Execute the operation. work_dir must be set to the given context
         path. The parameter_dict used for inline substitution.
         If only_check_pending is set to True, the operation will not be
@@ -559,8 +559,8 @@ class Operation(object):
                         stdout_handle = subprocess.PIPE
                     else:
                         stdout_handle = stdout
-                    if do_log_work_dir!=None:
-                        self.storeToDoLog(do, do_log_work_dir, env, shell)
+                    if dolog!=None:
+                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), shared=self.shared)
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > \"{1}\"".format(do,
@@ -713,23 +713,6 @@ class Operation(object):
     def __repr__(self):
         return self._do
 
-    def storeToDoLog(self, do, work_dir, env, shell):
-        """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
-        do_log_path = os.path.join(os.path.dirname(work_dir),
-                                   jube2.conf.WORKPACKAGE_DO_LOG_FILENAME)
-        initializeDoLog = True
-        if os.path.exists(do_log_path):
-            initializeDoLog = False
-        fdologout = open(do_log_path, "a")
-        if initializeDoLog:
-            fdologout.write('#!'+shell+'\n\n')
-            for envVarName, envVarValue in env.items():
-                fdologout.write("set "+envVarName+"='" +
-                                envVarValue.replace('\n', '\\n')+"'\n")
-            fdologout.write('\n')
-        fdologout.write(do+'\n')
-        fdologout.close()
-
     @staticmethod
     def read_process_environment(work_dir, remove_after_read=True, pid=None):
         """Read standard environment info file in given directory."""
@@ -755,3 +738,54 @@ class Operation(object):
             if remove_after_read:
                 os.remove(env_file_path)
         return env
+
+class DoLog(object):
+
+    """A DoLog class containing the operations and information for setting up the do log."""
+
+    def __init__(self, log_dir, initial_env):
+        log_path = os.path.join(os.path.dirname(log_dir),
+                                jube2.conf.WORKPACKAGE_DO_LOG_FILENAME)
+        self._log_path = log_path
+        self._initial_env = initial_env
+        self._work_dir = None
+
+    @property
+    def log_path(self):
+        """Get log directory"""
+        return self._log_path
+
+    @property
+    def work_dir(self):
+        """Get last work directory"""
+        return self._work_dir
+
+    @property
+    def initial_env(self):
+        """Get initial env"""
+        return self._initial_env
+
+    def initialiseFile(self, shell):
+        """Initialise file if not yet existent."""
+        fdologout = open(self.log_path, 'a')
+        fdologout.write('#!'+shell+'\n\n')
+        for envVarName, envVarValue in self.initial_env.items():
+            fdologout.write('set '+envVarName+"='" +
+                            envVarValue.replace('\n', '\\n')+"'\n")
+        fdologout.write('\n')
+        fdologout.close()
+
+    def store_do(self, do, shell, work_dir, shared=False):
+        """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
+        if not os.path.exists(self.log_path):
+            self.initialiseFile(shell)
+
+        fdologout = open(self.log_path, 'a')
+        if work_dir!=self.work_dir:
+            fdologout.write('cd '+work_dir+'\n')
+            self._work_dir=work_dir
+        fdologout.write(do)
+        if shared:
+            fdologout.write(' # shared execution')
+        fdologout.write('\n')
+        fdologout.close()

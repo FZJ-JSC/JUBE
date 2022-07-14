@@ -31,6 +31,7 @@ from result_database_tests import TestResultDatabase
 from examples_tests import TestExamples
 from yaml_tests import TestYAMLScripts
 from step_tests import TestOperation
+from step_tests import TestDoLog
 
 
 if __name__ == "__main__":

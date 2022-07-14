@@ -28,6 +28,7 @@ import jube2.util.output
 import jube2.conf
 import jube2.log
 import jube2.parameter
+import jube2.step
 import os
 import re
 import stat
@@ -579,6 +580,7 @@ class Workpackage(object):
         """Run all available operations"""
         continue_op = True
         continue_cycle = True
+        doLog = jube2.step.DoLog(log_dir=self.work_dir, initial_env=self.env)
         for operation_number, operation in enumerate(self._step.operations):
             # Check if the operation is activated
             active = operation.active(parameter)
@@ -653,7 +655,7 @@ class Workpackage(object):
                             environment=self._env,
                             only_check_pending=self.operation_done(
                                 operation_number),
-                            do_log_work_dir=self.work_dir)
+                            dolog=doLog)
 
                         # update all workpackages
                         for workpackage in self._benchmark.workpackages[
@@ -681,7 +683,7 @@ class Workpackage(object):
                         environment=self._env,
                         only_check_pending=self.operation_done(
                             operation_number), pid=pid,
-                        do_log_work_dir=self.work_dir)
+                        dolog=doLog)
                     self.operation_done(operation_number, True)
             if not continue_op or not continue_cycle:
                 break
