@@ -591,6 +591,7 @@ class Benchmark(object):
             os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
         LOGGER.debug("Start benchmark run")
+
         self.run()
 
     def run(self):

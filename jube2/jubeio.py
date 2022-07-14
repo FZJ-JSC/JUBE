@@ -820,6 +820,12 @@ class Parser(object):
         suffix = etree_step.get("suffix", "").strip()
         cycles = int(etree_step.get("cycles", "1").strip())
         procs = int(etree_step.get("procs", "1").strip())
+        do_log_file = etree_step.get("do_log_file", "None").strip() 
+        do_log_file = None if do_log_file == "None" else do_log_file
+        do_log_file = None if do_log_file == "False" else do_log_file
+        do_log_file = None if do_log_file == "false" else do_log_file
+        do_log_file = jube2.conf.DO_LOG_FILENAME if do_log_file == "True" else do_log_file
+        do_log_file = jube2.conf.DO_LOG_FILENAME if do_log_file == "true" else do_log_file
         shared_name = etree_step.get("shared")
         if shared_name is not None:
             shared_name = shared_name.strip()
@@ -831,7 +837,7 @@ class Parser(object):
 
         step = jube2.step.Step(name, depend, iterations, alt_work_dir,
                                shared_name, export, max_wps, active, suffix,
-                               cycles, procs)
+                               cycles, procs, do_log_file)
         for element in etree_step:
             Parser._check_tag(element, valid_tags)
             if element.tag == "do":

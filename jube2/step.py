@@ -43,7 +43,7 @@ class Step(object):
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
-                 active="true", suffix="", cycles=1, procs=1):
+                 active="true", suffix="", cycles=1, procs=1, do_log_file=None):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -57,6 +57,7 @@ class Step(object):
         self._suffix = suffix
         self._cycles = cycles
         self._procs = procs
+        self._do_log_file=do_log_file
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -144,6 +145,13 @@ class Step(object):
     def max_wps(self):
         """Return maximum number of simultaneous workpackages"""
         return self._max_wps
+
+    @property
+    def do_log_file(self):
+        """Return do log file name"""
+        return self._do_log_file
+
+
 
     def get_used_sets(self, available_sets, parameter_dict=None):
         """Get list of all used sets, which can be found in available_sets"""
@@ -560,7 +568,7 @@ class Operation(object):
                     else:
                         stdout_handle = stdout
                     if dolog!=None:
-                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), shared=self.shared)
+                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), parameter_dict=parameter_dict, shared=self.shared)
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > \"{1}\"".format(do,
@@ -743,16 +751,28 @@ class DoLog(object):
 
     """A DoLog class containing the operations and information for setting up the do log."""
 
-    def __init__(self, log_dir, initial_env):
-        log_path = os.path.join(os.path.dirname(log_dir),
-                                jube2.conf.WORKPACKAGE_DO_LOG_FILENAME)
-        self._log_path = log_path
+    def __init__(self, log_dir, log_file, initial_env, cycle): 
+        self._log_dir = log_dir
+        self._log_file = log_file
         self._initial_env = initial_env
         self._work_dir = None
-
+        self._cycle = cycle
+        self._file_created=False
+        self._log_path=None
+        
     @property
     def log_path(self):
         """Get log directory"""
+        return self._log_path
+
+    @property
+    def log_file(self):
+        """Get log file"""
+        return self._log_file
+
+    @property
+    def log_path(self):
+        """Get log path"""
         return self._log_path
 
     @property
@@ -775,11 +795,35 @@ class DoLog(object):
         fdologout.write('\n')
         fdologout.close()
 
-    def store_do(self, do, shell, work_dir, shared=False):
+    def store_do(self, do, shell, work_dir, parameter_dict, shared=False):
         """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
+        if self._log_file==None:
+            return
+    
+        if self._log_path==None:
+            new_log_file= jube2.util.util.substitution(
+                self._log_file, parameter_dict)
+            new_log_file = os.path.expandvars(os.path.expanduser(new_log_file))
+            self._log_file = new_log_file
+
+            if re.search(jube2.parameter.Parameter.parameter_regex, self._log_file):
+                raise IOError(("Given do_log_file path {0} contains a unknown " +
+                               "JUBE or environment variable.").format(
+                    self._log_file))
+            if self._log_file[0]=='/':
+                self._log_path=self._log_file
+            elif '/' not in self._log_file:
+                self._log_path=os.path.join(self._log_dir,self._log_file)
+            else:
+                self._log_path=os.path.join(os.getcwd(),self._log_file)
+
+        if self._file_created==False and os.path.exists(self.log_path) and self._cycle == 0:
+            print('Warning: Multiple workpackages are writing into the same do_log file.\n')
+
         if not os.path.exists(self.log_path):
             self.initialiseFile(shell)
-
+            self._file_created=True
+        
         fdologout = open(self.log_path, 'a')
         if work_dir!=self.work_dir:
             fdologout.write('cd '+work_dir+'\n')
