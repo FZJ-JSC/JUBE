@@ -131,6 +131,7 @@ class ExampleChecker(object):
                          "examples_output", self._bench_name, "run.log"), 'r')
             success = ExampleChecker._tabfinder(ausgabe, check)
             for l1, l2 in zip(ausgabe, check):
+                print("l1",l1,"l2",l2)
                 if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1:
                     ausgabeMatcher = re.match(
                         '^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l1)
@@ -163,6 +164,7 @@ class ExampleChecker(object):
                 check += l2
 
         for l1, l2 in zip(ausgabe.split("\n"), check.split("\n")):
+            print("l1",l1,"l2",l2)
             ausgabeTab = re.match(
                 '^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1)
             checkTab = re.match(
