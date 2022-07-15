@@ -871,3 +871,26 @@ The ``key`` tag adds columns to the database table having the same type as the c
    +-----+------------+------+---------+------------+----+
 
 To have a look into a database within a python script the python modules `sqalchemy <https://www.sqlalchemy.org/>`_ or `pandas <https://pandas.pydata.org>`_ can be used.
+
+.. index:: do log
+
+.. _do_log:
+
+Creating a do log
+~~~~~~~~~~~~~~~~~
+
+To increase reproducibility of the do statements within a workpackage of a step and to archive the environment during execution, a do log can be printed. A do log tries to mimick an executable script recreating the environment at execution time. The files used for this example can be found inside ``examples/do_log``.
+
+The input file ``do_log.xml``:
+
+.. literalinclude:: ../examples/do_log/do_log.xml
+   :language: xml
+
+The input file ``do_log.yaml``:
+
+.. literalinclude:: ../examples/do_log/do_log.yaml
+   :language: yaml
+
+In this example a hidden string is searched for within 5 files and the name of the file containing the hidden string is printed.
+
+For the initial execution of this example within ``bench_run/000000/00000[0-4]_execute`` each can be found a ``do_log`` file. These file can be executed manually by prefixing it with ``/bin/sh``. The scripts will reproduce the environment at execution time, the execution and the result output. Keep in mind that the shared ``grep`` will be executed by the benchmark with id 4.
