@@ -103,14 +103,11 @@ class ExampleChecker(object):
         """Run example"""
         success = True
         debug = "--debug" if self._debug else ""
-        print("{0} run -e {1} -r".format(debug, self._xml_file).split())
         jube2.main.main(
             "{0} run -e {1} -r".format(debug, self._xml_file).split())
 
         if self._check_function:
             success = self._check()
-
-        print(success, self._xml_file)
 
         shutil.rmtree(os.path.join(EXAMPLES_PREFIX,
                       os.path.join(self._bench_name, "bench_run")))
@@ -131,7 +128,6 @@ class ExampleChecker(object):
                          "examples_output", self._bench_name, "run.log"), 'r')
             success = ExampleChecker._tabfinder(ausgabe, check)
             for l1, l2 in zip(ausgabe, check):
-                print("l1",l1,"l2",l2)
                 if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1:
                     ausgabeMatcher = re.match(
                         '^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l1)
@@ -164,7 +160,6 @@ class ExampleChecker(object):
                 check += l2
 
         for l1, l2 in zip(ausgabe.split("\n"), check.split("\n")):
-            print("l1",l1,"l2",l2)
             ausgabeTab = re.match(
                 '^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1)
             checkTab = re.match(
