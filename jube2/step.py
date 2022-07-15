@@ -567,8 +567,13 @@ class Operation(object):
                         stdout_handle = subprocess.PIPE
                     else:
                         stdout_handle = stdout
+
                     if dolog!=None:
-                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), parameter_dict=parameter_dict, shared=self.shared)
+                        try:
+                            dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), parameter_dict=parameter_dict, shared=self.shared)
+                        except ValueError:
+                            print('Warning: Multiple workpackages are writing into the same do_log_file making this file invalid for reusage and incomplete!')
+
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > \"{1}\"".format(do,

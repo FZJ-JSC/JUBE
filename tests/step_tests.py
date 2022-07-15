@@ -101,12 +101,13 @@ class TestDoLog(unittest.TestCase):
         self.currWorkDir = os.getcwd()
         self.environment = {'TEST': 'test'}
         self.dolog=jube2.step.DoLog(log_dir=self.currWorkDir, log_file='do_log', initial_env=self.environment)
+        self.dolog_variable_path=jube2.step.DoLog(log_dir=self.currWorkDir, log_file='${path_variable}/do_log', initial_env=self.environment)
         self.echoPath = subprocess.check_output(['which', 'echo']).decode(
             sys.stdout.encoding)
         self.echoPath = self.echoPath.replace('\n', '')
 
 
-    def test_do_log_creation(self):
+    def test_do_log_content(self):
         """Test do log creation"""
         if os.path.exists(os.path.join(self.currWorkDir, 'do_log')):
             os.remove(os.path.join(self.currWorkDir, 'do_log'))
@@ -149,6 +150,23 @@ class TestDoLog(unittest.TestCase):
         dologFileHandle.close()
 
         os.remove(os.path.join(self.currWorkDir, 'do_log'))
+
+    def test_do_log_path_subsitution(self):
+        """Test do log creation"""
+        if os.path.exists(os.path.join(self.currWorkDir, 'path/do_log')):
+            os.remove(os.path.join(self.currWorkDir, 'path/do_log'))
+
+        if os.path.exists(os.path.join(self.currWorkDir, 'path')):
+            os.rmdir(os.path.join(self.currWorkDir, 'path'))
+
+        self.dolog_variable_path.store_do(do=self.echoPath+' Test1', shell='/bin/sh', work_dir=os.path.join(
+            self.currWorkDir, 'work'), parameter_dict={'path_variable': 'path'})
+
+        self.assertTrue(os.path.exists(
+            os.path.join(self.currWorkDir, 'path/do_log')))
+
+        os.remove(os.path.join(self.currWorkDir, 'path/do_log'))
+        os.rmdir(os.path.join(self.currWorkDir, 'path'))
 
 
 if __name__ == "__main__":
