@@ -180,6 +180,8 @@
     <xs:attribute name="shared" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
     <xs:attribute name="cycles" type="xs:integer" use="optional" />
+    <xs:attribute name="procs" type="xs:integer" use="optional" />
+    <xs:attribute name="do_log_file" type="xs:string" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="analyserType">

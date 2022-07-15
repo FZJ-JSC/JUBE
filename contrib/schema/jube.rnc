@@ -142,6 +142,8 @@ attlist.step &=
   attribute suffix { text }?,
   attribute export { "true" | "false" | "True" | "False" }?,
   attribute shared { text }?,
+  attribute do_log_file { "true" | "false" | "True" | "False" | text }?,
+  attribute procs { "int" }?,
   attribute tag { text }?
 analyzer =
   element analyzer { attlist.analyzer, (use | analyse | \include)* }

@@ -98,6 +98,8 @@
                         active CDATA #IMPLIED
                         suffix CDATA #IMPLIED
                         work_dir CDATA #IMPLIED
+                        procs CDATA #IMPLIED
+                        do_log_file CDATA #IMPLIED
                         shared CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT analyzer ((use|analyse|include)*)>

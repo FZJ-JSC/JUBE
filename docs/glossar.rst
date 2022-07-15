@@ -451,7 +451,7 @@ Glossary
      .. code-block:: xml
 
         <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." 
-              export="..." max_async="..." iterations="..." cycles="..." procs="...">
+              export="..." max_async="..." iterations="..." cycles="..." procs="..." do_log_file="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -491,6 +491,7 @@ Glossary
      * ``iterations`` is optional. All workpackages within this step will be executed multiple times if the iterations value is used.
      * ``cycles`` is optional. All ``<do>`` commands within the step will be executed ``cycles``-times
      * ``procs`` is optional. Amount of processes used to execute the parameter expansions of the corresponding step in parallel.
+     * ``do_log_file`` is optional. Name or path of a do log file trying to mimick the do steps and the environment of a workpacakge of a step to produce an executable script.
 
    do_tag
      A do contain a executable *Shell* operation.
