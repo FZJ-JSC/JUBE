@@ -232,7 +232,6 @@ Inside the benchmark directory you will see the follwing structure:
       +- 000000_say_hello  # the workpackage
          |
          +- done           # workpackage finished marker
-         +- do_log         # script mimicking the execution of dos of the workpackage
          +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands
@@ -436,7 +435,6 @@ The resulting directory-tree will be:
       +- 000000_sub_step   # the workpackage ($number = 1)
          |
          +- done           # workpackage finished marker
-         +- do_log         # script mimicking the execution of dos of the workpackage
          +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands

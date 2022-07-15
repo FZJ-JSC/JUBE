@@ -547,7 +547,6 @@ You will get the following directory structure:
       +- 000000_a_step     # the first workpackage
          |
          +- done           # workpackage finished marker
-         +- do_log         # script mimicking the execution of dos of the workpackage
          +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands
