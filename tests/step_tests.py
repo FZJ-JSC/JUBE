@@ -100,12 +100,13 @@ class TestDoLog(unittest.TestCase):
     def setUp(self):
         self.currWorkDir = os.getcwd()
         self.environment = {'TEST': 'test'}
-        self.dolog=jube2.step.DoLog(log_dir=self.currWorkDir, log_file='do_log', initial_env=self.environment)
-        self.dolog_variable_path=jube2.step.DoLog(log_dir=self.currWorkDir, log_file='${path_variable}/do_log', initial_env=self.environment)
+        self.dolog = jube2.step.DoLog(
+            log_dir=self.currWorkDir, log_file='do_log', initial_env=self.environment)
+        self.dolog_variable_path = jube2.step.DoLog(
+            log_dir=self.currWorkDir, log_file='${path_variable}/do_log', initial_env=self.environment)
         self.echoPath = subprocess.check_output(['which', 'echo']).decode(
             sys.stdout.encoding)
         self.echoPath = self.echoPath.replace('\n', '')
-
 
     def test_do_log_content(self):
         """Test do log creation"""

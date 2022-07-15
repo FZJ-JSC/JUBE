@@ -580,7 +580,8 @@ class Workpackage(object):
         """Run all available operations"""
         continue_op = True
         continue_cycle = True
-        doLog = jube2.step.DoLog(log_dir=os.path.dirname(self.work_dir), log_file=self.step._do_log_file, initial_env=self.env, cycle=self._cycle)
+        doLog = jube2.step.DoLog(log_dir=os.path.dirname(
+            self.work_dir), log_file=self.step._do_log_file, initial_env=self.env, cycle=self._cycle)
         for operation_number, operation in enumerate(self._step.operations):
             # Check if the operation is activated
             active = operation.active(parameter)

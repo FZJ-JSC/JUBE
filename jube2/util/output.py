@@ -187,6 +187,7 @@ def print_loading_bar(current_cnt, all_cnt, wait_cnt=0, error_cnt=0):
     sys.stdout.write(bar_str)
     sys.stdout.flush()
 
+
 def element_tree_tostring(element, encoding=None):
     """A more encoding friendly ElementTree.tostring method"""
     class Dummy(object):

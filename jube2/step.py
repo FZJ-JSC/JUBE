@@ -57,7 +57,7 @@ class Step(object):
         self._suffix = suffix
         self._cycles = cycles
         self._procs = procs
-        self._do_log_file=do_log_file
+        self._do_log_file = do_log_file
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -152,8 +152,6 @@ class Step(object):
     def do_log_file(self):
         """Return do log file name"""
         return self._do_log_file
-
-
 
     def get_used_sets(self, available_sets, parameter_dict=None):
         """Get list of all used sets, which can be found in available_sets"""
@@ -570,8 +568,9 @@ class Operation(object):
                     else:
                         stdout_handle = stdout
 
-                    if dolog!=None:
-                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), parameter_dict=parameter_dict, shared=self.shared)
+                    if dolog != None:
+                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(
+                            work_dir), parameter_dict=parameter_dict, shared=self.shared)
 
                     sub = subprocess.Popen(
                         [shell, "-c",
@@ -751,21 +750,23 @@ class Operation(object):
                 os.remove(env_file_path)
         return env
 
+
 class DoLog(object):
 
     """A DoLog class containing the operations and information for setting up the do log."""
 
-    def __init__(self, log_dir, log_file, initial_env, cycle=0): 
+    def __init__(self, log_dir, log_file, initial_env, cycle=0):
         self._log_dir = log_dir
-        if log_file!=None:
-            if log_file[-1]=='/':
-                raise ValueError("The path of do_log_file is ending with / which is a invalid file path.")
+        if log_file != None:
+            if log_file[-1] == '/':
+                raise ValueError(
+                    "The path of do_log_file is ending with / which is a invalid file path.")
         self._log_file = log_file
         self._initial_env = initial_env
         self._work_dir = None
         self._cycle = cycle
-        self._log_path=None
-        
+        self._log_path = None
+
     @property
     def log_path(self):
         """Get log directory"""
@@ -803,26 +804,27 @@ class DoLog(object):
 
     def store_do(self, do, shell, work_dir, parameter_dict=None, shared=False):
         """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
-        if self._log_file==None:
+        if self._log_file == None:
             return
-    
-        if self._log_path==None:
+
+        if self._log_path == None:
             if parameter_dict:
-                new_log_file= jube2.util.util.substitution(
+                new_log_file = jube2.util.util.substitution(
                     self._log_file, parameter_dict)
-                new_log_file = os.path.expandvars(os.path.expanduser(new_log_file))
+                new_log_file = os.path.expandvars(
+                    os.path.expanduser(new_log_file))
                 self._log_file = new_log_file
                 if re.search(jube2.parameter.Parameter.parameter_regex, self._log_file):
                     raise IOError(("Given do_log_file path {0} contains a unknown " +
-                                    "JUBE or environment variable.").format(
-                    self._log_file))
+                                   "JUBE or environment variable.").format(
+                        self._log_file))
 
-            if self._log_file[0]=='/':
-                self._log_path=self._log_file
+            if self._log_file[0] == '/':
+                self._log_path = self._log_file
             elif '/' not in self._log_file:
-                self._log_path=os.path.join(self._log_dir,self._log_file)
+                self._log_path = os.path.join(self._log_dir, self._log_file)
             else:
-                self._log_path=os.path.join(os.getcwd(),self._log_file)
+                self._log_path = os.path.join(os.getcwd(), self._log_file)
 
         # create directory if not yet existent
         if not os.path.exists(os.path.dirname(self.log_path)):
@@ -830,11 +832,11 @@ class DoLog(object):
 
         if not os.path.exists(self.log_path):
             self.initialiseFile(shell)
-        
+
         fdologout = open(self.log_path, 'a')
-        if work_dir!=self.work_dir:
+        if work_dir != self.work_dir:
             fdologout.write('cd '+work_dir+'\n')
-            self._work_dir=work_dir
+            self._work_dir = work_dir
         fdologout.write(do)
         if shared:
             fdologout.write(' # shared execution')

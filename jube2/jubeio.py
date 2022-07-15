@@ -820,7 +820,7 @@ class Parser(object):
         suffix = etree_step.get("suffix", "").strip()
         cycles = int(etree_step.get("cycles", "1").strip())
         procs = int(etree_step.get("procs", "1").strip())
-        do_log_file = etree_step.get("do_log_file", "None").strip() 
+        do_log_file = etree_step.get("do_log_file", "None").strip()
         do_log_file = None if do_log_file == "None" else do_log_file
         do_log_file = None if do_log_file == "False" else do_log_file
         do_log_file = None if do_log_file == "false" else do_log_file
