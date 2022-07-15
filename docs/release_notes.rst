@@ -42,7 +42,7 @@ Release: *FIXME*
 * Add the inclusion of the preprocessor also in case of init_with configuration.
 * A bug for the usage of a newline separator within yaml scripts is resolved.
 * A bug leading to an error when multiple benchmarks within a yaml script are stated without the benchmark tag is removed.
-* A feature to create a do_log file for every workpackage of a step is integrated. The do_log file contains the whole environment while execution, the execution shell and the do directives of the step.
+* A feature to create a do_log file for every workpackage of a step is integrated. The do_log file contains the whole environment while execution, the execution shell, the change of current work directories, comments if a directive was executed in a shared fashion and the do directives of the steps.
 
 Version 2.4.2
 ~~~~~~~~~~~~~

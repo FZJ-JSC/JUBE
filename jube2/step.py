@@ -751,8 +751,11 @@ class DoLog(object):
 
     """A DoLog class containing the operations and information for setting up the do log."""
 
-    def __init__(self, log_dir, log_file, initial_env, cycle): 
+    def __init__(self, log_dir, log_file, initial_env, cycle=0): 
         self._log_dir = log_dir
+        if log_file!=None:
+            if log_file[-1]=='/':
+                raise ValueError("The path of do_log_file is ending with / which is a invalid file path.")
         self._log_file = log_file
         self._initial_env = initial_env
         self._work_dir = None
@@ -795,21 +798,22 @@ class DoLog(object):
         fdologout.write('\n')
         fdologout.close()
 
-    def store_do(self, do, shell, work_dir, parameter_dict, shared=False):
+    def store_do(self, do, shell, work_dir, parameter_dict=None, shared=False):
         """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
         if self._log_file==None:
             return
     
         if self._log_path==None:
-            new_log_file= jube2.util.util.substitution(
-                self._log_file, parameter_dict)
-            new_log_file = os.path.expandvars(os.path.expanduser(new_log_file))
-            self._log_file = new_log_file
-
-            if re.search(jube2.parameter.Parameter.parameter_regex, self._log_file):
-                raise IOError(("Given do_log_file path {0} contains a unknown " +
-                               "JUBE or environment variable.").format(
+            if parameter_dict:
+                new_log_file= jube2.util.util.substitution(
+                    self._log_file, parameter_dict)
+                new_log_file = os.path.expandvars(os.path.expanduser(new_log_file))
+                self._log_file = new_log_file
+                if re.search(jube2.parameter.Parameter.parameter_regex, self._log_file):
+                    raise IOError(("Given do_log_file path {0} contains a unknown " +
+                                    "JUBE or environment variable.").format(
                     self._log_file))
+
             if self._log_file[0]=='/':
                 self._log_path=self._log_file
             elif '/' not in self._log_file:
@@ -818,7 +822,11 @@ class DoLog(object):
                 self._log_path=os.path.join(os.getcwd(),self._log_file)
 
         if self._file_created==False and os.path.exists(self.log_path) and self._cycle == 0:
-            print('Warning: Multiple workpackages are writing into the same do_log file.\n')
+            raise ValueError("Multiple workpackages are writing into the same do_log file. Consider making the do_log_file path dependent on JUBE variables or just give a file name without any path to store the do_log_file above the work directory of the local workpackage.")
+
+        # create directory if not yet existent
+        if not os.path.exists(os.path.dirname(self.log_path)):
+            os.makedirs(os.path.dirname(self.log_path))
 
         if not os.path.exists(self.log_path):
             self.initialiseFile(shell)

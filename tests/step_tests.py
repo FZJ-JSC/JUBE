@@ -100,7 +100,7 @@ class TestDoLog(unittest.TestCase):
     def setUp(self):
         self.currWorkDir = os.getcwd()
         self.environment = {'TEST': 'test'}
-        self.dolog=jube2.step.DoLog(log_dir=os.path.join(self.currWorkDir, 'work'), initial_env=self.environment)
+        self.dolog=jube2.step.DoLog(log_dir=self.currWorkDir, log_file='do_log', initial_env=self.environment)
         self.echoPath = subprocess.check_output(['which', 'echo']).decode(
             sys.stdout.encoding)
         self.echoPath = self.echoPath.replace('\n', '')
