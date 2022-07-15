@@ -103,6 +103,7 @@ class ExampleChecker(object):
         """Run example"""
         success = True
         debug = "--debug" if self._debug else ""
+        print("{0} run -e {1} -r".format(debug, self._xml_file).split())
         jube2.main.main(
             "{0} run -e {1} -r".format(debug, self._xml_file).split())
 
