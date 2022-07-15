@@ -76,12 +76,12 @@ Without the `--user` or `--prefix` argument, JUBE will be installed in the stand
 
 # Acknowledgments  
 
-We gratefully acknowledge the following reserach projects for their support in the development of JUBE.
+We gratefully acknowledge the following reserach projects and institutions for their support in the development of JUBE2 and granting compute time to develop JUBE2.
 
 - UNSEEN (BMWi project, ID: 03EI1004-C)
 - Gauss Centre for Supercomputing e.V. (www.gauss-centre.eu) and the John von Neumann Institute for Computing (NIC) on the GCS Supercomputer JUWELS at Jülich Supercomputing Centre (JSC) 
 
-Furthermore, we gratefully acknowledge all the people having contributed to this project with their expertise, time and passion in any way. A subset of these people can be found within the AUTHORS file.
+Furthermore, we gratefully acknowledge all the people and institutions having contributed to this project with their expertise, time and passion in any way. A subset of these people and institutions can be found within the AUTHORS file.
 
 # Further Information
 
