@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="do_log_example" outpath="bench_run">
+    <parameterset name="param_set">
+      <parameter name="number">1,2,3,4,5</parameter>
+    </parameterset>
+    
+    <step name="execute" shared="shared" do_log_file="do_log">
+      <use>param_set</use>
+      <do>cp ${jube_benchmark_home}/loreipsum${number} shared</do>
+      <do shared="true">grep -r -l "Hidden!" loreipsum*</do>
+    </step>    
+  </benchmark>
+</jube>

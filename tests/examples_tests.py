@@ -44,6 +44,8 @@ class TestExamples(unittest.TestCase):
         examples_tasks = []
         for i in [".xml", ".yaml"]:
             examples_tasks.append(ExampleChecker(
+                "do_log", "do_log"+i))
+            examples_tasks.append(ExampleChecker(
                 "environment", "environment"+i))
             examples_tasks.append(ExampleChecker(
                 "result_creation", "result_creation"+i))
