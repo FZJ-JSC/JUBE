@@ -84,6 +84,8 @@ class Step(object):
             step_etree.attrib["cycles"] = str(self._cycles)
         if self._procs != 1:
             step_etree.attrib["procs"] = str(self._procs)
+        if self._do_log_file != None:
+            step_etree.attrib["do_log_file"] = str(self._do_log_file)
         for use in self._use:
             use_etree = ET.SubElement(step_etree, "use")
             use_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(use)
@@ -569,10 +571,7 @@ class Operation(object):
                         stdout_handle = stdout
 
                     if dolog!=None:
-                        try:
-                            dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), parameter_dict=parameter_dict, shared=self.shared)
-                        except ValueError:
-                            print('Warning: Multiple workpackages are writing into the same do_log_file making this file invalid for reusage and incomplete!')
+                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(work_dir), parameter_dict=parameter_dict, shared=self.shared)
 
                     sub = subprocess.Popen(
                         [shell, "-c",
@@ -765,7 +764,6 @@ class DoLog(object):
         self._initial_env = initial_env
         self._work_dir = None
         self._cycle = cycle
-        self._file_created=False
         self._log_path=None
         
     @property
@@ -826,16 +824,12 @@ class DoLog(object):
             else:
                 self._log_path=os.path.join(os.getcwd(),self._log_file)
 
-        if self._file_created==False and os.path.exists(self.log_path) and self._cycle == 0:
-            raise ValueError("Multiple workpackages are writing into the same do_log file. Consider making the do_log_file path dependent on JUBE variables or just give a file name without any path to store the do_log_file above the work directory of the local workpackage.")
-
         # create directory if not yet existent
         if not os.path.exists(os.path.dirname(self.log_path)):
             os.makedirs(os.path.dirname(self.log_path))
 
         if not os.path.exists(self.log_path):
             self.initialiseFile(shell)
-            self._file_created=True
         
         fdologout = open(self.log_path, 'a')
         if work_dir!=self.work_dir:
