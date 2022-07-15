@@ -13,5 +13,5 @@
     do_log_file: "do_log"
     shared: "shared"
     do:
-      - cp ${jube_benchmark_home}/loreipsum${number} shared
+      - cp ../../../../loreipsum${number} shared
       - {shared: "true", _: "grep -r -l \"Hidden!\" loreipsum*"}
