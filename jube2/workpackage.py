@@ -714,12 +714,12 @@ class Workpackage(object):
         continue_cycle = True
         while (continue_cycle and continue_op):
 
-            stepstr = ("{0} ( iter:{2} | id:{1} | parents:{3} | cycle:{4} )"
+            stepstr = ("{0} ( iter:{2} | id:{1} | parents:{3} | cycle:{4} | procs:{5} )"
                        .format(self._step.name, self._id, self._iteration,
                                ",".join([parent.step.name + "(" +
                                          str(parent.id) + ")"
                                          for parent in self._parents]),
-                               self._cycle))
+                               self._cycle, self._step.procs))
             stepstr = "----- {0} -----".format(stepstr)
             LOGGER.debug(stepstr)
 
