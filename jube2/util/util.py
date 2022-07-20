@@ -110,7 +110,7 @@ def valid_tags(tag_string, tags):
         for tag in tag_array:
             tag_state.update({tag: str(tag in tags)})
         for tag in tag_array:
-            tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + '(?=\W|$)',
+            tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + r'(?=\W|$)',
                                   tag_state[tag], tag_tags_str)
         tag_tags_str = tag_tags_str.replace('|', ' or ')\
             .replace('+', ' and ').replace('!', ' not ')
@@ -222,7 +222,7 @@ def script_evaluation(cmd, script_type):
             if len(alt_shell) > 0:
                 shell = alt_shell
         sub = subprocess.Popen([shell, "-c", cmd], stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, shell=False)
+                               stderr=subprocess.PIPE, shell=False)
 
         stdout, stderr = sub.communicate()
         stdout = stdout.decode(errors="ignore")

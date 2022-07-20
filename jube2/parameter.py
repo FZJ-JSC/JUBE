@@ -162,7 +162,8 @@ class Parameterset(object):
                       update_mode=NEVER_MODE):
         """Two Parametersets are compatible, if the intersection only contains
         equivilant parameters"""
-        return len(self.get_incompatible_parameter(parameterset, update_mode)) == 0
+        return len(self.get_incompatible_parameter(
+            parameterset, update_mode)) == 0
 
     def get_incompatible_parameter(self, parameterset,
                                    update_mode=NEVER_MODE):
@@ -174,8 +175,9 @@ class Parameterset(object):
             set(parameterset.all_parameter_names)
         for name in intersection:
             if (not (self[name].update_allowed(update_mode) or
-                     # In case of the USE_MODE (in the beginning of a new step) only the actual
-                     # new parameterset and its mode is relevant
+                     # In case of the USE_MODE (in the beginning of a
+                     # new step) only the actual new parameterset and its
+                     # mode is relevant
                      parameterset[name].update_allowed(
                          NEVER_MODE if (update_mode == USE_MODE) else
                          update_mode)) and
