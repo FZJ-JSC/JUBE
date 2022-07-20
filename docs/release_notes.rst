@@ -21,6 +21,18 @@
 Release notes
 =============
 
+Version 2.4.3
+~~~~~~~~~~~~~
+Release: 2022-07-20
+
+* Fixes a bug related to `<include>` and `init-with` combinations.
+* `JUBE_EXEC_SHELL` is now also taken into account during parameter evaluation.
+* `jube status` now also returns `ERROR` state.
+* Fixes a bug of using `$$` in shell commands.
+* Updates *SLURM* `gres` default value in platform files.
+* Fixes a bug of having a list of benchmarks in YAML format.
+
+
 Version 2.4.2
 ~~~~~~~~~~~~~
 Release: 2021-11-30
