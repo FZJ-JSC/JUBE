@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2021
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -29,6 +29,7 @@ import xml.etree.ElementTree as ET
 import jube2.util.util
 import jube2.conf
 import jube2.log
+import jube2.parameter
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -509,6 +510,11 @@ class Operation(object):
                 self._work_dir, parameter_dict)
             new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
             work_dir = os.path.join(work_dir, new_work_dir)
+            if re.search(jube2.parameter.Parameter.parameter_regex, work_dir):
+                raise IOError(("Given work directory {0} contains a unknown " +
+                               "JUBE or environment variable.").format(
+                    work_dir))
+
             # Create directory if it does not exist
             if not jube2.conf.DEBUG_MODE and not os.path.exists(work_dir):
                 os.makedirs(work_dir)
