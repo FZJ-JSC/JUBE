@@ -213,6 +213,8 @@ class YAML_Converter(object):
     @staticmethod
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
+        if type(data) is not dict:
+            data = {'benchmark': data}
         to_delete = list()
         for tag in data.keys():
             if type(data[tag]) is not list:
