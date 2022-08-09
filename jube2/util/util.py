@@ -236,14 +236,19 @@ def substitution(text, substitution_dict):
 def convert_type(value_type, value, stop=True):
     """Convert value to given type"""
     result_value = None
+    value_type_incorrect=False
     try:
         if value_type == "int":
             if value == "nan":
                 result_value = float("nan")
             else:
                 result_value = int(float(value))
+                if re.match(r"^[-+]?\d+$", value) is None:
+                    value_type_incorrect=True
         elif value_type == "float":
             result_value = float(value)
+            if re.match(r"([+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))",value) is None:
+                value_type_incorrect=True
         else:
             result_value = value
     except ValueError:
@@ -252,6 +257,9 @@ def convert_type(value_type, value, stop=True):
                              .format(value, value_type))
         else:
             result_value = value
+    if value_type_incorrect:
+        raise TypeError(("\"{0}\" is not of type \"{1}\"")
+                             .format(value, value_type))
     return result_value
 
 

@@ -39,6 +39,7 @@ Release: *FIXME*
 * A wrong result entry in the glossary was fixed.
 * A bug for the usage of a newline separator within yaml scripts is resolved.
 * A feature to create a do_log file for every workpackage of a step is integrated. The do_log file contains the whole environment while execution, the execution shell, the change of current work directories, comments if a directive was executed in a shared fashion and the do directives of the steps.
+* The execution cancels now, when a parameter is of type int or float and the parameter value has not the form of a int or float correspondingly.
 
 Version 2.4.3
 ~~~~~~~~~~~~~

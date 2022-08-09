@@ -46,6 +46,10 @@ Release: *FIXME*
   directories, comments if a directive was executed in a shared
   fashion and the do directives of the steps.
 
+* The execution cancels now, when a parameter is of type int or float
+  and the parameter value has not the form of a int or float
+  correspondingly.
+
 
 Version 2.4.3
 =============
