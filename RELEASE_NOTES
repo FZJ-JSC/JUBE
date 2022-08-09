@@ -29,33 +29,41 @@ Release: *FIXME*
 
 * Some yaml example scripts were corrected.
 
-* The SLURM gres default and notification type were changed.
-
 * The MANIFEST file was removed.
 
 * A typo in the error message was fixed.
 
 * Fix result command documentation.
 
-* *JUBE_EXEC_SHELL* is now taken into account during parameter
-  evaluation.
-
 * A wrong result entry in the glossary was fixed.
-
-* Add the inclusion of the preprocessor also in case of init_with
-  configuration.
 
 * A bug for the usage of a newline separator within yaml scripts is
   resolved.
-
-* A bug leading to an error when multiple benchmarks within a yaml
-  script are stated without the benchmark tag is removed.
 
 * A feature to create a do_log file for every workpackage of a step is
   integrated. The do_log file contains the whole environment while
   execution, the execution shell, the change of current work
   directories, comments if a directive was executed in a shared
   fashion and the do directives of the steps.
+
+
+Version 2.4.3
+=============
+
+Release: 2022-07-20
+
+* Fixes a bug related to *<include>* and *init-with* combinations.
+
+* *JUBE_EXEC_SHELL* is now also taken into account during parameter
+  evaluation.
+
+* *jube status* now also returns *ERROR* state.
+
+* Fixes a bug of using *$$* in shell commands.
+
+* Updates *SLURM* *gres* default value in platform files.
+
+* Fixes a bug of having a list of benchmarks in YAML format.
 
 
 Version 2.4.2

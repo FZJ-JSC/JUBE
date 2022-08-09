@@ -212,6 +212,8 @@ class YAML_Converter(object):
     @staticmethod
     def create_headtags(data, parent_node):
         """ Search for the headtags in given dictionary """
+        if type(data) is not dict:
+            data = {'benchmark': data}
         to_delete = list()
         # If the benchmark tag is left out and just a list of benchmarks was stated,
         # data is a list. In this case extend data to a dictionary with the key

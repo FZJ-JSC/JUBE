@@ -67,11 +67,11 @@ config = {'name': 'JUBE',
           'download_url': 'www.fz-juelich.de/ias/jsc/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
           'version': '2.5.0',
-          'packages': ['jube2', 'jube2.result_types', 'jube2.util'],
+          'packages': ['jube2','jube2.result_types','jube2.util'],
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
                            ['docs/JUBE.pdf']),
-                          (SHARE_PATH, ['LICENSE', 'RELEASE_NOTES'])] +
+                          (SHARE_PATH, ['AUTHORS','LICENSE','RELEASE_NOTES'])] +
                          rel_path("examples", SHARE_PATH) +
                          rel_path("contrib", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),

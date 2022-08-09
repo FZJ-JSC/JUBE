@@ -158,7 +158,7 @@ def valid_tags(tag_string, tags):
         for tag in tag_array:
             tag_state.update({tag: str(tag in tags)})
         for tag in tag_array:
-            tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + '(?=\W|$)',
+            tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + r'(?=\W|$)',
                                   tag_state[tag], tag_tags_str)
         tag_tags_str = tag_tags_str.replace('|', ' or ')\
             .replace('+', ' and ').replace('!', ' not ')
