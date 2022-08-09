@@ -215,11 +215,6 @@ class YAML_Converter(object):
         if type(data) is not dict:
             data = {'benchmark': data}
         to_delete = list()
-        # If the benchmark tag is left out and just a list of benchmarks was stated,
-        # data is a list. In this case extend data to a dictionary with the key
-        # "benchmark" to enable execution of all of the benchmarks
-        if isinstance(data, list):
-            data = {"benchmark": data}
         for tag in data.keys():
             if type(data[tag]) is not list:
                 data[tag] = [data[tag]]
