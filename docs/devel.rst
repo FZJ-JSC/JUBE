@@ -72,8 +72,8 @@ Another possibility is to copy or link the file to the default search
 path ``~/.config/flake8`` to use it globally.
 
 
-Coverage
---------
+Coverage and testing
+--------------------
 
 To produce a coverage report the ``coverage`` packet must be
 installed. Run
@@ -88,6 +88,11 @@ in the ``test`` directory. The first command creates a coverage report
 folder ``htmlcov`` with html files visualizing the code coverage by
 adding colors for covered and uncovered regions of the code. The
 summary can be viewed in ``index.html``.
+
+Testing for multiprocessing parts need to be performed manually. The 
+corresponding file is located in ``tests/multiprocessing_tests.py``
+
+Make sure to add tests for your developments.
 
 
 Documentation creation
