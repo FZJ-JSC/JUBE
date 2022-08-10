@@ -16,23 +16,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Collection of all tests"""
+"""Util related tests"""
 
 from __future__ import (print_function,
                         unicode_literals,
                         division)
 
 import unittest
-from parameter_tests import TestParameter, TestParameterSet
-from multiprocessing_tests import TestMultiprocessing
-from pattern_tests import TestPattern
-from benchmark_tests import TestBenchmark
-from result_database_tests import TestResultDatabase
-from examples_tests import TestExamples
-from yaml_tests import TestYAMLScripts
-from step_tests import TestOperation
-from step_tests import TestDoLog
-from util_tests import TestUtil
+import jube2.util.util
+
+
+class TestUtil(unittest.TestCase):
+
+    """Util python file test class"""
+
+    def test_convert_type(self):
+        """Test convert_type"""
+        self.assertEqual(type(jube2.util.util.convert_type("int","42",stop=True)),int)
+        self.assertEqual(type(jube2.util.util.convert_type("float","42",stop=True)),float)
+        self.assertEqual(type(jube2.util.util.convert_type("float","3.141",stop=True)),float)
+        with self.assertRaises(TypeError):
+            jube2.util.util.convert_type("int","3.141",stop=True)
+        with self.assertRaises(ValueError):
+            jube2.util.util.convert_type("int","forty-two",stop=True)
+        self.assertEqual(jube2.util.util.convert_type("int","forty-two",stop=False),"forty-two")
 
 
 if __name__ == "__main__":
