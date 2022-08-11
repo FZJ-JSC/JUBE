@@ -53,7 +53,6 @@ class TestYAMLScripts(unittest.TestCase):
         self.assertFalse(errorFileExistent)
         shutil.rmtree(os.path.join(os.path.dirname(__file__),
                       'yaml_test_scripts', 'bench_run'))
-        print("TEST")
         return True
 
     def test_multiple_benchmarks(self):

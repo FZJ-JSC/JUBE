@@ -1,252 +1,288 @@
-[2022-07-15 16:07:56,250]:DEBUG: Create initial workpackages
-[2022-07-15 16:07:56,251]:DEBUG: Expand parameter templates:
-[2022-07-15 16:07:56,251]:DEBUG:     "number": 1,2,3,4,5
-[2022-07-15 16:07:56,271]:DEBUG: Store initial workpackage information
-[2022-07-15 16:07:56,274]:DEBUG: Start benchmark run
-[2022-07-15 16:07:56,275]:INFO: ####################################################################################################################################################################################
-[2022-07-15 16:07:56,275]:INFO: # benchmark: do_log_example
-[2022-07-15 16:07:56,275]:INFO: # id: 0
-[2022-07-15 16:07:56,275]:INFO: #
-[2022-07-15 16:07:56,275]:INFO: #
-[2022-07-15 16:07:56,275]:INFO: ####################################################################################################################################################################################
-[2022-07-15 16:07:56,275]:DEBUG: ----- execute ( iter:0 | id:0 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,276]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,276]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,276]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,276]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000000_execute/work |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_wp_id            | 0                                                                                                |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,277]:DEBUG:          | jube_wp_padid         | 000000                                                                                           |
-[2022-07-15 16:07:56,280]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_execute/work                                                             |
-[2022-07-15 16:07:56,280]:DEBUG:          | number                | 1                                                                                                |
-[2022-07-15 16:07:56,282]:DEBUG: >>> cp ../../../../loreipsum1 shared
-[2022-07-15 16:07:56,282]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000000_execute/work/stdout
-[2022-07-15 16:07:56,282]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000000_execute/work/stderr
-[2022-07-15 16:07:56,349]:DEBUG: ----- execute ( iter:0 | id:1 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,350]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,350]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,350]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000001_execute/work |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,350]:DEBUG:          | jube_wp_id            | 1                                                                                                |
-[2022-07-15 16:07:56,351]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,351]:DEBUG:          | jube_wp_padid         | 000001                                                                                           |
-[2022-07-15 16:07:56,351]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000001_execute/work                                                             |
-[2022-07-15 16:07:56,351]:DEBUG:          | number                | 2                                                                                                |
-[2022-07-15 16:07:56,351]:DEBUG: >>> cp ../../../../loreipsum2 shared
-[2022-07-15 16:07:56,351]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000001_execute/work/stdout
-[2022-07-15 16:07:56,351]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000001_execute/work/stderr
-[2022-07-15 16:07:56,417]:DEBUG: ----- execute ( iter:0 | id:2 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,418]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,418]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,418]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,418]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,418]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,418]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,418]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000002_execute/work |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_id            | 2                                                                                                |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_padid         | 000002                                                                                           |
-[2022-07-15 16:07:56,419]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000002_execute/work                                                             |
-[2022-07-15 16:07:56,419]:DEBUG:          | number                | 3                                                                                                |
-[2022-07-15 16:07:56,419]:DEBUG: >>> cp ../../../../loreipsum3 shared
-[2022-07-15 16:07:56,420]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000002_execute/work/stdout
-[2022-07-15 16:07:56,420]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000002_execute/work/stderr
-[2022-07-15 16:07:56,485]:DEBUG: ----- execute ( iter:0 | id:3 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,488]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,488]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,488]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000003_execute/work |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_id            | 3                                                                                                |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_padid         | 000003                                                                                           |
-[2022-07-15 16:07:56,488]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000003_execute/work                                                             |
-[2022-07-15 16:07:56,488]:DEBUG:          | number                | 4                                                                                                |
-[2022-07-15 16:07:56,489]:DEBUG: >>> cp ../../../../loreipsum4 shared
-[2022-07-15 16:07:56,489]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000003_execute/work/stdout
-[2022-07-15 16:07:56,489]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000003_execute/work/stderr
-[2022-07-15 16:07:56,554]:DEBUG: ----- execute ( iter:0 | id:4 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,555]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,556]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,556]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000004_execute/work |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_id            | 4                                                                                                |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_padid         | 000004                                                                                           |
-[2022-07-15 16:07:56,556]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000004_execute/work                                                             |
-[2022-07-15 16:07:56,556]:DEBUG:          | number                | 5                                                                                                |
-[2022-07-15 16:07:56,557]:DEBUG: >>> cp ../../../../loreipsum5 shared
-[2022-07-15 16:07:56,557]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000004_execute/work/stdout
-[2022-07-15 16:07:56,557]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000004_execute/work/stderr
-[2022-07-15 16:07:56,618]:DEBUG: ====== execute - shared ======
-[2022-07-15 16:07:56,618]:DEBUG: >>> grep -r -l "Hidden!" loreipsum*
-[2022-07-15 16:07:56,618]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/execute_shared/stdout
-[2022-07-15 16:07:56,618]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/execute_shared/stderr
-[2022-07-15 16:07:56,679]:DEBUG: ==============================
-[2022-07-15 16:07:56,680]:DEBUG: Create new workpackages for workpackage execute(4)
-[2022-07-15 16:07:56,680]:DEBUG:   0 new workpackages created
-[2022-07-15 16:07:56,685]:DEBUG: ----- execute ( iter:0 | id:0 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,686]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,686]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,686]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000000_execute/work |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_id            | 0                                                                                                |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_padid         | 000000                                                                                           |
-[2022-07-15 16:07:56,686]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_execute/work                                                             |
-[2022-07-15 16:07:56,686]:DEBUG:          | number                | 1                                                                                                |
-[2022-07-15 16:07:56,688]:DEBUG: Create new workpackages for workpackage execute(0)
-[2022-07-15 16:07:56,688]:DEBUG:   0 new workpackages created
-[2022-07-15 16:07:56,692]:DEBUG: ----- execute ( iter:0 | id:1 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,692]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,692]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,692]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000001_execute/work |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_id            | 1                                                                                                |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_padid         | 000001                                                                                           |
-[2022-07-15 16:07:56,693]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000001_execute/work                                                             |
-[2022-07-15 16:07:56,693]:DEBUG:          | number                | 2                                                                                                |
-[2022-07-15 16:07:56,694]:DEBUG: Create new workpackages for workpackage execute(1)
-[2022-07-15 16:07:56,694]:DEBUG:   0 new workpackages created
-[2022-07-15 16:07:56,699]:DEBUG: ----- execute ( iter:0 | id:2 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,699]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,699]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,699]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,699]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,699]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,699]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,699]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000002_execute/work |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_id            | 2                                                                                                |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_padid         | 000002                                                                                           |
-[2022-07-15 16:07:56,700]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000002_execute/work                                                             |
-[2022-07-15 16:07:56,700]:DEBUG:          | number                | 3                                                                                                |
-[2022-07-15 16:07:56,701]:DEBUG: Create new workpackages for workpackage execute(2)
-[2022-07-15 16:07:56,701]:DEBUG:   0 new workpackages created
-[2022-07-15 16:07:56,705]:DEBUG: ----- execute ( iter:0 | id:3 | parents: | cycle:0 ) -----
-[2022-07-15 16:07:56,706]:DEBUG:   available parameter:
-[2022-07-15 16:07:56,706]:DEBUG:          | parameter             | value                                                                                            |
-[2022-07-15 16:07:56,706]:DEBUG:          |-----------------------|--------------------------------------------------------------------------------------------------|
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log                                      |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_benchmark_id     | 0                                                                                                |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_benchmark_name   | do_log_example                                                                                   |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                           |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000                     |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_benchmark_start  | 2022-07-15T16:07:56                                                                              |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_step_cycles      | 1                                                                                                |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_step_iterations  | 1                                                                                                |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_step_name        | execute                                                                                          |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000003_execute/work |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_cycle         | 0                                                                                                |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_envlist       |                                                                                                  |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_envstr        |                                                                                                  |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_id            | 3                                                                                                |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_iteration     | 0                                                                                                |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_padid         | 000003                                                                                           |
-[2022-07-15 16:07:56,706]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000003_execute/work                                                             |
-[2022-07-15 16:07:56,706]:DEBUG:          | number                | 4                                                                                                |
-[2022-07-15 16:07:56,708]:DEBUG: Create new workpackages for workpackage execute(3)
-[2022-07-15 16:07:56,708]:DEBUG:   0 new workpackages created
-[2022-07-15 16:07:56,712]:INFO:   | stepname | all | open | wait | error | done |
-[2022-07-15 16:07:56,712]:INFO:   |----------|-----|------|------|-------|------|
-[2022-07-15 16:07:56,712]:INFO:   |  execute |   5 |    0 |    0 |     0 |    5 |
-[2022-07-15 16:07:56,712]:INFO: 
-[2022-07-15 16:07:56,712]:INFO: >>>> Benchmark information and further useful commands:
-[2022-07-15 16:07:56,712]:INFO: >>>>       id: 0
-[2022-07-15 16:07:56,712]:INFO: >>>>   handle: jube/examples/do_log/bench_run
-[2022-07-15 16:07:56,712]:INFO: >>>>      dir: jube/examples/do_log/bench_run/000000
-[2022-07-15 16:07:56,713]:INFO: >>>>  analyse: jube analyse jube/examples/do_log/bench_run --id 0
-[2022-07-15 16:07:56,713]:INFO: >>>>   result: jube result jube/examples/do_log/bench_run --id 0
-[2022-07-15 16:07:56,713]:INFO: >>>>     info: jube info jube/examples/do_log/bench_run --id 0
-[2022-07-15 16:07:56,713]:INFO: >>>>      log: jube log jube/examples/do_log/bench_run --id 0
-[2022-07-15 16:07:56,713]:INFO: ####################################################################################################################################################################################
+[2022-08-11 09:20:33,112]:DEBUG: Create initial workpackages
+[2022-08-11 09:20:33,112]:DEBUG: Expand parameter templates:
+[2022-08-11 09:20:33,112]:DEBUG:     "number": 1,2,3,4,5
+[2022-08-11 09:20:33,133]:DEBUG: Store initial workpackage information
+[2022-08-11 09:20:33,136]:DEBUG: Start benchmark run
+[2022-08-11 09:20:33,137]:INFO: ######################################################################
+[2022-08-11 09:20:33,137]:INFO: # benchmark: do_log_example
+[2022-08-11 09:20:33,137]:INFO: # id: 0
+[2022-08-11 09:20:33,137]:INFO: #
+[2022-08-11 09:20:33,137]:INFO: #
+[2022-08-11 09:20:33,137]:INFO: ######################################################################
+[2022-08-11 09:20:33,137]:DEBUG: ----- execute ( iter:0 | id:0 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,138]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,138]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,138]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,138]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,138]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,138]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,138]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,138]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,138]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,138]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,138]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,138]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,139]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,139]:DEBUG:          |                       | 000_execute/work                         |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_id            | 0                                        |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_padid         | 000000                                   |
+[2022-08-11 09:20:33,139]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_execute/work     |
+[2022-08-11 09:20:33,139]:DEBUG:          | number                | 1                                        |
+[2022-08-11 09:20:33,140]:DEBUG: >>> cp ../../../../loreipsum1 shared
+[2022-08-11 09:20:33,140]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000000_execute/work/stdout
+[2022-08-11 09:20:33,140]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000000_execute/work/stderr
+[2022-08-11 09:20:33,216]:DEBUG: ----- execute ( iter:0 | id:1 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,220]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,220]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,220]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,220]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,220]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,220]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,221]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,221]:DEBUG:          |                       | 001_execute/work                         |
+[2022-08-11 09:20:33,221]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,221]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,221]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,221]:DEBUG:          | jube_wp_id            | 1                                        |
+[2022-08-11 09:20:33,221]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,221]:DEBUG:          | jube_wp_padid         | 000001                                   |
+[2022-08-11 09:20:33,221]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000001_execute/work     |
+[2022-08-11 09:20:33,221]:DEBUG:          | number                | 2                                        |
+[2022-08-11 09:20:33,221]:DEBUG: >>> cp ../../../../loreipsum2 shared
+[2022-08-11 09:20:33,221]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000001_execute/work/stdout
+[2022-08-11 09:20:33,221]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000001_execute/work/stderr
+[2022-08-11 09:20:33,296]:DEBUG: ----- execute ( iter:0 | id:2 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,298]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,298]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,298]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,298]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,298]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,298]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,298]:DEBUG:          |                       | 002_execute/work                         |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_id            | 2                                        |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_padid         | 000002                                   |
+[2022-08-11 09:20:33,298]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000002_execute/work     |
+[2022-08-11 09:20:33,298]:DEBUG:          | number                | 3                                        |
+[2022-08-11 09:20:33,299]:DEBUG: >>> cp ../../../../loreipsum3 shared
+[2022-08-11 09:20:33,299]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000002_execute/work/stdout
+[2022-08-11 09:20:33,299]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000002_execute/work/stderr
+[2022-08-11 09:20:33,374]:DEBUG: ----- execute ( iter:0 | id:3 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,375]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,376]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,376]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,376]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,376]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,376]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,376]:DEBUG:          |                       | 003_execute/work                         |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_id            | 3                                        |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_padid         | 000003                                   |
+[2022-08-11 09:20:33,376]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000003_execute/work     |
+[2022-08-11 09:20:33,376]:DEBUG:          | number                | 4                                        |
+[2022-08-11 09:20:33,377]:DEBUG: >>> cp ../../../../loreipsum4 shared
+[2022-08-11 09:20:33,377]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000003_execute/work/stdout
+[2022-08-11 09:20:33,377]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000003_execute/work/stderr
+[2022-08-11 09:20:33,450]:DEBUG: ----- execute ( iter:0 | id:4 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,451]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,452]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,452]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,452]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,452]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,452]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,452]:DEBUG:          |                       | 004_execute/work                         |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_id            | 4                                        |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_padid         | 000004                                   |
+[2022-08-11 09:20:33,452]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000004_execute/work     |
+[2022-08-11 09:20:33,452]:DEBUG:          | number                | 5                                        |
+[2022-08-11 09:20:33,453]:DEBUG: >>> cp ../../../../loreipsum5 shared
+[2022-08-11 09:20:33,453]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000004_execute/work/stdout
+[2022-08-11 09:20:33,453]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/000004_execute/work/stderr
+[2022-08-11 09:20:33,523]:DEBUG: ====== execute - shared ======
+[2022-08-11 09:20:33,523]:DEBUG: >>> grep -r -l "Hidden!" loreipsum*
+[2022-08-11 09:20:33,523]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/execute_shared/stdout
+[2022-08-11 09:20:33,523]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/do_log/bench_run/000000/execute_shared/stderr
+[2022-08-11 09:20:33,601]:DEBUG: ==============================
+[2022-08-11 09:20:33,602]:DEBUG: Create new workpackages for workpackage execute(4)
+[2022-08-11 09:20:33,602]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:33,606]:DEBUG: ----- execute ( iter:0 | id:0 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,607]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,607]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,607]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,607]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,607]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,607]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,607]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,607]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,607]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,608]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,608]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,608]:DEBUG:          |                       | 000_execute/work                         |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_id            | 0                                        |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_padid         | 000000                                   |
+[2022-08-11 09:20:33,608]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_execute/work     |
+[2022-08-11 09:20:33,608]:DEBUG:          | number                | 1                                        |
+[2022-08-11 09:20:33,609]:DEBUG: Create new workpackages for workpackage execute(0)
+[2022-08-11 09:20:33,609]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:33,613]:DEBUG: ----- execute ( iter:0 | id:1 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,614]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,614]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,614]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,614]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,614]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,614]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,614]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,614]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,614]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,614]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,614]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,614]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,615]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,615]:DEBUG:          |                       | 001_execute/work                         |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_id            | 1                                        |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_padid         | 000001                                   |
+[2022-08-11 09:20:33,615]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000001_execute/work     |
+[2022-08-11 09:20:33,615]:DEBUG:          | number                | 2                                        |
+[2022-08-11 09:20:33,616]:DEBUG: Create new workpackages for workpackage execute(1)
+[2022-08-11 09:20:33,616]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:33,620]:DEBUG: ----- execute ( iter:0 | id:2 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,621]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,621]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,621]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,621]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,621]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,621]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,621]:DEBUG:          |                       | 002_execute/work                         |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_id            | 2                                        |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_padid         | 000002                                   |
+[2022-08-11 09:20:33,621]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000002_execute/work     |
+[2022-08-11 09:20:33,621]:DEBUG:          | number                | 3                                        |
+[2022-08-11 09:20:33,623]:DEBUG: Create new workpackages for workpackage execute(2)
+[2022-08-11 09:20:33,623]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:33,627]:DEBUG: ----- execute ( iter:0 | id:3 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:33,627]:DEBUG:   available parameter:
+[2022-08-11 09:20:33,627]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:33,627]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:33,627]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,627]:DEBUG:          |                       | ube/examples/do_log                      |
+[2022-08-11 09:20:33,627]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_benchmark_name   | do_log_example                           |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,628]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000     |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:33                      |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_step_name        | execute                                  |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:33,628]:DEBUG:          |                       | ube/examples/do_log/bench_run/000000/000 |
+[2022-08-11 09:20:33,628]:DEBUG:          |                       | 003_execute/work                         |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_id            | 3                                        |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_padid         | 000003                                   |
+[2022-08-11 09:20:33,628]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000003_execute/work     |
+[2022-08-11 09:20:33,628]:DEBUG:          | number                | 4                                        |
+[2022-08-11 09:20:33,629]:DEBUG: Create new workpackages for workpackage execute(3)
+[2022-08-11 09:20:33,629]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:33,633]:INFO:   | stepname | all | open | wait | error | done |
+[2022-08-11 09:20:33,633]:INFO:   |----------|-----|------|------|-------|------|
+[2022-08-11 09:20:33,633]:INFO:   |  execute |   5 |    0 |    0 |     0 |    5 |
+[2022-08-11 09:20:33,633]:INFO: 
+[2022-08-11 09:20:33,633]:INFO: >>>> Benchmark information and further useful commands:
+[2022-08-11 09:20:33,633]:INFO: >>>>       id: 0
+[2022-08-11 09:20:33,634]:INFO: >>>>   handle: bench_run
+[2022-08-11 09:20:33,634]:INFO: >>>>      dir: bench_run/000000
+[2022-08-11 09:20:33,634]:INFO: >>>>  analyse: jube analyse bench_run --id 0
+[2022-08-11 09:20:33,634]:INFO: >>>>   result: jube result bench_run --id 0
+[2022-08-11 09:20:33,634]:INFO: >>>>     info: jube info bench_run --id 0
+[2022-08-11 09:20:33,634]:INFO: >>>>      log: jube log bench_run --id 0
+[2022-08-11 09:20:33,634]:INFO: ######################################################################

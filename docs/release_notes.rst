@@ -30,8 +30,6 @@ Release: *FIXME*
 * `python2`-support was removed.
 * A couple of unittests were added which now include the testing of most of the examples.
 * Sample `run.log` of most examples were added to `tests/examples_output`.
-* The `DEFAULT_WIDTH` was changed from 70 to 180.
-* The `MAX_TABLE_CELL_WIDTH` was changed from 40 to 180.
 * Some yaml example scripts were corrected.
 * The MANIFEST file was removed.
 * A typo in the error message was fixed.

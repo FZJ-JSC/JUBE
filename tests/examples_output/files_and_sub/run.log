@@ -1,123 +1,138 @@
-[2022-07-06 17:37:30,614]:DEBUG: Create initial workpackages
-[2022-07-06 17:37:30,615]:DEBUG: Expand parameter templates:
-[2022-07-06 17:37:30,615]:DEBUG:     "number": 1,2,4
-[2022-07-06 17:37:30,627]:DEBUG: Store initial workpackage information
-[2022-07-06 17:37:30,630]:DEBUG: Start benchmark run
-[2022-07-06 17:37:30,630]:INFO: ####################################################################################################################################################################################
-[2022-07-06 17:37:30,630]:INFO: # benchmark: files_and_sub
-[2022-07-06 17:37:30,630]:INFO: # id: 0
-[2022-07-06 17:37:30,630]:INFO: #
-[2022-07-06 17:37:30,630]:INFO: # A file copy and substitution example
-[2022-07-06 17:37:30,630]:INFO: ####################################################################################################################################################################################
-[2022-07-06 17:37:30,630]:DEBUG: ----- sub_step ( iter:0 | id:0 | parents: | cycle:0 ) -----
-[2022-07-06 17:37:30,631]:DEBUG:   available parameter:
-[2022-07-06 17:37:30,631]:DEBUG:          | parameter             | value                                                                                                          |
-[2022-07-06 17:37:30,631]:DEBUG:          |-----------------------|----------------------------------------------------------------------------------------------------------------|
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub                                       |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_benchmark_id     | 0                                                                                                              |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_benchmark_name   | files_and_sub                                                                                                  |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                                         |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000                      |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_benchmark_start  | 2022-07-06T17:37:30                                                                                            |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_step_cycles      | 1                                                                                                              |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_step_iterations  | 1                                                                                                              |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_step_name        | sub_step                                                                                                       |
-[2022-07-06 17:37:30,631]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000000_sub_step/work |
-[2022-07-06 17:37:30,632]:DEBUG:          | jube_wp_cycle         | 0                                                                                                              |
-[2022-07-06 17:37:30,632]:DEBUG:          | jube_wp_envlist       |                                                                                                                |
-[2022-07-06 17:37:30,632]:DEBUG:          | jube_wp_envstr        |                                                                                                                |
-[2022-07-06 17:37:30,632]:DEBUG:          | jube_wp_id            | 0                                                                                                              |
-[2022-07-06 17:37:30,635]:DEBUG:          | jube_wp_iteration     | 0                                                                                                              |
-[2022-07-06 17:37:30,635]:DEBUG:          | jube_wp_padid         | 000000                                                                                                         |
-[2022-07-06 17:37:30,635]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_sub_step/work                                                                          |
-[2022-07-06 17:37:30,635]:DEBUG:          | number                | 1                                                                                                              |
-[2022-07-06 17:37:30,636]:DEBUG:   copy "file.in" -> "file.in"
-[2022-07-06 17:37:30,637]:DEBUG:   substitute file.in -> file.out
-[2022-07-06 17:37:30,637]:DEBUG:   substitute:
-[2022-07-06 17:37:30,637]:DEBUG:          | source   | dest |
-[2022-07-06 17:37:30,637]:DEBUG:          |----------|------|
-[2022-07-06 17:37:30,637]:DEBUG:          | #NUMBER# | 1    |
-[2022-07-06 17:37:30,637]:DEBUG: >>> cat file.out
-[2022-07-06 17:37:30,637]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000000_sub_step/work/stdout
-[2022-07-06 17:37:30,638]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000000_sub_step/work/stderr
-[2022-07-06 17:37:30,711]:DEBUG: Create new workpackages for workpackage sub_step(0)
-[2022-07-06 17:37:30,711]:DEBUG:   0 new workpackages created
-[2022-07-06 17:37:30,711]:DEBUG: ----- sub_step ( iter:0 | id:1 | parents: | cycle:0 ) -----
-[2022-07-06 17:37:30,718]:DEBUG:   available parameter:
-[2022-07-06 17:37:30,718]:DEBUG:          | parameter             | value                                                                                                          |
-[2022-07-06 17:37:30,718]:DEBUG:          |-----------------------|----------------------------------------------------------------------------------------------------------------|
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub                                       |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_benchmark_id     | 0                                                                                                              |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_benchmark_name   | files_and_sub                                                                                                  |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                                         |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000                      |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_benchmark_start  | 2022-07-06T17:37:30                                                                                            |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_step_cycles      | 1                                                                                                              |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_step_iterations  | 1                                                                                                              |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_step_name        | sub_step                                                                                                       |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000001_sub_step/work |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_cycle         | 0                                                                                                              |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_envlist       |                                                                                                                |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_envstr        |                                                                                                                |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_id            | 1                                                                                                              |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_iteration     | 0                                                                                                              |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_padid         | 000001                                                                                                         |
-[2022-07-06 17:37:30,718]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000001_sub_step/work                                                                          |
-[2022-07-06 17:37:30,718]:DEBUG:          | number                | 2                                                                                                              |
-[2022-07-06 17:37:30,719]:DEBUG:   copy "file.in" -> "file.in"
-[2022-07-06 17:37:30,720]:DEBUG:   substitute file.in -> file.out
-[2022-07-06 17:37:30,720]:DEBUG:   substitute:
-[2022-07-06 17:37:30,720]:DEBUG:          | source   | dest |
-[2022-07-06 17:37:30,720]:DEBUG:          |----------|------|
-[2022-07-06 17:37:30,720]:DEBUG:          | #NUMBER# | 2    |
-[2022-07-06 17:37:30,721]:DEBUG: >>> cat file.out
-[2022-07-06 17:37:30,721]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000001_sub_step/work/stdout
-[2022-07-06 17:37:30,721]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000001_sub_step/work/stderr
-[2022-07-06 17:37:30,783]:DEBUG: Create new workpackages for workpackage sub_step(1)
-[2022-07-06 17:37:30,784]:DEBUG:   0 new workpackages created
-[2022-07-06 17:37:30,784]:DEBUG: ----- sub_step ( iter:0 | id:2 | parents: | cycle:0 ) -----
-[2022-07-06 17:37:30,785]:DEBUG:   available parameter:
-[2022-07-06 17:37:30,785]:DEBUG:          | parameter             | value                                                                                                          |
-[2022-07-06 17:37:30,785]:DEBUG:          |-----------------------|----------------------------------------------------------------------------------------------------------------|
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_benchmark_home   | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub                                       |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_benchmark_id     | 0                                                                                                              |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_benchmark_name   | files_and_sub                                                                                                  |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_benchmark_padid  | 000000                                                                                                         |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_benchmark_rundir | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000                      |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_benchmark_start  | 2022-07-06T17:37:30                                                                                            |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_step_cycles      | 1                                                                                                              |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_step_iterations  | 1                                                                                                              |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_step_name        | sub_step                                                                                                       |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_abspath       | /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000002_sub_step/work |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_cycle         | 0                                                                                                              |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_envlist       |                                                                                                                |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_envstr        |                                                                                                                |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_id            | 2                                                                                                              |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_iteration     | 0                                                                                                              |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_padid         | 000002                                                                                                         |
-[2022-07-06 17:37:30,785]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000002_sub_step/work                                                                          |
-[2022-07-06 17:37:30,785]:DEBUG:          | number                | 4                                                                                                              |
-[2022-07-06 17:37:30,786]:DEBUG:   copy "file.in" -> "file.in"
-[2022-07-06 17:37:30,787]:DEBUG:   substitute file.in -> file.out
-[2022-07-06 17:37:30,787]:DEBUG:   substitute:
-[2022-07-06 17:37:30,787]:DEBUG:          | source   | dest |
-[2022-07-06 17:37:30,787]:DEBUG:          |----------|------|
-[2022-07-06 17:37:30,787]:DEBUG:          | #NUMBER# | 4    |
-[2022-07-06 17:37:30,787]:DEBUG: >>> cat file.out
-[2022-07-06 17:37:30,788]:DEBUG:     stdout: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000002_sub_step/work/stdout
-[2022-07-06 17:37:30,788]:DEBUG:     stderr: /p/scratch/ccstao/cstao08/jube_devs/unittest/jube/examples/files_and_sub/bench_run/000000/000002_sub_step/work/stderr
-[2022-07-06 17:37:30,852]:DEBUG: Create new workpackages for workpackage sub_step(2)
-[2022-07-06 17:37:30,852]:DEBUG:   0 new workpackages created
-[2022-07-06 17:37:30,856]:INFO:   | stepname | all | open | wait | error | done |
-[2022-07-06 17:37:30,856]:INFO:   |----------|-----|------|------|-------|------|
-[2022-07-06 17:37:30,856]:INFO:   | sub_step |   3 |    0 |    0 |     0 |    3 |
-[2022-07-06 17:37:30,856]:INFO: 
-[2022-07-06 17:37:30,856]:INFO: >>>> Benchmark information and further useful commands:
-[2022-07-06 17:37:30,856]:INFO: >>>>       id: 0
-[2022-07-06 17:37:30,856]:INFO: >>>>   handle: bench_run
-[2022-07-06 17:37:30,856]:INFO: >>>>      dir: bench_run/000000
-[2022-07-06 17:37:30,856]:INFO: >>>>  analyse: jube analyse bench_run --id 0
-[2022-07-06 17:37:30,856]:INFO: >>>>   result: jube result bench_run --id 0
-[2022-07-06 17:37:30,856]:INFO: >>>>     info: jube info bench_run --id 0
-[2022-07-06 17:37:30,856]:INFO: >>>>      log: jube log bench_run --id 0
-[2022-07-06 17:37:30,856]:INFO: ####################################################################################################################################################################################
+[2022-08-11 09:20:34,007]:DEBUG: Create initial workpackages
+[2022-08-11 09:20:34,008]:DEBUG: Expand parameter templates:
+[2022-08-11 09:20:34,008]:DEBUG:     "number": 1,2,4
+[2022-08-11 09:20:34,021]:DEBUG: Store initial workpackage information
+[2022-08-11 09:20:34,023]:DEBUG: Start benchmark run
+[2022-08-11 09:20:34,023]:INFO: ######################################################################
+[2022-08-11 09:20:34,023]:INFO: # benchmark: files_and_sub
+[2022-08-11 09:20:34,023]:INFO: # id: 0
+[2022-08-11 09:20:34,023]:INFO: #
+[2022-08-11 09:20:34,023]:INFO: # A file copy and substitution example
+[2022-08-11 09:20:34,023]:INFO: ######################################################################
+[2022-08-11 09:20:34,024]:DEBUG: ----- sub_step ( iter:0 | id:0 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:34,025]:DEBUG:   available parameter:
+[2022-08-11 09:20:34,025]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:34,025]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,025]:DEBUG:          |                       | ube/examples/files_and_sub               |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_benchmark_name   | files_and_sub                            |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,025]:DEBUG:          |                       | ube/examples/files_and_sub/bench_run/000 |
+[2022-08-11 09:20:34,025]:DEBUG:          |                       | 000                                      |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:34                      |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_step_name        | sub_step                                 |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,025]:DEBUG:          |                       | ube/examples/files_and_sub/bench_run/000 |
+[2022-08-11 09:20:34,025]:DEBUG:          |                       | 000/000000_sub_step/work                 |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_id            | 0                                        |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_padid         | 000000                                   |
+[2022-08-11 09:20:34,025]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_sub_step/work    |
+[2022-08-11 09:20:34,025]:DEBUG:          | number                | 1                                        |
+[2022-08-11 09:20:34,026]:DEBUG:   copy "file.in" -> "file.in"
+[2022-08-11 09:20:34,027]:DEBUG:   substitute file.in -> file.out
+[2022-08-11 09:20:34,027]:DEBUG:   substitute:
+[2022-08-11 09:20:34,027]:DEBUG:          | source   | dest |
+[2022-08-11 09:20:34,027]:DEBUG:          |----------|------|
+[2022-08-11 09:20:34,027]:DEBUG:          | #NUMBER# | 1    |
+[2022-08-11 09:20:34,031]:DEBUG: >>> cat file.out
+[2022-08-11 09:20:34,031]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/files_and_sub/bench_run/000000/000000_sub_step/work/stdout
+[2022-08-11 09:20:34,031]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/files_and_sub/bench_run/000000/000000_sub_step/work/stderr
+[2022-08-11 09:20:34,098]:DEBUG: Create new workpackages for workpackage sub_step(0)
+[2022-08-11 09:20:34,098]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:34,101]:DEBUG: ----- sub_step ( iter:0 | id:1 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:34,102]:DEBUG:   available parameter:
+[2022-08-11 09:20:34,102]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:34,102]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,102]:DEBUG:          |                       | ube/examples/files_and_sub               |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_benchmark_name   | files_and_sub                            |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,102]:DEBUG:          |                       | ube/examples/files_and_sub/bench_run/000 |
+[2022-08-11 09:20:34,102]:DEBUG:          |                       | 000                                      |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:34                      |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:34,102]:DEBUG:          | jube_step_name        | sub_step                                 |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,103]:DEBUG:          |                       | ube/examples/files_and_sub/bench_run/000 |
+[2022-08-11 09:20:34,103]:DEBUG:          |                       | 000/000001_sub_step/work                 |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_id            | 1                                        |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_padid         | 000001                                   |
+[2022-08-11 09:20:34,103]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000001_sub_step/work    |
+[2022-08-11 09:20:34,103]:DEBUG:          | number                | 2                                        |
+[2022-08-11 09:20:34,103]:DEBUG:   copy "file.in" -> "file.in"
+[2022-08-11 09:20:34,104]:DEBUG:   substitute file.in -> file.out
+[2022-08-11 09:20:34,104]:DEBUG:   substitute:
+[2022-08-11 09:20:34,104]:DEBUG:          | source   | dest |
+[2022-08-11 09:20:34,104]:DEBUG:          |----------|------|
+[2022-08-11 09:20:34,104]:DEBUG:          | #NUMBER# | 2    |
+[2022-08-11 09:20:34,105]:DEBUG: >>> cat file.out
+[2022-08-11 09:20:34,105]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/files_and_sub/bench_run/000000/000001_sub_step/work/stdout
+[2022-08-11 09:20:34,105]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/files_and_sub/bench_run/000000/000001_sub_step/work/stderr
+[2022-08-11 09:20:34,172]:DEBUG: Create new workpackages for workpackage sub_step(1)
+[2022-08-11 09:20:34,173]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:34,176]:DEBUG: ----- sub_step ( iter:0 | id:2 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-11 09:20:34,177]:DEBUG:   available parameter:
+[2022-08-11 09:20:34,177]:DEBUG:          | parameter             | value                                    |
+[2022-08-11 09:20:34,177]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,177]:DEBUG:          |                       | ube/examples/files_and_sub               |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_benchmark_name   | files_and_sub                            |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,177]:DEBUG:          |                       | ube/examples/files_and_sub/bench_run/000 |
+[2022-08-11 09:20:34,177]:DEBUG:          |                       | 000                                      |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_benchmark_start  | 2022-08-11T09:20:34                      |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_step_name        | sub_step                                 |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-11 09:20:34,177]:DEBUG:          |                       | ube/examples/files_and_sub/bench_run/000 |
+[2022-08-11 09:20:34,177]:DEBUG:          |                       | 000/000002_sub_step/work                 |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_wp_id            | 2                                        |
+[2022-08-11 09:20:34,177]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-11 09:20:34,178]:DEBUG:          | jube_wp_padid         | 000002                                   |
+[2022-08-11 09:20:34,178]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000002_sub_step/work    |
+[2022-08-11 09:20:34,178]:DEBUG:          | number                | 4                                        |
+[2022-08-11 09:20:34,178]:DEBUG:   copy "file.in" -> "file.in"
+[2022-08-11 09:20:34,179]:DEBUG:   substitute file.in -> file.out
+[2022-08-11 09:20:34,179]:DEBUG:   substitute:
+[2022-08-11 09:20:34,179]:DEBUG:          | source   | dest |
+[2022-08-11 09:20:34,179]:DEBUG:          |----------|------|
+[2022-08-11 09:20:34,179]:DEBUG:          | #NUMBER# | 4    |
+[2022-08-11 09:20:34,180]:DEBUG: >>> cat file.out
+[2022-08-11 09:20:34,180]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/files_and_sub/bench_run/000000/000002_sub_step/work/stdout
+[2022-08-11 09:20:34,180]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/files_and_sub/bench_run/000000/000002_sub_step/work/stderr
+[2022-08-11 09:20:34,246]:DEBUG: Create new workpackages for workpackage sub_step(2)
+[2022-08-11 09:20:34,246]:DEBUG:   0 new workpackages created
+[2022-08-11 09:20:34,249]:INFO:   | stepname | all | open | wait | error | done |
+[2022-08-11 09:20:34,249]:INFO:   |----------|-----|------|------|-------|------|
+[2022-08-11 09:20:34,249]:INFO:   | sub_step |   3 |    0 |    0 |     0 |    3 |
+[2022-08-11 09:20:34,249]:INFO: 
+[2022-08-11 09:20:34,249]:INFO: >>>> Benchmark information and further useful commands:
+[2022-08-11 09:20:34,249]:INFO: >>>>       id: 0
+[2022-08-11 09:20:34,249]:INFO: >>>>   handle: bench_run
+[2022-08-11 09:20:34,249]:INFO: >>>>      dir: bench_run/000000
+[2022-08-11 09:20:34,249]:INFO: >>>>  analyse: jube analyse bench_run --id 0
+[2022-08-11 09:20:34,249]:INFO: >>>>   result: jube result bench_run --id 0
+[2022-08-11 09:20:34,249]:INFO: >>>>     info: jube info bench_run --id 0
+[2022-08-11 09:20:34,249]:INFO: >>>>      log: jube log bench_run --id 0
+[2022-08-11 09:20:34,249]:INFO: ######################################################################
