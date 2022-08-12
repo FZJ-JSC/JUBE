@@ -46,6 +46,8 @@ Release: *FIXME*
   and the parameter value has not the form of a int or float
   correspondingly.
 
+* The FAQ documentation was extended with yaml examples.
+
 
 Version 2.4.3
 =============

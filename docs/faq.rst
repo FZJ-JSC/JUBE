@@ -35,6 +35,12 @@ E.g. you have two parameters:
 
    <parameter name="foo">10,100</parameter>
    <parameter name="bar">20,200</parameter>
+
+ .. code-block:: yaml
+
+   parameter:
+     - { name: foo,  _: '10,100' }
+     - { name: bar,  _: '20,200' }
    
 Without any additional change, *JUBE* will run four paramater combinations (
 ``foo=10,bar=20``, ``foo=100,bar=20``, ``foo=10,bar=200``, ``foo=100,bar=200``).
@@ -48,6 +54,13 @@ For this you can use the parameter dependencies feature and small *Python* snipp
    <parameter name="foo" mode="python">[10,100][$i]</parameter>
    <parameter name="bar" mode="python">[20,200][$i]</parameter>
    
+.. code-block:: yaml
+
+   parameter:
+     - { name: i,                 _: '0,1' }
+     - { name: foo, mode: python, _: '[10,100][$i]' }
+     - { name: bar, mode: python, _: '[20,200][$i]' }
+
 Instead of using a numerical index, you can also use a string value for selection:
 
 .. code-block:: xml
@@ -62,6 +75,26 @@ Instead of using a numerical index, you can also use a string value for selectio
        "tock" : 200}["${key}"]
    </parameter>
 
+.. code-block:: yaml
+
+   parameter:
+     - { name: key, _: 'tick,tock' }
+     - name: foo
+       mode: python
+       _: |
+           {
+             "tick" : 10,
+             "tock" : 100
+           }["${key}"]
+     - name: bar
+       mode: python
+       _: |
+           {
+             "tick" : 20,
+             "tock" : 200
+           }["${key}"]
+
+
 Also default values are possible:
 
 .. code-block:: xml
@@ -70,6 +103,17 @@ Also default values are possible:
       {"tick" : 10,
        "tock" : 100}.get("${key}",0)
    </parameter>
+
+.. code-block:: yaml
+
+   parameter:
+     - name: foo
+       mode: python
+       _: |
+           {
+             "tick" : 10,
+             "tock" : 100
+           }.get("${key}",0)
 
 .. index:: workdir change
 
@@ -87,6 +131,12 @@ directories e.g. by using the :term:`jube_variables`.
       ...
    </step>
 
+.. code-block:: yaml
+
+   step:
+     name: a_step
+     work_dir: "bench_run/${jube_benchmark_padid}/${jube_wp_padid}_${jube_step_name}"
+
 Using the ``*_padid`` variables will help to create a sorted directory structure.
 
 *JUBE* does not create any symbolic links inside the changed work directories. If you want to access files, out of
@@ -97,6 +147,13 @@ a dependend step, you can use a ``<fileset>`` and the ``rel_path_ref``-attribute
    <fileset name="needed_files">
       <link rel_path_ref="internal">dependent_step_name/a_file</link>
    </files>
+
+.. code-block:: yaml
+
+   fileset:
+     name: needed_files
+     link:
+       - {rel_path_ref: internal, _: dependent_step_name/a_file}
 
 This will create a link inside your alternative working dir and the link target path will be seen relative towards
 the original *JUBE* directory structure. So here you can use the normal automatic created link to access all
@@ -277,6 +334,11 @@ This is possible by using ``\s`` within the pattern for each individual newline 
 .. code-block:: xml
 
    <pattern name="a_pattern" dotall="true">blockB:.*?time=$jube_pat_int</pattern>
+
+.. code-block:: yaml
+
+   pattern:
+     - {name: a_pattern, dotall: true, _: 'blockB:.*?time=$jube_pat_int'}
 
 This only extracts ``30`` from ``blockB``. Setting ``dotall="true"`` allows to use the ``.`` to take care of all newline characters in between (by default newline characters are 
 not matched by ``.``).
