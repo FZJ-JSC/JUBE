@@ -36,7 +36,7 @@ E.g. you have two parameters:
    <parameter name="foo">10,100</parameter>
    <parameter name="bar">20,200</parameter>
 
- .. code-block:: yaml
+.. code-block:: yaml
 
    parameter:
      - { name: foo,  _: '10,100' }
