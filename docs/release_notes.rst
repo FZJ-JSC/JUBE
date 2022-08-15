@@ -21,8 +21,8 @@
 Release notes
 =============
 
-Version 2.5.0
-=============
+Version 2.5.0rc1
+================
 Release: 2022-08-15
 
 * Several independent workpackages within a step can be executed by multiple processes in parallel by stating `procs=#number_of_parallel_processes#` within the `step` tag. An example and a documentation entry was added.
