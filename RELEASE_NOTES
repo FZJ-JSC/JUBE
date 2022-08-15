@@ -5,7 +5,7 @@ Release notes
 Version 2.5.0
 *************
 
-Release: *FIXME*
+Release: 2022-08-15
 
 * Several independent workpackages within a step can be executed by
   multiple processes in parallel by stating
