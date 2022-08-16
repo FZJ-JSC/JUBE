@@ -1,4 +1,4 @@
-# JUBE Benchmarking Environment
+## JUBE Benchmarking Environment
 # Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
@@ -273,7 +273,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
             for name, value in parameter_dict.items():
                 if name != "id":
                     print("  {0}: {1}".format(name, value))
-            print()
+            print("")
     else:
         # Create parameterization table
         table_data = list()
