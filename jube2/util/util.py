@@ -222,8 +222,8 @@ def substitution(text, substitution_dict):
         count += 1
         orig_text = text
         # Save double $$
-        text = re.sub(r"(^(?=\$)|[^$])((?:\$\$)*?)((?:\${3})?(?:[^$]|$))",
-                      r"\1\2\2\3", text) if "$" in text else text
+        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text) \
+            if "$" in text else text
         tmp = string.Template(text)
         new_text = tmp.safe_substitute(local_substitution_dict)
         changed = new_text != orig_text

@@ -635,8 +635,7 @@ class StaticParameter(Parameter):
             # $$$ -> $$$ -> $
             # $$$$ -> $$$$$$$$ -> $$$$
             # $$$$$ -> $$$$$$$ -> $$$
-            value = re.sub(r"(^(?=\$)|[^$])((?:\$\$)*?)((?:\${3})?(?:[^$]|$))",
-                           r"\1\2\2\3", value)
+            value = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", value)
         parameter_dict = dict()
         if parametersets is not None:
             for parameterset in parametersets:
