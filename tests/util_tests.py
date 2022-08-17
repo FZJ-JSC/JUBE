@@ -41,6 +41,54 @@ class TestUtil(unittest.TestCase):
             jube2.util.util.convert_type("int","forty-two",stop=True)
         self.assertEqual(jube2.util.util.convert_type("int","forty-two",stop=False),"forty-two")
 
+    def test_expand_dollar_count(self):
+        test_text=[]
+        test_result_text=[]
+
+        test_text.append("echo -n $$$$PARAMNAME")
+        test_result_text.append("echo -n $$$$$$$$PARAMNAME")
+        test_text.append("echo -n $$PARAMNAME")
+        test_result_text.append("echo -n $$$$PARAMNAME")
+        test_text.append("echo -n $$$$$PARAMNAME")
+        test_result_text.append("echo -n $$$$$$$$$PARAMNAME")
+
+        test_text.append("$$$$PARAMNAME")
+        test_result_text.append("$$$$$$$$PARAMNAME")
+        test_text.append("$$PARAMNAME")
+        test_result_text.append("$$$$PARAMNAME")
+        test_text.append("$$$$$PARAMNAME")
+        test_result_text.append("$$$$$$$$$PARAMNAME")
+
+        test_text.append("42")
+        test_result_text.append("42")
+
+        for i in range(len(test_text)):
+            self.assertEqual(jube2.util.util.expand_dollar_count(text=test_text[i]),test_result_text[i])
+
+    def test_substitution(self):
+        test_substitution_dict={'test1':'test2','test3':'test4'}
+        test_text=[]
+        test_result_text=[]
+
+        test_text.append("echo -n $$$$PARAMNAME")
+        test_result_text.append("echo -n $$PARAMNAME")
+        test_text.append("echo -n $$PARAMNAME")
+        test_result_text.append("echo -n $PARAMNAME")
+        test_text.append("echo -n $$$$$PARAMNAME")
+        test_result_text.append("echo -n $$$PARAMNAME")
+
+        test_text.append("$$$$PARAMNAME")
+        test_result_text.append("$$PARAMNAME")
+        test_text.append("$$PARAMNAME")
+        test_result_text.append("$PARAMNAME")
+        test_text.append("$$$$$PARAMNAME")
+        test_result_text.append("$$$PARAMNAME")
+
+        test_text.append("42")
+        test_result_text.append("42")
+
+        for i in range(len(test_text)):
+            self.assertEqual(jube2.util.util.substitution(text=test_text[i], substitution_dict=test_substitution_dict),test_result_text[i])
 
 if __name__ == "__main__":
     unittest.main()

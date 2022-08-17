@@ -628,14 +628,7 @@ class StaticParameter(Parameter):
         """
         value = self._value
         if not final_sub and "$" in value:
-            # Replace a even number of $ by $$$$, because they will be
-            # substituted to $$. Even number will stay the same, odd number
-            # will shrink in every turn
-            # $$ -> $$$$ -> $$
-            # $$$ -> $$$ -> $
-            # $$$$ -> $$$$$$$$ -> $$$$
-            # $$$$$ -> $$$$$$$ -> $$$
-            value = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", value)
+            value = jube2.util.util.expand_dollar_count(value)
         parameter_dict = dict()
         if parametersets is not None:
             for parameterset in parametersets:
@@ -722,7 +715,6 @@ class StaticParameter(Parameter):
             param.based_on = self
         else:
             param = self
-
         return param, changed
 
     @staticmethod

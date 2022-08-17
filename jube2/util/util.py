@@ -196,6 +196,17 @@ def id_dir(base_dir, id_number):
                                        id_number=id_number))
 
 
+def expand_dollar_count(text):
+    # Replace a even number of $ by $$$$, because they will be
+    # substituted to $$. Even number will stay the same, odd number
+    # will shrink in every turn
+    # $$ -> $$$$ -> $$
+    # $$$ -> $$$ -> $
+    # $$$$ -> $$$$$$$$ -> $$$$
+    # $$$$$ -> $$$$$$$ -> $$$
+    return re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text)
+
+
 def substitution(text, substitution_dict):
     """Substitute templates given by parameter_dict inside of text"""
     changed = True
@@ -222,7 +233,7 @@ def substitution(text, substitution_dict):
         count += 1
         orig_text = text
         # Save double $$
-        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text) \
+        text = expand_dollar_count(text) \
             if "$" in text else text
         tmp = string.Template(text)
         new_text = tmp.safe_substitute(local_substitution_dict)
