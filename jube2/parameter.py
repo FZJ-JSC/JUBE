@@ -48,8 +48,9 @@ class Parameterset(object):
     """A parameterset represent a template or a specific product space. It
     can be combined with other Parametersets."""
 
-    def __init__(self, name=""):
+    def __init__(self, name="", duplicate="replace"):
         self._name = name
+        self._duplicate = duplicate
         self._parameters = dict()
 
     def clear(self):
@@ -58,7 +59,7 @@ class Parameterset(object):
 
     def copy(self):
         """Returns a deepcopy of the Parameterset"""
-        new_parameterset = Parameterset(self._name)
+        new_parameterset = Parameterset(self._name, self._duplicate)
         new_parameterset.add_parameterset(self)
         return new_parameterset
 
@@ -66,6 +67,11 @@ class Parameterset(object):
     def name(self):
         """Return name of the Parameterset"""
         return self._name
+
+    @property
+    def duplicate(self):
+        """Return the duplicate property of the Parameterset"""
+        return self._duplicate
 
     @property
     def has_templates(self):
@@ -105,8 +111,31 @@ class Parameterset(object):
 
     def add_parameter(self, parameter):
         """Add a new parameter"""
-        self._parameters[parameter.name] = parameter
-
+        if self._duplicate == "replace":
+            self._parameters[parameter.name] = parameter
+        elif self._duplicate == "concat":
+            if parameter.name in self._parameters.keys():
+                if  parameter._separator != self._parameters[parameter.name]._separator or \
+                    parameter._type != self._parameters[parameter.name]._type or \
+                    parameter._mode != self._parameters[parameter.name]._mode or \
+                    parameter._based_on != self._parameters[parameter.name]._based_on or \
+                    parameter._export != self._parameters[parameter.name]._export or \
+                    parameter._idx != self._parameters[parameter.name]._idx or \
+                    parameter._update_mode != self._parameters[parameter.name]._update_mode or \
+                    parameter._eval_helper != self._parameters[parameter.name]._eval_helper:
+                    raise ValueError("The options for the parameter {0} are unequal.".format(parameter.name))
+                self._parameters[parameter.name]._value=list(set(self._parameters[parameter.name]._value+parameter._value))
+            else:
+                self._parameters[parameter.name] = parameter
+        elif self._duplicate == "error":
+            if parameter.name in self._parameters.keys():
+                raise Exception("The parameter {0} was defined at least twice.".format(parameter.name))
+            else:
+                self._parameters[parameter.name] = parameter
+        else: # unknown error, this situation should not occur!
+            raise Exception("The execution was aborted due to an unknown error "+
+                "during adding of a parameter. Please contact the JUBE developers "+
+                "to resolve this situation.")
     def delete_parameter(self, parameter):
         """Delete a parameter"""
         name = ""
@@ -239,6 +268,7 @@ class Parameterset(object):
         parameterset_etree = ET.Element('parameterset')
         if len(self._name) > 0:
             parameterset_etree.attrib["name"] = self._name
+            parameterset_etree.attrib["duplicate"] = self._duplicate
         for parameter in self._parameters.values():
             parameterset_etree.append(
                 parameter.etree_repr(use_current_selection))

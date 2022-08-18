@@ -1144,7 +1144,7 @@ class Parser(object):
             LOGGER.error("Error while parsing {0}:".format(file_path))
             raise
 
-    def _extract_extern_set(self, filename, set_type, name, search_name=None):
+    def _extract_extern_set(self, filename, set_type, name, search_name=None, duplicate="replace"):
         """Load a parameter-/file-/substitutionset from a given file"""
         if search_name is None:
             search_name = name
@@ -1190,11 +1190,11 @@ class Parser(object):
                                           set_type, search_name, file_path))
                 result_set = self._extract_extern_set(new_filename,
                                                       set_type, name,
-                                                      new_search_name)
+                                                      new_search_name, duplicate)
 
             if set_type == "parameterset":
                 if result_set is None:
-                    result_set = jube2.parameter.Parameterset(name)
+                    result_set = jube2.parameter.Parameterset(name, duplicate)
                 for parameter in self._extract_parameters(elements[0]):
                     result_set.add_parameter(parameter)
             elif set_type == "substituteset":
@@ -1238,6 +1238,13 @@ class Parser(object):
                 raise ValueError("Empty \"name\" attribute in " +
                                  "<parameterset> found.")
             LOGGER.debug("  Parsing <parameterset name=\"{0}\">".format(name))
+            duplicate = etree.get("duplicate", "replace").strip()
+            if duplicate is None:
+                duplicate="replace"
+            if duplicate != "replace" and duplicate != "concat" and duplicate != "error":
+                raise ValueError("Invalid \"duplicate\" attribute in " +
+                                 "parameterset {0} found. Use \"replace\"" +
+                                 ", \"concat\" or \"error\".".format(name))
             init_with = element.get("init_with")
             if init_with is not None:
                 parts = init_with.strip().split(":")
@@ -1247,9 +1254,9 @@ class Parser(object):
                     search_name = None
                 parameterset = self._extract_extern_set(parts[0],
                                                         "parameterset", name,
-                                                        search_name)
+                                                        search_name, duplicate)
             else:
-                parameterset = jube2.parameter.Parameterset(name)
+                parameterset = jube2.parameter.Parameterset(name, duplicate)
             for parameter in self._extract_parameters(element):
                 parameterset.add_parameter(parameter)
             if parameterset.name in parametersets:
