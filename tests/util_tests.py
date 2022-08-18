@@ -45,22 +45,29 @@ class TestUtil(unittest.TestCase):
         test_text=[]
         test_result_text=[]
 
-        test_text.append("echo -n $$$$PARAMNAME")
-        test_result_text.append("echo -n $$$$$$$$PARAMNAME")
         test_text.append("echo -n $$PARAMNAME")
         test_result_text.append("echo -n $$$$PARAMNAME")
+        test_text.append("echo -n $$$PARAMNAME")
+        test_result_text.append("echo -n $$$PARAMNAME")
+        test_text.append("echo -n $$$$PARAMNAME")
+        test_result_text.append("echo -n $$$$$$$$PARAMNAME")
         test_text.append("echo -n $$$$$PARAMNAME")
-        test_result_text.append("echo -n $$$$$$$$$PARAMNAME")
+        test_result_text.append("echo -n $$$$$$$PARAMNAME")
 
-        test_text.append("$$$$PARAMNAME")
-        test_result_text.append("$$$$$$$$PARAMNAME")
         test_text.append("$$PARAMNAME")
         test_result_text.append("$$$$PARAMNAME")
+        test_text.append("$$$PARAMNAME")
+        test_result_text.append("$$$PARAMNAME")
+        test_text.append("$$$$PARAMNAME")
+        test_result_text.append("$$$$$$$$PARAMNAME")
         test_text.append("$$$$$PARAMNAME")
-        test_result_text.append("$$$$$$$$$PARAMNAME")
+        test_result_text.append("$$$$$$$PARAMNAME")
 
         test_text.append("42")
         test_result_text.append("42")
+
+        test_text.append("echo $$")
+        test_result_text.append("echo $$$$")
 
         for i in range(len(test_text)):
             self.assertEqual(jube2.util.util.expand_dollar_count(text=test_text[i]),test_result_text[i])
@@ -70,22 +77,32 @@ class TestUtil(unittest.TestCase):
         test_text=[]
         test_result_text=[]
 
+        test_text.append("echo -n $$$PARAMNAME")
+        test_result_text.append("echo -n $PARAMNAME")
         test_text.append("echo -n $$$$PARAMNAME")
         test_result_text.append("echo -n $$PARAMNAME")
-        test_text.append("echo -n $$PARAMNAME")
-        test_result_text.append("echo -n $PARAMNAME")
-        test_text.append("echo -n $$$$$PARAMNAME")
+        test_text.append("echo -n $$$$$$$PARAMNAME")
         test_result_text.append("echo -n $$$PARAMNAME")
+        test_text.append("echo -n $$$$$$$$PARAMNAME")
+        test_result_text.append("echo -n $$$$PARAMNAME")
 
+        test_text.append("$$$PARAMNAME")
+        test_result_text.append("$PARAMNAME")
         test_text.append("$$$$PARAMNAME")
         test_result_text.append("$$PARAMNAME")
-        test_text.append("$$PARAMNAME")
-        test_result_text.append("$PARAMNAME")
-        test_text.append("$$$$$PARAMNAME")
+        test_text.append("$$$$$$$PARAMNAME")
         test_result_text.append("$$$PARAMNAME")
+        test_text.append("$$$$$$$$PARAMNAME")
+        test_result_text.append("$$$$PARAMNAME")
 
         test_text.append("42")
         test_result_text.append("42")
+
+        test_text.append("echo $$")
+        test_result_text.append("echo $$")
+
+        test_text.append("$$")
+        test_result_text.append("$$")
 
         for i in range(len(test_text)):
             self.assertEqual(jube2.util.util.substitution(text=test_text[i], substitution_dict=test_substitution_dict),test_result_text[i])

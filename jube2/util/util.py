@@ -204,7 +204,7 @@ def expand_dollar_count(text):
     # $$$ -> $$$ -> $
     # $$$$ -> $$$$$$$$ -> $$$$
     # $$$$$ -> $$$$$$$ -> $$$
-    return re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text)
+    return re.sub(r"(^(?=\$)|[^$])((?:\$\$)+?)((?:\${3})?(?:[^$]|$))", r"\1\2\2\3", text)
 
 
 def substitution(text, substitution_dict):
@@ -241,7 +241,7 @@ def substitution(text, substitution_dict):
         text = new_text
     # Final substitution to remove $$
     tmp = string.Template(text)
-    return tmp.safe_substitute(str_substitution_dict)
+    return re.sub("\$(?=([\s]|$))","$$",tmp.safe_substitute(str_substitution_dict))
 
 
 def convert_type(value_type, value, stop=True):
