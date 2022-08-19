@@ -205,7 +205,7 @@ Glossary
 
       .. code-block:: xml
 
-         <parameterset name="..." init_with="...">
+         <parameterset name="..." init_with="..." duplicate="...">
             <parameter>...</parameter>
             ...
          </parameterset>
@@ -249,13 +249,19 @@ Glossary
                <parameter name="test2">bar</parameter> <!-- Other content in set2 -->
              </parameterset>
 
+      * ``duplicate`` is optional and of relevance, if there are more than one parameter definitions with the same name within one parameterset. This ``duplicate`` option has lower priority than the ``duplicte`` option of the parameters. ``duplicate`` must contain one of the following three options:
+
+        * ``replace`` (default): Parameters with the same name are overwritten
+        * ``concat``: Parameters with the same name are concatenated
+        * ``error``: Throws an error, if parameters with the same name are defined
+
    parameter_tag
       A parameter can be used to store benchmark configuration data. A set of different parameters will create
       a specific parameter environment (also called :term:`parameter space <parameter_space>`) for the different steps of the benchmark.
 
       .. code-block:: xml
 
-         <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="...">...</parameter>
+         <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="..." duplicate="...">...</parameter>
 
       * a parameter can be seen as variable: Name is the name to use the variable, and the text between the tags
         will be the real content
@@ -291,6 +297,14 @@ Glossary
           * ``step``: reevaluation in each new step
           * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
           * ``always``: reevaluation in each step and cycle
+
+      * ``duplicate`` is optional and of relevance, if there are more than one parameter definitions with the same name within one parameterset. This ``duplicate`` option has higher priority than the ``duplicte`` option of the parameterset. ``duplicate`` must contain one of the following four options:
+
+        * ``none`` (default): The ``duplicate`` option of the parameterset is prioritized
+        * ``replace``: Parameters with the same name are overwritten
+        * ``concat``: Parameters with the same name are concatenated
+        * ``error``: Throws an error, if parameters with the same name are defined
+
 
    update_mode
       The update mode is parameter attribute which can be used to control the reevaluation of the parameter content.

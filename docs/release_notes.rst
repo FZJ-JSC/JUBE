@@ -21,9 +21,9 @@
 Release notes
 =============
 
-Version 2.5.0rc1
-================
-Release: 2022-08-15
+Version 2.5.0
+=============
+Release: 2022-08-22
 
 * Several independent workpackages within a step can be executed by multiple processes in parallel by stating `procs=#number_of_parallel_processes#` within the `step` tag. An example and a documentation entry was added.
 * A result database can be produced by use of the `database` tag. An example and a documentation entry was added.
@@ -39,6 +39,7 @@ Release: 2022-08-15
 * A feature to create a do_log file for every workpackage of a step is integrated. The do_log file contains the whole environment while execution, the execution shell, the change of current work directories, comments if a directive was executed in a shared fashion and the do directives of the steps.
 * The execution cancels now, when a parameter is of type int or float and the parameter value has not the form of a int or float correspondingly.
 * The FAQ documentation was extended with yaml examples.
+* The option duplicate for parametersets and parameters was introduced.
 
 Version 2.4.3
 ~~~~~~~~~~~~~

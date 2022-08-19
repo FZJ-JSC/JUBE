@@ -581,7 +581,7 @@ parameter_tag
    environment (also called *parameter space*) for the different steps
    of the benchmark.
 
-      <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="...">...</parameter>
+      <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="..." duplicate="...">...</parameter>
 
    * a parameter can be seen as variable: Name is the name to use the
      variable, and the text between the tags will be the real content
@@ -648,10 +648,26 @@ parameter_tag
 
        * "always": reevaluation in each step and cycle
 
+   * "duplicate" is optional and of relevance, if there are more than
+     one parameter definitions with the same name within one
+     parameterset. This "duplicate" option has higher priority than
+     the "duplicte" option of the parameterset. "duplicate" must
+     contain one of the following four options:
+
+     * "none" (default): The "duplicate" option of the parameterset is
+       prioritized
+
+     * "replace": Parameters with the same name are overwritten
+
+     * "concat": Parameters with the same name are concatenated
+
+     * "error": Throws an error, if parameters with the same name are
+       defined
+
 parameterset_tag
    A parameterset is a container to store a bundle of *parameters*.
 
-      <parameterset name="..." init_with="...">
+      <parameterset name="..." init_with="..." duplicate="...">
          <parameter>...</parameter>
          ...
       </parameterset>
@@ -700,6 +716,20 @@ parameterset_tag
             <parameter name="test">2</parameter> <!-- Template in set1 -->
             <parameter name="test2">bar</parameter> <!-- Other content in set2 -->
           </parameterset>
+
+   * "duplicate" is optional and of relevance, if there are more than
+     one parameter definitions with the same name within one
+     parameterset. This "duplicate" option has lower priority than the
+     "duplicte" option of the parameters. "duplicate" must contain one
+     of the following three options:
+
+     * "replace" (default): Parameters with the same name are
+       overwritten
+
+     * "concat": Parameters with the same name are concatenated
+
+     * "error": Throws an error, if parameters with the same name are
+       defined
 
 pattern_tag
    A pattern is used to parse your output files and create your result

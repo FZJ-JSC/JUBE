@@ -2,10 +2,10 @@ Release notes
 *************
 
 
-Version 2.5.0rc1
-****************
+Version 2.5.0
+*************
 
-Release: 2022-08-15
+Release: 2022-08-22
 
 * Several independent workpackages within a step can be executed by
   multiple processes in parallel by stating
@@ -47,6 +47,9 @@ Release: 2022-08-15
   correspondingly.
 
 * The FAQ documentation was extended with yaml examples.
+
+* The option duplicate for parametersets and parameters was
+  introduced.
 
 
 Version 2.4.3
