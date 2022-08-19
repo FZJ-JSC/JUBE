@@ -1263,7 +1263,7 @@ class Parser(object):
                 duplicate="replace"
             if duplicate != "replace" and duplicate != "concat" and duplicate != "error":
                 raise ValueError("Invalid \"duplicate\" attribute in " +
-                                 "parameterset {0} found. Use \"replace\"" +
+                                 "parameterset {0} found. Use \"replace\" (default)" +
                                  ", \"concat\" or \"error\".".format(name))
             init_with = element.get("init_with")
             if init_with is not None:
@@ -1316,6 +1316,14 @@ class Parser(object):
                     .format(parameter_update_mode, name))
             export_str = param.get("export", default="false").strip()
             export = export_str.lower() == "true"
+
+            duplicate = param.get("duplicate", "none").strip()
+            if duplicate is None:
+                duplicate="none"
+            if duplicate != "replace" and duplicate != "concat" and duplicate != "error" and duplicate != "none":
+                raise ValueError("Invalid \"duplicate\" attribute in " +
+                                 "parameter {0} found. Use \"replace\"" +
+                                 ", \"concat\", \"error\" or \"none\" (default).".format(name))
             if parameter_mode not in jube2.conf.ALLOWED_MODETYPES:
                 raise ValueError(
                     ("parameter-mode \"{0}\" not allowed in " +
@@ -1347,7 +1355,7 @@ class Parser(object):
                 jube2.parameter.Parameter.create_parameter(
                     name, value, separator, parameter_type, selected_value,
                     parameter_mode, export, update_mode=parameter_update_mode,
-                    idx=idx)
+                    idx=idx, eval_helper=None, fixed=False, duplicate=duplicate)
             parameters.append(parameter)
         return parameters
 
