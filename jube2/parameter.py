@@ -116,6 +116,7 @@ class Parameterset(object):
                 return parameter
             else:
                 value=list(set(jube2.util.util.ensure_list(self._parameters[parameter.name]._value)+jube2.util.util.ensure_list(parameter._value)))
+                value.sort()
                 return jube2.parameter.TemplateParameter(
                             parameter._name, value, parameter._separator, parameter._type,
                             parameter._mode, parameter._export,
