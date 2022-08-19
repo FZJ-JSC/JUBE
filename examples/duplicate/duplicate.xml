@@ -4,9 +4,9 @@
     <comment>parameter duplicate example</comment>
      
     <parameterset name="options" duplicate="concat">
-      <parameter name="iterations"	     >0</parameter>
-      <parameter name="iterations" tag="few">1,2,3</parameter>
-      <parameter name="iterations" tag="many">10,20,30</parameter>
+      <parameter name="iterations"	     >1</parameter>
+      <parameter name="iterations" tag="few" >2,3,4</parameter>
+      <parameter name="iterations" tag="many">20,30,40</parameter>
     </parameterset>
 
     <step name="perform_iterations">

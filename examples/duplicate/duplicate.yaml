@@ -6,9 +6,9 @@ parameterset:
   name: options
   duplicate: concat
   parameter:
-    - {name: iterations,            _: "0"}
-    - {name: iterations, tag: few,  _: "1,2,3"}
-    - {name: iterations, tag: many, _: "10,20,30"}
+    - {name: iterations,            _: "1"}
+    - {name: iterations, tag: few,  _: "2,3,4"}
+    - {name: iterations, tag: many, _: "20,30,40"}
 
 step:
   name: perform_iterations
