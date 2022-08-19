@@ -1167,18 +1167,23 @@ class Parser(object):
                 elements.append(element)
 
         test_duplicate=None
-        # if a parameterset is included by a use tag, duplicate is None
-        # but the type is parameterset
         if duplicate == "###initiated_with_without_duplicate_mentioning###":
-            duplicate="replace"
-        if set_type == "parameterset":
-            if elements[0].get("duplicate") == None:
-                test_duplicate = duplicate
+            if elements[0].get("duplicate") != None:
+                duplicate = elements[0].get("duplicate")
             else:
-                test_duplicate = elements[0].get("duplicate")
-        if duplicate != None:
-            if test_duplicate != duplicate:
-                raise ValueError("The {0} {1} is mentioned at least twice with different duplicate options.".format(set_type, name))
+                duplicate = "replace"
+        if duplicate != "###initiated_with_without_duplicate_mentioning###" and duplicate != None:
+            if set_type == "parameterset":
+                if elements[0].get("duplicate") == None:
+                    test_duplicate = duplicate
+                else:
+                    test_duplicate = elements[0].get("duplicate")
+            if duplicate != None:
+                if test_duplicate != duplicate:
+                    raise ValueError("The {0} {1} is mentioned at least twice with different duplicate options.".format(set_type, name))
+        if duplicate == "###initiated_with_without_duplicate_mentioning###":
+            raise Exception("Unknown error in extracting an extern set." +
+                            "This should not happen. Please contact the JUBE developers.")
 
         if elements is not None:
             if len(elements) > 1:
