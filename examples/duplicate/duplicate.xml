@@ -11,7 +11,7 @@
 
     <step name="perform_iterations">
       <use>options</use>
-      <do>n=0; for i in {0..${iterations}} ; do n=$(($n + $i)) ; done ; echo $n</do>
+      <do>n=0; for (( i = 0 ; i &lt; ${iterations} ; ++i )) ; do n=$((${n} + ${i})) ; done ; echo ${n}</do>
     </step>
 
   </benchmark>
