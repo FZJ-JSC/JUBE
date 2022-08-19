@@ -9,9 +9,13 @@
       <parameter name="iterations" tag="many">20,30,40</parameter>
     </parameterset>
 
+    <parameterset name="result">
+      <parameter name="sum" mode="python">int(${iterations}*(${iterations}+1)/2)</parameter>
+    </parameterset>
+
     <step name="perform_iterations">
-      <use>options</use>
-      <do>n=0; for (( i = 0 ; i &lt; ${iterations} ; ++i )) ; do n=$((${n} + ${i})) ; done ; echo ${n}</do>
+      <use>options,result</use>
+      <do>echo $sum</do>
     </step>
 
   </benchmark>

@@ -3,14 +3,17 @@ outpath: bench_run
 comment: parameter duplicate example
 
 parameterset:
-  name: options
-  duplicate: concat
-  parameter:
-    - {name: iterations,            _: "1"}
-    - {name: iterations, tag: few,  _: "2,3,4"}
-    - {name: iterations, tag: many, _: "20,30,40"}
-
+  - name: options
+    duplicate: concat
+    parameter:
+      - {name: iterations,            _: "1"}
+      - {name: iterations, tag: few,  _: "2,3,4"}
+      - {name: iterations, tag: many, _: "20,30,40"}
+  - name: result
+    parameter:
+    - {name: sum, mode: "python", _: "int(${iterations}*(${iterations}+1)/2)"}
+ 
 step:
   name: perform_iterations
-  use: options
-  do: "n=0; for i in {0..${iterations}} ; do n=$(($n + $i)) ; done ; echo $n"
+  use: "options,result"
+  do: "echo $sum"
