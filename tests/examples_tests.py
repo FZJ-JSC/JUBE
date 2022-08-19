@@ -72,6 +72,8 @@ class TestExamples(unittest.TestCase):
                 "parameter_update", "parameter_update"+i))
             examples_tasks.append(ExampleChecker(
                 "result_database", "result_database"+i))
+            examples_tasks.append(ExampleChecker(
+                "duplicate", "duplicate"+i, suffix="--tag few many"))
 
         for checker in examples_tasks:
             self.assertTrue(checker.run())
@@ -82,7 +84,7 @@ class ExampleChecker(object):
     """Class for checking examples"""
 
     def __init__(self, bench_path, xml_file, bench_run_path=None,
-                 check_function=True, debug=False):
+                 check_function=True, debug=False, suffix=""):
         """Init instance.
 
         The check_function should return a bool value to indicate the
@@ -97,13 +99,14 @@ class ExampleChecker(object):
 
         self._check_function = check_function
         self._debug = debug
+        self._suffix = suffix
 
     def run(self):
         """Run example"""
         success = True
         debug = "--debug" if self._debug else ""
         jube2.main.main(
-            "{0} run -e {1} -r".format(debug, self._xml_file).split())
+            "{0} run -e {1} -r {2}".format(debug, self._xml_file, self._suffix).split())
 
         if self._check_function:
             success = self._check()
@@ -154,9 +157,9 @@ class ExampleChecker(object):
             check = open(os.path.join(os.path.dirname(__file__),
                          "examples_output", self._bench_name, "run.log.tmp"), 'r')
             ausgabeOriginal.close()
-            checkOriginal.close()
+            checkOriginal.close() 
 
-            success = ExampleChecker._tabfinder(ausgabe, check)
+            success = ExampleChecker._tabfinder(ausgabe, check) 
             for l1, l2 in zip(ausgabe, check):
                 if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1:
                     ausgabeMatcher = re.match(
@@ -226,7 +229,7 @@ class ExampleChecker(object):
                     file2.seek(0)
 
                     return False
-
+ 
         # remove to beginning of the files
         file1.seek(0)
         file2.seek(0)
