@@ -42,36 +42,36 @@ class TestExamples(unittest.TestCase):
         """Main function"""
         examples_tasks = []
         for i in [".xml", ".yaml"]:
-            #examples_tasks.append(ExampleChecker(
-            #    "do_log", "do_log"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "environment", "environment"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "result_creation", "result_creation"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "files_and_sub", "files_and_sub"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "dependencies", "dependencies"+i))
-            #examples_tasks.append(ExampleChecker("tagging", "tagging"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "parameterspace", "parameterspace"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "parameter_dependencies", "parameter_dependencies"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "scripting_parameter", "scripting_parameter"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "scripting_pattern", "scripting_pattern"+i))
-            #examples_tasks.append(ExampleChecker("statistic", "statistic"+i))
-            #examples_tasks.append(ExampleChecker("include", "main"+i))
-            #examples_tasks.append(ExampleChecker("shared", "shared"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "hello_world", "hello_world"+i))
-            #examples_tasks.append(ExampleChecker("iterations", "iterations"+i))
-            #examples_tasks.append(ExampleChecker("cycle", "cycle"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "parameter_update", "parameter_update"+i))
-            #examples_tasks.append(ExampleChecker(
-            #    "result_database", "result_database"+i))
+            examples_tasks.append(ExampleChecker(
+                "do_log", "do_log"+i))
+            examples_tasks.append(ExampleChecker(
+                "environment", "environment"+i))
+            examples_tasks.append(ExampleChecker(
+                "result_creation", "result_creation"+i))
+            examples_tasks.append(ExampleChecker(
+                "files_and_sub", "files_and_sub"+i))
+            examples_tasks.append(ExampleChecker(
+                "dependencies", "dependencies"+i))
+            examples_tasks.append(ExampleChecker("tagging", "tagging"+i))
+            examples_tasks.append(ExampleChecker(
+                "parameterspace", "parameterspace"+i))
+            examples_tasks.append(ExampleChecker(
+                "parameter_dependencies", "parameter_dependencies"+i))
+            examples_tasks.append(ExampleChecker(
+                "scripting_parameter", "scripting_parameter"+i))
+            examples_tasks.append(ExampleChecker(
+                "scripting_pattern", "scripting_pattern"+i))
+            examples_tasks.append(ExampleChecker("statistic", "statistic"+i))
+            examples_tasks.append(ExampleChecker("include", "main"+i))
+            examples_tasks.append(ExampleChecker("shared", "shared"+i))
+            examples_tasks.append(ExampleChecker(
+                "hello_world", "hello_world"+i))
+            examples_tasks.append(ExampleChecker("iterations", "iterations"+i))
+            examples_tasks.append(ExampleChecker("cycle", "cycle"+i))
+            examples_tasks.append(ExampleChecker(
+                "parameter_update", "parameter_update"+i))
+            examples_tasks.append(ExampleChecker(
+                "result_database", "result_database"+i))
             examples_tasks.append(ExampleChecker(
                 "duplicate", "duplicate"+i, suffix="--tag few many"))
 
@@ -161,8 +161,6 @@ class ExampleChecker(object):
 
             success = ExampleChecker._tabfinder(ausgabe, check) 
             for l1, l2 in zip(ausgabe, check):
-                print(l1)
-                print(l2)
                 if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1:
                     ausgabeMatcher = re.match(
                         '^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l1)
