@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="parameter_duplicate_example" outpath="bench_run">
+    <comment>parameter duplicate example</comment>
+     
+    <parameterset name="options" duplicate="concat">
+      <parameter name="iterations"	     >0</parameter>
+      <parameter name="iterations" tag="few">1,2,3</parameter>
+      <parameter name="iterations" tag="many">10,20,30</parameter>
+    </parameterset>
+
+    <step name="perform_iterations">
+      <use>options</use>
+      <do>n=0; for i in {0..${iterations}} ; do n=$(($n + $i)) ; done ; echo $n</do>
+    </step>
+
+  </benchmark>
+</jube>

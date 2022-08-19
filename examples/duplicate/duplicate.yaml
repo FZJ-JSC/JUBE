@@ -1,0 +1,16 @@
+name: parameter_duplicate_example
+outpath: bench_run
+comment: parameter duplicate example
+
+parameterset:
+  name: options
+  duplicate: concat
+  parameter:
+    - {name: iterations,            _: "0"}
+    - {name: iterations, tag: few,  _: "1,2,3"}
+    - {name: iterations, tag: many, _: "10,20,30"}
+
+step:
+  name: perform_iterations
+  use: options
+  do: "n=0; for i in {0..${iterations}} ; do n=$(($n + $i)) ; done ; echo $n"

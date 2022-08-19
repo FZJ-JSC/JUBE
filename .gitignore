@@ -12,5 +12,5 @@ docs/_build
 tests/benchmark_runs
 tests/.coverage
 tests/htmlcov
-examples/result_database/result_database.sqlite3
+examples/result_database/result_database.dat 
 dist
