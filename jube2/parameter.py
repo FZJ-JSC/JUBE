@@ -115,6 +115,7 @@ class Parameterset(object):
             self._parameters[parameter.name] = parameter
         elif self._duplicate == "concat":
             if parameter.name in self._parameters.keys():
+                # Check whether both parameters have identical options
                 if  parameter._separator != self._parameters[parameter.name]._separator or \
                     parameter._type != self._parameters[parameter.name]._type or \
                     parameter._mode != self._parameters[parameter.name]._mode or \
@@ -124,7 +125,13 @@ class Parameterset(object):
                     parameter._update_mode != self._parameters[parameter.name]._update_mode or \
                     parameter._eval_helper != self._parameters[parameter.name]._eval_helper:
                     raise ValueError("The options for the parameter {0} are unequal.".format(parameter.name))
-                self._parameters[parameter.name]._value=list(set(self._parameters[parameter.name]._value+parameter._value))
+                if self._parameters[parameter.name]._value == parameter._value:
+                    self._parameters[parameter.name] = parameter
+                else:
+                    value=list(set(jube2.util.util.ensure_list(self._parameters[parameter.name]._value)+jube2.util.util.ensure_list(parameter._value)))
+                    self._parameters[parameter.name] = jube2.parameter.TemplateParameter(parameter._name, value, parameter._separator, parameter._type,
+                            parameter._mode, parameter._export,
+                            parameter._update_mode, parameter._idx, parameter._eval_helper)
             else:
                 self._parameters[parameter.name] = parameter
         elif self._duplicate == "error":
@@ -132,10 +139,11 @@ class Parameterset(object):
                 raise Exception("The parameter {0} was defined at least twice.".format(parameter.name))
             else:
                 self._parameters[parameter.name] = parameter
-        else: # unknown error, this situation should not occur!
+        else: # unknown error, this situation should never occur!
             raise Exception("The execution was aborted due to an unknown error "+
-                "during adding of a parameter. Please contact the JUBE developers "+
+                "when adding a parameter. Please contact the JUBE developers "+
                 "to resolve this situation.")
+
     def delete_parameter(self, parameter):
         """Delete a parameter"""
         name = ""

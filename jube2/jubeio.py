@@ -1144,7 +1144,7 @@ class Parser(object):
             LOGGER.error("Error while parsing {0}:".format(file_path))
             raise
 
-    def _extract_extern_set(self, filename, set_type, name, search_name=None, duplicate="replace"):
+    def _extract_extern_set(self, filename, set_type, name, search_name=None, duplicate=None):
         """Load a parameter-/file-/substitutionset from a given file"""
         if search_name is None:
             search_name = name
@@ -1165,6 +1165,20 @@ class Parser(object):
                 etree, attribute_dict={"name": search_name})
             if element is not None:
                 elements.append(element)
+
+        test_duplicate=None
+        # if a parameterset is included by a use tag, duplicate is None
+        # but the type is parameterset
+        if duplicate == "###initiated_with_without_duplicate_mentioning###":
+            duplicate="replace"
+        if set_type == "parameterset":
+            if elements[0].get("duplicate") == None:
+                test_duplicate = duplicate
+            else:
+                test_duplicate = elements[0].get("duplicate")
+        if duplicate != None:
+            if test_duplicate != duplicate:
+                raise ValueError("The {0} {1} is mentioned at least twice with different duplicate options.".format(set_type, name))
 
         if elements is not None:
             if len(elements) > 1:
@@ -1231,6 +1245,7 @@ class Parser(object):
 
     def _extract_parametersets(self, etree):
         """Return parametersets from etree"""
+
         parametersets = dict()
         for element in etree.findall("parameterset"):
             name = Parser._attribute_from_element(element, "name").strip()
@@ -1238,7 +1253,7 @@ class Parser(object):
                 raise ValueError("Empty \"name\" attribute in " +
                                  "<parameterset> found.")
             LOGGER.debug("  Parsing <parameterset name=\"{0}\">".format(name))
-            duplicate = etree.get("duplicate", "replace").strip()
+            duplicate = element.get("duplicate", "replace").strip()
             if duplicate is None:
                 duplicate="replace"
             if duplicate != "replace" and duplicate != "concat" and duplicate != "error":
@@ -1252,6 +1267,8 @@ class Parser(object):
                     search_name = parts[1]
                 else:
                     search_name = None
+                if element.get("duplicate") == None:
+                    duplicate = "###initiated_with_without_duplicate_mentioning###"
                 parameterset = self._extract_extern_set(parts[0],
                                                         "parameterset", name,
                                                         search_name, duplicate)

@@ -520,3 +520,10 @@ def safe_split(text, separator):
         return text.split(separator)
     else:
         return [text]
+
+
+def ensure_list(element):
+    if type(element)!=list:
+        return [element]
+    else:
+        return element
