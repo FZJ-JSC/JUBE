@@ -310,6 +310,115 @@ class TestParameterSet(unittest.TestCase):
         self.assertEqual(etree.tag, "parameterset")
         self.assertEqual(len(etree.findall("parameter")), 2)
 
+    def test_concat_parameter(self):
+        """Test concat_parameter"""
+        param1 = jube2.parameter.TemplateParameter(
+            name='param1',
+            value=['1','2','3'],
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='none')
+        param2 = jube2.parameter.TemplateParameter(
+            name='param1',
+            value=['4','5','6'],
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='none')
+        param3 = jube2.parameter.StaticParameter(
+            name='param1',
+            value='',
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='none')
+
+        paramset1 = jube2.parameter.Parameterset(name='paramset1',duplicate='concat')
+        paramset1.add_parameter(param1)
+        self.assertEqual(paramset1.concat_parameter(param2)._value,['1','2','3','4','5','6'])
+        self.assertEqual(paramset1.concat_parameter(param3)._value,['','1','2','3'])
+
+    def test_check_parameter_options(self):
+        """Test check_parameter_options"""
+        param1 = jube2.parameter.TemplateParameter(
+            name='param1',
+            value=['1','2','3'],
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='none')
+        param2 = jube2.parameter.TemplateParameter(
+            name='param1',
+            value=['4','5','6'],
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='none')
+        param3 = jube2.parameter.TemplateParameter(
+            name='param1',
+            value=['7','8','9'],
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='replace')
+        paramset1 = jube2.parameter.Parameterset(name='paramset1',duplicate='concat')
+        paramset1.add_parameter(param1)
+        paramset1.check_parameter_options(param2)
+        with self.assertRaises(ValueError):
+            paramset1.check_parameter_options(param3)
+
+    def test_add_parameter(self):
+        """Test add_parameter"""
+        param1 = jube2.parameter.TemplateParameter(
+            name='param1',
+            value=['1','2','3'],
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='none')
+        param2 = jube2.parameter.TemplateParameter(
+            name='param1',
+            value=['4','5','6'],
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='none')
+        param4 = jube2.parameter.StaticParameter(
+            name='param2',
+            value='',
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='replace')
+        param5 = jube2.parameter.StaticParameter(
+            name='param2',
+            value='1',
+            separator=',',
+            parameter_type='string',
+            parameter_mode='text',
+            duplicate='replace')
+
+        paramset1 = jube2.parameter.Parameterset(name='paramset1',duplicate='concat')
+        paramset1.add_parameter(param1)
+        self.assertEqual(paramset1._parameters[param1._name]._value,['1','2','3'])
+        paramset1.add_parameter(param2)
+        self.assertEqual(paramset1._parameters[param2._name]._value,['1','2','3','4','5','6'])
+
+        paramset2 = jube2.parameter.Parameterset(name='paramset2',duplicate='replace')
+        paramset2.add_parameter(param1)
+        paramset2.add_parameter(param2)
+        self.assertEqual(paramset2._parameters[param2._name]._value,['4','5','6'])
+
+        paramset3 = jube2.parameter.Parameterset(name='paramset3',duplicate='error')
+        paramset3.add_parameter(param1)
+        with self.assertRaises(Exception):
+            paramset3.add_parameter(param2)
+
+        paramset1.add_parameter(param4)
+        paramset1.add_parameter(param5)
+        self.assertEqual(paramset1._parameters[param4._name]._value,'1')
+
 
 if __name__ == "__main__":
     unittest.main()

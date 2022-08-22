@@ -42,6 +42,7 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(jube2.util.util.convert_type("int","forty-two",stop=False),"forty-two")
 
     def test_expand_dollar_count(self):
+        """Test expand_dollar_count"""
         test_text=[]
         test_result_text=[]
 
@@ -73,6 +74,7 @@ class TestUtil(unittest.TestCase):
             self.assertEqual(jube2.util.util.expand_dollar_count(text=test_text[i]),test_result_text[i])
 
     def test_substitution(self):
+        """Test substitution"""
         test_substitution_dict={'test1':'test2','test3':'test4'}
         test_text=[]
         test_result_text=[]
@@ -106,6 +108,16 @@ class TestUtil(unittest.TestCase):
 
         for i in range(len(test_text)):
             self.assertEqual(jube2.util.util.substitution(text=test_text[i], substitution_dict=test_substitution_dict),test_result_text[i])
+
+    def test_ensure_list(self):
+        """Test ensure_list"""
+        self.assertEqual(jube2.util.util.ensure_list(42),[42])
+        self.assertEqual(type(jube2.util.util.ensure_list(42)),list)
+        self.assertEqual(jube2.util.util.ensure_list(""),[""])
+        self.assertEqual(type(jube2.util.util.ensure_list("")),list)
+        self.assertEqual(jube2.util.util.ensure_list(["",42,3.141]),["",42,3.141])
+        self.assertEqual(type(jube2.util.util.ensure_list(["",42,3.141])),list)
+
 
 if __name__ == "__main__":
     unittest.main()
