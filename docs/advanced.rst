@@ -894,3 +894,24 @@ The input file ``do_log.yaml``:
 In this example a hidden string is searched for within 5 files and the name of the file containing the hidden string is printed.
 
 For the initial execution of this example within ``bench_run/000000/00000[0-4]_execute`` each can be found a ``do_log`` file. These files can be executed manually by prefixing it with ``/bin/sh``. The scripts will reproduce the environment at execution time, the execution and the result output. Keep in mind that the shared ``grep`` will be executed by the benchmark with id 4 only.
+
+The duplicate option
+~~~~~~~~~~~~~~~~~~~~
+
+To simplify advanced tagging and parameter concatenation the ``duplicate`` option within parametersets or parameters can be stated.
+
+The input file ``duplicate.xml``:
+
+.. literalinclude:: ../examples/duplicate/duplicate.xml
+   :language: xml
+
+The input file ``duplicate.yaml``:
+
+.. literalinclude:: ../examples/duplicate/duplicate.yaml
+   :language: yaml
+
+In this example the ``duplicate`` option with the value ``concat`` is stated for a parameterset. This leads to a concatenation of parameter values of the same name. In combination with the tagging option for parameters the user can specify which options are included into the parameters. If the user states the tags ``few`` and ``many`` the parameter ``iterations`` takes the values ``1,2,3,4,20,30,40``.
+
+The default option of ``duplicate`` for parametersets is ``replace`` which leads to a replacing of parameters if they are mentioned more than once. A third option for the ``duplicate`` option for parametersets is ``error``. In this case the execution is aborted if a parameter is defined more than once.
+
+The option ``duplicate`` can also be stated for parameters. In this case the parameters ``duplicate`` option is prioritized over the parametersets one. The possible values for parameters ``duplicate`` option are ``none``, ``replace``, ``concat`` and ``error``. ``none`` is the default value and leads to option being ignored such that the parametersets ``duplicate`` option is taking precedence. The other three options are the same as in the parameterset.
