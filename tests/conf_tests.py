@@ -16,24 +16,23 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Collection of all tests"""
+"""Test the configurations"""
 
 from __future__ import (print_function,
                         unicode_literals,
                         division)
 
 import unittest
-from parameter_tests import TestParameter, TestParameterSet
-from multiprocessing_tests import TestMultiprocessing
-from pattern_tests import TestPattern
-from benchmark_tests import TestBenchmark
-from result_database_tests import TestResultDatabase
-from examples_tests import TestExamples
-from yaml_tests import TestYAMLScripts
-from step_tests import TestOperation
-from step_tests import TestDoLog
-from util_tests import TestUtil
-from conf_tests import TestConf
+import jube2.conf
+from distutils.version import StrictVersion
+
+class TestConf(unittest.TestCase):
+
+    """Class for testing the configurations"""
+
+    def test_version_number(self):
+        """version number testing"""
+        StrictVersion(jube2.conf.JUBE_VERSION)
 
 
 if __name__ == "__main__":
