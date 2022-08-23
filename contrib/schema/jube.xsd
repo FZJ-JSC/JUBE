@@ -34,6 +34,7 @@
     </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="init_with" type="xs:string" use="optional" />
+    <xs:attribute name="duplicate" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
@@ -44,6 +45,7 @@
         <xs:attribute name="type" type="contentType" use="optional" />
         <xs:attribute name="mode" type="xs:string" use="optional" />
         <xs:attribute name="export" type="booleanType" use="optional" />
+        <xs:attribute name="duplicate" type="xs:string" use="optional" />
         <xs:attribute name="update_mode" type="updateModeType"
           use="optional" />
         <xs:attribute name="separator" type="xs:string"

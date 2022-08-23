@@ -52,6 +52,7 @@ parameterset =
 attlist.parameterset &=
   attribute name { text },
   attribute init_with { text }?,
+  attribute duplicate { "replace" | "error" | "concat" }?,
   attribute tag { text }?
 parameter = element parameter { attlist.parameter, text }
 attlist.parameter &=
@@ -61,6 +62,7 @@ attlist.parameter &=
   attribute export { "true" | "false" | "True" | "False" }?,
   attribute update_mode { "never" | "use" | "step" | "cycle" | "always" }?,
   attribute separator { text }?,
+  attribute duplicate { "none" | "replace" | "error" | "concat" }?,
   attribute tag { text }?
 substituteset =
   element substituteset {
