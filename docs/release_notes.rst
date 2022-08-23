@@ -21,6 +21,12 @@
 Release notes
 =============
 
+Version 2.5.1
+=============
+Release: 2022-08-29
+
+* The default behaviour of replacing two parameters with different options is restored without throwing an error was restored.
+
 Version 2.5.0
 =============
 Release: 2022-08-22
