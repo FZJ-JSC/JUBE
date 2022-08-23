@@ -140,7 +140,6 @@ class Parameterset(object):
         if parameter.name not in self._parameters.keys():
             self._parameters[parameter.name] = parameter
         else:
-            self.check_parameter_options(parameter)
             # check, which action to perform and prioritize the duplicate
             # option from the parameters over the duplicate option from
             # the parametersets
@@ -148,6 +147,7 @@ class Parameterset(object):
             if parameter._duplicate == "replace":
                 self._parameters[parameter.name] = parameter
             elif parameter._duplicate == "concat":
+                self.check_parameter_options(parameter)
                 self._parameters[parameter.name] = self.concat_parameter(parameter)
             elif parameter._duplicate == "error":
                 if parameter.name in self._parameters.keys():
@@ -158,6 +158,7 @@ class Parameterset(object):
                 if self._duplicate == "replace":
                     self._parameters[parameter.name] = parameter
                 elif self._duplicate == "concat":
+                    self.check_parameter_options(parameter)
                     self._parameters[parameter.name] = self.concat_parameter(parameter)
                 elif self._duplicate == "error":
                     if parameter.name in self._parameters.keys():
