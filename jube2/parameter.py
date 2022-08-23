@@ -125,21 +125,28 @@ class Parameterset(object):
         else:
             return parameter
 
-    def check_parameter_options(self, parameter):
+    def check_parameter_options(self, parameter, only_duplicate=True):
         """Check whether both parameters have
         identical options and throw an error
         if this is not the case"""
-        if  parameter._separator != self._parameters[parameter.name]._separator or \
-                parameter._type != self._parameters[parameter.name]._type or \
-                parameter._update_mode != self._parameters[parameter.name]._update_mode or \
-                parameter._duplicate != self._parameters[parameter.name]._duplicate:
-            raise ValueError("At least one option for the duplicate parameter {0} is unequal.".format(parameter.name))
+        if only_duplicate:
+            if parameter._duplicate != self._parameters[parameter.name]._duplicate:
+                raise ValueError("The duplicate options for the parameter {0} are stated at least twice differently leading to undefined behaviour.".format(parameter.name))
+        else:
+            if  parameter._separator != self._parameters[parameter.name]._separator or \
+                    parameter._type != self._parameters[parameter.name]._type or \
+                    parameter._update_mode != self._parameters[parameter.name]._update_mode or \
+                    parameter._duplicate != self._parameters[parameter.name]._duplicate:
+                raise ValueError("At least one option for the parameter {0} was defined at least twice differently leading to undefined behaviour.".format(parameter.name))
 
     def add_parameter(self, parameter):
         """Add a new parameter"""
         if parameter.name not in self._parameters.keys():
             self._parameters[parameter.name] = parameter
         else:
+            # Check whether only the duplicate option of two parameters is
+            # identical, otherwise the behaviour is undefined.
+            self.check_parameter_options(parameter=parameter, only_duplicate=True)
             # check, which action to perform and prioritize the duplicate
             # option from the parameters over the duplicate option from
             # the parametersets
@@ -147,7 +154,7 @@ class Parameterset(object):
             if parameter._duplicate == "replace":
                 self._parameters[parameter.name] = parameter
             elif parameter._duplicate == "concat":
-                self.check_parameter_options(parameter)
+                self.check_parameter_options(parameter=parameter, only_duplicate=False)
                 self._parameters[parameter.name] = self.concat_parameter(parameter)
             elif parameter._duplicate == "error":
                 if parameter.name in self._parameters.keys():
@@ -158,7 +165,7 @@ class Parameterset(object):
                 if self._duplicate == "replace":
                     self._parameters[parameter.name] = parameter
                 elif self._duplicate == "concat":
-                    self.check_parameter_options(parameter)
+                    self.check_parameter_options(parameter=parameter, only_duplicate=False)
                     self._parameters[parameter.name] = self.concat_parameter(parameter)
                 elif self._duplicate == "error":
                     if parameter.name in self._parameters.keys():

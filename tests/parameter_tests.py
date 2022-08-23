@@ -384,6 +384,13 @@ class TestParameterSet(unittest.TestCase):
             parameter_type='string',
             parameter_mode='text',
             duplicate='none')
+        param3 = jube2.parameter.StaticParameter(
+            name='param1',
+            value='84',
+            separator=',',
+            parameter_type='int',
+            parameter_mode='text',
+            duplicate='error')
         param4 = jube2.parameter.StaticParameter(
             name='param2',
             value='',
@@ -398,17 +405,42 @@ class TestParameterSet(unittest.TestCase):
             parameter_type='string',
             parameter_mode='text',
             duplicate='replace')
+        param6 = jube2.parameter.StaticParameter(
+            name='param1',
+            value='42',
+            separator=',',
+            parameter_type='int',
+            parameter_mode='text',
+            duplicate='none')
+        param7 = jube2.parameter.StaticParameter(
+            name='param3',
+            value='3141',
+            separator=',',
+            parameter_type='int',
+            parameter_mode='text',
+            duplicate='erroneous_duplicate_type')
 
         paramset1 = jube2.parameter.Parameterset(name='paramset1',duplicate='concat')
         paramset1.add_parameter(param1)
         self.assertEqual(paramset1._parameters[param1._name]._value,['1','2','3'])
         paramset1.add_parameter(param2)
         self.assertEqual(paramset1._parameters[param2._name]._value,['1','2','3','4','5','6'])
+        with self.assertRaises(ValueError):
+            paramset1.add_parameter(param6)
+        with self.assertRaises(ValueError):
+            paramset1.add_parameter(param3)
+
+        paramset1.add_parameter(param7)
+        with self.assertRaises(Exception):
+            paramset1.add_parameter(param7)
 
         paramset2 = jube2.parameter.Parameterset(name='paramset2',duplicate='replace')
         paramset2.add_parameter(param1)
         paramset2.add_parameter(param2)
         self.assertEqual(paramset2._parameters[param2._name]._value,['4','5','6'])
+        paramset2.add_parameter(param6)
+        self.assertEqual(paramset2._parameters[param6._name]._value,'42')
+        self.assertEqual(paramset2._parameters[param6._name]._type,'int')
 
         paramset3 = jube2.parameter.Parameterset(name='paramset3',duplicate='error')
         paramset3.add_parameter(param1)
