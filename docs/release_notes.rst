@@ -25,7 +25,7 @@ Version 2.5.1
 =============
 Release: 2022-08-29
 
-* The default behaviour of replacing two parameters with different options is restored without throwing an error was restored.
+* The default behaviour of replacing two parameters with different options without throwing an error was restored.
 * The testing suite was extended.
 * The schema files were corrected such that they contain the duplicate option.
 
