@@ -22,7 +22,7 @@ Release notes
 =============
 
 Version 2.5.1
-=============
+~~~~~~~~~~~~~
 Release: 2022-08-24
 
 * The default behaviour of replacing two parameters with different options without throwing an error was restored.
@@ -30,7 +30,7 @@ Release: 2022-08-24
 * The schema files were corrected such that they contain the duplicate option.
 
 Version 2.5.0
-=============
+~~~~~~~~~~~~~
 Release: 2022-08-22
 
 * Several independent workpackages within a step can be executed by multiple processes in parallel by stating `procs=#number_of_parallel_processes#` within the `step` tag. An example and a documentation entry was added.
