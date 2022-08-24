@@ -30,6 +30,7 @@ from benchmark_tests import TestBenchmark
 from result_database_tests import TestResultDatabase
 from examples_tests import TestExamples
 from yaml_tests import TestYAMLScripts
+from xml_tests import TestXMLScripts
 from step_tests import TestOperation
 from step_tests import TestDoLog
 from util_tests import TestUtil

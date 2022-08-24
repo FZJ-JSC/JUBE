@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Test the examples"""
+"""Test additional yaml example scripts"""
 
 from __future__ import (print_function,
                         unicode_literals,
@@ -34,7 +34,7 @@ import jube2.main
 
 class TestYAMLScripts(unittest.TestCase):
 
-    """Class for testing yaml scripts"""
+    """Class for testing additional yaml scripts"""
 
     def test_newline_separator(self):
         """Testing newline separator"""
