@@ -269,8 +269,10 @@ def convert_type(value_type, value, stop=True):
         else:
             result_value = value
     if value_type_incorrect:
-        raise TypeError(("\"{0}\" is not of type \"{1}\"")
-                             .format(value, value_type))
+        print("Warning: \"{0}\" is not of type \"{1}\" but the execution is continued to ensure backward compatibility."
+                                 .format(value, value_type))
+        LOGGER.debug(("Warning: \"{0}\" is not of type \"{1}\" but the execution is continued to ensure backward compatibility.")
+                                 .format(value, value_type))
     return result_value
 
 

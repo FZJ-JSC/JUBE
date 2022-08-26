@@ -135,9 +135,8 @@ class Parameterset(object):
         else:
             if  parameter._separator != self._parameters[parameter.name]._separator or \
                     parameter._type != self._parameters[parameter.name]._type or \
-                    parameter._update_mode != self._parameters[parameter.name]._update_mode or \
-                    parameter._duplicate != self._parameters[parameter.name]._duplicate:
-                raise ValueError("At least one option for the parameter {0} was defined at least twice differently leading to undefined behaviour.".format(parameter.name))
+                    parameter._update_mode != self._parameters[parameter.name]._update_mode:
+                raise ValueError("At least one option (separator, type, update_mode) for the parameter {0} was defined at least twice differently leading to undefined behaviour.".format(parameter.name))
 
     def add_parameter(self, parameter):
         """Add a new parameter"""
