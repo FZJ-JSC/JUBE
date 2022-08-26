@@ -131,11 +131,17 @@ class Parameterset(object):
         if this is not the case"""
         if only_duplicate:
             if parameter._duplicate != self._parameters[parameter.name]._duplicate:
+                LOGGER.debug(
+                        "The duplicate options for the parameter {0} are stated at least twice differently leading to undefined behaviour.\n".format(
+                            parameter.name))
                 raise ValueError("The duplicate options for the parameter {0} are stated at least twice differently leading to undefined behaviour.".format(parameter.name))
         else:
             if  parameter._separator != self._parameters[parameter.name]._separator or \
                     parameter._type != self._parameters[parameter.name]._type or \
                     parameter._update_mode != self._parameters[parameter.name]._update_mode:
+                LOGGER.debug(
+                        "At least one option (separator, type, update_mode) for the parameter {0} was defined at least twice differently leading to undefined behaviour.\n".format(
+                            parameter.name))
                 raise ValueError("At least one option (separator, type, update_mode) for the parameter {0} was defined at least twice differently leading to undefined behaviour.".format(parameter.name))
 
     def add_parameter(self, parameter):
