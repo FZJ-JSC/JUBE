@@ -894,8 +894,7 @@ def gen_subparser_conf():
 
     # completion subparser
     subparser_configuration["complete"] = {
-        "help": "generate shell completion "
-                'usage: eval "$(jube complete)"',
+        "help": "generate shell completion ",
         "func": complete,
         "arguments": {
             ('--command-name', "-c"):

@@ -98,6 +98,9 @@ comment_tag
 
       <comment>...</comment>
 
+complete
+   Generate shell completion.
+
 continue
    Continue an existing benchmark. Not finished steps will be
    continued, if they are leaving pending mode.

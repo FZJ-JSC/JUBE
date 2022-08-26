@@ -83,6 +83,9 @@ Glossary
       If no benchmark id is given, last benchmark found in directory will be used. If multiple benchmarks are selected (e.g. by using ``--id all``), a combined result 
       view of all available benchmarks in the given directory will be created. If benchmark directory is missing, current directory will be used.
 
+   complete
+      Generate shell completion.
+
    benchmark_tag
       The main benchmark definition
 
