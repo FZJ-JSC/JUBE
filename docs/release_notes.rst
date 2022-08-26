@@ -21,6 +21,12 @@
 Release notes
 =============
 
+Version 2.5.2
+~~~~~~~~~~~~~
+Release: 2022-09-01
+
+* Debug `jube complete` help output.
+
 Version 2.5.1
 ~~~~~~~~~~~~~
 Release: 2022-08-24
