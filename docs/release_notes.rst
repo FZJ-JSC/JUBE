@@ -25,7 +25,10 @@ Version 2.5.2
 ~~~~~~~~~~~~~
 Release: 2022-09-01
 
-* Debug `jube complete` help output.
+* The `jube complete` help output was debugged.
+* The tests were refactored and debugged.
+* Backward compatibility for floating number value definitions of parameters of type int was restored such that only warning messages are printed in this case.
+* Typos and bugs in the glossary and the help were fixed. 
 
 Version 2.5.1
 ~~~~~~~~~~~~~

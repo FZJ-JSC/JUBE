@@ -617,6 +617,7 @@ Glossary
           ...
           <table>...</table>
           <syslog>...</syslog>
+          <database>...</database>
           ...
         </result>
 

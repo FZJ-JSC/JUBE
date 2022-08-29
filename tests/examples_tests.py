@@ -84,7 +84,7 @@ class ExampleChecker(object):
     """Class for checking examples"""
 
     def __init__(self, bench_path, xml_file, bench_run_path=None,
-                 check_function=True, debug=False, suffix=""):
+                 check_function=True, debug=False, suffix="", log_files=["run.log"]):
         """Init instance.
 
         The check_function should return a bool value to indicate the
@@ -100,6 +100,7 @@ class ExampleChecker(object):
         self._check_function = check_function
         self._debug = debug
         self._suffix = suffix
+        self._log_files = log_files
 
     def run(self):
         """Run example"""
@@ -109,7 +110,9 @@ class ExampleChecker(object):
             "{0} run -e {1} -r {2}".format(debug, self._xml_file, self._suffix).split())
 
         if self._check_function:
-            success = self._check()
+            for log_file in self._log_files:
+                if self._check(log_file=log_file) == False:
+                    success=False
 
         shutil.rmtree(os.path.join(EXAMPLES_PREFIX,
                       os.path.join(self._bench_name, "bench_run")))
@@ -119,27 +122,33 @@ class ExampleChecker(object):
         return success
 
     # compare the output line-wise with check file
-    def _check(self):
+    def _check(self, log_file=None):
         success = True
+
+        if log_file==None :
+            raise ValueError("log_file is not defined")
+        if type(log_file)!=str :
+            raise TypeError("log_file is not of type str")
+
         if not self._debug:
             latest_file = max(glob.glob(os.path.join(os.path.join(EXAMPLES_PREFIX, os.path.join(
                 self._bench_name, "bench_run")), '*/')), key=os.path.getmtime)
+            abspath_latest_file_tmp  = os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, log_file+".tmp")
+            abspath_example_file_tmp = os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, log_file+".tmp")
+            abspath_latest_file      = os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, log_file)
+            abspath_example_file     = os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, log_file)
 
             # delete temporary files, if they are existing
-            if os.path.exists(os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, "run.log.tmp")):
-                os.remove(os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, "run.log.tmp"))
-            if os.path.exists(os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, "run.log.tmp")):
-                os.remove(os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, "run.log.tmp"))
+            if os.path.exists(abspath_latest_file_tmp):
+                os.remove(abspath_latest_file_tmp)
+            if os.path.exists(abspath_example_file_tmp):
+                os.remove(abspath_example_file_tmp)
 
             # preprocess test and check file to care for line breaks within tables
-            ausgabe = open(os.path.join(EXAMPLES_PREFIX, os.path.join(
-                self._bench_name, "bench_run"), latest_file, "run.log.tmp"), 'w')
-            check = open(os.path.join(os.path.dirname(__file__),
-                         "examples_output", self._bench_name, "run.log.tmp"), 'w')
-            ausgabeOriginal = open(os.path.join(EXAMPLES_PREFIX, os.path.join(
-                self._bench_name, "bench_run"), latest_file, "run.log"), 'r')
-            checkOriginal = open(os.path.join(os.path.dirname(__file__),
-                         "examples_output", self._bench_name, "run.log"), 'r')
+            ausgabe = open(abspath_latest_file_tmp, 'w')
+            check = open(abspath_example_file_tmp, 'w')
+            ausgabeOriginal = open(abspath_latest_file, 'r')
+            checkOriginal = open(abspath_example_file, 'r')
 
             # leave out all jube printed tables rows, which have an emptry columns entry and therefore, are part of a line break
             for fileHandle in [[ausgabeOriginal,ausgabe],[checkOriginal,check]]:
@@ -152,16 +161,14 @@ class ExampleChecker(object):
             # jump to start of the temporary output files
             ausgabe.close()
             check.close()
-            ausgabe = open(os.path.join(EXAMPLES_PREFIX, os.path.join(
-                self._bench_name, "bench_run"), latest_file, "run.log.tmp"), 'r')
-            check = open(os.path.join(os.path.dirname(__file__),
-                         "examples_output", self._bench_name, "run.log.tmp"), 'r')
+            ausgabe = open(abspath_latest_file_tmp, 'r')
+            check = open(abspath_example_file_tmp, 'r')
             ausgabeOriginal.close()
             checkOriginal.close() 
 
-            success = ExampleChecker._tabfinder(ausgabe, check) 
+            success = self._tabfinder(ausgabe, check)
             for l1, l2 in zip(ausgabe, check):
-                if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1:
+                if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1 and "Command:" not in l1 and "Version:" not in l1 and "Parsing" not in l1 and "path:" not in l1:
                     ausgabeMatcher = re.match(
                         '^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l1)
                     checkMatcher = re.match(
@@ -170,26 +177,25 @@ class ExampleChecker(object):
                         check.close()
                         ausgabe.close()
                         # delete temporary files, if they are existing
-                        if os.path.exists(os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, "run.log.tmp")):
-                            os.remove(os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, "run.log.tmp"))
-                        if os.path.exists(os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, "run.log.tmp")):
-                            os.remove(os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, "run.log.tmp"))
+                        if os.path.exists(abspath_latest_file_tmp):
+                            os.remove(abspath_latest_file_tmp)
+                        if os.path.exists(abspath_example_file_tmp):
+                            os.remove(abspath_example_file_tmp)
                         return False
             check.close()
             ausgabe.close()
 
             # delete temporary files, if they are existing
-            if os.path.exists(os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, "run.log.tmp")):
-                os.remove(os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, "run.log.tmp"))
-            if os.path.exists(os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, "run.log.tmp")):
-                os.remove(os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, "run.log.tmp"))
+            if os.path.exists(abspath_latest_file_tmp):
+                os.remove(abspath_latest_file_tmp)
+            if os.path.exists(abspath_example_file_tmp):
+                os.remove(abspath_example_file_tmp)
 
         return success
 
     # extract and compare tables
-    @staticmethod
-    def _tabfinder(file1, file2):
-        success = False
+    def _tabfinder(self,file1, file2):
+        success = True
         ignore = ["_home", "_id", "_padid", "_rundir",
                   "_start", "_abspath", "_relpath"]
         vergleichbar = True

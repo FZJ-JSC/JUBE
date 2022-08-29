@@ -848,6 +848,7 @@ result_tag
         ...
         <table>...</table>
         <syslog>...</syslog>
+        <database>...</database>
         ...
       </result>
 
