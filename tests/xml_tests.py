@@ -59,6 +59,56 @@ class TestXMLScripts(unittest.TestCase):
 
         return True
 
+    def test_xml_test_01(self):
+        """Testing the example xml script xml-test-01.xml"""
+        thisfiledir = os.path.dirname(__file__)
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs')):
+            shutil.rmtree(os.path.join(os.path.dirname(__file__), 'benchmark_runs'))
+        jube2.main.main(('run -e '+os.path.join(thisfiledir,
+                        'xml-test-01.xml')).split())
+        errorFileExistent = False
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000000_compile', 'error')):
+            errorFileExistent = True
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000001_compile', 'error')):
+            errorFileExistent = True
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000002_execute_p0', 'error')):
+            errorFileExistent = True
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000003_execute_p0', 'error')):
+            errorFileExistent = True
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000004_execute_p0', 'error')):
+            errorFileExistent = True
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000005_execute_p1', 'error')):
+            errorFileExistent = True
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000006_execute_p1', 'error')):
+            errorFileExistent = True
+        if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000007_execute_p1', 'error')):
+            errorFileExistent = True
+        self.assertFalse(errorFileExistent)
+
+        stdoutFileExistent = True
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000000_compile', 'work', 'stdout')):
+            stdoutFileExistent = False
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000001_compile', 'work', 'stdout')):
+            stdoutFileExistent = False
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000002_execute_p0', 'work', 'stdout')):
+            stdoutFileExistent = False
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000003_execute_p0', 'work', 'stdout')):
+            stdoutFileExistent = False
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000004_execute_p0', 'work', 'stdout')):
+            stdoutFileExistent = False
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000005_execute_p1', 'work', 'stdout')):
+            stdoutFileExistent = False
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000006_execute_p1', 'work', 'stdout')):
+            stdoutFileExistent = False
+        if not os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000007_execute_p1', 'work', 'stdout')):
+            stdoutFileExistent = False
+        self.assertTrue(stdoutFileExistent)
+
+        shutil.rmtree(os.path.join(os.path.dirname(__file__),
+                      'benchmark_runs'))
+
+        return True
+
 
 if __name__ == "__main__":
     unittest.main()
