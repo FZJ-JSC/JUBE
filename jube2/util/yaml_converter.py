@@ -24,6 +24,10 @@ from __future__ import (print_function,
 import xml.etree.ElementTree as etree
 import xml.dom.minidom as DOM
 try:
+    import ruamel.yaml
+except ImportError:
+    print("Warning: The python package 'ruamel.yaml' is not installed. The validity of yaml files cannot be checked properly and silent errors can occur. Nevertheless, the execution is continued.")
+try:
     import yaml
 except ImportError:
     pass
@@ -99,8 +103,21 @@ class YAML_Converter(object):
 
     def __convert(self):
         """ Opens given file, make a Tree of it and print it """
+        # Check the validity of the yaml file
+        with open(self._path, "r") as file_handle:
+            try:
+                ruamel.yaml.add_constructor("!include", self.__yaml_include)
+                ruamel.yaml.load(file_handle, Loader=ruamel.yaml.Loader)
+            except NameError:
+                print("Warning: The file {0} could not be validated by use of the python package 'ruamel.yaml'. Continue execution without validation.".format(self._path))
+            except ruamel.yaml.constructor.DuplicateKeyError as e:
+                e.note=""
+                raise(e)
+
         LOGGER.debug("  Start YAML to XML file conversion for file {0}".format(
             self._path))
+
+        # Read the yaml file and create an xml tree
         with open(self._path, "r") as file_handle:
             xmltree = etree.Element('jube')
             YAML_Converter.create_headtags(
