@@ -47,7 +47,7 @@ class TestMultiprocessing(unittest.TestCase):
             name='paramet_set')
         self.parallelParameterset.add_parameter(self.parallelParameter)
         self.parallelStep = jube2.step.Step(
-            name='parallel_execution', depend=set(), procs=2)
+            name='parallel_execution', depend=set(), prepare=set(), procs=2)
         self.parallelStep.add_uses(['param_set'])
         self.parallelOperation = jube2.step.Operation('echo "$i"', stdout_filename='stdout',
                                                       stderr_filename='stderr',

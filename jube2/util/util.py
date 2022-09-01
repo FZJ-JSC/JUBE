@@ -525,7 +525,38 @@ def safe_split(text, separator):
 
 
 def ensure_list(element):
+    """If argument is a list, just return argument and if argument is something else, return a list of that."""
     if type(element)!=list:
         return [element]
     else:
         return element
+
+def resolve_prepares(steps):
+    """Check for prepares, transform them into backward depends and delelte preparational steps, when the step to prepare is not available."""
+    # First transform prepares to backward depends
+    for step in steps:
+        if step in steps[step]._prepare:
+            raise ValueError("Step '{0}' is not able to prepare itself.".format(step))
+        for prepare in steps[step]._prepare:
+            for step_update in steps:
+                if step_update != step and step_update==prepare:
+                    steps[step_update]._depend.add(step)
+
+    # Iterate quadratically through all steps to resolve for missing prepared steps
+    original_length=len(steps)
+    for i in range(original_length):
+        updated_steps={}
+        for step in steps:
+            # Delete the current step if prepared step is not available
+            if steps[step]._prepare==set():
+                updated_steps[step]=steps[step]
+            else:
+                prepared_step_available=False
+                for prepare in steps[step]._prepare:
+                    if prepare in steps.keys():
+                        prepared_step_available=True
+                if prepared_step_available==True:
+                    updated_steps[step]=steps[step]
+        steps=updated_steps
+
+    return steps
