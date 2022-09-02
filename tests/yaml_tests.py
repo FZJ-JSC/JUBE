@@ -30,6 +30,7 @@ import unittest
 import os
 import shutil
 import jube2.main
+import jube2.util.yaml_converter
 
 
 class TestYAMLScripts(unittest.TestCase):
@@ -75,6 +76,30 @@ class TestYAMLScripts(unittest.TestCase):
         shutil.rmtree(os.path.join(os.path.dirname(__file__),
                       'yaml_test_scripts', 'bench_run_2'))
         return True
+
+    def test_overwrite_parameterset(self):
+        """Testing errors due to overwriting the parameterset within yaml"""
+        thisfiledir = os.path.dirname(__file__)
+        if os.path.exists(os.path.join(thisfiledir, 'yaml_test_scripts', 'bench_run')):
+            shutil.rmtree(os.path.join(os.path.dirname(__file__),
+                          'yaml_test_scripts', 'bench_run'))
+
+        try:
+            import ruamel.yaml
+            try:
+                jube2.util.yaml_converter.YAML_Converter(os.path.join(thisfiledir,'yaml_test_scripts/overwrite_parameterset.yaml'))
+                return False
+            except ruamel.yaml.constructor.DuplicateKeyError:
+                return True
+        except ImportError:
+            try:
+                jube2.main.main(('run -e '+os.path.join(thisfiledir,
+                            'yaml_test_scripts/overwrite_parameterset.yaml')).split())
+                return False
+            except SystemExit:
+                return True
+
+        return False
 
 
 if __name__ == "__main__":

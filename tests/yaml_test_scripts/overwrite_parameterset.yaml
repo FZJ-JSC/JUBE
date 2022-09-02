@@ -1,0 +1,20 @@
+name: overwrite_parameterset
+outpath: bench_run
+comment: overwriting parameter sets leading to errors
+
+parameterset:
+  name: param_set
+  parameter:
+    - {name: number, type: int, _: "1,2,4"}
+    - {name: text, separator: ;, _: Hello;World}
+
+parameterset:
+  name: param_set_2
+  parameter:
+    - {name: number_2, type: int, _: "1,2,4"}
+    - {name: text_2, separator: ;, _: Hello;World}
+
+step:
+  name: say_hello
+  use: param_set
+  do: echo "$text $number"
