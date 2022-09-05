@@ -24,6 +24,7 @@ from __future__ import (print_function,
 
 import unittest
 import jube2.util.util
+import jube2.step
 
 
 class TestUtil(unittest.TestCase):
@@ -116,6 +117,41 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(type(jube2.util.util.ensure_list("")),list)
         self.assertEqual(jube2.util.util.ensure_list(["",42,3.141]),["",42,3.141])
         self.assertEqual(type(jube2.util.util.ensure_list(["",42,3.141])),list)
+
+    def test_resolve_prepares(self):
+
+        steps={}
+        steps['step1'] = jube2.step.Step(name='step1', depend=set(), prepare=set(['step2','step3']))
+        steps['step2'] = jube2.step.Step(name='step2', depend=set(), prepare=set(['step3']))
+        steps['step3'] = jube2.step.Step(name='step3', depend=set(), prepare=set())
+
+        jube2.util.util.resolve_prepares(steps)
+
+        self.assertEqual(steps['step1']._prepare,set(['step2','step3']))
+        self.assertEqual(steps['step2']._prepare,set(['step3']))
+        self.assertEqual(steps['step3']._prepare,set())
+        self.assertEqual(steps['step1']._depend,set())
+        self.assertEqual(steps['step2']._depend,set(['step1']))
+        self.assertEqual(steps['step3']._depend,set(['step1','step2']))
+
+        steps['step4'] = jube2.step.Step(name='step4', depend=set(), prepare=set(['step4']))
+
+        with self.assertRaises(ValueError):
+            jube2.util.util.resolve_prepares(steps)
+
+        steps['step3'] = jube2.step.Step(name='step3', depend=set(), prepare=set(['step4']))
+        steps['step4'] = jube2.step.Step(name='step4', depend=set(), prepare=set(['step1']))
+
+        with self.assertRaises(ValueError):
+            jube2.util.util.resolve_prepares(steps)
+
+        steps['step4'] = jube2.step.Step(name='step4', depend=set(), prepare=set(['step5']))
+
+        self.assertTrue("step4" in steps.keys())
+        self.assertTrue("step5" not in steps.keys())
+        steps=jube2.util.util.resolve_prepares(steps)
+        self.assertTrue("step4" not in steps.keys())
+        self.assertTrue("step5" not in steps.keys())
 
 
 if __name__ == "__main__":
