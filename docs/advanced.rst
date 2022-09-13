@@ -915,3 +915,24 @@ In this example the ``duplicate`` option with the value ``concat`` is stated for
 The default option of ``duplicate`` for parametersets is ``replace`` which leads to a replacing of parameters if they are mentioned more than once. A third option for the ``duplicate`` option for parametersets is ``error``. In this case the execution is aborted if a parameter is defined more than once.
 
 The option ``duplicate`` can also be stated for parameters. In this case the parameters ``duplicate`` option is prioritized over the parametersets one. The possible values for parameters ``duplicate`` option are ``none``, ``replace``, ``concat`` and ``error``. ``none`` is the default value and leads to the ``duplicate`` option being ignored for this parameter such that the parametersets ``duplicate`` option is taking precedence. The other three options have the same effect as in the parameterset.
+
+The prepare option
+~~~~~~~~~~~~~~~~~~
+
+In case of compilation-execution workflows one step can be defined to compile a piece of software while another step is executing the compiled binary. Both steps can be combined through the ``depend`` option of the ``step`` tag. If there are a lot of compilations which take a lot of time for each iteration it is reasonable to reduce the amount of compilations dependent on the executions. The ``depend`` option is not suited to achieve this goal. Therefore, there is the ``prepare`` option for a ``step`` tag.
+
+The ``prepare`` option defines a list of steps which are prepared by the current preparation step. If at least one of the prepared steps is available the current preparation step is executed. Otherwise, it is not executed and no errors are thrown unlike in the case of the ``depend`` option.
+
+The input file ``step_prepare.xml``:
+
+.. literalinclude:: ../examples/step_prepare/step_prepare.xml
+   :language: xml
+
+The input file ``step_prepare.yaml``:
+
+.. literalinclude:: ../examples/step_prepare/step_prepare.yaml
+   :language: yaml
+
+In this example, the step ``prepare_step`` is only executed if the tag ``execute`` for the step ``execution_step`` is passed to the ``jube`` execution. Otherwise, the ``prepare_step`` is not executed.
+
+Defining a ``prepare`` relationship between to steps is implicitly leading to a reverse ``depend`` relationship, such that the ``depend`` option is not explicitly needed. Therefore, it is guaranteed that the preparation step is executed before the prepared step.
