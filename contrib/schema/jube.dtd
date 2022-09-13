@@ -96,6 +96,7 @@
                         cycles CDATA #IMPLIED
                         max_async CDATA #IMPLIED
                         depend CDATA #IMPLIED
+                        prepare CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
                         active CDATA #IMPLIED
                         suffix CDATA #IMPLIED

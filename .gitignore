@@ -11,6 +11,7 @@ jube-debug.log
 docs/_build
 tests/benchmark_runs
 tests/.coverage
+tests/**/bench_run
 tests/htmlcov
 examples/result_database/result_database.dat 
 dist

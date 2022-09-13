@@ -139,6 +139,7 @@ attlist.step &=
   attribute cycles { text }?,
   attribute max_async { text }?,
   attribute depend { text }?,
+  attribute prepare { text }?,
   attribute work_dir { text }?,
   attribute active { text }?,
   attribute suffix { text }?,
