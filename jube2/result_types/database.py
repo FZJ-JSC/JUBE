@@ -95,7 +95,7 @@ class Database(GenericResult):
 
             if len(self._primekeys) > 0:
                 db_col_insert_types = db_col_insert_types[:-1] + \
-                    ", PRIMARY KEY {})".format(tuple(self._primekeys))
+                    ", PRIMARY KEY ({}))".format(', '.join(map(repr, self._primekeys)))
             # create new table with a name of stored in variable self.name if it does not exists
             LOGGER.debug("CREATE TABLE IF NOT EXISTS {} {};".format(
                 self.name, db_col_insert_types))
