@@ -31,7 +31,7 @@ import os
 import shutil
 import jube2.main
 
-EXAMPLES_PREFIX = os.path.abspath(os.path.join(os.path.dirname(__file__), "../examples"))
+EXAMPLES_PREFIX = os.path.join(os.path.dirname(__file__), "../examples")
 
 
 class TestExamples(unittest.TestCase):
@@ -74,8 +74,6 @@ class TestExamples(unittest.TestCase):
                 "result_database", "result_database"+i))
             examples_tasks.append(ExampleChecker(
                 "duplicate", "duplicate"+i, suffix="--tag few many"))
-            examples_tasks.append(ExampleChecker(
-                "step_prepare", "step_prepare"+i, suffix="--tag execute"))
 
         for checker in examples_tasks:
             self.assertTrue(checker.run())
