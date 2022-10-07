@@ -23,14 +23,13 @@ Release notes
 
 Version 2.5.2
 ~~~~~~~~~~~~~
-Release: 2022-09-19
+Release: 2022-09-01
 
 * The `jube complete` help output was debugged.
 * The tests were refactored and debugged.
 * Backward compatibility for floating number value definitions of parameters of type int was restored such that only warning messages are printed in this case.
 * Typos and bugs in the glossary and the help were fixed. 
 * A validity check by use of the pip package ruamel.yaml is introduced. This package is used if it is installed. Otherwise, there will be no validity check for yaml files and a corresponding warning.
-* The `prepare` feature is introduced which allows to define a step being a preparation for another step. The preparation step is only executed if the step to prepare is available.
 
 Version 2.5.1
 ~~~~~~~~~~~~~
