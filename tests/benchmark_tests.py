@@ -45,7 +45,7 @@ class TestBenchmark(unittest.TestCase):
             parameter_mode='python')
         self.parameterset = jube2.parameter.Parameterset(name='param_set')
         self.parameterset.add_parameter(self.parameter)
-        self.step = jube2.step.Step(name='execution', depend=set(), prepare=set())
+        self.step = jube2.step.Step(name='execution', depend=set())
         self.step.add_uses(['param_set'])
         self.operation = jube2.step.Operation('echo "$i"', stdout_filename='stdout',
                                               stderr_filename='stderr',

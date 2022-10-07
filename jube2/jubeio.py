@@ -797,22 +797,19 @@ class Parser(object):
             if step.name in steps:
                 raise ValueError("\"{0}\" not unique".format(step.name))
             steps[step.name] = step
-        steps=jube2.util.util.resolve_prepares(steps)
         return steps
-
 
     @staticmethod
     def _extract_step(etree_step):
         """Extract a step from etree
 
-        Return name, list of contents (dicts), depend (list of strings), prepare (list of strings).
+        Return name, list of contents (dicts), depend (list of strings).
         """
         valid_tags = ["use", "do"]
 
         name = Parser._attribute_from_element(etree_step, "name").strip()
         LOGGER.debug("  Parsing <step name=\"{0}\">".format(name))
-        tmp_depend = etree_step.get("depend", "").strip()
-        tmp_prepare = etree_step.get("prepare", "").strip()
+        tmp = etree_step.get("depend", "").strip()
         iterations = int(etree_step.get("iterations", "1").strip())
         alt_work_dir = etree_step.get("work_dir")
         if alt_work_dir is not None:
@@ -836,11 +833,9 @@ class Parser(object):
                 raise ValueError("Empty \"shared\" attribute in " +
                                  "<step> found.")
         depend = set(val.strip() for val in
-                     tmp_depend.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
-        prepare = set(val.strip() for val in
-                     tmp_prepare.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
+                     tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
 
-        step = jube2.step.Step(name, depend, prepare, iterations, alt_work_dir,
+        step = jube2.step.Step(name, depend, iterations, alt_work_dir,
                                shared_name, export, max_wps, active, suffix,
                                cycles, procs, do_log_file)
         for element in etree_step:

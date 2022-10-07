@@ -41,7 +41,7 @@ class Step(object):
     A Step is a template for Workpackages.
     """
 
-    def __init__(self, name, depend, prepare, iterations=1, alt_work_dir=None,
+    def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
                  active="true", suffix="", cycles=1, procs=1, do_log_file=None):
         self._name = name
@@ -49,7 +49,6 @@ class Step(object):
         self._operations = list()
         self._iterations = iterations
         self._depend = depend
-        self._prepare = prepare
         self._alt_work_dir = alt_work_dir
         self._shared_name = shared_name
         self._export = export
@@ -67,9 +66,6 @@ class Step(object):
         if len(self._depend) > 0:
             step_etree.attrib["depend"] = \
                 jube2.conf.DEFAULT_SEPARATOR.join(self._depend)
-        if len(self._prepare) > 0:
-            step_etree.attrib["prepare"] = \
-                jube2.conf.DEFAULT_SEPARATOR.join(self._prepare)
         if self._alt_work_dir is not None:
             step_etree.attrib["work_dir"] = self._alt_work_dir
         if self._shared_name is not None:
@@ -413,11 +409,6 @@ class Step(object):
         """Return dependencies"""
         return self._depend
 
-    @property
-    def prepare(self):
-        """Return preparations"""
-        return self._prepare
-
     def get_depend_history(self, benchmark):
         """Creates a set of all dependent steps in history for given
         benchmark"""
@@ -428,17 +419,6 @@ class Step(object):
                 depend_history.update(
                     benchmark.steps[step_name].get_depend_history(benchmark))
         return depend_history
-
-    def get_prepare_history(self, benchmark):
-        """Creates a set of all preparational steps in history for given
-        benchmark"""
-        prepare_history = set()
-        for step_name in self._prepare:
-            if step_name not in prepare_history:
-                prepare_history.add(step_name)
-                prepare_history.update(
-                    benchmark.steps[step_name].get_prepare_history(benchmark))
-        return prepare_history
 
 
 class Operation(object):
