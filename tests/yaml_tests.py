@@ -99,10 +99,6 @@ class TestYAMLScripts(unittest.TestCase):
             except SystemExit:
                 return True
 
-        if os.path.exists(os.path.join(thisfiledir, 'yaml_test_scripts', 'bench_run')):
-            shutil.rmtree(os.path.join(os.path.dirname(__file__),
-                          'yaml_test_scripts', 'bench_run'))
-
         return False
 
 
