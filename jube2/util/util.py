@@ -531,33 +531,12 @@ def ensure_list(element):
     else:
         return element
 
-
-def recursive_step_prepare_check(current_step, parent_steps, all_steps):
-    """Check recursively, whether a prepare chain lands at its start"""
-    new_parent_steps=parent_steps.copy()
-    new_parent_steps.append(current_step)
-    for step in all_steps[current_step]._prepare:
-        if step in all_steps.keys():
-            if all_steps[step]._name in new_parent_steps:
-                raise ValueError("Step '{0}' is preparing itself in a circular chained fashion. The found prepare chain is given by: '{1}'.".format(all_steps[step]._name,[*new_parent_steps,all_steps[step]._name]))
-            else:
-                jube2.util.util.recursive_step_prepare_check(all_steps[step]._name, new_parent_steps, all_steps)
-
-
 def resolve_prepares(steps):
     """Check for prepares, transform them into backward depends and delelte preparational steps, when the step to prepare is not available."""
-
-    # Check whether a step prepares itself
+    # First transform prepares to backward depends
     for step in steps:
         if step in steps[step]._prepare:
             raise ValueError("Step '{0}' is not able to prepare itself.".format(step))
-
-    # Check, whether the prepares form a circular chain
-    for step in steps:
-        jube2.util.util.recursive_step_prepare_check(steps[step]._name, [], steps)
-
-    # Transform prepares to backward depends
-    for step in steps:
         for prepare in steps[step]._prepare:
             for step_update in steps:
                 if step_update != step and step_update==prepare:
@@ -565,18 +544,19 @@ def resolve_prepares(steps):
 
     # Iterate quadratically through all steps to resolve for missing prepared steps
     original_length=len(steps)
-    updated_steps={}
-    for step in steps:
-        # Delete the current step if prepared step is not available
-        if steps[step]._prepare==set():
-            updated_steps[step]=steps[step]
-        else:
-            prepared_step_available=False
-            for prepare in steps[step]._prepare:
-                if prepare in steps.keys():
-                    prepared_step_available=True
-            if prepared_step_available==True:
+    for i in range(original_length):
+        updated_steps={}
+        for step in steps:
+            # Delete the current step if prepared step is not available
+            if steps[step]._prepare==set():
                 updated_steps[step]=steps[step]
-    steps=updated_steps
+            else:
+                prepared_step_available=False
+                for prepare in steps[step]._prepare:
+                    if prepare in steps.keys():
+                        prepared_step_available=True
+                if prepared_step_available==True:
+                    updated_steps[step]=steps[step]
+        steps=updated_steps
 
     return steps
