@@ -468,8 +468,7 @@ Glossary
      .. code-block:: xml
 
         <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." 
-              export="..." max_async="..." iterations="..." cycles="..." procs="..."
-              do_log_file="..." prepare="...">
+              export="..." max_async="..." iterations="..." cycles="..." procs="..." do_log_file="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -504,15 +503,12 @@ Glossary
 
      * ``export="true"``
 
-       * the environment of the current step will be exported to a dependent step
+       * the environment of the current step will be exported to an dependent step
 
      * ``iterations`` is optional. All workpackages within this step will be executed multiple times if the iterations value is used.
      * ``cycles`` is optional. All ``<do>`` commands within the step will be executed ``cycles``-times
      * ``procs`` is optional. Amount of processes used to execute the parameter expansions of the corresponding step in parallel.
      * ``do_log_file`` is optional. Name or path of a do log file trying to mimick the do steps and the environment of a workpacakge of a step to produce an executable script.
-     * ``prepare`` is optional and can contain a list of other step names which are prepared by this preparation step. This preparation step is only executed when at least one
-       of the prepared steps is available. Otherwise, this preparation step is just not executed and no error is thrown in this case, which is different compared to the
-       ``depend`` behaviour. The prepared step is implicitly dependent (``depend``) of this preparation step.
 
    do_tag
      A do contain a executable *Shell* operation.
