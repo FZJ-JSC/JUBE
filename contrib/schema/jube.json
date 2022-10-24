@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "title": "JUBE",
+    "description": "JUBE benchmark definition",
+    "type": "object",
+    "properties": {
+      "name": {
+        "description": "unique name of the benchmark",
+        "type": "string"
+      },
+      "outpath": {
+        "description": "contains the path to the root folder for benchmark runs",
+        "type": "string"
+      },
+      "comment": {
+        "description": "Add a benchmark specific comment. These comment will be stored inside the benchmark directory.The price of the product",
+        "type": "string"
+      },
+      "parameterset": {
+        "description": "A parameterset is a container to store a bundle of *parameters*",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "must be unique (cannot be reused inside substitutionsets or filesets)",
+            "type": "string"
+          },
+          "init_with": {
+            "description": "import parameters",
+            "type": "string"
+          },
+          "parameter": {
+            "description": "A parameter can be used to store benchmark configuration data. Aet of different parameters will create a specific parameter environment (also called *parameter space*) for the different steps of the benchmark.",
+            "type": "object"
+          }
+        },
+        "required": [ "name" ]
+      }
+    },
+    "required": [ "name", "outpath" ]
+  }
