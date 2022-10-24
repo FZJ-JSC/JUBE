@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema",
     "title": "JUBE",
     "description": "JUBE benchmark definition",
-    "type": "object",
+
     "properties": {
       "name": {
         "description": "unique name of the benchmark",
