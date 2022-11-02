@@ -22,6 +22,8 @@ Release: 2022-09-01
   there will be no validity check for yaml files and a corresponding
   warning.
 
+* add database element to schema files
+
 
 Version 2.5.1
 =============
