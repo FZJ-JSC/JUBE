@@ -218,6 +218,7 @@
     <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="use" type="stringTagType" />
         <xs:element name="table" type="tableType" />
+	<xs:element name="database" type="databaseType" />
         <xs:element name="syslog" type="syslogType" />
         <xs:element name="include" type="includeType" />
     </xs:choice>
@@ -236,6 +237,18 @@
     <xs:attribute name="filter" type="xs:string" use="optional" />
     <xs:attribute name="separator" type="xs:string" use="optional" />
     <xs:attribute name="transpose" type="booleanType" use="optional" />
+    <xs:attribute name="tag" type="xs:string" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="databaseType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="key" type="stringTagType" />
+      <xs:element name="include" type="includeType" />
+    </xs:choice>
+    <xs:attribute name="name" type="xs:string" use="required" />
+    <xs:attribute name="primekeys" type="xs:string" use="optional" />
+    <xs:attribute name="file" type="xs:string" use="optional" />
+    <xs:attribute name="filter" type="xs:string" use="optional" />
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
