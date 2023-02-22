@@ -1,40 +1,130 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "JUBE",
-    "description": "JUBE benchmark definition",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "JUBE",
+  "description": "JUBE benchmark definition",
 
-    "properties": {
-      "name": {
-        "description": "unique name of the benchmark",
-        "type": "string"
-      },
-      "outpath": {
-        "description": "contains the path to the root folder for benchmark runs",
-        "type": "string"
-      },
-      "comment": {
-        "description": "Add a benchmark specific comment. These comment will be stored inside the benchmark directory.The price of the product",
-        "type": "string"
-      },
-      "parameterset": {
-        "description": "A parameterset is a container to store a bundle of *parameters*",
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "must be unique (cannot be reused inside substitutionsets or filesets)",
-            "type": "string"
-          },
-          "init_with": {
-            "description": "import parameters",
-            "type": "string"
-          },
-          "parameter": {
-            "description": "A parameter can be used to store benchmark configuration data. Aet of different parameters will create a specific parameter environment (also called *parameter space*) for the different steps of the benchmark.",
-            "type": "object"
-          }
-        },
-        "required": [ "name" ]
-      }
+
+
+  "properties": {
+    "name": {
+      "description": "unique name of the benchmark",
+      "type": "string"
     },
-    "required": [ "name", "outpath" ]
-  }
+    "outpath": {        
+      "description": "contains the path to the root folder for benchmark runs",
+      "type": "string"
+    },
+    "comment": {
+      "description": "Add a benchmark specific comment. These comment will be stored inside the benchmark directory.",
+      "type": "string"
+    },
+    "file_path_ref": {
+      "description": "unknown functionality",
+      "type": "string"
+    },
+    "tag": {
+      "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+      "type": "string"
+    },
+
+
+
+    "parameterset": {
+      "description": "A parameterset is a container to store a bundle of *parameters*",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "name must be unique (cannot be reused inside substitutionsets or filesets)",
+          "type": "string"
+        },
+        "init_with": {
+          "description": "import parameters",
+          "type": "string"
+        },
+        "duplicate": {
+          "description": "duplicate is of relevance, if there are more than one parameter definitions with the same name within one parameterset.",
+          "type": "string",
+          "pattern": "(replace|concat|error)"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "parameter": {
+          "description": "A parameter can be used to store benchmark configuration data. A set of different parameters will create a specific parameter environment (also called *parameter space*) for the different steps of the benchmark.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "name must be unique inside the given parameterset",
+              "type": "string"
+            },
+            "type": {
+              "description": "type is only used for sorting",
+              "type": "string",
+              "pattern": "(string|int|float)"
+            },
+            "mode": {
+              "description": "mode is used for script-types",
+              "type": "string",
+              "pattern": "(python|perl|shell|env|tag)"
+            },
+            "export": {
+              "description": "If export is set to true, the parameter will be exported to the shell environment when using *do*",
+              "type": "boolean"
+            },
+            "duplicate": {
+              "description": "duplicate is of relevance, if there are more than one parameter definitions with the same name within one parameterset.",
+              "type": "string",
+              "pattern": "(none|replace|concat|error)"
+            },
+            "update_mode": {
+              "description": "Depending on the update_mode the parameter will be reevaluated",
+              "type": "string",
+              "pattern": "(never|use|step|cycle|always)"
+            },
+            "separator": {
+              "description": "The default separator can be changed by using separator",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },    
+          "required": [ "name" ]    
+        },
+        "include": {
+          "description": "include can be used to include an external XML-structure into the current file",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "from is used to specify an external set source",
+              "type": "string"
+            },
+            "path": {
+              "description": "path can be used to give an alternative xml-path inside the include-file",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "from" ]
+        }
+      },
+      "required": [ "name" ]
+    },
+
+
+
+    "patternset": {},
+    "substituteset": {},
+    "fileset": {},
+    "step": {},
+    "analyser": {},
+    "result": {},
+    "include": {}
+  },
+  "required": [ "name", "outpath" ]
+}
