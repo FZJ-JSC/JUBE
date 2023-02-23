@@ -44,7 +44,7 @@
         "duplicate": {
           "description": "duplicate is of relevance, if there are more than one parameter definitions with the same name within one parameterset.",
           "type": "string",
-          "pattern": "(replace|concat|error)"
+          "pattern": "^(replace|concat|error)$"
         },
         "tag": {
           "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
@@ -61,12 +61,12 @@
             "type": {
               "description": "type is only used for sorting",
               "type": "string",
-              "pattern": "(string|int|float)"
+              "pattern": "^(string|int|float)$"
             },
             "mode": {
               "description": "mode is used for script-types",
               "type": "string",
-              "pattern": "(python|perl|shell|env|tag)"
+              "pattern": "^(python|perl|shell|env|tag)$"
             },
             "export": {
               "description": "If export is set to true, the parameter will be exported to the shell environment when using *do*",
@@ -75,12 +75,12 @@
             "duplicate": {
               "description": "duplicate is of relevance, if there are more than one parameter definitions with the same name within one parameterset.",
               "type": "string",
-              "pattern": "(none|replace|concat|error)"
+              "pattern": "^(none|replace|concat|error)$"
             },
             "update_mode": {
               "description": "Depending on the update_mode the parameter will be reevaluated",
               "type": "string",
-              "pattern": "(never|use|step|cycle|always)"
+              "pattern": "^(never|use|step|cycle|always)$"
             },
             "separator": {
               "description": "The default separator can be changed by using separator",
@@ -119,8 +119,244 @@
 
 
     "patternset": {},
-    "substituteset": {},
-    "fileset": {},
+
+
+
+    "substituteset": {
+      "description": "A substituteset is a container to store a bundle of *sub* commands.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "name must be unique",
+          "type": "string"
+        },
+        "init_with": {
+          "description": "if the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a substituteset using the given name, all *iofile* and *sub* will be copied to the local set.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "iofile": {
+          "description": "A iofile declare the name (and path) of a file used for substitution.",
+          "type": "object",
+          "properties": {
+            "in": {
+              "description": "Relative filepath to the current work directory for every single step",
+              "type": "string"
+            },
+            "out": {
+              "description": "Relative filepath to the current work directory for every single step",
+              "type": "string"
+            },
+            "out_mode": {
+              "description": "out_mode can be used to declare, if the out-file will be overridden (w) or appended (a)",
+              "type": "string",
+              "pattern": "^(w|a)$"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "in","out" ]
+        },
+        "sub": {
+          "description": "A substition expression",
+          "type": "object",
+          "properties": {
+            "source": {
+              "description": "source-string will be replaced by dest-string",
+              "type": "string"
+            },
+            "dest": {
+              "description": "dest-string will replace the source-string",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "source" ]
+        },
+        "include": {
+          "description": "include can be used to include an external XML-structure into the current file",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "from is used to specify an external set source",
+              "type": "string"
+            },
+            "path": {
+              "description": "path can be used to give an alternative xml-path inside the include-file",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "from" ]
+        }
+      },
+      "required": [ "name" ]
+    },
+
+
+
+    "fileset": {
+      "description": "A fileset is a container to store a bundle of links and copy commands.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "name must be unique",
+          "type": "string"
+        },
+        "init_with": {
+          "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a fileset using the given name, all *link* and *copy* will be copied to the local set",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "copy": {
+          "description": "A copy can be used to copy a file or directory from your normal filesytem to your sandbox work directory.",
+          "type": "object",
+          "properties": {
+            "directory": {
+              "description": "unknown functionality",
+              "type": "string"
+            },
+            "name": {
+              "description": "name can be used to rename the file inside your work directory (will be ignored if you use shell extensions in your pathname)",
+              "type": "string"
+            },
+            "rel_path_ref": {
+              "description": "rel_path_ref declares, if relative paths will be based on the position of the JUBE-Skript (external) or the current work directory (internal).",
+              "type": "string"
+            },
+            "file_path_ref": {
+              "description": "unknown functionality",
+              "type": "string"
+            },
+            "active": {
+              "description": "active can be used to enable or disable the single command",
+              "type": "boolean"
+            },
+            "source_dir": {
+              "description": "source_dir will be used as a prefix for the source filenames",
+              "type": "string"
+            },
+            "target_dir": {
+              "description": "target_dir will be used as a prefix for the target filenames",
+              "type": "string"
+            },
+            "separator": {
+              "description": "separator can be used to change the default separator.",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          }
+        },
+        "link": {
+          "description": "",
+          "type": "object",
+          "properties": {
+            "directory": {
+              "description": "unknown functionality",
+              "type": "string"
+            },
+            "name": {
+              "description": "name can be used to rename the file inside your work directory (will be ignored if you use shell extensions in your pathname)",
+              "type": "string"
+            },
+            "rel_path_ref": {
+              "description": "rel_path_ref declares, if relative paths will be based on the position of the JUBE-Skript (external) or the current work directory (internal).",
+              "type": "string"
+            },
+            "file_path_ref": {
+              "description": "unknown functionality",
+              "type": "string"
+            },
+            "active": {
+              "description": "active can be used to enable or disable the single command",
+              "type": "boolean"
+            },
+            "source_dir": {
+              "description": "source_dir will be used as a prefix for the source filenames",
+              "type": "string"
+            },
+            "target_dir": {
+              "description": "target_dir will be used as a prefix for the target filenames",
+              "type": "string"
+            },
+            "separator": {
+              "description": "separator can be used to change the default separator.",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          }
+        },
+        "prepare": {
+          "description": "The prepare can contain any Shell command you want. It will be executed like a normal *do* inside the step where the corresponding fileset is used. The only difference towards the normal *do* is, that it will be executed before the substitution will be executed.",
+          "type": "object",
+          "properties": {
+            "stdout": {
+              "description": "standard out file",
+              "type": "string"
+            },
+            "stderr": {
+              "description": "standard error file",
+              "type": "string"
+            },
+            "active": {
+              "description": "active can be used to enable or disable the single command",
+              "type": "boolean"
+            },
+            "work_dir": {
+              "description": "work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          }
+        },
+        "include": {
+          "description": "include can be used to include an external XML-structure into the current file",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "from is used to specify an external set source",
+              "type": "string"
+            },
+            "path": {
+              "description": "path can be used to give an alternative xml-path inside the include-file",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "from" ]
+        }
+      },
+      "required": [ "name" ]
+    },
+
+
+
     "step": {},
     "analyser": {},
     "result": {},
