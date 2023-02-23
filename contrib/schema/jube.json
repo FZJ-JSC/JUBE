@@ -118,7 +118,81 @@
 
 
 
-    "patternset": {},
+    "patternset": {
+      "description": "A patternset is a container to store a bundle of patterns.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "patternset-name must be unique",
+          "type": "string"
+        },
+        "init_with": {
+          "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a patternset using the given name, all pattern will be copied to the local set.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "pattern": {
+          "description": "A pattern is used to parse your output files and create your result data.",
+          "type": "object",
+          "properties": {
+            "name": {
+              "description": "name must be unique",
+              "type": "string"
+            },
+            "unit": {
+              "description": "unit will be used in the result table",
+              "type": "string"
+            },
+            "type": {
+              "description": "type is only used for sorting",
+              "type": "string",
+              "pattern": "^(string|int|float)$"
+            },
+            "mode": {
+              "description": "mode is used for script-types",
+              "type": "string",
+              "pattern": "^(python|perl|shell|env|tag)$"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            },
+            "default": {
+              "description": "Specify default value if pattern cannot be found or if it cannot be evaluated",
+              "type": "string"
+            },
+            "dotall": {
+              "description": "dotall can be used to specify if a '.' within the regular expression should also match newline characters.",
+              "type": "boolean"
+            }
+          },
+          "required": [ "name" ]
+        },
+        "include": {
+          "description": "include can be used to include an external XML-structure into the current file",
+          "type": "object",
+          "properties": {
+            "from": {
+              "description": "from is used to specify an external set source",
+              "type": "string"
+            },
+            "path": {
+              "description": "path can be used to give an alternative xml-path inside the include-file",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "from" ]
+        }
+      },
+      "required": [ "name" ]
+    },
 
 
 
