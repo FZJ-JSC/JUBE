@@ -301,7 +301,7 @@
           "type": [ "object","array","string" ],
           "properties": {
             "directory": {
-              "description": "unknown functionality",
+              "description": "directory will be used as a prefix for the source filenames. It does not allow parameter substitution (deprecated; new attribut: source_dir)",
               "type": "string"
             },
             "name": {
@@ -321,7 +321,7 @@
               "type": "string"
             },
             "source_dir": {
-              "description": "source_dir will be used as a prefix for the source filenames",
+              "description": "source_dir will be used as a prefix for the source filenames. It allows parameter substitution",
               "type": "string"
             },
             "target_dir": {
@@ -564,9 +564,406 @@
 
 
 
-    "analyser": {},
-    "result": {},
-    "include": {}
+    "analyser": {
+      "description": "The analyser describes the steps and files which should be scanned using a set of pattern.",
+      "type": [ "object","array" ],
+      "properties": {
+        "name": {
+          "description": "unique name of the analyser",
+          "type": "string"
+        },
+        "reduce": {
+          "description": "reduce declares, if the result lines for each iteration will be combined.",
+          "type": "boolean"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "use": {
+          "description": "use declares, which patternsets are usable",
+          "type": [ "object","array","string" ],
+          "properties": {
+            "from": {
+              "description": "from can be used to specify an external set source",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          }
+        },
+        "analyse": {
+          "description": "analyse declares, which step and files will be analysed",
+          "type": [ "object","array" ],
+          "properties": {
+            "step": {
+              "description": "The step-attribute contains the step that will be analysed",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            },
+            "file": {
+              "description": "The file-attribute contains the files that will be analysed. Each file using each workpackage will be scanned seperatly.",
+              "type": [ "object","array","string" ],
+              "properties": {
+                "use": {
+                  "description": "The use argument inside the file-tag can be used to specify a file specific patternset. The global *use* and this local *use* will be combined and evaluated at the same time.",
+                  "type": "string"
+                }
+              }
+            },
+            "include": {
+              "description": "include can be used to include an external XML-structure into the current file",
+              "type": [ "object","array" ],
+              "properties": {
+                "from": {
+                  "description": "from is used to specify an external set source",
+                  "type": "string"
+                },
+                "path": {
+                  "description": "path can be used to give an alternative xml-path inside the include-file",
+                  "type": "string"
+                },
+                "tag": {
+                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+                  "type": "string"
+                }
+              },
+              "required": [ "from" ]
+            }
+          },
+          "required": [ "step" ]
+        },
+        "include": {
+          "description": "include can be used to include an external XML-structure into the current file",
+          "type": [ "object","array" ],
+          "properties": {
+            "from": {
+              "description": "from is used to specify an external set source",
+              "type": "string"
+            },
+            "path": {
+              "description": "path can be used to give an alternative xml-path inside the include-file",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "from" ]
+        }
+      },
+      "required": [ "name" ]
+    },
+
+
+
+    "result": {
+      "description": "The result tag is used to handle different visualisation types of your analysed data.",
+      "type": [ "object","array","string" ],
+      "properties": {
+        "result_dir": {
+          "description": "result_dir can be used to specify an different output directory. Inside of this directory a subfolder named by the current benchmark id will be created.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "use": {
+          "description": "use declares, which analyser are usable",
+          "type": [ "object","array","string" ],
+          "properties": {
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          }
+        },
+        "table": {
+          "description": "A simple ASCII based table ouput.",
+          "type": [ "object","array" ],
+          "properties": {
+            "name": {
+              "description": "unique name of the table",
+              "type": "string"
+            },
+            "style": {
+              "description": "allowed styles: csv, pretty, aligned",
+              "type": "string",
+              "pattern": "^(csv|pretty|aligned)$"
+            },
+            "sort": {
+              "description": "can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting.",
+              "type": "string"
+            },
+            "filter": {
+              "description": "can contain a bool expression to show only specific result entries",
+              "type": "string"
+            },
+            "separator": {
+              "description": "separator can be used to change the default separator (only used in csv-style).",
+              "type": "string"
+            },
+            "transpose": {
+              "description": "If transpose is set to true, the table is transposed (rows and columns are swapped)",
+              "type": "boolean"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            },
+            "column": {
+              "description": "A line within a ASCII result table. The column-tag can contain the name of a pattern or the name of a parameter.",
+              "type": [ "object","array","string" ],
+              "properties": {
+                "colw": {
+                  "description": "column width",
+                  "type": "integer"
+                },
+                "format": {
+                  "description": "format can contain a C like format string: e.g. '.2f'",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "column title",
+                  "type": "string"
+                },
+                "tag": {
+                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+                  "type": "string"
+                }
+              }
+            },
+            "include": {
+              "description": "include can be used to include an external XML-structure into the current file",
+              "type": [ "object","array" ],
+              "properties": {
+                "from": {
+                  "description": "from is used to specify an external set source",
+                  "type": "string"
+                },
+                "path": {
+                  "description": "path can be used to give an alternative xml-path inside the include-file",
+                  "type": "string"
+                },
+                "tag": {
+                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+                  "type": "string"
+                }
+              },
+              "required": [ "from" ]
+            }
+          },
+          "required": [ "name" ]
+        },
+        "syslog": {
+          "description": "A syslog result type",
+          "type": [ "object","array" ],
+          "properties": {
+            "name": {
+              "description": "name for the syslog",
+              "type": "string"
+            },
+            "address": {
+              "description": "socket adress that gives a syslog daemon (the combination of *host*/*port* and *address* is not allowed)",
+              "type": "string"
+            },
+            "host": {
+              "description": "host can give a syslog daemon in combination with *port* (the combination of *host*/*port* and *address* is not allowed)",
+              "type": "string"
+            },
+            "port": {
+              "description": "port can give a syslog daemon in combination with *host* (the combination of *host*/*port* and *address* is not allowed)",
+              "type": "integer"
+            },
+            "format": {
+              "description": "format can contain a log format written in a pythonic way.",
+              "type": "string"
+            },
+            "sort": {
+              "description": "sort can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting",
+              "type": "string"
+            },
+            "filter": {
+              "description": "filter can contain a bool expression to show only specific result entries.",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            },
+            "key": {
+              "description": "A syslog result key. It must contain a single parameter- or patternname.",
+              "type": [ "object","array","string" ],
+              "properties": {
+                "colw": {
+                  "description": "column width",
+                  "type": "integer"
+                },
+                "format": {
+                  "description": "format can contain a C like format string: e.g. '.2f'",
+                  "type": "string"
+                },
+                "title": {
+                  "description": "alternative key title",
+                  "type": "string"
+                },
+                "tag": {
+                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+                  "type": "string"
+                }
+              }
+            },
+            "include": {
+              "description": "include can be used to include an external XML-structure into the current file",
+              "type": [ "object","array" ],
+              "properties": {
+                "from": {
+                  "description": "from is used to specify an external set source",
+                  "type": "string"
+                },
+                "path": {
+                  "description": "path can be used to give an alternative xml-path inside the include-file",
+                  "type": "string"
+                },
+                "tag": {
+                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+                  "type": "string"
+                }
+              },
+              "required": [ "from" ]
+            }
+          },
+          "required": [ "name" ],
+          "anyOf": [
+            {
+              "allOf": [
+                {
+                  "properties": {
+                    "address": {"type": "string"}
+                  }, 
+                  "required": [ "address" ]
+                },
+                {
+                  "allOf": [
+                    {
+                      "not": {
+                        "properties": {
+                          "host": {"type": "string"}
+                        }, 
+                        "required": [ "host" ]
+                      }
+                    },
+                    {
+                      "not": {
+                        "properties": {
+                          "port": {"type": "integer"}
+                        }, 
+                        "required": [ "port" ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "not": {
+                    "properties": {
+                      "address": {"type": "string"}
+                    }, 
+                    "required": [ "address" ]
+                  }
+                },
+                {
+                  "properties": {
+                    "host": {"type": "string"},
+                    "port": {"type": "integer"}
+                  }, 
+                  "required": [ "host","port" ]
+                }
+              ]
+            },
+            {
+              "allOf": [
+                {
+                  "not": {
+                    "properties": {
+                      "host": {"type": "string"}
+                    }, 
+                    "required": [ "host" ]
+                  }
+                },
+                {
+                  "not": {
+                    "properties": {
+                      "port": {"type": "integer"}
+                    }, 
+                    "required": [ "port" ]
+                  }
+                },
+                {
+                  "not": {
+                    "properties": {
+                      "address": {"type": "string"}
+                    }, 
+                    "required": [ "address" ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "include": {
+          "description": "include can be used to include an external XML-structure into the current file",
+          "type": [ "object","array" ],
+          "properties": {
+            "from": {
+              "description": "from is used to specify an external set source",
+              "type": "string"
+            },
+            "path": {
+              "description": "path can be used to give an alternative xml-path inside the include-file",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          },
+          "required": [ "from" ]
+        }
+      }
+    },
+
+
+
+    "include": {
+      "description": "include can be used to include an external XML-structure into the current file",
+      "type": [ "object","array" ],
+      "properties": {
+        "from": {
+          "description": "from is used to specify an external set source",
+          "type": "string"
+        },
+        "path": {
+          "description": "path can be used to give an alternative xml-path inside the include-file",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      },
+      "required": [ "from" ]
+    }
   },
   "required": [ "name", "outpath" ]
 }
