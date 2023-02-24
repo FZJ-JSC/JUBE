@@ -762,6 +762,62 @@
           },
           "required": [ "name" ]
         },
+        "database": {
+          "description": "Creates sqlite3 database",
+          "type": [ "object","array" ],
+          "properties": {
+            "name": {
+              "description": "name of the table in the database",
+              "type": "string"
+            },
+            "primekeys": {
+              "description": "primekeys can contain a list of parameter or pattern names (separated by ,). Given parameters or patterns will be used as primary keys of the database table. All primekeys have to be listed as a *key* as well. Modification of primary keys of an existing table is not supported. If no primekeys are set then each jube result will add new rows to the database. Otherwise rows with matching primekeys will be updated.",
+              "type": "string"
+            },
+            "file": {
+              "description": "The given value should hold the full path to the database file. If the file including the path does not exists it will be created. Absolute and relative paths are supported.",
+              "type": "string"
+            },
+            "filter": {
+              "description": "filter can contain a bool expression to show only specific result entries.",
+              "type": "string"
+            },
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            },
+            "key": {
+              "description": "must contain an single parameter or pattern name",
+              "type": "object",
+              "properties": {
+                "tag": {
+                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+                  "type": "string"
+                }
+              }
+            },
+            "include": {
+              "description": "include can be used to include an external XML-structure into the current file",
+              "type": [ "object","array" ],
+              "properties": {
+                "from": {
+                  "description": "from is used to specify an external set source",
+                  "type": "string"
+                },
+                "path": {
+                  "description": "path can be used to give an alternative xml-path inside the include-file",
+                  "type": "string"
+                },
+                "tag": {
+                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+                  "type": "string"
+                }
+              },
+              "required": [ "from" ]
+            }
+          },
+          "required": [ "name" ]
+        },
         "syslog": {
           "description": "A syslog result type",
           "type": [ "object","array" ],
