@@ -3,8 +3,6 @@
   "title": "JUBE",
   "description": "JUBE benchmark definition",
 
-
-
   "properties": {
     "name": {
       "description": "unique name of the benchmark",
@@ -26,9 +24,34 @@
       "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
       "type": "string"
     },
+    "parameterset": {
+      "$ref": "#/$defs/parameterset"
+    },
+    "patternset": {
+      "$ref": "#/$defs/patternset"
+    },
+    "substituteset": {
+      "$ref": "#/$defs/substituteset"
+    },
+    "fileset": {
+      "$ref": "#/$defs/fileset"
+    },
+    "step": {
+      "$ref": "#/$defs/step"
+    },
+    "analyser": {
+      "$ref": "#/$defs/analyser"
+    },
+    "result": {
+      "$ref": "#/$defs/result"
+    },
+    "include": {
+      "$ref": "#/$defs/include"
+    }
+  },
+  "required": [ "name", "outpath" ],
 
-
-
+  "$defs": {
     "parameterset": {
       "description": "A parameterset is a container to store a bundle of *parameters*",
       "type": [ "object","array" ],
@@ -51,150 +74,58 @@
           "type": "string"
         },
         "parameter": {
-          "description": "A parameter can be used to store benchmark configuration data. A set of different parameters will create a specific parameter environment (also called *parameter space*) for the different steps of the benchmark.",
-          "type": [ "object","array" ],
-          "properties": {
-            "name": {
-              "description": "name must be unique inside the given parameterset",
-              "type": "string"
-            },
-            "type": {
-              "description": "type is only used for sorting",
-              "type": "string",
-              "pattern": "^(string|int|float)$"
-            },
-            "mode": {
-              "description": "mode is used for script-types",
-              "type": "string",
-              "pattern": "^(python|perl|shell|env|tag)$"
-            },
-            "export": {
-              "description": "If export is set to true, the parameter will be exported to the shell environment when using *do*",
-              "type": "boolean"
-            },
-            "duplicate": {
-              "description": "duplicate is of relevance, if there are more than one parameter definitions with the same name within one parameterset.",
-              "type": "string",
-              "pattern": "^(none|replace|concat|error)$"
-            },
-            "update_mode": {
-              "description": "Depending on the update_mode the parameter will be reevaluated",
-              "type": "string",
-              "pattern": "^(never|use|step|cycle|always)$"
-            },
-            "separator": {
-              "description": "The default separator can be changed by using separator",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },    
-          "required": [ "name" ]    
+          "$ref": "#/$defs/parameter"
         },
         "include": {
-          "description": "include can be used to include an external XML-structure into the current file",
-          "type": "object",
-          "properties": {
-            "from": {
-              "description": "from is used to specify an external set source",
-              "type": "string"
-            },
-            "path": {
-              "description": "path can be used to give an alternative xml-path inside the include-file",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "from" ]
+          "$ref": "#/$defs/include"
         }
       },
       "required": [ "name" ]
     },
 
-
-
-    "patternset": {
-      "description": "A patternset is a container to store a bundle of patterns.",
+    "parameter": {
+      "description": "A parameter can be used to store benchmark configuration data. A set of different parameters will create a specific parameter environment (also called *parameter space*) for the different steps of the benchmark.",
       "type": [ "object","array" ],
       "properties": {
         "name": {
-          "description": "unique name of the patternset",
+          "description": "name must be unique inside the given parameterset",
           "type": "string"
         },
-        "init_with": {
-          "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a patternset using the given name, all pattern will be copied to the local set.",
+        "type": {
+          "description": "type is only used for sorting",
+          "type": "string",
+          "pattern": "^(string|int|float)$"
+        },
+        "mode": {
+          "description": "mode is used for script-types",
+          "type": "string",
+          "pattern": "^(python|perl|shell|env|tag)$"
+        },
+        "export": {
+          "description": "If export is set to true, the parameter will be exported to the shell environment when using *do*",
+          "type": "boolean"
+        },
+        "duplicate": {
+          "description": "duplicate is of relevance, if there are more than one parameter definitions with the same name within one parameterset.",
+          "type": "string",
+          "pattern": "^(none|replace|concat|error)$"
+        },
+        "update_mode": {
+          "description": "Depending on the update_mode the parameter will be reevaluated",
+          "type": "string",
+          "pattern": "^(never|use|step|cycle|always)$"
+        },
+        "separator": {
+          "description": "The default separator can be changed by using separator",
           "type": "string"
         },
         "tag": {
           "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
           "type": "string"
-        },
-        "pattern": {
-          "description": "A pattern is used to parse your output files and create your result data.",
-          "type": [ "object","array" ],
-          "properties": {
-            "name": {
-              "description": "name must be unique",
-              "type": "string"
-            },
-            "unit": {
-              "description": "unit will be used in the result table",
-              "type": "string"
-            },
-            "type": {
-              "description": "type is only used for sorting",
-              "type": "string",
-              "pattern": "^(string|int|float)$"
-            },
-            "mode": {
-              "description": "mode is used for script-types",
-              "type": "string",
-              "pattern": "^(python|perl|shell|env|tag)$"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            },
-            "default": {
-              "description": "Specify default value if pattern cannot be found or if it cannot be evaluated",
-              "type": "string"
-            },
-            "dotall": {
-              "description": "dotall can be used to specify if a '.' within the regular expression should also match newline characters.",
-              "type": "boolean"
-            }
-          },
-          "required": [ "name" ]
-        },
-        "include": {
-          "description": "include can be used to include an external XML-structure into the current file",
-          "type": [ "object","array" ],
-          "properties": {
-            "from": {
-              "description": "from is used to specify an external set source",
-              "type": "string"
-            },
-            "path": {
-              "description": "path can be used to give an alternative xml-path inside the include-file",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "from" ]
         }
-      },
-      "required": [ "name" ]
+      },    
+      "required": [ "name" ]    
     },
-
-
 
     "substituteset": {
       "description": "A substituteset is a container to store a bundle of *sub* commands.",
@@ -213,72 +144,62 @@
           "type": "string"
         },
         "iofile": {
-          "description": "A iofile declares the name (and path) of a file used for substitution.",
-          "type": [ "object","array" ],
-          "properties": {
-            "in": {
-              "description": "Relative filepath to the current work directory for every single step",
-              "type": "string"
-            },
-            "out": {
-              "description": "Relative filepath to the current work directory for every single step",
-              "type": "string"
-            },
-            "out_mode": {
-              "description": "out_mode can be used to declare, if the out-file will be overridden (w) or appended (a)",
-              "type": "string",
-              "pattern": "^(w|a)$"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "in","out" ]
+          "$ref": "#/$defs/iofile"
         },
         "sub": {
-          "description": "A substition expression",
-          "type": [ "object","array" ],
-          "properties": {
-            "source": {
-              "description": "source-string will be replaced by dest-string",
-              "type": "string"
-            },
-            "dest": {
-              "description": "dest-string will replace the source-string",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "source" ]
+          "$ref": "#/$defs/sub"
         },
         "include": {
-          "description": "include can be used to include an external XML-structure into the current file",
-          "type": [ "object","array" ],
-          "properties": {
-            "from": {
-              "description": "from is used to specify an external set source",
-              "type": "string"
-            },
-            "path": {
-              "description": "path can be used to give an alternative xml-path inside the include-file",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "from" ]
+          "$ref": "#/$defs/include"
         }
       },
       "required": [ "name" ]
     },
 
+    "iofile": {
+      "description": "A iofile declares the name (and path) of a file used for substitution.",
+      "type": [ "object","array" ],
+      "properties": {
+        "in": {
+          "description": "Relative filepath to the current work directory for every single step",
+          "type": "string"
+        },
+        "out": {
+          "description": "Relative filepath to the current work directory for every single step",
+          "type": "string"
+        },
+        "out_mode": {
+          "description": "out_mode can be used to declare, if the out-file will be overridden (w) or appended (a)",
+          "type": "string",
+          "pattern": "^(w|a)$"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      },
+      "required": [ "in","out" ]
+    },
 
+    "sub": {
+      "description": "A substition expression",
+      "type": [ "object","array" ],
+      "properties": {
+        "source": {
+          "description": "source-string will be replaced by dest-string",
+          "type": "string"
+        },
+        "dest": {
+          "description": "dest-string will replace the source-string",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      },
+      "required": [ "source" ]
+    },
 
     "fileset": {
       "description": "A fileset is a container to store a bundle of links and copy commands.",
@@ -298,138 +219,154 @@
         },
         "copy": {
           "description": "A copy can be used to copy a file or directory from your normal filesytem to your sandbox work directory.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "directory": {
-              "description": "directory will be used as a prefix for the source filenames. It does not allow parameter substitution (deprecated; new attribut: source_dir)",
-              "type": "string"
-            },
-            "name": {
-              "description": "name can be used to rename the file inside your work directory (will be ignored if you use shell extensions in your pathname)",
-              "type": "string"
-            },
-            "rel_path_ref": {
-              "description": "rel_path_ref declares, if relative paths will be based on the position of the JUBE-Skript (external) or the current work directory (internal).",
-              "type": "string"
-            },
-            "file_path_ref": {
-              "description": "unknown functionality",
-              "type": "string"
-            },
-            "active": {
-              "description": "active can be used to enable or disable the single command",
-              "type": "string"
-            },
-            "source_dir": {
-              "description": "source_dir will be used as a prefix for the source filenames. It allows parameter substitution",
-              "type": "string"
-            },
-            "target_dir": {
-              "description": "target_dir will be used as a prefix for the target filenames",
-              "type": "string"
-            },
-            "separator": {
-              "description": "separator can be used to change the default separator.",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/$defs/file"
         },
         "link": {
-          "description": "",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "directory": {
-              "description": "unknown functionality",
-              "type": "string"
-            },
-            "name": {
-              "description": "name can be used to rename the file inside your work directory (will be ignored if you use shell extensions in your pathname)",
-              "type": "string"
-            },
-            "rel_path_ref": {
-              "description": "rel_path_ref declares, if relative paths will be based on the position of the JUBE-Skript (external) or the current work directory (internal).",
-              "type": "string"
-            },
-            "file_path_ref": {
-              "description": "unknown functionality",
-              "type": "string"
-            },
-            "active": {
-              "description": "active can be used to enable or disable the single command",
-              "type": "string"
-            },
-            "source_dir": {
-              "description": "source_dir will be used as a prefix for the source filenames",
-              "type": "string"
-            },
-            "target_dir": {
-              "description": "target_dir will be used as a prefix for the target filenames",
-              "type": "string"
-            },
-            "separator": {
-              "description": "separator can be used to change the default separator.",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          }
+          "description": "A link can be used to create a symbolic link from your sandbox work directory to a file or directory inside your normal filesystem.",
+          "$ref": "#/$defs/file"
         },
         "prepare": {
-          "description": "The prepare can contain any Shell command you want. It will be executed like a normal *do* inside the step where the corresponding fileset is used. The only difference towards the normal *do* is, that it will be executed before the substitution will be executed.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "stdout": {
-              "description": "standard out file",
-              "type": "string"
-            },
-            "stderr": {
-              "description": "standard error file",
-              "type": "string"
-            },
-            "active": {
-              "description": "active can be used to enable or disable the single command",
-              "type": "string"
-            },
-            "work_dir": {
-              "description": "work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/$defs/prepare"
         },
         "include": {
-          "description": "include can be used to include an external XML-structure into the current file",
-          "type": [ "object","array" ],
-          "properties": {
-            "from": {
-              "description": "from is used to specify an external set source",
-              "type": "string"
-            },
-            "path": {
-              "description": "path can be used to give an alternative xml-path inside the include-file",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "from" ]
+          "$ref": "#/$defs/include"
         }
       },
       "required": [ "name" ]
     },
 
+    "file": {
+      "type": [ "object","array","string" ],
+      "properties": {
+        "directory": {
+          "description": "directory will be used as a prefix for the source filenames. It does not allow parameter substitution (deprecated; new attribut: source_dir)",
+          "type": "string"
+        },
+        "name": {
+          "description": "name can be used to rename the file inside your work directory (will be ignored if you use shell extensions in your pathname)",
+          "type": "string"
+        },
+        "rel_path_ref": {
+          "description": "rel_path_ref declares, if relative paths will be based on the position of the JUBE-Skript (external) or the current work directory (internal).",
+          "type": "string"
+        },
+        "file_path_ref": {
+          "description": "unknown functionality",
+          "type": "string"
+        },
+        "active": {
+          "description": "active can be used to enable or disable the single command",
+          "type": "string"
+        },
+        "source_dir": {
+          "description": "source_dir will be used as a prefix for the source filenames. It allows parameter substitution",
+          "type": "string"
+        },
+        "target_dir": {
+          "description": "target_dir will be used as a prefix for the target filenames",
+          "type": "string"
+        },
+        "separator": {
+          "description": "separator can be used to change the default separator.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      }
+    },
 
+    "prepare": {
+      "description": "The prepare can contain any Shell command you want. It will be executed like a normal *do* inside the step where the corresponding fileset is used. The only difference towards the normal *do* is, that it will be executed before the substitution will be executed.",
+      "type": [ "object","array","string" ],
+      "properties": {
+        "stdout": {
+          "description": "standard out file",
+          "type": "string"
+        },
+        "stderr": {
+          "description": "standard error file",
+          "type": "string"
+        },
+        "active": {
+          "description": "active can be used to enable or disable the single command",
+          "type": "string"
+        },
+        "work_dir": {
+          "description": "work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      }
+    },
+
+    "patternset": {
+      "description": "A patternset is a container to store a bundle of patterns.",
+      "type": [ "object","array" ],
+      "properties": {
+        "name": {
+          "description": "unique name of the patternset",
+          "type": "string"
+        },
+        "init_with": {
+          "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a patternset using the given name, all pattern will be copied to the local set.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "pattern": {
+          "$ref": "#/$defs/pattern"
+        },
+        "include": {
+          "$ref": "#/$defs/include"
+        }
+      },
+      "required": [ "name" ]
+    },
+
+    "pattern": {
+      "description": "A pattern is used to parse your output files and create your result data.",
+      "type": [ "object","array" ],
+      "properties": {
+        "name": {
+          "description": "name must be unique",
+          "type": "string"
+        },
+        "unit": {
+          "description": "unit will be used in the result table",
+          "type": "string"
+        },
+        "type": {
+          "description": "type is only used for sorting",
+          "type": "string",
+          "pattern": "^(string|int|float)$"
+        },
+        "mode": {
+          "description": "mode is used for script-types",
+          "type": "string",
+          "pattern": "^(python|perl|shell|env|tag)$"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "default": {
+          "description": "Specify default value if pattern cannot be found or if it cannot be evaluated",
+          "type": "string"
+        },
+        "dotall": {
+          "description": "dotall can be used to specify if a '.' within the regular expression should also match newline characters.",
+          "type": "boolean"
+        }
+      },
+      "required": [ "name" ]
+    },
 
     "step": {
       "description": "A step gives a list of Shell operations and a corresponding parameter environment.",
@@ -489,80 +426,70 @@
         },
         "use": {
           "description": "use declares, which parametersets, filesets and substitutionsets are usable",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "from": {
-              "description": "from can be used to specify an external set source",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/$defs/use"
         },
         "do": {
-          "description": "A do contains an executable Shell operation.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "done_file": {
-              "description": "By using done_file the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.",
-              "type": "string"
-            },
-            "error_file": {
-              "description": "By using error_file the operation will produce a error if the named file can be found inside the work directory.",
-              "type": "string"
-            },
-            "break_file": {
-              "description": "By using break_file the user can stop further cycle runs. the current step will be directly marked with finalized and further *do* will be ignored.",
-              "type": "string"
-            },
-            "stdout": {
-              "description": "standard out file",
-              "type": "string"
-            },
-            "stderr": {
-              "description": "standard error file",
-              "type": "string"
-            },
-            "active": {
-              "description": "active can be used to enable or disable the single command",
-              "type": "string"
-            },
-            "shared": {
-              "description": "If shared is set to true, the *do* will be executed inside the shared folder once (synchronize all workpackages).",
-              "type": "boolean"
-            },
-            "work_dir": {
-              "description": "work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
-              "type": "string"
-            }
-          }
+          "$ref": "#/$defs/do"
         },
         "include": {
-          "description": "include can be used to include an external XML-structure into the current file",
-          "type": [ "object","array" ],
-          "properties": {
-            "from": {
-              "description": "from is used to specify an external set source",
-              "type": "string"
-            },
-            "path": {
-              "description": "path can be used to give an alternative xml-path inside the include-file",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "from" ]
+          "$ref": "#/$defs/include"
         }
       },
       "required": [ "name" ]
     },
 
+    "use": {
+      "type": [ "object","array","string" ],
+      "properties": {
+        "from": {
+          "description": "from can be used to specify an external set source",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      }
+    },
 
+    "do": {
+      "description": "A do contains an executable Shell operation.",
+      "type": [ "object","array","string" ],
+      "properties": {
+        "done_file": {
+          "description": "By using done_file the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.",
+          "type": "string"
+        },
+        "error_file": {
+          "description": "By using error_file the operation will produce a error if the named file can be found inside the work directory.",
+          "type": "string"
+        },
+        "break_file": {
+          "description": "By using break_file the user can stop further cycle runs. the current step will be directly marked with finalized and further *do* will be ignored.",
+          "type": "string"
+        },
+        "stdout": {
+          "description": "standard out file",
+          "type": "string"
+        },
+        "stderr": {
+          "description": "standard error file",
+          "type": "string"
+        },
+        "active": {
+          "description": "active can be used to enable or disable the single command",
+          "type": "string"
+        },
+        "shared": {
+          "description": "If shared is set to true, the *do* will be executed inside the shared folder once (synchronize all workpackages).",
+          "type": "boolean"
+        },
+        "work_dir": {
+          "description": "work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
+          "type": "string"
+        }
+      }
+    },
 
     "analyser": {
       "description": "The analyser describes the steps and files which should be scanned using a set of pattern.",
@@ -582,86 +509,54 @@
         },
         "use": {
           "description": "use declares, which patternsets are usable",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "from": {
-              "description": "from can be used to specify an external set source",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          }
+          "$ref": "#/$defs/use"
         },
         "analyse": {
-          "description": "analyse declares, which step and files will be analysed",
-          "type": [ "object","array" ],
-          "properties": {
-            "step": {
-              "description": "The step-attribute contains the step that will be analysed",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            },
-            "file": {
-              "description": "The file-attribute contains the files that will be analysed. Each file using each workpackage will be scanned seperatly.",
-              "type": [ "object","array","string" ],
-              "properties": {
-                "use": {
-                  "description": "The use argument inside the file-tag can be used to specify a file specific patternset. The global *use* and this local *use* will be combined and evaluated at the same time.",
-                  "type": "string"
-                }
-              }
-            },
-            "include": {
-              "description": "include can be used to include an external XML-structure into the current file",
-              "type": [ "object","array" ],
-              "properties": {
-                "from": {
-                  "description": "from is used to specify an external set source",
-                  "type": "string"
-                },
-                "path": {
-                  "description": "path can be used to give an alternative xml-path inside the include-file",
-                  "type": "string"
-                },
-                "tag": {
-                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-                  "type": "string"
-                }
-              },
-              "required": [ "from" ]
-            }
-          },
-          "required": [ "step" ]
+          "$ref": "#/$defs/analyse"
         },
         "include": {
-          "description": "include can be used to include an external XML-structure into the current file",
-          "type": [ "object","array" ],
-          "properties": {
-            "from": {
-              "description": "from is used to specify an external set source",
-              "type": "string"
-            },
-            "path": {
-              "description": "path can be used to give an alternative xml-path inside the include-file",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "from" ]
+          "$ref": "#/$defs/include"
         }
       },
       "required": [ "name" ]
     },
 
+    "analyse": {
+      "description": "analyse declares, which step and files will be analysed",
+      "type": [ "object","array" ],
+      "properties": {
+        "step": {
+          "description": "The step-attribute contains the step that will be analysed",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "file": {
+          "$ref": "#/$defs/analyseFile"
+        },
+        "include": {
+          "$ref": "#/$defs/include"
+        }
+      },
+      "required": [ "step" ]
+    },
 
+    "analyseFile": {
+      "description": "The file-attribute contains the files that will be analysed. Each file using each workpackage will be scanned seperatly.",
+      "type": [ "object","array","string" ],
+      "properties": {
+        "use": {
+          "description": "The use argument inside the file-tag can be used to specify a file specific patternset. The global *use* and this local *use* will be combined and evaluated at the same time.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      }
+    },
 
     "result": {
       "description": "The result tag is used to handle different visualisation types of your analysed data.",
@@ -686,324 +581,233 @@
           }
         },
         "table": {
-          "description": "A simple ASCII based table ouput.",
-          "type": [ "object","array" ],
-          "properties": {
-            "name": {
-              "description": "unique name of the table",
-              "type": "string"
-            },
-            "style": {
-              "description": "allowed styles: csv, pretty, aligned",
-              "type": "string",
-              "pattern": "^(csv|pretty|aligned)$"
-            },
-            "sort": {
-              "description": "can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting.",
-              "type": "string"
-            },
-            "filter": {
-              "description": "can contain a bool expression to show only specific result entries",
-              "type": "string"
-            },
-            "separator": {
-              "description": "separator can be used to change the default separator (only used in csv-style).",
-              "type": "string"
-            },
-            "transpose": {
-              "description": "If transpose is set to true, the table is transposed (rows and columns are swapped)",
-              "type": "boolean"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            },
-            "column": {
-              "description": "A line within a ASCII result table. The column-tag can contain the name of a pattern or the name of a parameter.",
-              "type": [ "object","array","string" ],
-              "properties": {
-                "colw": {
-                  "description": "column width",
-                  "type": "integer"
-                },
-                "format": {
-                  "description": "format can contain a C like format string: e.g. '.2f'",
-                  "type": "string"
-                },
-                "title": {
-                  "description": "column title",
-                  "type": "string"
-                },
-                "tag": {
-                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-                  "type": "string"
-                }
-              }
-            },
-            "include": {
-              "description": "include can be used to include an external XML-structure into the current file",
-              "type": [ "object","array" ],
-              "properties": {
-                "from": {
-                  "description": "from is used to specify an external set source",
-                  "type": "string"
-                },
-                "path": {
-                  "description": "path can be used to give an alternative xml-path inside the include-file",
-                  "type": "string"
-                },
-                "tag": {
-                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-                  "type": "string"
-                }
-              },
-              "required": [ "from" ]
-            }
-          },
-          "required": [ "name" ]
+          "$ref": "#/$defs/table"
         },
         "database": {
-          "description": "Creates sqlite3 database",
-          "type": [ "object","array" ],
-          "properties": {
-            "name": {
-              "description": "name of the table in the database",
-              "type": "string"
-            },
-            "primekeys": {
-              "description": "primekeys can contain a list of parameter or pattern names (separated by ,). Given parameters or patterns will be used as primary keys of the database table. All primekeys have to be listed as a *key* as well. Modification of primary keys of an existing table is not supported. If no primekeys are set then each jube result will add new rows to the database. Otherwise rows with matching primekeys will be updated.",
-              "type": "string"
-            },
-            "file": {
-              "description": "The given value should hold the full path to the database file. If the file including the path does not exists it will be created. Absolute and relative paths are supported.",
-              "type": "string"
-            },
-            "filter": {
-              "description": "filter can contain a bool expression to show only specific result entries.",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            },
-            "key": {
-              "description": "must contain an single parameter or pattern name",
-              "type": "object",
-              "properties": {
-                "tag": {
-                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-                  "type": "string"
-                }
-              }
-            },
-            "include": {
-              "description": "include can be used to include an external XML-structure into the current file",
-              "type": [ "object","array" ],
-              "properties": {
-                "from": {
-                  "description": "from is used to specify an external set source",
-                  "type": "string"
-                },
-                "path": {
-                  "description": "path can be used to give an alternative xml-path inside the include-file",
-                  "type": "string"
-                },
-                "tag": {
-                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-                  "type": "string"
-                }
-              },
-              "required": [ "from" ]
-            }
-          },
-          "required": [ "name" ]
+          "$ref": "#/$defs/database"
         },
         "syslog": {
-          "description": "A syslog result type",
-          "type": [ "object","array" ],
-          "properties": {
-            "name": {
-              "description": "name for the syslog",
-              "type": "string"
-            },
-            "address": {
-              "description": "socket adress that gives a syslog daemon (the combination of *host*/*port* and *address* is not allowed)",
-              "type": "string"
-            },
-            "host": {
-              "description": "host can give a syslog daemon in combination with *port* (the combination of *host*/*port* and *address* is not allowed)",
-              "type": "string"
-            },
-            "port": {
-              "description": "port can give a syslog daemon in combination with *host* (the combination of *host*/*port* and *address* is not allowed)",
-              "type": "integer"
-            },
-            "format": {
-              "description": "format can contain a log format written in a pythonic way.",
-              "type": "string"
-            },
-            "sort": {
-              "description": "sort can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting",
-              "type": "string"
-            },
-            "filter": {
-              "description": "filter can contain a bool expression to show only specific result entries.",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            },
-            "key": {
-              "description": "A syslog result key. It must contain a single parameter- or patternname.",
-              "type": [ "object","array","string" ],
-              "properties": {
-                "colw": {
-                  "description": "column width",
-                  "type": "integer"
-                },
-                "format": {
-                  "description": "format can contain a C like format string: e.g. '.2f'",
-                  "type": "string"
-                },
-                "title": {
-                  "description": "alternative key title",
-                  "type": "string"
-                },
-                "tag": {
-                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-                  "type": "string"
-                }
-              }
-            },
-            "include": {
-              "description": "include can be used to include an external XML-structure into the current file",
-              "type": [ "object","array" ],
-              "properties": {
-                "from": {
-                  "description": "from is used to specify an external set source",
-                  "type": "string"
-                },
-                "path": {
-                  "description": "path can be used to give an alternative xml-path inside the include-file",
-                  "type": "string"
-                },
-                "tag": {
-                  "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-                  "type": "string"
-                }
-              },
-              "required": [ "from" ]
-            }
-          },
-          "required": [ "name" ],
-          "anyOf": [
-            {
-              "allOf": [
-                {
-                  "properties": {
-                    "address": {"type": "string"}
-                  }, 
-                  "required": [ "address" ]
-                },
-                {
-                  "allOf": [
-                    {
-                      "not": {
-                        "properties": {
-                          "host": {"type": "string"}
-                        }, 
-                        "required": [ "host" ]
-                      }
-                    },
-                    {
-                      "not": {
-                        "properties": {
-                          "port": {"type": "integer"}
-                        }, 
-                        "required": [ "port" ]
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "allOf": [
-                {
-                  "not": {
-                    "properties": {
-                      "address": {"type": "string"}
-                    }, 
-                    "required": [ "address" ]
-                  }
-                },
-                {
-                  "properties": {
-                    "host": {"type": "string"},
-                    "port": {"type": "integer"}
-                  }, 
-                  "required": [ "host","port" ]
-                }
-              ]
-            },
-            {
-              "allOf": [
-                {
-                  "not": {
-                    "properties": {
-                      "host": {"type": "string"}
-                    }, 
-                    "required": [ "host" ]
-                  }
-                },
-                {
-                  "not": {
-                    "properties": {
-                      "port": {"type": "integer"}
-                    }, 
-                    "required": [ "port" ]
-                  }
-                },
-                {
-                  "not": {
-                    "properties": {
-                      "address": {"type": "string"}
-                    }, 
-                    "required": [ "address" ]
-                  }
-                }
-              ]
-            }
-          ]
+          "$ref": "#/$defs/syslog"
         },
         "include": {
-          "description": "include can be used to include an external XML-structure into the current file",
-          "type": [ "object","array" ],
-          "properties": {
-            "from": {
-              "description": "from is used to specify an external set source",
-              "type": "string"
-            },
-            "path": {
-              "description": "path can be used to give an alternative xml-path inside the include-file",
-              "type": "string"
-            },
-            "tag": {
-              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
-              "type": "string"
-            }
-          },
-          "required": [ "from" ]
+          "$ref": "#/$defs/include"
         }
       }
     },
 
+    "table": {
+      "description": "A simple ASCII based table ouput.",
+      "type": [ "object","array" ],
+      "properties": {
+        "name": {
+          "description": "unique name of the table",
+          "type": "string"
+        },
+        "style": {
+          "description": "allowed styles: csv, pretty, aligned",
+          "type": "string",
+          "pattern": "^(csv|pretty|aligned)$"
+        },
+        "sort": {
+          "description": "can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting.",
+          "type": "string"
+        },
+        "filter": {
+          "description": "can contain a bool expression to show only specific result entries",
+          "type": "string"
+        },
+        "separator": {
+          "description": "separator can be used to change the default separator (only used in csv-style).",
+          "type": "string"
+        },
+        "transpose": {
+          "description": "If transpose is set to true, the table is transposed (rows and columns are swapped)",
+          "type": "boolean"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "column": {
+          "description": "A line within a ASCII result table. The column-tag can contain the name of a pattern or the name of a parameter.",
+          "type": [ "object","array","string" ],
+          "$ref": "#/$defs/column"
+        },
+        "include": {
+          "$ref": "#/$defs/include"
+        }
+      },
+      "required": [ "name" ]
+    },
 
+    "database": {
+      "description": "Creates sqlite3 database",
+      "type": [ "object","array" ],
+      "properties": {
+        "name": {
+          "description": "name of the table in the database",
+          "type": "string"
+        },
+        "primekeys": {
+          "description": "primekeys can contain a list of parameter or pattern names (separated by ,). Given parameters or patterns will be used as primary keys of the database table. All primekeys have to be listed as a *key* as well. Modification of primary keys of an existing table is not supported. If no primekeys are set then each jube result will add new rows to the database. Otherwise rows with matching primekeys will be updated.",
+          "type": "string"
+        },
+        "file": {
+          "description": "The given value should hold the full path to the database file. If the file including the path does not exists it will be created. Absolute and relative paths are supported.",
+          "type": "string"
+        },
+        "filter": {
+          "description": "filter can contain a bool expression to show only specific result entries.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "key": {
+          "description": "must contain an single parameter or pattern name",
+          "type": "object",
+          "properties": {
+            "tag": {
+              "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+              "type": "string"
+            }
+          }
+        },
+        "include": {
+          "$ref": "#/$defs/include"
+        }
+      },
+      "required": [ "name" ]
+    },
+
+    "syslog": {
+      "description": "A syslog result type",
+      "type": [ "object","array" ],
+      "properties": {
+        "name": {
+          "description": "name for the syslog",
+          "type": "string"
+        },
+        "address": {
+          "description": "socket adress that gives a syslog daemon (the combination of *host*/*port* and *address* is not allowed)",
+          "type": "string"
+        },
+        "host": {
+          "description": "host can give a syslog daemon in combination with *port* (the combination of *host*/*port* and *address* is not allowed)",
+          "type": "string"
+        },
+        "port": {
+          "description": "port can give a syslog daemon in combination with *host* (the combination of *host*/*port* and *address* is not allowed)",
+          "type": "integer"
+        },
+        "format": {
+          "description": "format can contain a log format written in a pythonic way.",
+          "type": "string"
+        },
+        "sort": {
+          "description": "sort can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting",
+          "type": "string"
+        },
+        "filter": {
+          "description": "filter can contain a bool expression to show only specific result entries.",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        },
+        "key": {
+          "description": "A syslog result key. It must contain a single parameter- or patternname.",
+          "type": [ "object","array","string" ],
+          "$ref": "#/$defs/column"
+        },
+        "include": {
+          "$ref": "#/$defs/include"
+        }
+      },
+      "required": [ "name" ],
+      "anyOf": [{
+        "allOf": [{
+          "properties": {"address": {"type": "string"}}, 
+          "required": [ "address" ]
+        },
+        {
+          "allOf": [{
+            "not": {
+              "properties": {"host": {"type": "string"}}, 
+              "required": [ "host" ]
+            }
+          },
+          {
+            "not": {
+              "properties": {"port": {"type": "integer"}}, 
+              "required": [ "port" ]
+            }
+          }]
+        }]
+      },
+      {
+        "allOf": [{
+          "not": {
+            "properties": {"address": {"type": "string"}}, 
+            "required": [ "address" ]
+          }
+        },
+        {
+          "properties": {
+            "host": {"type": "string"},
+            "port": {"type": "integer"}
+          }, 
+          "required": [ "host","port" ]
+        }]
+      },
+      {
+        "allOf": [{
+          "not": {
+            "properties": {"host": {"type": "string"}}, 
+            "required": [ "host" ]
+          }
+        },
+        {
+          "not": {
+            "properties": {"port": {"type": "integer"}}, 
+            "required": [ "port" ]
+          }
+        },
+        {
+          "not": {
+            "properties": {"address": {"type": "string"}}, 
+            "required": [ "address" ]
+          }
+        }]
+      }]
+    },
+
+    "column": {
+      "properties": {
+        "colw": {
+          "description": "column width",
+          "type": "integer"
+        },
+        "format": {
+          "description": "format can contain a C like format string: e.g. '.2f'",
+          "type": "string"
+        },
+        "title": {
+          "description": "alternative title",
+          "type": "string"
+        },
+        "tag": {
+          "description": "A tag can be used to mark parts of your input file to be includable or excludable.",
+          "type": "string"
+        }
+      }
+    },
 
     "include": {
       "description": "include can be used to include an external XML-structure into the current file",
-      "type": [ "object","array" ],
+      "type": "object",
       "properties": {
         "from": {
           "description": "from is used to specify an external set source",
@@ -1020,6 +824,5 @@
       },
       "required": [ "from" ]
     }
-  },
-  "required": [ "name", "outpath" ]
+  }
 }
