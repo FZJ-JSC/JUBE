@@ -4,7 +4,7 @@
 
   "anyOf": [{
     "description": "JUBE script/benchmark definition. It is a container for all benchmark information.",
-    "type": "object",
+    "type": [ "array","object" ],
     "$ref": "#/$defs/benchmark",
     "additionalProperties": false
   },
@@ -69,7 +69,8 @@
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
     "selection": {
@@ -100,7 +101,8 @@
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
 
@@ -182,7 +184,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "parameter": {
@@ -224,9 +227,14 @@
         "tag": {
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
+        },
+        "_": {
+          "description": "Real content of the *parameter*",
+          "type": "string"
         }
       },    
-      "required": [ "name" ]    
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "substituteset": {
@@ -255,7 +263,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "iofile": {
@@ -280,7 +289,8 @@
           "type": "string"
         }
       },
-      "required": [ "in","out" ]
+      "required": [ "in","out" ],
+      "additionalProperties": false
     },
 
     "sub": {
@@ -300,7 +310,8 @@
           "type": "string"
         }
       },
-      "required": [ "source" ]
+      "required": [ "source" ],
+      "additionalProperties": false
     },
 
     "fileset": {
@@ -334,7 +345,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "file": {
@@ -376,7 +388,12 @@
         "tag": {
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
-        }
+        },
+        "_": {
+          "description": "It can contain a list of filenames (or directories).",
+          "type": "string"
+        },
+        "additionalProperties": false
       }
     },
 
@@ -403,8 +420,13 @@
         "tag": {
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
+        },
+        "_": {
+          "description": "It contains the Shell command that will be executed.",
+          "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
     "patternset": {
@@ -430,7 +452,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "pattern": {
@@ -466,9 +489,14 @@
         "dotall": {
           "description": "It can be used to specify if a '.' within the regular expression should also match newline characters.",
           "type": "boolean"
+        },
+        "_": {
+          "description": "Real content of the *pattern*",
+          "type": "string"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "step": {
@@ -538,7 +566,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "use": {
@@ -551,8 +580,13 @@
         "tag": {
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
+        },
+        "_": {
+          "description": "It contains the names of usable *sets* and/or *analysers*.",
+          "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
     "do": {
@@ -590,8 +624,13 @@
         "work_dir": {
           "description": "The work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
           "type": "string"
+        },
+        "_": {
+          "description": "It contains the Shell command that will be executed.",
+          "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
     "analyser": {
@@ -621,7 +660,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "analyse": {
@@ -643,7 +683,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "step" ]
+      "required": [ "step" ],
+      "additionalProperties": false
     },
 
     "analyseFile": {
@@ -657,8 +698,13 @@
         "tag": {
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
+        },
+        "_": {
+          "description": "It contains the filenames of the files that will be analysed.",
+          "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
     "result": {
@@ -695,7 +741,8 @@
         "include": {
           "$ref": "#/$defs/include"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
     "table": {
@@ -740,7 +787,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "database": {
@@ -781,7 +829,8 @@
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ]
+      "required": [ "name" ],
+      "additionalProperties": false
     },
 
     "syslog": {
@@ -830,6 +879,7 @@
         }
       },
       "required": [ "name" ],
+      "additionalProperties": false,
       "anyOf": [{
         "allOf": [{
           "not": {
@@ -871,8 +921,13 @@
         "tag": {
           "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
           "type": "string"
+        },
+        "_": {
+          "description": "It can contain the name of a single pattern or parameter.",
+          "type": "string"
         }
-      }
+      },
+      "additionalProperties": false
     },
 
     "include": {
@@ -892,7 +947,8 @@
           "type": "string"
         }
       },
-      "required": [ "from" ]
+      "required": [ "from" ],
+      "additionalProperties": false
     }
   }
 }
