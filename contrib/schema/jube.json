@@ -4,26 +4,50 @@
 
   "anyOf": [{
     "description": "JUBE script/benchmark definition. It is a container for all benchmark information.",
-    "type": [ "array","object" ],
-    "$ref": "#/$defs/benchmark",
-    "additionalProperties": false
+    "anyOf": [{
+			"type": "array",
+			"items": {
+				"$ref": "#/$defs/benchmark_object"
+			}
+		}, {
+			"$ref": "#/$defs/benchmark_object"
+		}]
   },
   {
-    "description": "JUBE script definition",
-    "type": "object",
-    "$ref": "#/$defs/jube",
-    "additionalProperties": false
+    "$ref": "#/$defs/jube_object"
   }],
 
   "$defs": {
-    "jube": {
+    "jube_object": {
+      "description": "JUBE script definition",
+      "type": "object",
       "properties": {
         "include-path": {
-          "$ref": "#/$defs/include-path"
-        },
+          "description": "It is used to add some include paths where to search for include files.",
+          "anyOf": [{
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/include-path_object"
+            }
+          }, {
+            "$ref": "#/$defs/include-path_object"
+          }, {
+            "type": "string"
+          }]
+        }, 
         "selection": {
-          "$ref": "#/$defs/selection"
-        },
+          "description": "It is used to select or unselect *benchmarks* by name.",
+          "anyOf": [{
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/selection_object"
+            }
+          }, {
+            "$ref": "#/$defs/selection_object"
+          }, {
+            "type": "string"
+          }]
+        }, 
         "parameterset": {
           "$ref": "#/$defs/parameterset"
         },
@@ -38,8 +62,14 @@
         },
         "benchmark": {
           "description": "The main benchmark definition. It is a container for all benchmark information.",
-          "type": [ "object","array" ],
-          "$ref": "#/$defs/benchmark"
+          "anyOf": [{
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/benchmark_object"
+            }
+          }, {
+            "$ref": "#/$defs/benchmark_object"
+          }]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -48,66 +78,72 @@
           "description": "Version of the JUBE script",
           "type": "string"
         }
-      }
-    },
-
-    "include-path": {
-      "description": "It is used to add some include paths where to search for include files.",
-      "type": [ "object","array","string" ],
-      "properties": {
-        "path": {
-          "description": "The path will be scanned for include files.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "tag": {
-              "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-              "type": "string"
-            }
-          }
-        },
-        "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
-        }
       },
       "additionalProperties": false
     },
 
-    "selection": {
-      "description": "It is used to select or unselect *benchmarks* by name.",
-      "type": [ "object","array","string" ],
+    "include-path_object": {
+			"type": "object",
+			"properties": {
+				"path": {
+          "description": "The path will be scanned for include files.",
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/string_tag_object"
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
+        },
+        "tag": {
+          "$ref": "#/$defs/tag"
+        }
+      },
+      "additionalProperties": false
+		},
+
+		"selection_object": {
+			"type": "object",
       "properties": {
         "only": {
           "description": "Only selected *benchmarks* will run. It can contain a name list divided by ','.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "tag": {
-              "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-              "type": "string"
-            }
-          }
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/string_tag_object"
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
         },
         "not": {
           "description": "Selected *benchmarks* will not run. It can contain a name list divided by ','.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "tag": {
-              "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-              "type": "string"
-            }
-          }
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/string_tag_object"
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         }
       },
       "additionalProperties": false
-    },
+		},
 
-
-    "benchmark": {
-      "properties": {
+    "benchmark_object": {
+			"type": "object",
+			"properties": {
         "name": {
           "description": "Unique name of the benchmark",
           "type": "string"
@@ -125,8 +161,7 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "parameterset": {
           "$ref": "#/$defs/parameterset"
@@ -141,25 +176,63 @@
           "$ref": "#/$defs/fileset"
         },
         "step": {
-          "$ref": "#/$defs/step"
+          "description": "A *step* gives a list of Shell operations and a corresponding parameter environment.",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/step_object"
+						}
+					}, {
+						"$ref": "#/$defs/step_object"
+					}]
         },
         "analyser": {
-          "$ref": "#/$defs/analyser"
+          "description": "The *analyser* describes the *steps* and files which should be scanned using a set of *pattern*.",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/analyser_object"
+						}
+					}, {
+						"$ref": "#/$defs/analyser_object"
+					}]
         },
         "result": {
-          "$ref": "#/$defs/result"
+          "description": "The *result* is used to handle different visualisation types of your analysed data.",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/result_object"
+						}
+					}, {
+						"$ref": "#/$defs/result_object"
+					}, {
+						"type": "string"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name", "outpath" ]
-    },
+      "required": [ "name", "outpath" ],
+			"additionalProperties": false
+		},
 
     "parameterset": {
-      "description": "A *parameterset* is a container to store a bundle of *parameters*.",
-      "type": [ "object","array" ],
-      "properties": {
+			"description": "A *parameterset* is a container to store a bundle of *parameters*.",
+      "anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/parameterset_object"
+				}
+			}, {
+				"$ref": "#/$defs/parameterset_object"
+			}]
+		},
+
+		"parameterset_object": {
+			"type": "object",
+			"properties": {
         "name": {
           "description": "Unique name of the *parameterset*",
           "type": "string"
@@ -174,24 +247,30 @@
           "pattern": "^(replace|concat|error)$"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "parameter": {
-          "$ref": "#/$defs/parameter"
+          "description": "A *parameter* can be used to store *benchmark* configuration data. A set of different *parameters* will create a specific parameter environment (also called parameter space) for the different *steps* of the *benchmark*.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/parameter_object"
+						}
+					}, {
+						"$ref": "#/$defs/parameter_object"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ],
+      "required": "name",
       "additionalProperties": false
-    },
+		},
 
-    "parameter": {
-      "description": "A *parameter* can be used to store *benchmark* configuration data. A set of different *parameters* will create a specific parameter environment (also called parameter space) for the different *steps* of the *benchmark*.",
-      "type": [ "object","array" ],
-      "properties": {
+    "parameter_object": {
+			"type": "object",
+			"properties": {
         "name": {
           "description": "The name must be unique inside the given *parameterset*.",
           "type": "string"
@@ -225,22 +304,32 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "_": {
           "description": "Real content of the *parameter*",
           "type": "string"
         }
       },    
-      "required": [ "name" ],
+      "required": "name",
       "additionalProperties": false
-    },
+		},
 
     "substituteset": {
-      "description": "A *substituteset* is a container to store a bundle of *sub* commands.",
-      "type": [ "object","array" ],
-      "properties": {
+			"description": "A *substituteset* is a container to store a bundle of *sub* commands.",
+      "anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/substituteset_object"
+				}
+			}, {
+				"$ref": "#/$defs/substituteset_object"
+			}]
+		},
+
+		"substituteset_object": {
+			"type": "object",
+			"properties": {
         "name": {
           "description": "Unique name of the *substituteset*",
           "type": "string"
@@ -250,26 +339,40 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "iofile": {
-          "$ref": "#/$defs/iofile"
+          "description": "A *iofile* declares the name (and path) of a file used for substitution.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/iofile_object"
+						}
+					}, {
+						"$ref": "#/$defs/iofile_object"
+					}]
         },
         "sub": {
-          "$ref": "#/$defs/sub"
+          "description": "A substitution expression",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/sub_object"
+						}
+					}, {
+						"$ref": "#/$defs/sub_object"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
         }
       },
-      "required": [ "name" ],
+      "required": "name",
       "additionalProperties": false
-    },
+		},
 
-    "iofile": {
-      "description": "A *iofile* declares the name (and path) of a file used for substitution.",
-      "type": [ "object","array" ],
+    "iofile_object": {
+      "type": "object",
       "properties": {
         "in": {
           "description": "Relative filepath to the current work directory for every single *step*. It can be the same as *out*.",
@@ -285,17 +388,15 @@
           "pattern": "^(w|a)$"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         }
       },
       "required": [ "in","out" ],
       "additionalProperties": false
     },
 
-    "sub": {
-      "description": "A substitution expression",
-      "type": [ "object","array" ],
+    "sub_object": {
+      "type": "object",
       "properties": {
         "source": {
           "description": "The source-string will be replaced by *dest*.",
@@ -306,8 +407,7 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         }
       },
       "required": [ "source" ],
@@ -315,8 +415,19 @@
     },
 
     "fileset": {
-      "description": "A *fileset* is a container to store a bundle of *links* and *copy* commands.",
-      "type": [ "object","array" ],
+			"description": "A *fileset* is a container to store a bundle of *links* and *copy* commands.",
+      "anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/fileset_object"
+				}
+			}, {
+				"$ref": "#/$defs/fileset_object"
+			}]
+		},
+
+    "fileset_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "The name must be unique.",
@@ -327,19 +438,46 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "copy": {
           "description": "A *copy* can be used to copy a file or directory from your normal filesytem to your sandbox work directory. It can contain a list of filenames (or directories).",
-          "$ref": "#/$defs/file"
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/file_object"
+						}
+					}, {
+						"$ref": "#/$defs/file_object"
+					}, {
+						"type": "string"
+					}]
         },
         "link": {
           "description": "A *link* can be used to create a symbolic link from your sandbox work directory to a file or directory inside your normal filesystem. It can contain a list of filenames (or directories).",
-          "$ref": "#/$defs/file"
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/file_object"
+						}
+					}, {
+						"$ref": "#/$defs/file_object"
+					}, {
+						"type": "string"
+					}]
         },
         "prepare": {
-          "$ref": "#/$defs/prepare"
+          "description": "It can contain any Shell command you want. It will be executed like a normal *do* inside the *step* where the corresponding *fileset* is used. The only difference towards the normal *do* is, that it will be executed before the substitution will be executed.",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/prepare_object"
+						}
+					}, {
+						"$ref": "#/$defs/prepare_object"
+					}, {
+						"type": "string"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -349,8 +487,8 @@
       "additionalProperties": false
     },
 
-    "file": {
-      "type": [ "object","array","string" ],
+    "file_object": {
+      "type": "object",
       "properties": {
         "directory": {
           "description": "It will be used as a prefix for the source filenames. It does not allow *parameter* substitution (deprecated; new attribut: *source_dir*).",
@@ -386,20 +524,18 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "_": {
           "description": "It can contain a list of filenames (or directories).",
           "type": "string"
-        },
-        "additionalProperties": false
-      }
+        }
+      },
+      "additionalProperties": false
     },
 
-    "prepare": {
-      "description": "It can contain any Shell command you want. It will be executed like a normal *do* inside the *step* where the corresponding *fileset* is used. The only difference towards the normal *do* is, that it will be executed before the substitution will be executed.",
-      "type": [ "object","array","string" ],
+    "prepare_object": {
+      "type": "object",
       "properties": {
         "stdout": {
           "description": "Standard out file",
@@ -418,8 +554,7 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "_": {
           "description": "It contains the Shell command that will be executed.",
@@ -430,8 +565,19 @@
     },
 
     "patternset": {
-      "description": "A *patternset* is a container to store a bundle of *patterns*.",
-      "type": [ "object","array" ],
+			"description": "A *patternset* is a container to store a bundle of *patterns*.",
+      "anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/patternset_object"
+				}
+			}, {
+				"$ref": "#/$defs/patternset_object"
+			}]
+		},
+
+    "patternset_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "Unique name of the *patternset*",
@@ -442,11 +588,18 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "pattern": {
-          "$ref": "#/$defs/pattern"
+          "description": "A *pattern* is used to parse your output files and create your *result* data.",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/pattern_object"
+						}
+					}, {
+						"$ref": "#/$defs/pattern_object"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -456,9 +609,8 @@
       "additionalProperties": false
     },
 
-    "pattern": {
-      "description": "A *pattern* is used to parse your output files and create your *result* data.",
-      "type": [ "object","array" ],
+    "pattern_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "The name must be unique.",
@@ -479,8 +631,7 @@
           "pattern": "^(python|perl|shell|env|tag|text)$"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "default": {
           "description": "It is used to specify a default value if *pattern* cannot be found or if it cannot be evaluated.",
@@ -499,9 +650,8 @@
       "additionalProperties": false
     },
 
-    "step": {
-      "description": "A *step* gives a list of Shell operations and a corresponding parameter environment.",
-      "type": [ "object","array" ],
+    "step_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "The name must be unique.",
@@ -540,8 +690,7 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "cycles": {
           "description": "Cycles can be used to execute all *do* commands within the *step* multiple times.",
@@ -560,7 +709,17 @@
           "$ref": "#/$defs/use"
         },
         "do": {
-          "$ref": "#/$defs/do"
+          "description": "A *do* contains an executable Shell operation.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/do_object"
+						}
+					}, {
+						"$ref": "#/$defs/do_object"
+					}, {
+						"type": "string"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -571,15 +730,27 @@
     },
 
     "use": {
-      "type": [ "object","array","string" ],
+      "anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/use_object"
+				}
+			}, {
+				"$ref": "#/$defs/use_object"
+			}, {
+				"type": "string"
+			}]
+		},
+    
+		"use_object": {
+      "type": "object",
       "properties": {
         "from": {
           "description": "The attribute can be used to specify an external set source.",
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "_": {
           "description": "It contains the names of usable *sets* and/or *analysers*.",
@@ -589,9 +760,8 @@
       "additionalProperties": false
     },
 
-    "do": {
-      "description": "A *do* contains an executable Shell operation.",
-      "type": [ "object","array","string" ],
+    "do_object": {
+      "type": "object",
       "properties": {
         "done_file": {
           "description": "By using done_file the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.",
@@ -633,9 +803,8 @@
       "additionalProperties": false
     },
 
-    "analyser": {
-      "description": "The *analyser* describes the *steps* and files which should be scanned using a set of *pattern*.",
-      "type": [ "object","array" ],
+    "analyser_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "Unique name of the *analyser*",
@@ -646,15 +815,22 @@
           "type": "boolean"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "use": {
           "description": "It declares, which *patternsets* are usable.",
           "$ref": "#/$defs/use"
         },
         "analyse": {
-          "$ref": "#/$defs/analyse"
+          "description": "It declares, which *step* and files will be analysed.",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/analyse_object"
+						}
+					}, {
+						"$ref": "#/$defs/analyse_object"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -664,20 +840,28 @@
       "additionalProperties": false
     },
 
-    "analyse": {
-      "description": "It declares, which *step* and files will be analysed.",
-      "type": [ "object","array" ],
+    "analyse_object": {
+      "type": "object",
       "properties": {
         "step": {
           "description": "The *step* contains the *step* that will be analysed.",
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "file": {
-          "$ref": "#/$defs/analyseFile"
+          "description": "The file-attribute contains the files that will be analysed. Each file using each workpackage will be scanned seperatly.",
+      		"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/analyseFile_object"
+						}
+					}, {
+						"$ref": "#/$defs/analyseFile_object"
+					}, {
+						"type": "string"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -687,17 +871,15 @@
       "additionalProperties": false
     },
 
-    "analyseFile": {
-      "description": "The file-attribute contains the files that will be analysed. Each file using each workpackage will be scanned seperatly.",
-      "type": [ "object","array","string" ],
+    "analyseFile_object": {
+      "type": "object",
       "properties": {
         "use": {
           "description": "The use argument inside the file-tag can be used to specify a file specific *patternset*. The global *use* and this local *use* will be combined and evaluated at the same time.",
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "_": {
           "description": "It contains the filenames of the files that will be analysed.",
@@ -707,36 +889,62 @@
       "additionalProperties": false
     },
 
-    "result": {
+    "result_object": {
       "description": "The *result* is used to handle different visualisation types of your analysed data.",
-      "type": [ "object","array","string" ],
+      "type": "object",
       "properties": {
         "result_dir": {
           "description": "The result_dir can be used to specify an different output directory. Inside of this directory a subfolder named by the current benchmark id will be created.",
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "use": {
           "description": "It declares, which *analyser* are usable.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "tag": {
-              "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-              "type": "string"
-            }
-          }
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/string_tag_object"
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
         },
         "table": {
-          "$ref": "#/$defs/table"
+          "description": "A simple ASCII based *table* ouput",
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/table_object"
+						}
+					}, {
+						"$ref": "#/$defs/table_object"
+					}]
         },
         "database": {
-          "$ref": "#/$defs/database"
+          "description": "Creates sqlite3 database",
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/database_object"
+						}
+					}, {
+						"$ref": "#/$defs/database_object"
+					}]
         },
         "syslog": {
-          "$ref": "#/$defs/syslog"
+          "description": "A syslog result type",
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/syslog_object"
+						}
+					}, {
+						"$ref": "#/$defs/syslog_object"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -745,9 +953,8 @@
       "additionalProperties": false
     },
 
-    "table": {
-      "description": "A simple ASCII based *table* ouput",
-      "type": [ "object","array" ],
+    "table_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "Unique name of the *table*",
@@ -775,13 +982,20 @@
           "type": "boolean"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "column": {
           "description": "A line within a ASCII result table. The *column* can contain the name of a *pattern* or the name of a parameter.",
-          "type": [ "object","array","string" ],
-          "$ref": "#/$defs/column"
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/column_object"
+						}
+					}, {
+						"$ref": "#/$defs/column_object"
+					}, {
+						"type": "string"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -791,9 +1005,8 @@
       "additionalProperties": false
     },
 
-    "database": {
-      "description": "Creates sqlite3 database",
-      "type": [ "object","array" ],
+    "database_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "The name of the table in the database.",
@@ -812,18 +1025,20 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "key": {
           "description": "The *key* must contain a single *parameter* or *pattern* name.",
-          "type": [ "object","array","string" ],
-          "properties": {
-            "tag": {
-              "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-              "type": "string"
-            }
-          }
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/string_tag_object"
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -833,9 +1048,8 @@
       "additionalProperties": false
     },
 
-    "syslog": {
-      "description": "A syslog result type",
-      "type": [ "object","array" ],
+    "syslog_object": {
+      "type": "object",
       "properties": {
         "name": {
           "description": "The name for the *syslog*.",
@@ -866,13 +1080,20 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "key": {
           "description": "A syslog result key. It must contain a single parameter- or patternname.",
-          "type": [ "object","array","string" ],
-          "$ref": "#/$defs/column"
+          "anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/column_object"
+						}
+					}, {
+						"$ref": "#/$defs/column_object"
+					}, {
+						"type": "string"
+					}]
         },
         "include": {
           "$ref": "#/$defs/include"
@@ -885,26 +1106,24 @@
           "not": {
             "required": [ "host" ]
           }
-        },
-        {
+        }, {
           "not": {
             "required": [ "port" ]
           }
         }]
-      },
-      {
+      }, {
         "allOf": [{
           "not": {
             "required": [ "address" ]
           }
-        },
-        {
+        }, {
           "required": [ "host","port" ]
         }]
       }]
     },
 
-    "column": {
+    "column_object": {
+      "type": "object",
       "properties": {
         "colw": {
           "description": "Column width",
@@ -919,8 +1138,7 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         },
         "_": {
           "description": "It can contain the name of a single pattern or parameter.",
@@ -932,7 +1150,18 @@
 
     "include": {
       "description": "It can be used to include an external XML-structure into the current file.",
-      "type": [ "array","object" ],
+      "anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/include_object"
+				}
+			}, {
+				"$ref": "#/$defs/include_object"
+			}]
+    },
+
+    "include_object": {
+      "type": "object",
       "properties": {
         "from": {
           "description": "The attribute is used to specify an external set source.",
@@ -943,12 +1172,30 @@
           "type": "string"
         },
         "tag": {
-          "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-          "type": "string"
+          "$ref": "#/$defs/tag"
         }
       },
       "required": [ "from" ],
       "additionalProperties": false
-    }
+    },
+
+    "string_tag_object": {
+      "type": "object",
+			"properties": {
+				"_": {
+          "description": "Real content of the tag",
+          "type": "string"
+        },
+        "tag": {
+          "$ref": "#/$defs/tag"
+			 	}
+		 	},
+      "additionalProperties": false
+    },
+
+		"tag": {
+			"description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
+			"type": "string"
+		}
   }
 }
