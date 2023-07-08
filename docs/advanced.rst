@@ -438,7 +438,7 @@ Inside the ``platform`` directory you will find some example benchmark independe
 Forschungszentrum Jülich.
 
 To avoid writing long include-paths every time you run a platform independent benchmark, you can store the include-path inside your
-input file. This can be mixed using the tagging-feature:
+input file. This can be mixed using the tagging-feature::
 
 .. code-block:: xml
    :linenos:
@@ -452,6 +452,17 @@ input file. This can be mixed using the tagging-feature:
      </include-path>
      ...
    </jube>
+
+Or in *YAML*::
+
+.. code-block:: yaml
+   :linenos:
+   ...
+   include-path:
+   path:
+      - {tag: plat1,  _: "some path"}
+      - {tag: plat2,  _: "another path"}
+   ...
 
 Now you can run your benchmark using::
 
