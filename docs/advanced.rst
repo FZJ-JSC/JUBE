@@ -350,7 +350,7 @@ It will search for the files to include inside four different positions, in the 
      :linenos:
 
      <?xml version="1.0" encoding="UTF-8"?>
-     <benchmark>
+     <jube>
        <include-path>
          <path>some_path</path>
          <path>another_path</path>
