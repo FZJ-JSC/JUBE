@@ -344,7 +344,7 @@ It will search for the files to include inside four different positions, in the 
 
       >>> jube run --include-path some_path another_path -- main.xml
 
-* inside any path given by an ``<include-path>``-tag:
+* inside any path given by an ``<include-path>``- or ``include-path:``-tag in *XML* or *YAML*, respectively:
 
   .. code-block:: xml
      :linenos:
@@ -357,6 +357,18 @@ It will search for the files to include inside four different positions, in the 
        </include-path>
        ...
      </jube>
+
+
+  .. code-block:: yaml
+     :linenos:
+  
+     ...
+     include-path:
+       path:
+         - "some path"
+         - "another path"
+     ...
+
 
 * inside any path given with the ``JUBE_INCLUDE_PATH`` environment variable (see :ref:`configuration`)::
 
@@ -461,9 +473,9 @@ Or in *YAML*:
 
    ...
    include-path:
-   path:
-      - {tag: plat1,  _: "some path"}
-      - {tag: plat2,  _: "another path"}
+     path:
+       - {tag: plat1,  _: "some path"}
+       - {tag: plat2,  _: "another path"}
    ...
 
 Now you can run your benchmark using::
