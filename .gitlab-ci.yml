@@ -18,8 +18,6 @@ stages:
     - deploy
 
 before_script:
-    - virtualenv -p `which python3` venv
-    - source venv/bin/activate
     - python3 -V  # Print out python version for debugging
     # Dependencies:
     - pip3 install sphinx
