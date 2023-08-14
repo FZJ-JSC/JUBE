@@ -29,7 +29,7 @@ tests:
     script:
         - python3 tests/run_all_tests.py
 
-update_release_notes:
+build:release_notes:
     stage: build
     script:
         - cd docs
@@ -41,7 +41,7 @@ update_release_notes:
         - changes:
             - docs/release_notes.rst
 
-update_help:
+build:help:
     stage: build
     script:
         - cd docs
@@ -53,7 +53,7 @@ update_help:
         - changes:
             - docs/glossary.rst
 
-build_docs_pdf:
+build:pdf:
     stage: build
     script:
         - cd docs
@@ -65,7 +65,7 @@ build_docs_pdf:
         - changes:
             - docs/**/* # all files under folder 'docs'
 
-build_docs_site:
+build:site:
     stage: build
     script:
         - cd docs
@@ -80,10 +80,13 @@ build_docs_site:
 pages:
     stage: deploy
     needs: 
-        - build
+        - build:site
     script:
         - mkdir -p public
         - cp -r docs/_build/html/* public/
     artifacts:
         paths:
             - public
+    rules:
+        - changes:
+            - docs/**/* # all files under folder 'docs'
