@@ -23,7 +23,8 @@ before_script:
     - python3 -V  # Print out python version for debugging
     # Dependencies:
     - for package in $PIP_DEPENDENCIES ; do pip3 install $package ; done
-    - for package in $PIP_DEPENDENCIES ; do tlmgr install $package ; done
+    - tlmgr init-usertree
+    - for package in $TEX_DEPENDENCIES ; do tlmgr install $package ; done
     # Checking installed packages and their versions
     - pip3 list
     # PATH required for tests
