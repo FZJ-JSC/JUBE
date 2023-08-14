@@ -29,7 +29,43 @@ tests:
     script:
         - python3 tests/run_all_tests.py
 
-build:
+update_release_notes:
+    stage: build
+    script:
+        - cd docs
+        - make update_release
+    artifacts:
+        paths:
+            - RELEASE_NOTES
+    rules:
+        - changes:
+            - docs/release_notes.rst
+
+update_help:
+    stage: build
+    script:
+        - cd docs
+        - make update_help
+    artifacts:
+        paths:
+            - jube2/help.txt
+    rules:
+        - changes:
+            - docs/glossary.rst
+
+build_docs_pdf:
+    stage: build
+    script:
+        - cd docs
+        - make latexpdf
+    artifacts:
+        paths:
+            - docs/JUBE.pdf
+    rules:
+        - changes:
+            - docs/**/* # all files under folder 'docs'
+
+build_docs_site:
     stage: build
     script:
         - cd docs
@@ -37,11 +73,14 @@ build:
     artifacts:
         paths:
             - docs/_build/html
+    rules:
+        - changes:
+            - docs/**/* # all files under folder 'docs'
 
 pages:
     stage: deploy
     needs: 
-        - build
+        - build_docs_site
     script:
         - mkdir -p public
         - cp -r docs/_build/html/* public/
