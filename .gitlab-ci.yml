@@ -2,7 +2,7 @@
 # only cache local items.
 variables:
     # PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
-    PIP_DEPENDENCIES: "sphinx ruamel.yaml"
+    PIP_DEPENDENCIES: "sphinx==7.1.2 ruamel.yaml==0.17.32"
 
 # Pip's cache doesn't store the python packages
 # https://pip.pypa.io/en/stable/reference/pip_install/#caching
@@ -21,7 +21,9 @@ stages:
 before_script:
     - python3 -V  # Print out python version for debugging
     # Dependencies:
-    - for package in $PIP_DEPENDENCIES ; do pip3 install $package ; pip3 install $package -U --no-cache-dir ; done
+    - for package in $PIP_DEPENDENCIES ; do pip3 install $package ; done
+    # Checking installed packages and their versions
+    - pip3 list
     # PATH required for tests
     - export PYTHONPATH=jube2:$PYTHONPATH
 
