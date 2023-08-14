@@ -51,7 +51,7 @@ build:help:
             - jube2/help.txt
     rules:
         - changes:
-            - docs/glossary.rst
+            - docs/glossar.rst
 
 build:pdf:
     stage: build
