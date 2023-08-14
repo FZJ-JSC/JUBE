@@ -3,7 +3,7 @@
 variables:
     # PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     PIP_DEPENDENCIES: "sphinx ruamel.yaml"
-    TEX_DEPENDENCIES: "fncychap"
+    TEX_DEPENDENCIES: "fncychap titlesec tabulary framed wrapfig upquote capt-of needspace polyglossia"
 
 # Pip's cache doesn't store the python packages
 # https://pip.pypa.io/en/stable/reference/pip_install/#caching
@@ -22,9 +22,8 @@ stages:
 before_script:
     - python3 -V  # Print out python version for debugging
     # Dependencies:
-    - for package in $PIP_DEPENDENCIES ; do pip3 install $package ; done
-    - tlmgr option repository ftp://tug.org/historic/systems/texlive/2017/tlnet-final # Fixing repository due to old version
-    - for package in $TEX_DEPENDENCIES ; do tlmgr install $package ; done
+    - pip3 install $PIP_DEPENDENCIES
+    - tlmgr install $TEX_DEPENDENCIES
     # Checking installed packages and their versions
     - pip3 list
     # PATH required for tests
