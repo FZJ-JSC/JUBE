@@ -21,6 +21,8 @@ before_script:
     - python3 -V  # Print out python version for debugging
     # Dependencies:
     - pip3 install sphinx
+    - tlmgr update --self --all
+    - tlmgr install latexmk
     # PATH required for tests
     - export PYTHONPATH=jube2:$PYTHONPATH
 
