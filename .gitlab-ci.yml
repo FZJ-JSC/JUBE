@@ -80,7 +80,7 @@ build_docs_site:
 pages:
     stage: deploy
     needs: 
-        - build_docs_site
+        - build
     script:
         - mkdir -p public
         - cp -r docs/_build/html/* public/
