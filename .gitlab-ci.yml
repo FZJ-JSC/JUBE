@@ -166,3 +166,21 @@ pages:
     rules:
         - changes:
             - docs/**/* # all files under folder 'docs'
+
+pages:production:
+    stage: deploy
+    needs: 
+        - build:site
+    rules:
+        - changes:
+            - docs/**/* # all files under folder 'docs'
+        - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
+    tags:
+        - remote
+    script:
+        - echo "Deploying to production"
+        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del docs/_build/html/* apps_jube_docu:"
+    when: manual # Manually triggered
+    environment:
+        name: production
+        url: https://apps.fz-juelich.de/jsc/jube/jube2/docu/
