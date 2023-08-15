@@ -133,10 +133,6 @@ class ExampleChecker(object):
         if not self._debug:
             latest_file = max(glob.glob(os.path.join(os.path.join(EXAMPLES_PREFIX, os.path.join(
                 self._bench_name, "bench_run")), '*/')), key=os.path.getmtime)
-            print("FG1: ",EXAMPLES_PREFIX)
-            print("FG2: ",os.path.join(self._bench_name, "bench_run"))
-            print("FG3: ",latest_file)
-            print("FG4: ",log_file+".tmp")
             abspath_latest_file_tmp  = os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, log_file+".tmp")
             abspath_example_file_tmp = os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, log_file+".tmp")
             abspath_latest_file      = os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, log_file)
@@ -149,8 +145,6 @@ class ExampleChecker(object):
                 os.remove(abspath_example_file_tmp)
 
             # preprocess test and check file to care for line breaks within tables
-            print("FG5: ",abspath_latest_file_tmp)
-
             ausgabe = open(abspath_latest_file_tmp, 'w')
             check = open(abspath_example_file_tmp, 'w')
             ausgabeOriginal = open(abspath_latest_file, 'r')
