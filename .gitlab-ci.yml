@@ -40,16 +40,14 @@ tests:
         - git fetch
         - git checkout ${CI_COMMIT_BRANCH}
         - |
-            # Check if we have modifications to commit
             CHANGES=$(git status --porcelain | wc -l)
             if [ "$CHANGES" -gt "0" ]; then
-                # Show the status of files that are about to be created, updated or deleted
                 git status
                 git config --global user.name "${BOT_NAME}"
                 git config --global user.email "${BOT_EMAIL}"
                 git add ${FILE_LIST}
                 git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
-                git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@gitlab.jsc.fz-juelich.de/cstao/jube.git
+                git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}
             else
                 echo "No changes, nothing to commit"
 
