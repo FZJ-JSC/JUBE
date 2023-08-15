@@ -37,19 +37,21 @@ tests:
 
 .push_files: &push_files
     after_script:
-        - git fetch
+        # Cloning to a new folder to avoid caching issues
+        - git clone https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@} "${CI_COMMIT_SHA}"
+        - cd "${CI_COMMIT_SHA}"
+        # Changing to current branch
         - git checkout ${CI_COMMIT_BRANCH}
-        - |
-            CHANGES=$(git status --porcelain | wc -l)
-            if [ "$CHANGES" -gt "0" ]; then
-                git status
-                git config --global user.name "${BOT_NAME}"
-                git config --global user.email "${BOT_EMAIL}"
-                git add ${FILE_LIST}
-                git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
-                git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}
-            else
-                echo "No changes, nothing to commit"
+        # Using bot information
+        - git config --global user.name "${BOT_NAME}"
+        - git config --global user.email "${BOT_EMAIL}"
+        # Add list of files
+        - CHANGES=$(git status --porcelain | wc -l)
+        - echo ${CHANGES}
+        - git status
+        - git add ${FILE_LIST}
+        - git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
+        - git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}
 
 build:release_notes:
     variables:
