@@ -23,7 +23,7 @@ Glossary
    :sorted:
 
    test
-      Temp key as a test 2.
+      Temp key as a test.
 
    remove
       The given benchmark will be removed.
