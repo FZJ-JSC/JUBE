@@ -36,19 +36,18 @@ tests:
         - python3 tests/run_all_tests.py
 
 .push_files: &push_files
-    after_script:
+    before_script:
         # Cloning to a new folder to avoid caching issues
         - git clone https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@} "${CI_COMMIT_SHA}"
-        - cd "${CI_COMMIT_SHA}"
-        # Changing to current branch
-        - git checkout ${CI_COMMIT_BRANCH}
         # Using bot information
         - git config --global user.name "${BOT_NAME}"
         - git config --global user.email "${BOT_EMAIL}"
-        # Add list of files
-        - CHANGES=$(git status --porcelain | wc -l)
-        - echo ${CHANGES}
+        - cd "${CI_COMMIT_SHA}"
+        # Changing to current branch
+        - git checkout ${CI_COMMIT_BRANCH}
+    after_script:
         - git status
+        # Add list of files
         - git add ${FILE_LIST}
         - git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
         - git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}
