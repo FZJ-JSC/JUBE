@@ -42,7 +42,8 @@ tests:
         # Using bot information
         - git config --global user.name "${BOT_NAME}"
         - git config --global user.email "${BOT_EMAIL}"
-        # Changing to current branch
+        # Changing cloned repo to current branch
+        - cd "${CI_COMMIT_SHA}"
         - git checkout ${CI_COMMIT_BRANCH}
     after_script:
         - cd "${CI_COMMIT_SHA}"
