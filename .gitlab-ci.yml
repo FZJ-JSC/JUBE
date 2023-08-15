@@ -17,8 +17,8 @@ cache:
         - .cache/pip
 
 stages:
-    - tests
     - build
+    - tests
     - deploy
 
 before_script:
@@ -29,44 +29,6 @@ before_script:
     - pip3 list
     # PATH required for tests
     - export PYTHONPATH=jube2:$PYTHONPATH
-
-.run_test: &run_test
-    stage: tests
-    script:
-        - python3 tests/${CI_JOB_NAME#*:}.py
-
-tests:parameter_tests:
-    <<: *run_test
-
-tests:multiprocessing_tests:
-    <<: *run_test
-
-tests:pattern_tests:
-    <<: *run_test
-
-tests:benchmark_tests:
-    <<: *run_test
-
-tests:result_database_tests:
-    <<: *run_test
-
-tests:examples_tests:
-    <<: *run_test
-
-tests:yaml_tests:
-    <<: *run_test
-
-tests:xml_tests:
-    <<: *run_test
-
-tests:step_tests:
-    <<: *run_test
-
-tests:util_tests:
-    <<: *run_test
-
-tests:conf_tests:
-    <<: *run_test
 
 .push_files: &push_files
     before_script:
@@ -139,6 +101,47 @@ build:site:
     rules:
         - changes:
             - docs/**/* # all files under folder 'docs'
+
+
+
+.run_test: &run_test
+    stage: tests
+    script:
+        - python3 tests/${CI_JOB_NAME#*:}.py
+
+tests:parameter_tests:
+    <<: *run_test
+
+tests:multiprocessing_tests:
+    <<: *run_test
+
+tests:pattern_tests:
+    <<: *run_test
+
+tests:benchmark_tests:
+    <<: *run_test
+
+tests:result_database_tests:
+    <<: *run_test
+
+tests:examples_tests:
+    <<: *run_test
+
+tests:yaml_tests:
+    <<: *run_test
+
+tests:xml_tests:
+    <<: *run_test
+
+tests:step_tests:
+    <<: *run_test
+
+tests:util_tests:
+    <<: *run_test
+
+tests:conf_tests:
+    <<: *run_test
+
 
 pages:
     stage: deploy
