@@ -40,9 +40,9 @@ tests:
         - git status
         - git config --global user.name "${BOT_NAME}"
         - git config --global user.email "${BOT_EMAIL}"
-        - echo "git add ${FILE_LIST}"
-        - echo "git commit -m '${CI_RUNNER_ID} ${COMMIT_MESSAGE}'"
-        - echo "git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@gitlab.jsc.fz-juelich.de/cstao/jube.git ${CI_COMMIT_BRANCH}"
+        - git add ${FILE_LIST}
+        - git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
+        - git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@gitlab.jsc.fz-juelich.de/cstao/jube.git ${CI_COMMIT_BRANCH}
 
 build:release_notes:
     variables:
@@ -53,9 +53,6 @@ build:release_notes:
         - cd docs
         - make update_release
     <<: *push_files
-    artifacts:
-        paths:
-            - RELEASE_NOTES
     rules:
         - changes:
             - docs/release_notes.rst
