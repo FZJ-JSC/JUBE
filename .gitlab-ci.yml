@@ -59,25 +59,27 @@ build:release_notes:
             - docs/release_notes.rst
 
 build:help:
+    variables:
+        FILE_LIST: jube2/help.txt
+        COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
         - cd docs
         - make update_help
-    artifacts:
-        paths:
-            - jube2/help.txt
+    <<: *push_files
     rules:
         - changes:
             - docs/glossar.rst
 
 build:pdf:
+    variables:
+        FILE_LIST: docs/JUBE.pdf
+        COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
         - cd docs
         - make latexpdf
-    artifacts:
-        paths:
-            - docs/JUBE.pdf
+    <<: *push_files
     rules:
         - changes:
             - docs/**/* # all files under folder 'docs'

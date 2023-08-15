@@ -22,9 +22,6 @@ Glossary
 .. glossary::
    :sorted:
 
-   test
-      Temp key as a test 3.
-
    remove
       The given benchmark will be removed.
 
