@@ -21,6 +21,12 @@
 Release notes
 =============
 
+Version 2.5.2.1
+~~~~~~~~~~~~~~~
+Release: 2023-08-14
+
+* Test entry 3
+
 Version 2.5.2
 ~~~~~~~~~~~~~
 Release: 2022-09-01
