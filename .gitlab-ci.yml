@@ -17,18 +17,21 @@ cache:
         - .cache/pip
 
 stages:
+    - prepare
     - build
     - tests
     - deploy
 
-before_script:
-    - python3 -V  # Print out python version for debugging
-    # Dependencies:
-    - pip3 install $PIP_DEPENDENCIES
-    # Checking installed packages and their versions
-    - pip3 list
-    # PATH required for tests
-    - export PYTHONPATH=jube2:$PYTHONPATH
+dependencies:
+    stage: prepare
+    script:
+        - python3 -V  # Print out python version for debugging
+        # Dependencies:
+        - pip3 install $PIP_DEPENDENCIES
+        # Checking installed packages and their versions
+        - pip3 list
+        # PATH required for tests
+        - export PYTHONPATH=jube2:$PYTHONPATH
 
 .push_files: &push_files
     before_script:
