@@ -46,6 +46,7 @@ tests:
         - cd "${CI_COMMIT_SHA}"
         - git checkout ${CI_COMMIT_BRANCH}
     after_script:
+        - cd "$CI_PROJECT_DIR/${CI_COMMIT_SHA}"
         - git status
         # Add list of files
         - git add ${FILE_LIST}
@@ -58,7 +59,7 @@ build:release_notes:
         COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
-        - cd docs
+        - cd "$CI_PROJECT_DIR/${CI_COMMIT_SHA}/docs"
         - make update_release
     <<: *push_files
     rules:
@@ -71,7 +72,7 @@ build:help:
         COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
-        - cd docs
+        - cd "$CI_PROJECT_DIR/${CI_COMMIT_SHA}/docs"
         - make update_help
     <<: *push_files
     rules:
@@ -84,7 +85,7 @@ build:pdf:
         COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
-        - cd docs
+        - cd "$CI_PROJECT_DIR/${CI_COMMIT_SHA}/docs"
         - make latexpdf
     <<: *push_files
     rules:
