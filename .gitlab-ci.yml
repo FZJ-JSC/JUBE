@@ -33,10 +33,7 @@ before_script:
 .run_test: &run_test
     stage: tests
     script:
-        -|
-        for TEST in $RUNTESTS; do
-            python3 ${CI_JOB_NAME#*:}.py
-        done
+        - python3 ${CI_JOB_NAME#*:}.py
 
 tests:parameter_tests:
     <<: *run_test
