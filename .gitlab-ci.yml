@@ -59,6 +59,8 @@ build:release_notes:
         COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
+        - pwd
+        - ls
         - cd "${CI_COMMIT_SHA}/docs"
         - make update_release
     <<: *push_files
