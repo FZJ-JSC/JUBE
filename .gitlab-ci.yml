@@ -1,17 +1,20 @@
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
 variables:
-    # PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     PIP_DEPENDENCIES: "sphinx ruamel.yaml"
+    GIT_DEPTH: 1                              # Create a shallow copy
+    BOT_NAME: "GitLab Runner Bot"             # Bot's name that appears in the commit log
+    BOT_EMAIL: "jube@fz-juelich.de"           # Bot's email, not important
 
 # Pip's cache doesn't store the python packages
 # https://pip.pypa.io/en/stable/reference/pip_install/#caching
 #
 # If you want to also cache the installed packages, you have to install
 # them in a virtualenv and cache it as well.
-# cache:
-#     paths:
-#         - .cache/pip
+cache:
+    paths:
+        - .cache/pip
 
 stages:
     - tests
@@ -33,10 +36,6 @@ tests:
         - python3 tests/run_all_tests.py
 
 .push_files: &push_files
-    variables:
-        GIT_DEPTH: 1                              # Create a shallow copy
-        BOT_NAME: "GitLab Runner Bot"             # Bot's name that appears in the commit log
-        BOT_EMAIL: "jube@fz-juelich.de"           # Bot's email, not important
     after_script:
         - git status
         - git config --global user.name "${BOT_NAME}"
