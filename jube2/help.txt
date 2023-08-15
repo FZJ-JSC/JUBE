@@ -1106,6 +1106,9 @@ tagging
      and running with "a b" will hide the "<tag>" because the "!b" is
      more important than the "a"
 
+test
+   Temp key as a test 2.
+
 types
    *Parameter* and *Pattern* allow a type specification. This type is
    either used for sorting within the result table and is also used to
