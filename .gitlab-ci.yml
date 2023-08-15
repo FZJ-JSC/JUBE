@@ -3,7 +3,6 @@
 variables:
     # PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     PIP_DEPENDENCIES: "sphinx ruamel.yaml"
-    TEX_DEPENDENCIES: "fncychap titlesec tabulary framed wrapfig upquote capt-of needspace polyglossia luatex85 anyfontsize ctablestack gnu-freefont tex-gyre pict2e gyre varwidth"
 
 # Pip's cache doesn't store the python packages
 # https://pip.pypa.io/en/stable/reference/pip_install/#caching
@@ -23,7 +22,6 @@ before_script:
     - python3 -V  # Print out python version for debugging
     # Dependencies:
     - pip3 install $PIP_DEPENDENCIES
-    - tlmgr install $TEX_DEPENDENCIES
     # Checking installed packages and their versions
     - pip3 list
     # PATH required for tests
@@ -40,6 +38,7 @@ tests:
         BOT_NAME: "GitLab Runner Bot"             # Bot's name that appears in the commit log
         BOT_EMAIL: "jube@fz-juelich.de"           # Bot's email, not important
     after_script:
+        - git status
         - git config --global user.name "${BOT_NAME}"
         - git config --global user.email "${BOT_EMAIL}"
         - echo "git add ${FILE_LIST}"
