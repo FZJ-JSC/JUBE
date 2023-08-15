@@ -37,12 +37,13 @@ tests:
 
 .push_files: &push_files
     after_script:
+        - git checkout ${CI_COMMIT_BRANCH}
         - git status
         - git config --global user.name "${BOT_NAME}"
         - git config --global user.email "${BOT_EMAIL}"
         - git add ${FILE_LIST}
         - git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
-        - git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@gitlab.jsc.fz-juelich.de/cstao/jube.git ${CI_COMMIT_BRANCH}
+        - git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@gitlab.jsc.fz-juelich.de/cstao/jube.git
 
 build:release_notes:
     variables:
