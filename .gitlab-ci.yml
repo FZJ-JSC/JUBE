@@ -3,7 +3,7 @@
 variables:
     # PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
     PIP_DEPENDENCIES: "sphinx ruamel.yaml"
-    TEX_DEPENDENCIES: "fncychap titlesec tabulary framed wrapfig upquote capt-of needspace polyglossia"
+    TEX_DEPENDENCIES: "fncychap titlesec tabulary framed wrapfig upquote capt-of needspace polyglossia luatex85 anyfontsize ctablestack gnu-freefont tex-gyre pict2e gyre varwidth"
 
 # Pip's cache doesn't store the python packages
 # https://pip.pypa.io/en/stable/reference/pip_install/#caching
@@ -34,11 +34,27 @@ tests:
     script:
         - python3 tests/run_all_tests.py
 
+.push_files: &push_files
+    variables:
+        GIT_DEPTH: 1                              # Create a shallow copy
+        BOT_NAME: "GitLab Runner Bot"             # Bot's name that appears in the commit log
+        BOT_EMAIL: "jube@fz-juelich.de"           # Bot's email, not important
+    after_script:
+        - git config --global user.name "${BOT_NAME}"
+        - git config --global user.email "${BOT_EMAIL}"
+        - echo "git add ${FILE_LIST}"
+        - echo "git commit -m '${CI_RUNNER_ID} ${COMMIT_MESSAGE}'"
+        - echo "git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@gitlab.jsc.fz-juelich.de/cstao/jube.git ${CI_COMMIT_BRANCH}"
+
 build:release_notes:
+    variables:
+        FILE_LIST: RELEASE_NOTES
+        COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
         - cd docs
         - make update_release
+    <<: *push_files
     artifacts:
         paths:
             - RELEASE_NOTES
