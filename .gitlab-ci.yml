@@ -33,6 +33,14 @@ dependencies:
         # PATH required for tests
         - export PYTHONPATH=${CI_PROJECT_DIR}/jube2:${PYTHONPATH}
 
+test:
+    stage: prepare
+    script:
+        - echo "CI job triggered only when tag is added"
+    rules:
+        - if: $CI_COMMIT_TAG =~ /^test-.*/
+
+
 .push_files: &push_files
     before_script:
         # Cloning to a new folder to avoid caching issues
@@ -56,6 +64,7 @@ dependencies:
         # Cleaning up
         - cd ${CI_PROJECT_DIR}
         - rm -r "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
+
 
 build:release_notes:
     variables:
@@ -110,7 +119,6 @@ build:site:
     rules:
         - changes:
             - docs/**/* # all files under folder 'docs'
-
 
 
 .run_test: &run_test
