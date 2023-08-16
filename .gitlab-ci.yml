@@ -91,7 +91,8 @@ build:version:
         - export RELEASE=${CI_COMMIT_TAG#*-}
         - export VERSION=${RELEASE%.*}
         # Updating version in files
-        - sed -i "s/'version': '.*'/'version': '$RELEASE'/g" ${CI_PROJECT_DIR}/setup.py
+        - |
+            sed -i "s/'version': '.*'/'version': '$RELEASE'/g" ${CI_PROJECT_DIR}/setup.py
         - sed -i "s/JUBE_VERSION = \".*\"/JUBE_VERSION = \"${RELEASE}\"/g" ${CI_PROJECT_DIR}/jube2/conf.py
         - sed -i "s/version = '.*'/version = '$VERSION'/g" ${CI_PROJECT_DIR}/docs/conf.py
         - sed -i "s/release = '.*'/release = '$RELEASE'/g" ${CI_PROJECT_DIR}/docs/conf.py
