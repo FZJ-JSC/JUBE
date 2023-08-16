@@ -180,9 +180,9 @@ pages:production:
     needs: 
         - build:site
     rules:
-        - changes:
-            - docs/**/* # all files under folder 'docs'
         - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
+          changes:
+            - docs/**/* # all files under folder 'docs'
     tags:
         - remote
     script:
