@@ -1,0 +1,23 @@
+name: parameter_dependencies
+outpath: bench_run
+comment: A parameter_dependencies example
+
+#Configuration
+parameterset:
+  - name: param_set
+    parameter:
+      - {name: index, type: int,  _: "0,1"} #comma separated integer must be in quotations
+      - {name: text, mode: python, _: '["hello","world"][$index]'} #attributes with " and [] must be in quotations
+  - name: depend_param_set0
+    parameter: {name: number, type: int,  _: "3,5"} #comma separated integer must be in quotations
+  - name: depend_param_set1
+    parameter: {name: number, type: int,  _: "1,2,4"} #comma separated integer must be in quotations
+
+#Operation
+step:
+  name: operation
+  use:
+    - param_set #use basic parameterset
+    - depend_param_set$index #use dependent parameterset
+    - {from: 'include_file.yaml:depend_param_set0:depend_param_set1', _: depend_param_set$index}
+  do: echo "$text $number $number2"

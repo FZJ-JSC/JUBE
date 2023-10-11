@@ -1,8 +1,0 @@
-include LICENSE
-include RELEASE_NOTES
-include docs/JUBE.pdf
-recursive-include examples *
-recursive-include contrib/schema *
-recursive-include platform *
-include bin/jube
-include bin/jube-autorun

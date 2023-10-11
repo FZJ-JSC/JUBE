@@ -1,0 +1,17 @@
+name: dependencies
+outpath: bench_run
+comment: A Dependency example
+
+#Configuration
+parameterset:
+  name: param_set
+  parameter: {name: number, type: int,  _: "1,2,4" } #comma separated integers must be quoted
+
+#Operation
+step:
+  - name: first_step
+    use: param_set #use existing parameterset
+    do: echo $number #shell command
+  - name: second_step
+    depend: first_step #Create a dependency between both steps
+    do: cat first_step/stdout #shell command

@@ -1,0 +1,38 @@
+name: result_creation
+outpath: bench_run
+comment: A result creation example
+
+#Configuration
+parameterset:
+  name: param_set
+  #Create a parameterspace with one template parameter
+  parameter: {name: number, type: int, _: "1,2,4"} #comma separated integer must be quoted
+
+#Regex pattern
+patternset:
+  name: pattern
+  pattern: {name: number_pat, type: int, _: "Number: $jube_pat_int"} # ":" must be quoted
+
+#Operation
+step:
+  name: write_number
+  use: param_set #use existing parameterset
+  do: 'echo "Number: $number"' #shell command
+
+#Analyse
+analyser:
+  name: analyse
+  use: pattern #use existing patternset
+  analyse:
+    step: write_number
+    file: stdout #file which should be scanned
+
+#Create result table
+result:
+  use: analyse #use existing analyser
+  table:
+    name: result
+    style: pretty
+    sort: number
+    column: [number,number_pat]
+

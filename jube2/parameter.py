@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -29,6 +29,7 @@ import jube2.util.util
 import jube2.conf
 import jube2.log
 import re
+import inspect
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -47,8 +48,9 @@ class Parameterset(object):
     """A parameterset represent a template or a specific product space. It
     can be combined with other Parametersets."""
 
-    def __init__(self, name=""):
+    def __init__(self, name="", duplicate="replace"):
         self._name = name
+        self._duplicate = duplicate
         self._parameters = dict()
 
     def clear(self):
@@ -57,7 +59,7 @@ class Parameterset(object):
 
     def copy(self):
         """Returns a deepcopy of the Parameterset"""
-        new_parameterset = Parameterset(self._name)
+        new_parameterset = Parameterset(self._name, self._duplicate)
         new_parameterset.add_parameterset(self)
         return new_parameterset
 
@@ -65,6 +67,11 @@ class Parameterset(object):
     def name(self):
         """Return name of the Parameterset"""
         return self._name
+
+    @property
+    def duplicate(self):
+        """Return the duplicate property of the Parameterset"""
+        return self._duplicate
 
     @property
     def has_templates(self):
@@ -102,9 +109,83 @@ class Parameterset(object):
             if parameter.name in self:
                 self._parameters[parameter.name] = parameter.copy()
 
+    def concat_parameter(self, parameter):
+        """Concatenate a new parameter to a potentially existing one."""
+        if parameter.name in self._parameters.keys():
+            if self._parameters[parameter.name]._value == parameter._value:
+                return parameter
+            else:
+                value=list(set(jube2.util.util.ensure_list(self._parameters[parameter.name]._value)+jube2.util.util.ensure_list(parameter._value)))
+                value.sort()
+                return jube2.parameter.TemplateParameter(
+                            parameter._name, value, parameter._separator, parameter._type,
+                            parameter._mode, parameter._export,
+                            parameter._update_mode, parameter._idx,
+                            parameter._eval_helper, parameter._duplicate)
+        else:
+            return parameter
+
+    def check_parameter_options(self, parameter, only_duplicate=True):
+        """Check whether both parameters have
+        identical options and throw an error
+        if this is not the case"""
+        if only_duplicate:
+            if parameter._duplicate != self._parameters[parameter.name]._duplicate:
+                LOGGER.debug(
+                        "The duplicate options for the parameter {0} are stated at least twice differently leading to undefined behaviour.\n".format(
+                            parameter.name))
+                raise ValueError("The duplicate options for the parameter {0} are stated at least twice differently leading to undefined behaviour.".format(parameter.name))
+        else:
+            if  parameter._separator != self._parameters[parameter.name]._separator or \
+                    parameter._type != self._parameters[parameter.name]._type or \
+                    parameter._update_mode != self._parameters[parameter.name]._update_mode:
+                LOGGER.debug(
+                        "At least one option (separator, type, update_mode) for the parameter {0} was defined at least twice differently leading to undefined behaviour.\n".format(
+                            parameter.name))
+                raise ValueError("At least one option (separator, type, update_mode) for the parameter {0} was defined at least twice differently leading to undefined behaviour.".format(parameter.name))
+
     def add_parameter(self, parameter):
         """Add a new parameter"""
-        self._parameters[parameter.name] = parameter
+        if parameter.name not in self._parameters.keys():
+            self._parameters[parameter.name] = parameter
+        else:
+            # Check whether only the duplicate option of two parameters is
+            # identical, otherwise the behaviour is undefined.
+            self.check_parameter_options(parameter=parameter, only_duplicate=True)
+            # check, which action to perform and prioritize the duplicate
+            # option from the parameters over the duplicate option from
+            # the parametersets
+            raise_unknown_error=False
+            if parameter._duplicate == "replace":
+                self._parameters[parameter.name] = parameter
+            elif parameter._duplicate == "concat":
+                self.check_parameter_options(parameter=parameter, only_duplicate=False)
+                self._parameters[parameter.name] = self.concat_parameter(parameter)
+            elif parameter._duplicate == "error":
+                if parameter.name in self._parameters.keys():
+                    raise Exception("The parameter {0} was defined at least twice.".format(parameter.name))
+                else:
+                    self._parameters[parameter.name] = parameter
+            elif parameter._duplicate == "none":
+                if self._duplicate == "replace":
+                    self._parameters[parameter.name] = parameter
+                elif self._duplicate == "concat":
+                    self.check_parameter_options(parameter=parameter, only_duplicate=False)
+                    self._parameters[parameter.name] = self.concat_parameter(parameter)
+                elif self._duplicate == "error":
+                    if parameter.name in self._parameters.keys():
+                        raise Exception("The parameter {0} was defined at least twice.".format(parameter.name))
+                    else:
+                        self._parameters[parameter.name] = parameter
+                else: # unknown error, this situation should never occur!
+                    raise_unknown_error=True
+            else: # unknown error, this situation should never occur!
+                raise_unknown_error=True
+
+            if raise_unknown_error:
+                raise Exception("The execution was aborted due to an unknown error "+
+                    "when adding a parameter. Please contact the JUBE developers "+
+                    "to resolve this situation.")
 
     def delete_parameter(self, parameter):
         """Delete a parameter"""
@@ -162,29 +243,24 @@ class Parameterset(object):
                       update_mode=NEVER_MODE):
         """Two Parametersets are compatible, if the intersection only contains
         equivilant parameters"""
-        # Find parameternames which exists in both parametersets
-        intersection = set(self.all_parameter_names) & \
-            set(parameterset.all_parameter_names)
-        for name in intersection:
-            if (not (self[name].update_allowed(update_mode) or
-                     parameterset[name].update_allowed(
-                         NEVER_MODE if (update_mode == USE_MODE) else
-                         update_mode)) and
-                    not self[name].is_equivalent(parameterset[name])):
-                return False
-        return True
+        return len(self.get_incompatible_parameter(
+            parameterset, update_mode)) == 0
 
     def get_incompatible_parameter(self, parameterset,
                                    update_mode=NEVER_MODE):
         """Return a set of incompatible parameter names between the current
         and the given parameterset"""
         result = set()
+        # Find parameternames which exists in both parametersets
         intersection = set(self.all_parameter_names) & \
             set(parameterset.all_parameter_names)
         for name in intersection:
             if (not (self[name].update_allowed(update_mode) or
+                     # In case of the USE_MODE (in the beginning of a
+                     # new step) only the actual new parameterset and its
+                     # mode is relevant
                      parameterset[name].update_allowed(
-                         STEP_MODE if (update_mode == USE_MODE) else
+                         NEVER_MODE if (update_mode == USE_MODE) else
                          update_mode)) and
                     not self[name].is_equivalent(parameterset[name])):
                 result.add(name)
@@ -243,6 +319,7 @@ class Parameterset(object):
         parameterset_etree = ET.Element('parameterset')
         if len(self._name) > 0:
             parameterset_etree.attrib["name"] = self._name
+            parameterset_etree.attrib["duplicate"] = self._duplicate
         for parameter in self._parameters.values():
             parameterset_etree.append(
                 parameter.etree_repr(use_current_selection))
@@ -339,7 +416,7 @@ class Parameter(object):
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", unit="", export=False,
-                 update_mode=NEVER_MODE, idx=-1, eval_helper=None):
+                 update_mode=NEVER_MODE, idx=-1, eval_helper=None, duplicate="none"):
         self._name = name
         self._value = value
         if separator is None:
@@ -357,13 +434,14 @@ class Parameter(object):
         else:
             self._update_mode = NEVER_MODE
         self._eval_helper = eval_helper
+        self._duplicate=duplicate
 
     @staticmethod
     def create_parameter(name, value, separator=None, parameter_type="string",
                          selected_value=None, parameter_mode="text", unit="",
                          export=False, no_templates=False,
                          update_mode=NEVER_MODE, idx=-1, eval_helper=None,
-                         fixed=False):
+                         fixed=False, duplicate="none"):
         """Parameter constructor.
         Return a Static- or TemplateParameter based on the given data."""
         if separator is None:
@@ -386,29 +464,38 @@ class Parameter(object):
                jube2.conf.ALLOWED_ADVANCED_MODETYPES)):
             if fixed:
                 result = FixedParameter(name, value, separator, parameter_type,
-                                        parameter_mode, unit, export, 
-                                        update_mode, idx, eval_helper)
+                                        parameter_mode, unit, export, update_mode,
+                                        idx, eval_helper, duplicate)
             else:
                 result = StaticParameter(name, value, separator,
                                          parameter_type, parameter_mode, unit,
-                                         export, update_mode, idx, eval_helper)
+                                         export, update_mode, idx, eval_helper, duplicate)
         else:
             result = TemplateParameter(name, values, separator, parameter_type,
-                                       parameter_mode, unit, export,
-                                       update_mode, idx, eval_helper)
+                                       parameter_mode, unit, export, update_mode,
+                                       idx, eval_helper, duplicate)
 
         if selected_value is not None:
             tmp = result
             parameter_mode = "text"
             result = FixedParameter(name, selected_value, separator,
-                                    parameter_type, parameter_mode, unit,
-                                    export, update_mode, idx, eval_helper)
+                                    parameter_type, parameter_mode, unit, export,
+                                    update_mode, idx, eval_helper, duplicate)
             result.based_on = tmp
         return result
 
     def copy(self):
         """Returns Parameter copy (flat copy)"""
         return copy.copy(self)
+
+    def search_method(self, propertyString, recursiveProperty=None):
+        """ Searches, potentially recursively, for a method and returns True in case of a success """
+        if(inspect.ismethod(self[propertyString])):
+            return True
+        elif(recursiveProperty and self[recursiveProperty]):
+            return self[recursiveProperty].search_method(propertyString, recursiveProperty)
+        else:
+            return False
 
     @property
     def eval_helper(self):
@@ -529,6 +616,11 @@ class Parameter(object):
         """Return parametertype"""
         return self._type
 
+    @property
+    def duplicate(self):
+        """Return duplicate option"""
+        return self._duplicate
+
     def is_equivalent(self, parameter, first_check=True):
         """Checks whether the given and the current Parameter based on
         equivalent templates and (if expanded) contain the same value and
@@ -561,6 +653,7 @@ class Parameter(object):
 
         parameter_etree.attrib["type"] = self._type
         parameter_etree.attrib["separator"] = self._separator
+        parameter_etree.attrib["duplicate"] = self._duplicate
         based_on = self.based_on_value
         if use_current_selection:
             content_etree = ET.SubElement(parameter_etree, "value")
@@ -588,6 +681,9 @@ class Parameter(object):
     def __repr__(self):
         return "Parameter({0})".format(self.__dict__)
 
+    def __getitem__(self, propertyString):
+        return getattr(self, propertyString)
+
 
 class StaticParameter(Parameter):
 
@@ -595,10 +691,10 @@ class StaticParameter(Parameter):
 
     def __init__(self, name, value, separator=None, parameter_type="string",
                  parameter_mode="text", unit="", export=False,
-                 update_mode=NEVER_MODE, idx=-1, eval_helper=None):
+                 update_mode=NEVER_MODE, idx=-1, eval_helper=None, duplicate="none"):
         Parameter.__init__(self, name, value, separator, parameter_type,
                            parameter_mode, unit, export, update_mode, idx,
-                           eval_helper)
+                           eval_helper, duplicate)
         self._depending_parameter = \
             set([other_par[1] for other_par in
                  re.findall(Parameter.parameter_regex, self._value)])
@@ -629,14 +725,7 @@ class StaticParameter(Parameter):
         """
         value = self._value
         if not final_sub and "$" in value:
-            # Replace a even number of $ by $$$$, because they will be
-            # substituted to $$. Even number will stay the same, odd number
-            # will shrink in every turn
-            # $$ -> $$$$ -> $$
-            # $$$ -> $$$ -> $
-            # $$$$ -> $$$$$$$$ -> $$$$
-            # $$$$$ -> $$$$$$$ -> $$$
-            value = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", value)
+            value = jube2.util.util.expand_dollar_count(value)
         parameter_dict = dict()
         if parametersets is not None:
             for parameterset in parametersets:
@@ -720,11 +809,11 @@ class StaticParameter(Parameter):
                                                update_mode=self._update_mode,
                                                idx=self._idx,
                                                eval_helper=None,
-                                               fixed=final_sub)
+                                               fixed=final_sub,
+                                               duplicate=self._duplicate)
             param.based_on = self
         else:
             param = self
-
         return param, changed
 
     @staticmethod
@@ -768,7 +857,7 @@ class TemplateParameter(Parameter):
                                            unit = self._unit,
                                            export=self._export,
                                            update_mode=self._update_mode,
-                                           idx=index)
+                                           idx=index, duplicate=self._duplicate)
             static_param.based_on = self
             yield static_param
 
@@ -780,11 +869,11 @@ class FixedParameter(StaticParameter):
     """
 
     def __init__(self, name, value, separator=None, parameter_type="string",
-                 parameter_mode="text", unit="",  export=False,
-                 update_mode=NEVER_MODE, idx=-1, eval_helper=None):
+                 parameter_mode="text", unit="", export=False,
+                 update_mode=NEVER_MODE, idx=-1, eval_helper=None, duplicate="none"):
         StaticParameter.__init__(self, name, value, separator, parameter_type,
                                  parameter_mode, unit, export, update_mode, idx,
-                                 eval_helper)
+                                 eval_helper, duplicate)
         self._depending_parameter = set()
 
     def substitute_and_evaluate(self, parametersets=None,

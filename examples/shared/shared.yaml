@@ -1,0 +1,17 @@
+name: shared
+outpath: bench_run
+comment: A shared folder example
+
+#Configuration
+parameterset:
+  name: param_set
+  parameter: {name: number, type: int, _: "1,2,4"}
+
+#Operation
+step:
+  name: a_step
+  shared: shared
+  use: param_set
+  do:
+    - echo $jube_wp_id >> shared/all_ids #shell command will run three times 
+    - {shared: true, _: cat all_ids} #shell command will run one times 

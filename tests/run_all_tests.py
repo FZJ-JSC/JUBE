@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2016
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -24,8 +24,17 @@ from __future__ import (print_function,
 
 import unittest
 from parameter_tests import TestParameter, TestParameterSet
+from multiprocessing_tests import TestMultiprocessing
 from pattern_tests import TestPattern
-#from examples_test import TestExamples
+from benchmark_tests import TestBenchmark
+from result_database_tests import TestResultDatabase
+from examples_tests import TestExamples
+from yaml_tests import TestYAMLScripts
+from xml_tests import TestXMLScripts
+from step_tests import TestOperation
+from step_tests import TestDoLog
+from util_tests import TestUtil
+from conf_tests import TestConf
 
 
 if __name__ == "__main__":

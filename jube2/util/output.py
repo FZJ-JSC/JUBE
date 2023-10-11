@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -49,7 +49,7 @@ def text_line():
 
 
 def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
-               auto_linebreak=True, colw=None, pretty=True, separator=None,
+               auto_linebreak=True, colw=None, style="pretty", separator=None,
                transpose=False):
     """Create a ASCII based table.
     entries must contain a list of lists, use_header_line can be used to
@@ -58,7 +58,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
     Return the ASCII table
     """
 
-    if not pretty:
+    if style != "pretty":
         auto_linebreak = False
         use_header_line = False
         indent = 0
@@ -79,7 +79,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
         for i, text in enumerate(item):
             if i > len(max_length) - 1:
                 max_length.append(0)
-            if pretty:
+            if style != "csv":
                 for line in text.splitlines():
                     max_length[i] = max(max_length[i], len(line))
                 if auto_linebreak:
@@ -104,7 +104,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                         textwrap.wrap(line, jube2.conf.MAX_TABLE_CELL_WIDTH)
                 wraps.append(lines)
             else:
-                if pretty:
+                if style == "pretty":
                     wraps.append(text.splitlines())
                 else:
                     wraps.append([text.replace("\n", " ")])
@@ -114,6 +114,8 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
         while grow:
             grow = False
             line_str = " " * indent
+            if style == "pretty":
+                line_str += "| "
             for i, wrap in enumerate(wraps):
                 grow = grow or len(wrap) > height + 1
                 if len(wrap) > height:
@@ -126,30 +128,25 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                     align = "<"
                 line_str += \
                     ("{0:" + align + str(max_length[i]) + "s}").format(text)
-                if pretty:
-                    if i < len(max_length) - 1:
-                        if separator is None:
-                            line_str += " | "
-                        else:
-                            line_str += separator
-                else:
-                    if i < len(max_length) - 1:
-                        if separator is None:
-                            line_str += ","
-                        else:
-                            line_str += separator
+                if i < len(max_length) - 1:
+                    if separator is None:
+                        line_str += " | " if style == "pretty" else ","
+                    else:
+                        line_str += separator
+            if style == "pretty":
+                line_str += " |"
             line_str += "\n"
             table_str += line_str
             height += 1
 
         if not header_line_used:
             # Create title separator line
-            table_str += " " * indent
+            table_str += " " * indent + "|-"
             for i, cell_length in enumerate(max_length):
                 table_str += "-" * cell_length
                 if i < len(max_length) - 1:
-                    table_str += "-+-"
-            table_str += "\n"
+                    table_str += "-|-"
+            table_str += "-|\n"
             header_line_used = True
     return table_str
 

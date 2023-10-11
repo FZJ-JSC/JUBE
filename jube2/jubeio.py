@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -23,10 +23,7 @@ from __future__ import (print_function,
 
 import xml.etree.ElementTree as ET
 import os
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from jube2.util.util import Queue
 import jube2.benchmark
 import jube2.substitute
 import jube2.parameter
@@ -40,6 +37,8 @@ import jube2.util.output
 import jube2.conf
 import jube2.result_types.syslog
 import jube2.result_types.table
+import jube2.result_types.database
+import jube2.util.yaml_converter
 import sys
 import re
 import copy
@@ -50,7 +49,7 @@ from distutils.version import StrictVersion
 LOGGER = jube2.log.get_logger(__name__)
 
 
-class XMLParser(object):
+class Parser(object):
 
     """JUBE XML input file parser"""
 
@@ -65,6 +64,11 @@ class XMLParser(object):
         self._tags = tags
         self._force = force
         self._strict = strict
+        self._file_handle = None
+
+    def __del__(self):
+        if self._file_handle is not None:
+            self._file_handle.close()
 
     @property
     def file_path_ref(self):
@@ -87,12 +91,8 @@ class XMLParser(object):
         if not os.path.isfile(self._filename):
             raise IOError("Benchmark configuration file not found: \"{0}\""
                           .format(self._filename))
-        try:
-            tree = ET.parse(self._filename)
-        except Exception as parseerror:
-            raise IOError(("XML parse error in \"{0}\": {1}\n" +
-                           "XML is not valid, use validation tool.")
-                          .format(self._filename, str(parseerror)))
+
+        tree = self._tree_from_file(self._filename)
 
         # Check compatible terminal encoding: In some cases, the terminal env.
         # only allow ascii based encoding, print and filesystem operation will
@@ -157,12 +157,12 @@ class XMLParser(object):
             LOGGER.debug("    Available tags: {0}"
                          .format(jube2.conf.DEFAULT_SEPARATOR.join(
                              self._tags)))
-            XMLParser._remove_invalid_tags(local_tree.getroot(), self._tags)
+            Parser._remove_invalid_tags(local_tree.getroot(), self._tags)
 
             # Read selection area
             for selection_tree in local_tree.findall("selection"):
                 new_only_bench, new_not_bench, new_tags = \
-                    XMLParser._extract_selection(selection_tree)
+                    Parser._extract_selection(selection_tree)
                 self._tags.update(new_tags)
                 only_bench.update(new_only_bench)
                 not_bench.update(new_not_bench)
@@ -173,14 +173,14 @@ class XMLParser(object):
                              self._tags)))
             # Reset tree, because selection might add additional tags
             local_tree = copy.deepcopy(tree)
-            XMLParser._remove_invalid_tags(local_tree.getroot(), self._tags)
+            Parser._remove_invalid_tags(local_tree.getroot(), self._tags)
 
             # Read include-path
             for include_path_tree in local_tree.findall("include-path"):
                 self._extract_include_path(include_path_tree)
 
             # Add env var based include path
-            self._read_envvar_include_path()
+            self._include_path += Parser._read_envvar_include_path()
 
             # Add local dir to include path
             self._include_path += [self.file_path_ref]
@@ -193,17 +193,20 @@ class XMLParser(object):
             changed = self._preprocessor(tree.getroot())
             if changed:
                 LOGGER.debug("  New tags might be included, start " +
-                             "additional run.")
+                             "additional include-preprocess run.")
+            else:
+                LOGGER.debug("  No preprocessing changes were detected, stop" +
+                             " additional include-preprocess runs.")
 
         # Rerun removing invalid tags
         LOGGER.debug("  Remove invalid tags")
         LOGGER.debug("    Available tags: {0}"
                      .format(jube2.conf.DEFAULT_SEPARATOR.join(self._tags)))
-        XMLParser._remove_invalid_tags(tree.getroot(), self._tags)
+        Parser._remove_invalid_tags(tree.getroot(), self._tags)
 
         # Check tags
         for element in tree.getroot():
-            XMLParser._check_tag(element, valid_tags)
+            Parser._check_tag(element, valid_tags)
 
         # Check for remaing <include> tags
         node = jube2.util.util.get_tree_element(tree.getroot(),
@@ -256,41 +259,17 @@ class XMLParser(object):
     @staticmethod
     def _check_valid_tags(element, tags):
         """Check if element contains only valid tags"""
-        if tags is None:
-            tags = set()
-        tag_tags_str = element.get("tag")
-        if tag_tags_str is not None:
-            # Check for old tag format
-            if "," in tag_tags_str:
-                tag_tags_str = XMLParser._convert_old_tag_format(tag_tags_str)
-            tag_tags_str = tag_tags_str.replace(' ', '')
-            tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
-                         if len(i) > 0]
-            tag_state = {}
-            for tag in tag_array:
-                tag_state.update({tag: str(tag in tags)})
-            for tag in tag_array:
-                tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + '(?=\W|$)',
-                                      tag_state[tag], tag_tags_str)
-            tag_tags_str = tag_tags_str.replace('|', ' or ')\
-                .replace('+', ' and ').replace('!', ' not ')
-            try:
-                return eval(tag_tags_str)
-            except SyntaxError:
-                raise ValueError("Tag string '{0}' not parseable."
-                                 .format(element.get("tag")))
-        else:
-            return True
+        return jube2.util.util.valid_tags(element.get("tag"), tags)
 
     @staticmethod
     def _remove_invalid_tags(etree, tags):
         """Remove tags which contain an invalid tags-attribute"""
         children = list(etree)
         for child in children:
-            if not XMLParser._check_valid_tags(child, tags):
+            if not Parser._check_valid_tags(child, tags):
                 etree.remove(child)
                 continue
-            XMLParser._remove_invalid_tags(child, tags)
+            Parser._remove_invalid_tags(child, tags)
 
     def _preprocessor(self, etree):
         """Preprocess the xml-file by replacing include-tags"""
@@ -301,8 +280,8 @@ class XMLParser(object):
         for child in children:
             # Replace include tags
             if ((child.tag == "include") and
-                    XMLParser._check_valid_tags(child, self._tags)):
-                filename = XMLParser._attribute_from_element(child, "from")
+                    Parser._check_valid_tags(child, self._tags)):
+                filename = Parser._attribute_from_element(child, "from")
                 path = child.get("path", ".")
                 if path == "":
                     path = "."
@@ -313,6 +292,9 @@ class XMLParser(object):
                     includes = include_tree.findall(path)
                 except ValueError:
                     includes = list()
+                except ET.ParseError:
+                    LOGGER.error("Error while parsing {0}:".format(file_path))
+                    raise
                 if len(includes) > 0:
                     # Remove include-node
                     etree.remove(child)
@@ -327,7 +309,7 @@ class XMLParser(object):
                 new_children.append(child)
             include_index += 1
         for child in new_children:
-            self._preprocessor(child)
+            changed = self._preprocessor(child) or changed
         return changed
 
     def _benchmark_preprocessor(self, benchmark_etree):
@@ -376,6 +358,8 @@ class XMLParser(object):
                 set_etree.attrib["name"] = "jube_{0}_{1}".format(fileid, name)
                 set_etree.attrib["init_with"] = "{0}:{1}".format(
                     filename, name)
+                LOGGER.debug("    Created new <{0}>: jube_{1}_{2}".format(
+                    set_type, fileid, name))
 
     def _find_include_file(self, filename):
         """Search for filename in include-pathes and return resulting path"""
@@ -393,8 +377,8 @@ class XMLParser(object):
         LOGGER.debug(
             "    Searching for type of \"{0}\" in {1}".format(name, filename))
         file_path = self._find_include_file(filename)
-        etree = ET.parse(file_path).getroot()
-        XMLParser._remove_invalid_tags(etree, self._tags)
+        etree = self._tree_from_file(file_path).getroot()
+        Parser._remove_invalid_tags(etree, self._tags)
         found_set = jube2.util.util.get_tree_elements(
             etree, attribute_dict={"name": name})
 
@@ -426,8 +410,8 @@ class XMLParser(object):
         if benchmark_etree is None:
             raise ValueError("benchmark-tag not found in \"{0}\"".format(
                 self._filename))
-        name = XMLParser._attribute_from_element(benchmark_etree,
-                                                 "name").strip()
+        name = Parser._attribute_from_element(benchmark_etree,
+                                              "name").strip()
         comment_element = benchmark_etree.find("comment")
         if comment_element is not None:
             comment = comment_element.text
@@ -452,26 +436,26 @@ class XMLParser(object):
         analyser = jube2.util.util.get_tree_elements(tree, "analyzer")
         analyser += jube2.util.util.get_tree_elements(tree, "analyser")
         for analyser_etree in analyser:
-            analyser_name = XMLParser._attribute_from_element(
+            analyser_name = Parser._attribute_from_element(
                 analyser_etree, "name")
             analyse_result[analyser_name] = dict()
             for step_etree in analyser_etree:
-                XMLParser._check_tag(step_etree, ["step"])
-                step_name = XMLParser._attribute_from_element(
+                Parser._check_tag(step_etree, ["step"])
+                step_name = Parser._attribute_from_element(
                     step_etree, "name")
                 analyse_result[analyser_name][step_name] = dict()
                 for workpackage_etree in step_etree:
-                    XMLParser._check_tag(workpackage_etree, ["workpackage"])
-                    wp_id = int(XMLParser._attribute_from_element(
+                    Parser._check_tag(workpackage_etree, ["workpackage"])
+                    wp_id = int(Parser._attribute_from_element(
                         workpackage_etree, "id"))
                     analyse_result[analyser_name][step_name][wp_id] = dict()
                     for pattern_etree in workpackage_etree:
-                        XMLParser._check_tag(pattern_etree, ["pattern"])
+                        Parser._check_tag(pattern_etree, ["pattern"])
                         pattern_name = \
-                            XMLParser._attribute_from_element(
+                            Parser._attribute_from_element(
                                 pattern_etree, "name")
                         pattern_type = \
-                            XMLParser._attribute_from_element(
+                            Parser._attribute_from_element(
                                 pattern_etree, "type")
                         value = pattern_etree.text
                         if value is not None:
@@ -492,7 +476,7 @@ class XMLParser(object):
         # parents_tmp: Dict workpackage_id => list of parent_workpackage_ids
         parents_tmp = dict()
         iteration_siblings_tmp = dict()
-        work_list = queue.Queue()
+        work_list = Queue()
         LOGGER.debug("Parsing {0}".format(self._filename))
         if not os.path.isfile(self._filename):
             raise IOError("Workpackage configuration file not found: \"{0}\""
@@ -500,11 +484,11 @@ class XMLParser(object):
         tree = ET.parse(self._filename)
         max_id = -1
         for element in tree.getroot():
-            XMLParser._check_tag(element, ["workpackage"])
+            Parser._check_tag(element, ["workpackage"])
             # Read XML-data
             (workpackage_id, step_name, parameterset, parents,
              iteration_siblings, iteration, cycle, set_env, unset_env) = \
-                XMLParser._extract_workpackage_data(element)
+                Parser._extract_workpackage_data(element)
             # Search for step
             step = benchmark.steps[step_name]
             parameter_names = [parameter.name for parameter in parameterset]
@@ -601,8 +585,8 @@ class XMLParser(object):
         valid_tags = ["step", "parameterset", "parents", "iteration_siblings",
                       "environment"]
         for element in workpackage_etree:
-            XMLParser._check_tag(element, valid_tags)
-        workpackage_id = int(XMLParser._attribute_from_element(
+            Parser._check_tag(element, valid_tags)
+        workpackage_id = int(Parser._attribute_from_element(
             workpackage_etree, "id"))
         step_etree = workpackage_etree.find("step")
         iteration = int(step_etree.get("iteration", "0").strip())
@@ -610,7 +594,7 @@ class XMLParser(object):
         step_name = step_etree.text.strip()
         parameterset_etree = workpackage_etree.find("parameterset")
         if parameterset_etree is not None:
-            parameters = XMLParser._extract_parameters(parameterset_etree)
+            parameters = Parser._extract_parameters(parameterset_etree)
         else:
             parameters = list()
         parameterset = jube2.parameter.Parameterset()
@@ -633,8 +617,8 @@ class XMLParser(object):
         unset_env = list()
         if environment_etree is not None:
             for env_etree in environment_etree:
-                env_name = XMLParser._attribute_from_element(env_etree,
-                                                             "name")
+                env_name = Parser._attribute_from_element(env_etree,
+                                                          "name")
                 if env_etree.tag == "env":
                     if env_etree.text is not None:
                         set_env[env_name] = env_etree.text.strip()
@@ -662,7 +646,7 @@ class XMLParser(object):
         not_bench = list()
         tags = set()
         for element in selection_etree:
-            XMLParser._check_tag(element, valid_tags)
+            Parser._check_tag(element, valid_tags)
             separator = jube2.conf.DEFAULT_SEPARATOR
             if element.text is not None:
                 if element.tag == "only":
@@ -680,27 +664,34 @@ class XMLParser(object):
         """Extract include-path pathes from etree"""
         LOGGER.debug("  Parsing <include-path>")
         valid_tags = ["path"]
+        pathes = []
+        if len(include_path_etree.text.strip()) > 0:
+            pathes.append(include_path_etree.text.strip())
         for element in include_path_etree:
-            XMLParser._check_tag(element, valid_tags)
+            Parser._check_tag(element, valid_tags)
             path = element.text
             if path is None:
                 raise ValueError("Empty \"<path>\" found")
             path = path.strip()
             if len(path) == 0:
                 raise ValueError("Empty \"<path>\" found")
+            pathes.append(path)
+        for path in pathes:
             path = os.path.expandvars(os.path.expanduser(path))
             path = os.path.join(self.file_path_ref, path)
             self._include_path += [path]
             LOGGER.debug("    New path: {0}".format(path))
 
-    def _read_envvar_include_path(self):
+    @staticmethod
+    def _read_envvar_include_path():
         """Add environment var include-path"""
         LOGGER.debug("  Read $JUBE_INCLUDE_PATH")
         if "JUBE_INCLUDE_PATH" in os.environ:
-            self._include_path += \
-                [include_path for include_path in
-                 os.environ["JUBE_INCLUDE_PATH"].split(":")
-                 if include_path != ""]
+            return [include_path for include_path in
+                    os.environ["JUBE_INCLUDE_PATH"].split(":")
+                    if include_path != ""]
+        else:
+            return []
 
     def _create_benchmark(self, benchmark_etree, global_parametersets,
                           global_substitutesets, global_filesets,
@@ -710,13 +701,13 @@ class XMLParser(object):
         Return a benchmark
         """
         name = \
-            XMLParser._attribute_from_element(benchmark_etree, "name").strip()
+            Parser._attribute_from_element(benchmark_etree, "name").strip()
 
         valid_tags = ["parameterset", "substituteset", "fileset", "step",
                       "comment", "patternset", "analyzer", "analyser",
                       "result"]
         for element in benchmark_etree:
-            XMLParser._check_tag(element, valid_tags)
+            Parser._check_tag(element, valid_tags)
 
         comment_element = benchmark_etree.find("comment")
         if comment_element is not None:
@@ -726,8 +717,8 @@ class XMLParser(object):
         else:
             comment = ""
         comment = re.sub(r"\s+", " ", comment).strip()
-        outpath = XMLParser._attribute_from_element(benchmark_etree,
-                                                    "outpath").strip()
+        outpath = Parser._attribute_from_element(benchmark_etree,
+                                                 "outpath").strip()
         outpath = os.path.expandvars(os.path.expanduser(outpath))
         # Add position of user to outpath
         outpath = os.path.normpath(os.path.join(self.file_path_ref, outpath))
@@ -735,21 +726,21 @@ class XMLParser(object):
 
         # Combine global and local sets
         parametersets = \
-            XMLParser._combine_global_and_local_sets(
+            Parser._combine_global_and_local_sets(
                 global_parametersets,
                 self._extract_parametersets(benchmark_etree))
 
         substitutesets = \
-            XMLParser._combine_global_and_local_sets(
+            Parser._combine_global_and_local_sets(
                 global_substitutesets,
                 self._extract_substitutesets(benchmark_etree))
 
         filesets = \
-            XMLParser._combine_global_and_local_sets(
+            Parser._combine_global_and_local_sets(
                 global_filesets, self._extract_filesets(benchmark_etree))
 
         patternsets = \
-            XMLParser._combine_global_and_local_sets(
+            Parser._combine_global_and_local_sets(
                 global_patternsets, self._extract_patternsets(benchmark_etree))
 
         # dict of local steps
@@ -802,7 +793,7 @@ class XMLParser(object):
         """
         steps = dict()
         for element in etree.findall("step"):
-            step = XMLParser._extract_step(element)
+            step = Parser._extract_step(element)
             if step.name in steps:
                 raise ValueError("\"{0}\" not unique".format(step.name))
             steps[step.name] = step
@@ -816,7 +807,7 @@ class XMLParser(object):
         """
         valid_tags = ["use", "do"]
 
-        name = XMLParser._attribute_from_element(etree_step, "name").strip()
+        name = Parser._attribute_from_element(etree_step, "name").strip()
         LOGGER.debug("  Parsing <step name=\"{0}\">".format(name))
         tmp = etree_step.get("depend", "").strip()
         iterations = int(etree_step.get("iterations", "1").strip())
@@ -828,6 +819,13 @@ class XMLParser(object):
         active = etree_step.get("active", "true").strip()
         suffix = etree_step.get("suffix", "").strip()
         cycles = int(etree_step.get("cycles", "1").strip())
+        procs = int(etree_step.get("procs", "1").strip())
+        do_log_file = etree_step.get("do_log_file", "None").strip()
+        do_log_file = None if do_log_file == "None" else do_log_file
+        do_log_file = None if do_log_file == "False" else do_log_file
+        do_log_file = None if do_log_file == "false" else do_log_file
+        do_log_file = jube2.conf.DO_LOG_FILENAME if do_log_file == "True" else do_log_file
+        do_log_file = jube2.conf.DO_LOG_FILENAME if do_log_file == "true" else do_log_file
         shared_name = etree_step.get("shared")
         if shared_name is not None:
             shared_name = shared_name.strip()
@@ -839,9 +837,9 @@ class XMLParser(object):
 
         step = jube2.step.Step(name, depend, iterations, alt_work_dir,
                                shared_name, export, max_wps, active, suffix,
-                               cycles)
+                               cycles, procs, do_log_file)
         for element in etree_step:
-            XMLParser._check_tag(element, valid_tags)
+            Parser._check_tag(element, valid_tags)
             if element.tag == "do":
                 async_filename = element.get("done_file")
                 if async_filename is not None:
@@ -868,6 +866,9 @@ class XMLParser(object):
                         raise ValueError("<do shared=\"true\"> only allowed "
                                          "inside a <step> which has a shared "
                                          "region")
+                    if procs != 1:
+                        raise ValueError("<do shared=\"true\"> not allowed " +
+                                         "inside a parallel <step>")
                     shared = True
                 elif shared_str == "false":
                     shared = False
@@ -889,7 +890,7 @@ class XMLParser(object):
                                                  error_filename)
                 step.add_operation(operation)
             elif element.tag == "use":
-                step.add_uses(XMLParser._extract_use(element))
+                step.add_uses(Parser._extract_use(element))
         return step
 
     @staticmethod
@@ -899,7 +900,7 @@ class XMLParser(object):
         analyser_tags = etree.findall("analyzer")
         analyser_tags += etree.findall("analyser")
         for element in analyser_tags:
-            analyser = XMLParser._extract_analyser(element)
+            analyser = Parser._extract_analyser(element)
             if analyser.name in analysers:
                 raise ValueError("\"{0}\" not unique".format(analyser.name))
             analysers[analyser.name] = analyser
@@ -909,17 +910,17 @@ class XMLParser(object):
     def _extract_analyser(etree_analyser):
         """Extract an analyser from etree"""
         valid_tags = ["use", "analyse"]
-        name = XMLParser._attribute_from_element(etree_analyser,
-                                                 "name").strip()
+        name = Parser._attribute_from_element(etree_analyser,
+                                              "name").strip()
         reduce_iteration = \
             etree_analyser.get("reduce", "true").strip().lower() == "true"
         analyser = jube2.analyser.Analyser(name, reduce_iteration)
         LOGGER.debug("  Parsing <analyser name=\"{0}\">".format(name))
         for element in etree_analyser:
-            XMLParser._check_tag(element, valid_tags)
+            Parser._check_tag(element, valid_tags)
             if element.tag == "analyse":
-                step_name = XMLParser._attribute_from_element(element,
-                                                              "step").strip()
+                step_name = Parser._attribute_from_element(element,
+                                                           "step").strip()
                 # If there are no files, just add a dummy element to the list
                 if len(element) == 0:
                     analyser.add_analyse(step_name, None)
@@ -942,7 +943,7 @@ class XMLParser(object):
                             file_obj.add_uses(use_names)
                             analyser.add_analyse(step_name, file_obj)
             elif element.tag == "use":
-                analyser.add_uses(XMLParser._extract_use(element))
+                analyser.add_uses(Parser._extract_use(element))
         return analyser
 
     @staticmethod
@@ -950,7 +951,7 @@ class XMLParser(object):
         """Extract all results from etree"""
         results = dict()
         results_order = list()
-        valid_tags = ["use", "table", "syslog"]
+        valid_tags = ["use", "table", "syslog", "database"]
         for result_etree in etree.findall("result"):
             result_dir = result_etree.get("result_dir")
             if result_dir is not None:
@@ -959,15 +960,18 @@ class XMLParser(object):
             sub_results = dict()
             uses = list()
             for element in result_etree:
-                XMLParser._check_tag(element, valid_tags)
+                Parser._check_tag(element, valid_tags)
                 if element.tag == "use":
-                    uses.append(XMLParser._extract_use(element))
+                    uses.append(Parser._extract_use(element))
                 elif element.tag == "table":
-                    result = XMLParser._extract_table(element)
+                    result = Parser._extract_table(element)
                     result.result_dir = result_dir
                 elif element.tag == "syslog":
-                    result = XMLParser._extract_syslog(element)
-                if element.tag in ["table", "syslog"]:
+                    result = Parser._extract_syslog(element)
+                elif element.tag == "database":
+                    result = Parser._extract_database(element)
+                    result.result_dir = result_dir
+                if element.tag in ["table", "syslog", "database"]:
                     if result.name in sub_results:
                         raise ValueError(
                             ("Result name \"{0}\" is used " +
@@ -992,11 +996,11 @@ class XMLParser(object):
     @staticmethod
     def _extract_table(etree_table):
         """Extract a table from etree"""
-        name = XMLParser._attribute_from_element(etree_table, "name").strip()
+        name = Parser._attribute_from_element(etree_table, "name").strip()
         separator = \
             etree_table.get("separator", jube2.conf.DEFAULT_SEPARATOR)
         style = etree_table.get("style", "csv").strip()
-        if style not in ["csv", "pretty"]:
+        if style not in ["csv", "pretty", "aligned"]:
             raise ValueError("Not allowed style-type \"{0}\" "
                              "in <table name=\"{1}\">".format(style, name))
         sort_names = etree_table.get("sort", "").split(
@@ -1016,7 +1020,7 @@ class XMLParser(object):
                                                sort_names, transpose,
                                                res_filter)
         for element in etree_table:
-            XMLParser._check_tag(element, ["column"])
+            Parser._check_tag(element, ["column"])
             column_name = element.text
             if column_name is None:
                 column_name = ""
@@ -1034,9 +1038,39 @@ class XMLParser(object):
         return table
 
     @staticmethod
+    def _extract_database(etree_database):
+        """Extract a database result infos from etree"""
+        name = Parser._attribute_from_element(etree_database, "name").strip()
+        res_filter = etree_database.get("filter")
+        if res_filter is not None:
+            res_filter = res_filter.strip()
+        primekeys = etree_database.get("primekeys", "")
+        primekeys = primekeys.replace('[', '').replace(']', '').replace(
+            "'", '').split(jube2.conf.DEFAULT_SEPARATOR)
+        primekeys = [primekey.strip() for primekey in primekeys]
+        primekeys = [primekey for primekey in primekeys if len(primekey) > 0]
+        db_file = etree_database.get("file")
+        database = jube2.result_types.database.Database(
+            name, res_filter, primekeys, db_file)
+        for element in etree_database:
+            Parser._check_tag(element, ["key"])
+            key_name = element.text
+            if key_name is None:
+                key_name = ""
+            key_name = key_name.strip()
+            if key_name == "":
+                raise ValueError("Empty <key> not allowed")
+            title = element.get("title")
+            format_string = element.get("format")
+            if format_string is not None:
+                format_string = format_string.strip()
+            database.add_key(key_name, format_string, title)
+        return database
+
+    @staticmethod
     def _extract_syslog(etree_syslog):
         """Extract requires syslog information from etree."""
-        name = XMLParser._attribute_from_element(etree_syslog, "name").strip()
+        name = Parser._attribute_from_element(etree_syslog, "name").strip()
         # see if the host, port combination or address is given
         syslog_address = etree_syslog.get("address")
         if syslog_address is not None:
@@ -1064,7 +1098,7 @@ class XMLParser(object):
             sort_names, res_filter)
 
         for element in etree_syslog:
-            XMLParser._check_tag(element, ["key"])
+            Parser._check_tag(element, ["key"])
             key_name = element.text
             if key_name is None:
                 key_name = ""
@@ -1088,15 +1122,38 @@ class XMLParser(object):
         else:
             raise ValueError("Empty <use> found")
 
-    def _extract_extern_set(self, filename, set_type, name, search_name=None):
+    def _tree_from_file(self, file_path):
+        """Extract a XML tree from a file (doing implicit YAML conversion)"""
+        try:
+            if file_path.endswith(".xml"):
+                return ET.parse(file_path)
+            elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
+                jube2.util.yaml_converter.\
+                    YAML_Converter.is_parseable_yaml_file(file_path):
+                include_path = list(self._include_path)
+                include_path += Parser._read_envvar_include_path()
+                file_handle = jube2.util.yaml_converter.YAML_Converter(
+                    file_path, include_path, self._tags)
+                data = file_handle.read()
+                tree = ET.ElementTree(ET.fromstring(data))
+                file_handle.close()
+                return tree
+            else:
+                return ET.parse(file_path)
+        except Exception:
+            LOGGER.error("Error while parsing {0}:".format(file_path))
+            raise
+
+    def _extract_extern_set(self, filename, set_type, name, search_name=None, duplicate=None):
         """Load a parameter-/file-/substitutionset from a given file"""
         if search_name is None:
             search_name = name
         LOGGER.debug("    Searching for <{0} name=\"{1}\"> in {2}"
                      .format(set_type, search_name, filename))
         file_path = self._find_include_file(filename)
-        etree = ET.parse(file_path).getroot()
-        XMLParser._remove_invalid_tags(etree, self._tags)
+        etree = self._tree_from_file(file_path).getroot()
+        Parser._remove_invalid_tags(etree, self._tags)
+        self._preprocessor(etree)
         result_set = None
 
         # Find element in XML-tree
@@ -1108,6 +1165,25 @@ class XMLParser(object):
                 etree, attribute_dict={"name": search_name})
             if element is not None:
                 elements.append(element)
+
+        test_duplicate=None
+        if duplicate == "###initiated_with_without_duplicate_mentioning###":
+            if elements[0].get("duplicate") != None:
+                duplicate = elements[0].get("duplicate")
+            else:
+                duplicate = "replace"
+        if duplicate != "###initiated_with_without_duplicate_mentioning###" and duplicate != None:
+            if set_type == "parameterset":
+                if elements[0].get("duplicate") == None:
+                    test_duplicate = duplicate
+                else:
+                    test_duplicate = elements[0].get("duplicate")
+            if duplicate != None:
+                if test_duplicate != duplicate:
+                    raise ValueError("The {0} {1} is mentioned at least twice with different duplicate options.".format(set_type, name))
+        if duplicate == "###initiated_with_without_duplicate_mentioning###":
+            raise Exception("Unknown error in extracting an extern set." +
+                            "This should not happen. Please contact the JUBE developers.")
 
         if elements is not None:
             if len(elements) > 1:
@@ -1133,11 +1209,11 @@ class XMLParser(object):
                                           set_type, search_name, file_path))
                 result_set = self._extract_extern_set(new_filename,
                                                       set_type, name,
-                                                      new_search_name)
+                                                      new_search_name, duplicate)
 
             if set_type == "parameterset":
                 if result_set is None:
-                    result_set = jube2.parameter.Parameterset(name)
+                    result_set = jube2.parameter.Parameterset(name, duplicate)
                 for parameter in self._extract_parameters(elements[0]):
                     result_set.add_parameter(parameter)
             elif set_type == "substituteset":
@@ -1174,13 +1250,21 @@ class XMLParser(object):
 
     def _extract_parametersets(self, etree):
         """Return parametersets from etree"""
+
         parametersets = dict()
         for element in etree.findall("parameterset"):
-            name = XMLParser._attribute_from_element(element, "name").strip()
+            name = Parser._attribute_from_element(element, "name").strip()
             if name == "":
                 raise ValueError("Empty \"name\" attribute in " +
                                  "<parameterset> found.")
             LOGGER.debug("  Parsing <parameterset name=\"{0}\">".format(name))
+            duplicate = element.get("duplicate", "replace").strip()
+            if duplicate is None:
+                duplicate="replace"
+            if duplicate != "replace" and duplicate != "concat" and duplicate != "error":
+                raise ValueError("Invalid \"duplicate\" attribute in " +
+                                 "parameterset {0} found. Use \"replace\" (default)" +
+                                 ", \"concat\" or \"error\".".format(name))
             init_with = element.get("init_with")
             if init_with is not None:
                 parts = init_with.strip().split(":")
@@ -1188,11 +1272,13 @@ class XMLParser(object):
                     search_name = parts[1]
                 else:
                     search_name = None
+                if element.get("duplicate") == None:
+                    duplicate = "###initiated_with_without_duplicate_mentioning###"
                 parameterset = self._extract_extern_set(parts[0],
                                                         "parameterset", name,
-                                                        search_name)
+                                                        search_name, duplicate)
             else:
-                parameterset = jube2.parameter.Parameterset(name)
+                parameterset = jube2.parameter.Parameterset(name, duplicate)
             for parameter in self._extract_parameters(element):
                 parameterset.add_parameter(parameter)
             if parameterset.name in parametersets:
@@ -1208,8 +1294,8 @@ class XMLParser(object):
         Return a list of parameters. Parameters might also include lists"""
         parameters = list()
         for param in etree_parameterset:
-            XMLParser._check_tag(param, ["parameter"])
-            name = XMLParser._attribute_from_element(param, "name").strip()
+            Parser._check_tag(param, ["parameter"])
+            name = Parser._attribute_from_element(param, "name").strip()
             if name == "":
                 raise ValueError(
                     "Empty \"name\" attribute in <parameter> found.")
@@ -1231,6 +1317,14 @@ class XMLParser(object):
                     .format(parameter_update_mode, name))
             export_str = param.get("export", default="false").strip()
             export = export_str.lower() == "true"
+
+            duplicate = param.get("duplicate", "none").strip()
+            if duplicate is None:
+                duplicate="none"
+            if duplicate != "replace" and duplicate != "concat" and duplicate != "error" and duplicate != "none":
+                raise ValueError("Invalid \"duplicate\" attribute in " +
+                                 "parameter {0} found. Use \"replace\"" +
+                                 ", \"concat\", \"error\" or \"none\" (default).".format(name))
             if parameter_mode not in jube2.conf.ALLOWED_MODETYPES:
                 raise ValueError(
                     ("parameter-mode \"{0}\" not allowed in " +
@@ -1262,7 +1356,7 @@ class XMLParser(object):
                 jube2.parameter.Parameter.create_parameter(
                     name, value, separator, parameter_type, selected_value,
                     parameter_mode, parameter_unit, export, update_mode=parameter_update_mode,
-                    idx=idx)
+                    idx=idx, eval_helper=None, fixed=False, duplicate=duplicate)
             parameters.append(parameter)
         return parameters
 
@@ -1270,7 +1364,7 @@ class XMLParser(object):
         """Return patternset from etree"""
         patternsets = dict()
         for element in etree.findall("patternset"):
-            name = XMLParser._attribute_from_element(element, "name").strip()
+            name = Parser._attribute_from_element(element, "name").strip()
             if name == "":
                 raise ValueError("Empty \"name\" attribute in " +
                                  "<patternset> found.")
@@ -1287,7 +1381,7 @@ class XMLParser(object):
                                                       search_name)
             else:
                 patternset = jube2.pattern.Patternset(name)
-            for pattern in XMLParser._extract_pattern(element):
+            for pattern in Parser._extract_pattern(element):
                 patternset.add_pattern(pattern)
             if patternset.name in patternsets:
                 raise ValueError("\"{0}\" not unique".format(patternset.name))
@@ -1301,8 +1395,8 @@ class XMLParser(object):
         Return a list of pattern"""
         patternlist = list()
         for pattern in etree_patternset:
-            XMLParser._check_tag(pattern, ["pattern"])
-            name = XMLParser._attribute_from_element(pattern, "name").strip()
+            Parser._check_tag(pattern, ["pattern"])
+            name = Parser._attribute_from_element(pattern, "name").strip()
             if name == "":
                 raise ValueError(
                     "Empty \"name\" attribute in <pattern> found.")
@@ -1320,7 +1414,7 @@ class XMLParser(object):
             content_type = pattern.get("type", default="string").strip()
             unit = pattern.get("unit", "").strip()
             dotall = \
-                pattern.get("dotall", "true").strip().lower() == "true"
+                pattern.get("dotall", "false").strip().lower() == "true"
             default = pattern.get("default")
             if default is not None:
                 default = default.strip()
@@ -1337,13 +1431,13 @@ class XMLParser(object):
         """Return filesets from etree"""
         filesets = dict()
         for element in etree.findall("fileset"):
-            name = XMLParser._attribute_from_element(element, "name").strip()
+            name = Parser._attribute_from_element(element, "name").strip()
             if name == "":
                 raise ValueError(
                     "Empty \"name\" attribute in <fileset> found.")
             LOGGER.debug("  Parsing <fileset name=\"{0}\">".format(name))
             init_with = element.get("init_with")
-            filelist = XMLParser._extract_files(element)
+            filelist = Parser._extract_files(element)
             if name in filesets:
                 raise ValueError("\"{0}\" not unique".format(name))
             if init_with is not None:
@@ -1366,7 +1460,7 @@ class XMLParser(object):
         filelist = list()
         valid_tags = ["copy", "link", "prepare"]
         for etree_file in etree_fileset:
-            XMLParser._check_tag(etree_file, valid_tags)
+            Parser._check_tag(etree_file, valid_tags)
             if etree_file.tag in ["copy", "link"]:
                 separator = etree_file.get(
                     "separator", jube2.conf.DEFAULT_SEPARATOR)
@@ -1448,13 +1542,13 @@ class XMLParser(object):
         {"compilesub": ([iofile0,...], [sub0,...])}"""
         substitutesets = dict()
         for element in etree.findall("substituteset"):
-            name = XMLParser._attribute_from_element(element, "name").strip()
+            name = Parser._attribute_from_element(element, "name").strip()
             if name == "":
                 raise ValueError("Empty \"name\" attribute in " +
                                  "<substituteset> found.")
             LOGGER.debug("  Parsing <substituteset name=\"{0}\">".format(name))
             init_with = element.get("init_with")
-            files, subs = XMLParser._extract_subs(element)
+            files, subs = Parser._extract_subs(element)
             if name in substitutesets:
                 raise ValueError("\"{0}\" not unique".format(name))
             if init_with is not None:
@@ -1483,10 +1577,10 @@ class XMLParser(object):
         files = list()
         subs = dict()
         for sub in etree_substituteset:
-            XMLParser._check_tag(sub, valid_tags)
+            Parser._check_tag(sub, valid_tags)
             if sub.tag == "iofile":
-                in_file = XMLParser._attribute_from_element(sub, "in").strip()
-                out_file = XMLParser._attribute_from_element(
+                in_file = Parser._attribute_from_element(sub, "in").strip()
+                out_file = Parser._attribute_from_element(
                     sub, "out").strip()
                 out_mode = sub.get("out_mode", "w").strip()
                 if out_mode not in ["w", "a"]:
@@ -1497,7 +1591,7 @@ class XMLParser(object):
                 files.append((out_file, in_file, out_mode))
             elif sub.tag == "sub":
                 source = "" + \
-                    XMLParser._attribute_from_element(sub, "source").strip()
+                    Parser._attribute_from_element(sub, "source").strip()
                 if source == "":
                     raise ValueError(
                         "Empty \"source\" attribute in <sub> found.")
@@ -1530,4 +1624,6 @@ class XMLParser(object):
         """
         if element.tag not in valid_tags:
             raise ValueError(("Unknown tag or tag used in wrong " +
-                              "position: <{0}>").format(element.tag))
+                              "position:\n{0}").format(
+                jube2.util.output.element_tree_tostring(
+                    element, encoding="UTF-8")))

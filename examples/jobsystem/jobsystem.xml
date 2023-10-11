@@ -43,7 +43,7 @@
     </substituteset> 
          
     <!-- Operation -->
-    <step name="submit" work_dir="$$WORK/jobsystem_bench_${jube_benchmark_id}_${jube_wp_id}" >
+    <step name="submit" work_dir="$$SCRATCH/jobsystem_bench_${jube_benchmark_id}_${jube_wp_id}" >
       <use>param_set</use>
       <use>executeset</use>
       <use>files,sub_job</use>

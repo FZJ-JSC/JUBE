@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
   <benchmark name="parameter_updates" outpath="bench_run">
-    <comment>A parameter_dependencies example</comment>
+    <comment>A parameter_update example</comment>
 
     <!-- Configuration -->
     <parameterset name="foo">

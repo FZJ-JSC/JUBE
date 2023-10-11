@@ -1,0 +1,17 @@
+- name: do_log_example
+  outpath: bench_run
+
+  parameterset: 
+    - name: "param_set"
+      parameter: 
+        - {name: "number", _: "1,2,3,4,5"}
+
+  step:
+    name: execute
+    use: 
+      - param_set
+    do_log_file: "do_log"
+    shared: "shared"
+    do:
+      - cp ../../../../loreipsum${number} shared
+      - {shared: "true", _: "grep -r -l \"Hidden!\" loreipsum*"}

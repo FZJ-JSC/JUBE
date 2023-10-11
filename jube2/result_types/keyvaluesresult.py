@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -255,7 +255,7 @@ class KeyValuesResult(Result):
                             value = str(dataset[key.name])
                     row.append(value)
                 else:
-                    row.append("")
+                    row.append(None)
 
             if cnt > 0:
                 table_data.append(row)

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -21,10 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-try:
-    import queue
-except ImportError:
-    import Queue as queue
+from collections import deque
 import re
 import string
 import operator
@@ -40,12 +37,59 @@ import pwd
 LOGGER = jube2.log.get_logger(__name__)
 
 
+class Queue:
+    '''
+    Queue based on collections.dequeue
+    '''
+
+    def __init__(self):
+        '''
+        Initialize this queue to the empty queue.
+        '''
+
+        self._queue = deque()
+
+    def put(self, item):
+        '''
+        Add this item to the left of this queue.
+        '''
+
+        self._queue.appendleft(item)
+
+    def put_first(self, item):
+        '''
+        Add this item to the left of this queue.
+        '''
+
+        self._queue.append(item)
+
+    def get_nowait(self):
+        '''
+        Dequeues (i.e., removes) the item from the right side of this queue *and*
+        returns this item.
+
+        Raises
+        ----------
+        IndexError
+            If this queue is empty.
+        '''
+
+        return self._queue.pop()
+
+    def empty(self):
+        '''
+        Return True if the queue is empty, False otherwise
+        '''
+
+        return False if len(self._queue) > 0 else True
+
+
 class WorkStat(object):
 
     """Workpackage queuing handler"""
 
     def __init__(self):
-        self._work_list = queue.Queue()
+        self._work_list = Queue()
         self._cnt_work = dict()
         self._wait_lists = dict()
 
@@ -67,7 +111,7 @@ class WorkStat(object):
                 self._cnt_work[workpackage.step.name] += 1
         else:
             if workpackage.step.name not in self._wait_lists:
-                self._wait_lists[workpackage.step.name] = queue.Queue()
+                self._wait_lists[workpackage.step.name] = Queue()
             self._wait_lists[workpackage.step.name].put(workpackage)
 
     def update_queues(self, last_workpackage):
@@ -91,6 +135,40 @@ class WorkStat(object):
     def empty(self):
         """Check if work queue is empty"""
         return self._work_list.empty()
+
+    def push_back(self, wp):
+        """push element to the first position of the queue"""
+        self._work_list.put_first(wp)
+
+
+def valid_tags(tag_string, tags):
+    """Check if tag_string contains only valid tags"""
+    if tags is None:
+        tags = set()
+    tag_tags_str = tag_string
+    if tag_tags_str is not None:
+        # Check for old tag format
+        if "," in tag_tags_str:
+            tag_tags_str = jube2.jubeio.Parser._convert_old_tag_format(
+                tag_tags_str)
+        tag_tags_str = tag_tags_str.replace(' ', '')
+        tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
+                     if len(i) > 0]
+        tag_state = {}
+        for tag in tag_array:
+            tag_state.update({tag: str(tag in tags)})
+        for tag in tag_array:
+            tag_tags_str = re.sub(r'(?:^|(?<=\W))' + tag + r'(?=\W|$)',
+                                  tag_state[tag], tag_tags_str)
+        tag_tags_str = tag_tags_str.replace('|', ' or ')\
+            .replace('+', ' and ').replace('!', ' not ')
+        try:
+            return eval(tag_tags_str)
+        except SyntaxError:
+            raise ValueError("Tag string '{0}' not parseable."
+                             .format(tag_string))
+    else:
+        return True
 
 
 def get_current_id(base_dir):
@@ -118,6 +196,17 @@ def id_dir(base_dir, id_number):
                                        id_number=id_number))
 
 
+def expand_dollar_count(text):
+    # Replace a even number of $ by $$$$, because they will be
+    # substituted to $$. Even number will stay the same, odd number
+    # will shrink in every turn
+    # $$ -> $$$$ -> $$
+    # $$$ -> $$$ -> $
+    # $$$$ -> $$$$$$$$ -> $$$$
+    # $$$$$ -> $$$$$$$ -> $$$
+    return re.sub(r"(^(?=\$)|[^$])((?:\$\$)+?)((?:\${3})?(?:[^$]|$))", r"\1\2\2\3", text)
+
+
 def substitution(text, substitution_dict):
     """Substitute templates given by parameter_dict inside of text"""
     changed = True
@@ -126,6 +215,10 @@ def substitution(text, substitution_dict):
     try:
         str_substitution_dict = \
             dict([(k, str(v).decode("utf-8", errors="ignore")) for k, v in
+                  substitution_dict.items()])
+    except TypeError:
+        str_substitution_dict = \
+            dict([(k, str(v).decode("utf-8", "ignore")) for k, v in
                   substitution_dict.items()])
     except AttributeError:
         str_substitution_dict = dict([(k, str(v)) for k, v in
@@ -140,7 +233,7 @@ def substitution(text, substitution_dict):
         count += 1
         orig_text = text
         # Save double $$
-        text = re.sub(r"(\$\$)(?=(\$\$|[^$]))", "$$$$", text) \
+        text = expand_dollar_count(text) \
             if "$" in text else text
         tmp = string.Template(text)
         new_text = tmp.safe_substitute(local_substitution_dict)
@@ -148,20 +241,25 @@ def substitution(text, substitution_dict):
         text = new_text
     # Final substitution to remove $$
     tmp = string.Template(text)
-    return tmp.safe_substitute(str_substitution_dict)
+    return re.sub("\$(?=([\s]|$))","$$",tmp.safe_substitute(str_substitution_dict))
 
 
 def convert_type(value_type, value, stop=True):
     """Convert value to given type"""
     result_value = None
+    value_type_incorrect=False
     try:
         if value_type == "int":
             if value == "nan":
                 result_value = float("nan")
             else:
                 result_value = int(float(value))
+                if re.match(r"^[-+]?\d+$", value) is None:
+                    value_type_incorrect=True
         elif value_type == "float":
             result_value = float(value)
+            if re.match(r"([+-]?(?:\d*\.?\d+(?:[eE][-+]?\d+)?|\d+\.))",value) is None:
+                value_type_incorrect=True
         else:
             result_value = value
     except ValueError:
@@ -170,6 +268,11 @@ def convert_type(value_type, value, stop=True):
                              .format(value, value_type))
         else:
             result_value = value
+    if value_type_incorrect:
+        print("Warning: \"{0}\" is not of type \"{1}\" but the execution is continued to ensure backward compatibility.\n"
+                                 .format(value, value_type))
+        LOGGER.debug(("Warning: \"{0}\" is not of type \"{1}\" but the execution is continued to ensure backward compatibility.\n")
+                                 .format(value, value_type))
     return result_value
 
 
@@ -180,8 +283,16 @@ def script_evaluation(cmd, script_type):
     elif script_type in ["perl", "shell"]:
         if script_type == "perl":
             cmd = "perl -e \"print " + cmd + "\""
-        sub = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, shell=True)
+
+        # Select unix shell
+        shell = jube2.conf.STANDARD_SHELL
+        if "JUBE_EXEC_SHELL" in os.environ:
+            alt_shell = os.environ["JUBE_EXEC_SHELL"].strip()
+            if len(alt_shell) > 0:
+                shell = alt_shell
+        sub = subprocess.Popen([shell, "-c", cmd], stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE, shell=False)
+
         stdout, stderr = sub.communicate()
         stdout = stdout.decode(errors="ignore")
         # Check command execution error code
@@ -411,3 +522,10 @@ def safe_split(text, separator):
         return text.split(separator)
     else:
         return [text]
+
+
+def ensure_list(element):
+    if type(element)!=list:
+        return [element]
+    else:
+        return element

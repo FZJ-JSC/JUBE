@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <parameterset name="options">
+    <parameter name="iterations" type="int">2</parameter>
+  </parameterset>
+</jube>

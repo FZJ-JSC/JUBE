@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -21,9 +21,12 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+import multiprocessing as mp
 import xml.etree.ElementTree as ET
 import xml.dom.minidom as DOM
+import logging
 import os
+import re
 import stat
 import pprint
 import shutil
@@ -341,14 +344,18 @@ class Benchmark(object):
                     workpackage.queued = True
                     self._work_stat.put(workpackage)
 
-    def analyse(self, show_info=True):
+    def analyse(self, show_info=True, specific_analyser_name=None):
         """Run analyser"""
 
         if show_info:
             LOGGER.info(">>> Start analyse")
 
-        for analyser in self._analyser.values():
-            analyser.analyse()
+        if specific_analyser_name is not None and \
+                specific_analyser_name in self._analyser:
+            self._analyser[specific_analyser_name].analyse()
+        else:
+            for analyser in self._analyser.values():
+                analyser.analyse()
         if ((not jube2.conf.DEBUG_MODE) and
                 (os.access(self.bench_dir, os.W_OK))):
             self.write_analyse_data(os.path.join(self.bench_dir,
@@ -564,10 +571,12 @@ class Benchmark(object):
         jube2.log.change_logfile_name(os.path.join(
             self.bench_dir, jube2.conf.LOGFILE_RUN_NAME))
         # Move parse logfile into benchmark folder
-        if os.path.isfile(jube2.conf.DEFAULT_LOGFILE_NAME):
-            os.rename(jube2.conf.DEFAULT_LOGFILE_NAME,
-                      os.path.join(self.bench_dir,
-                                   jube2.conf.LOGFILE_PARSE_NAME))
+        if os.path.isfile(os.path.join(self._file_path_ref,
+                                       jube2.conf.DEFAULT_LOGFILE_NAME)):
+            shutil.move(os.path.join(self._file_path_ref,
+                                     jube2.conf.DEFAULT_LOGFILE_NAME),
+                        os.path.join(self.bench_dir,
+                                     jube2.conf.LOGFILE_PARSE_NAME))
 
         # Reset Workpackage counter
         jube2.workpackage.Workpackage.id_counter = 0
@@ -582,6 +591,7 @@ class Benchmark(object):
             os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
         LOGGER.debug("Start benchmark run")
+
         self.run()
 
     def run(self):
@@ -603,37 +613,90 @@ class Benchmark(object):
         # Handle all workpackages in given order
         while not self._work_stat.empty():
             workpackage = self._work_stat.get()
+
+            run_parallel = False
+
+            def collect_result(val):
+                """used collect return values from pool.apply_async"""
+                # run postprocessing of each wp
+                for i, wp in enumerate(self._workpackages[val["step_name"]]):
+                    if wp.id == val["id"]:
+                        if(len(val) == 2):  # workpackage is done or its execution was erroneous
+                            pass
+                        else:
+                            # update corresponding wp in self._workpackage with modified wp
+                            wp.env = val["env"]
+                            # restore the parameters containing a method of a class,
+                            # which needed to be deleted within the multiprocess
+                            # execution to avoid excessive memory usage
+                            for p in wp._parameterset.all_parameters:
+                                if(p.search_method(propertyString="eval_helper",
+                                                   recursiveProperty="based_on")):
+                                    val["parameterset"].add_parameter(p)
+                            wp.parameterset = val["parameterset"]
+                            wp.cycle = val["cycle"]
+                        self.wp_post_run_config(wp)
+                        break
+
+            def log_e(e):
+                """used to print error_callback from pool.apply_async"""
+                print(e)
+            # TODO
+            # writeXML position(y) - replace by database
+            # TODO END
             if not workpackage.done:
-                workpackage.run()
-            self._create_new_workpackages_for_workpackage(workpackage)
+                # execute wps in parallel which have the same name
+                if workpackage.step.procs > 1:
+                    run_parallel = True
+                    procs = workpackage.step.procs
+                    name = workpackage.step.name
+                    pool = mp.Pool(processes=procs)
 
-            # Update queues (move waiting workpackages to work queue
-            # if possible)
-            self._work_stat.update_queues(workpackage)
+                    # add wps to the parallel pool as long as they have the same name
+                    while True:
+                        pool.apply_async(workpackage.run, args=('p',),
+                                         callback=collect_result, error_callback=log_e)
 
-            if not jube2.conf.HIDE_ANIMATIONS:
-                status = self.benchmark_status
-                jube2.util.output.print_loading_bar(
-                    status["done"], status["all"], status["wait"],
-                    status["error"])
-            workpackage.queued = False
+                        if not self._work_stat.empty():
+                            workpackage = self._work_stat.get()
+                            # push back as first element of _work_stat and
+                            # terminate parallel loop
+                            if workpackage.step.name != name:
+                                self._work_stat.push_back(workpackage)
+                                break
+                        else:
+                            break
 
-            for mode in ("only_started", "all"):
-                for child in workpackage.children:
-                    all_done = True
-                    for parent in child.parents:
-                        all_done = all_done and parent.done
-                    if all_done:
-                        if (mode == "only_started" and child.started) or \
-                           (mode == "all" and (not child.queued)):
-                            child.queued = True
-                            self._work_stat.put(child)
-        # Store workpackage information
-        self.write_workpackage_information(
-            os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
+                    pool.close()
+                    pool.join()
+                else:
+                    workpackage.run()
+
+            if run_parallel == True:
+                # merge parallel run log files into the main run log file and
+                # delete the parallel logs
+                log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
+                filenames = [file for file in os.listdir(self.bench_dir)
+                             if file.startswith(log_fname.split('.')[0]) and
+                             file != log_fname]
+                filenames.sort(key=lambda o: int(re.split('_|\.', o)[1]))
+                with open(os.path.join(self.bench_dir,
+                                       jube2.conf.LOGFILE_RUN_NAME), 'a') as outfile:
+                    for fname in filenames:
+                        with open(os.path.join(self.bench_dir, fname), 'r') as infile:
+                            contents = infile.read()
+                            outfile.write(contents)
+                        os.remove(os.path.join(self.bench_dir, fname))
+
+                run_parallel = False
+            else:
+                self.wp_post_run_config(workpackage)
+
+            # Store workpackage information
+            self.write_workpackage_information(
+                os.path.join(self.bench_dir, jube2.conf.WORKPACKAGES_FILENAME))
 
         print("\n")
-
         status_data = [("stepname", "all", "open", "wait", "error", "done")]
         status_data += [(stepname, str(_status["all"]), str(_status["open"]),
                          str(_status["wait"]), str(_status["error"]),
@@ -662,6 +725,35 @@ class Benchmark(object):
         LOGGER.info((">>>>      log: jube log {0} " +
                      "--id {1}").format(self._outpath, self._id))
         LOGGER.info(jube2.util.output.text_line() + "\n")
+
+    def wp_post_run_config(self, workpackage):
+        """additional processing of workpackage:
+        - update status bar
+        - build up queue after restart
+        """
+        self._create_new_workpackages_for_workpackage(workpackage)
+
+        # Update queues (move waiting workpackages to work queue
+        # if possible)
+        self._work_stat.update_queues(workpackage)
+
+        if not jube2.conf.HIDE_ANIMATIONS:
+            status = self.benchmark_status
+            jube2.util.output.print_loading_bar(
+                status["done"], status["all"], status["wait"],
+                status["error"])
+        workpackage.queued = False
+
+        for mode in ("only_started", "all"):
+            for child in workpackage.children:
+                all_done = True
+                for parent in child.parents:
+                    all_done = all_done and parent.done
+                if all_done:
+                    if (mode == "only_started" and child.started) or \
+                            (mode == "all" and (not child.queued)):
+                        child.queued = True
+                        self._work_stat.put(child)
 
     def _create_bench_dir(self):
         """Create the directory for a benchmark."""

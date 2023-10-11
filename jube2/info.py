@@ -1,5 +1,5 @@
-# JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+## JUBE Benchmarking Environment
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -46,7 +46,7 @@ def print_benchmarks_info(path):
         if os.path.isdir(dir_path) and os.path.exists(configuration_file):
             try:
                 id_number = int(dir_name)
-                parser = jube2.jubeio.XMLParser(configuration_file)
+                parser = jube2.jubeio.Parser(configuration_file)
                 name_str, comment_str, tags = parser.benchmark_info_from_xml()
                 tags_str = jube2.conf.DEFAULT_SEPARATOR.join(tags)
 
@@ -273,7 +273,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
             for name, value in parameter_dict.items():
                 if name != "id":
                     print("  {0}: {1}".format(name, value))
-            print()
+            print("")
     else:
         # Create parameterization table
         table_data = list()
@@ -289,7 +289,8 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
                     table_data[-1].append(parameter_dict[name])
         print(jube2.util.output.text_table(
             table_data, use_header_line=True, indent=1, align_right=True,
-            auto_linebreak=False, pretty=not parametrization_only_csv,
+            auto_linebreak=False,
+            style="csv" if parametrization_only_csv else "pretty",
             separator=(parametrization_only_csv if (parametrization_only_csv)
                        else None)))
 
@@ -305,12 +306,21 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
 
 def print_benchmark_status(benchmark):
-    """Print FINISHED or "RUNNING" dependign on the workpackage status"""
-    all_done = True
+    """Print overall workpackage status in the following order
+        RUNNING: At least one WP is still active
+        ERROR: At least one WP raised an errror
+        FINISHED: All WPs are finalized and no error was raised
+    """
+    error = False
+    running = False
     for step_name in benchmark.workpackages:
         for workpackage in benchmark.workpackages[step_name]:
-            all_done = workpackage.done and all_done
-    if all_done:
-        print("FINISHED")
-    else:
+            running = \
+                (not workpackage.done and not workpackage.error) or running
+            error = workpackage.error or error
+    if running:
         print("RUNNING")
+    elif error:
+        print("ERROR")
+    else:
+        print("FINISHED")

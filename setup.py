@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -23,18 +23,18 @@
 # to install it into your .local folder. .local/bin must be inside your $PATH.
 # You can also change the folder by using --prefix instead of --user
 
+import os
 add_opt = dict()
 try:
     from setuptools import setup
     import sys
-    SHARE_PATH = ""
-    add_opt["install_requires"] = list()
+    add_opt["install_requires"] = ['pyyaml']
     if sys.hexversion < 0x02070000:
         add_opt["install_requires"].append("argparse")
 except ImportError:
     from distutils.core import setup
-    SHARE_PATH = "share/jube"
-import os
+
+SHARE_PATH = "share/jube"
 
 
 def rel_path(directory, new_root=""):
@@ -59,18 +59,19 @@ def rel_path(directory, new_root=""):
         os.chdir(cwd)
     return result
 
+
 config = {'name': 'JUBE',
           'description': 'JUBE Benchmarking Environment',
           'author': 'Forschungszentrum Juelich GmbH',
-          'url': 'www.fz-juelich.de/jube',
-          'download_url': 'www.fz-juelich.de/jube',
+          'url': 'www.fz-juelich.de/ias/jsc/jube',
+          'download_url': 'www.fz-juelich.de/ias/jsc/jube',
           'author_email': 'jube.jsc@fz-juelich.de',
-          'version': '2.3.0',
+          'version': '2.5.2',
           'packages': ['jube2','jube2.result_types','jube2.util'],
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
                            ['docs/JUBE.pdf']),
-                          (SHARE_PATH, ['LICENSE','RELEASE_NOTES'])] +
+                          (SHARE_PATH, ['AUTHORS','LICENSE','RELEASE_NOTES'])] +
                          rel_path("examples", SHARE_PATH) +
                          rel_path("contrib", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),
@@ -106,7 +107,7 @@ config = {'name': 'JUBE',
               "License :: OSI Approved :: GNU General Public License v3 " +
               "(GPLv3)",
               "Operating System :: POSIX :: Linux",
-              "Programming Language :: Python :: 2.6",
+              "Programming Language :: Python :: 3.2",
               "Topic :: System :: Monitoring",
               "Topic :: System :: Benchmark",
               "Topic :: Software Development :: Testing"],

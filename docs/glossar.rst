@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -80,8 +80,11 @@ Glossary
    result
       Create a result table.
 
-      If no benchmark id is given, a combined result view of all available benchmarks in given directory will be created. 
-      If benchmark directory is missing, current directory will be used.
+      If no benchmark id is given, last benchmark found in directory will be used. If multiple benchmarks are selected (e.g. by using ``--id all``), a combined result 
+      view of all available benchmarks in the given directory will be created. If benchmark directory is missing, current directory will be used.
+
+   complete
+      Generate shell completion.
 
    benchmark_tag
       The main benchmark definition
@@ -178,7 +181,7 @@ Glossary
         * allowed: ``int``, ``float`` or ``string``
 
       * ``default`` is optional: Specify default value if pattern cannot be found or if it cannot be evaluated
-      * ``dotall`` is optional (default: ``false``): Can be set to ``true```or ``false`` to specify if a ``.`` within the regular expression
+      * ``dotall`` is optional (default: ``false``): Can be set to ``true`` or ``false`` to specify if a ``.`` within the regular expression
         should also match newline characters, which can be very helpfull to extract a line only after a specific header was mentioned.
 
    statistical_values
@@ -205,7 +208,7 @@ Glossary
 
       .. code-block:: xml
 
-         <parameterset name="..." init_with="...">
+         <parameterset name="..." init_with="..." duplicate="...">
             <parameter>...</parameter>
             ...
          </parameterset>
@@ -249,13 +252,19 @@ Glossary
                <parameter name="test2">bar</parameter> <!-- Other content in set2 -->
              </parameterset>
 
+      * ``duplicate`` is optional and of relevance, if there are more than one parameter definitions with the same name within one parameterset. This ``duplicate`` option has lower priority than the ``duplicte`` option of the parameters. ``duplicate`` must contain one of the following three options:
+
+        * ``replace`` (default): Parameters with the same name are overwritten
+        * ``concat``: Parameters with the same name are concatenated
+        * ``error``: Throws an error, if parameters with the same name are defined
+
    parameter_tag
       A parameter can be used to store benchmark configuration data. A set of different parameters will create
       a specific parameter environment (also called :term:`parameter space <parameter_space>`) for the different steps of the benchmark.
 
       .. code-block:: xml
 
-         <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="...">...</parameter>
+         <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="..." duplicate="...">...</parameter>
 
       * a parameter can be seen as variable: Name is the name to use the variable, and the text between the tags
         will be the real content
@@ -283,25 +292,33 @@ Glossary
       * Templates can be created, using scripting e.g.: ``",".join([str(2**i) for i in range(3)])``
       * ``update_mode`` is optional (default: ``never``)
 
-         * can be set to ``never``, ``use``, ``step``, ``cycle`` and ``always``
-         * depending on the setting the parameter will be reevaluated:
+        * can be set to ``never``, ``use``, ``step``, ``cycle`` and ``always``
+        * depending on the setting the parameter will be reevaluated:
 
-            * ``never``: no reevaluation, even if the parameterset is used multiple times
-            * ``use``: reevaluation if the parameterset is explicitly used
-            * ``step``: reevaluation in each new step
-            * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
-            * ``always``: reevaluation in each step and cycle
+          * ``never``: no reevaluation, even if the parameterset is used multiple times
+          * ``use``: reevaluation if the parameterset is explicitly used
+          * ``step``: reevaluation in each new step
+          * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+          * ``always``: reevaluation in each step and cycle
+
+      * ``duplicate`` is optional and of relevance, if there are more than one parameter definitions with the same name within one parameterset. This ``duplicate`` option has higher priority than the ``duplicte`` option of the parameterset. ``duplicate`` must contain one of the following four options:
+
+        * ``none`` (default): The ``duplicate`` option of the parameterset is prioritized
+        * ``replace``: Parameters with the same name are overwritten
+        * ``concat``: Parameters with the same name are concatenated
+        * ``error``: Throws an error, if parameters with the same name are defined
+
 
    update_mode
       The update mode is parameter attribute which can be used to control the reevaluation of the parameter content.
 
       These update modes are available:
 
-         * ``never``: no reevaluation, even if the parameterset is used multiple times
-         * ``use``: reevaluation if the parameterset is explicitly used
-         * ``step``: reevaluation in each new step
-         * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
-         * ``always``: reevaluation in each step and cycle
+      * ``never``: no reevaluation, even if the parameterset is used multiple times
+      * ``use``: reevaluation if the parameterset is explicitly used
+      * ``step``: reevaluation in each new step
+      * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+      * ``always``: reevaluation in each step and cycle
 
    fileset_tag
       A fileset is a container to store a bundle of links and copy commands.
@@ -348,7 +365,7 @@ Glossary
      * each link-tag can contain a list of filenames (or directories), separated by ``,``, the default separator can be changed
        by using the ``separator`` attribute
 
-        * if ``name`` is present, the lists must have the same length
+       * if ``name`` is present, the lists must have the same length
 
      * in the execution step the given files or directories will be linked
 
@@ -451,7 +468,7 @@ Glossary
      .. code-block:: xml
 
         <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..." 
-              export="..." max_async="..." iterations="..." cycles="...">
+              export="..." max_async="..." iterations="..." cycles="..." procs="..." do_log_file="...">
           <use from="">...</use>
           ...
           <do></do>
@@ -490,6 +507,8 @@ Glossary
 
      * ``iterations`` is optional. All workpackages within this step will be executed multiple times if the iterations value is used.
      * ``cycles`` is optional. All ``<do>`` commands within the step will be executed ``cycles``-times
+     * ``procs`` is optional. Amount of processes used to execute the parameter expansions of the corresponding step in parallel.
+     * ``do_log_file`` is optional. Name or path of a do log file trying to mimick the do steps and the environment of a workpacakge of a step to produce an executable script.
 
    do_tag
      A do contain a executable *Shell* operation.
@@ -503,7 +522,7 @@ Glossary
         <do work_dir="...">...</do>
 
 
-     * ``do`` can contain any *Shell*-syntax-snippet (:term:`parameter <parameter_tag>` will be replaced ... $nameofparameter ...)
+     * ``do`` can contain any *Shell*-syntax-snippet (:term:`parameter <parameter_tag>` will be replaced ``... $nameofparameter ...``)
      * ``stdout``- and ``stderr``-filename are optional (default: ``stdout`` and ``stderr``)
      * ``work_dir`` is optional, it can be used to change the work directory of this single command (relativly seen towards
        the original work directory)
@@ -560,6 +579,34 @@ Glossary
        * ``true`` : Combine result lines if iteration-option is used
        * ``false`` : Create single line for each iteration
 
+   database_tag
+     Create sqlite3 database
+
+     .. code-block:: xml
+
+        <database name="..." primekeys="..." file="..." filter="...">
+          <key>...</key>
+          ...
+        </database>
+
+     * "name": name of the table in the database
+
+     * "<key>" must contain an single parameter or pattern name
+
+     * "primekeys" is optional: can contain a list of parameter or
+       pattern names (separated by ,). Given parameters or patterns
+       will be used as primary keys of the database table. All
+       primekeys have to be listed as a "<key>" as well. Modification
+       of primary keys of an existing table is not supported.
+       If no primekeys are set then each `jube result` will add new rows
+       to the database. Otherwise rows with matching primekeys will be updated.
+
+     * "file" is optional. The given value should hold the full path
+       to the database file. If the file including the path does not
+       exists it will be created. Absolute and relative paths are supported.
+
+     * "filter" is optional. It can contain a bool expression to show only specific result entries.
+
    result_tag
      The result tag is used to handle different visualisation types of your analysed data.
 
@@ -570,6 +617,7 @@ Glossary
           ...
           <table>...</table>
           <syslog>...</syslog>
+          <database>...</database>
           ...
         </result>
 
@@ -599,7 +647,7 @@ Glossary
           ...
         </table>
 
-     * ``style`` is optional; allowed styles: ``csv``, ``pretty``; default: ``csv``
+     * ``style`` is optional; allowed styles: ``csv``, ``pretty``, ``aligned``; default: ``csv``
      * ``separator`` is optional; only used in csv-style, default: ``,``
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
@@ -617,7 +665,7 @@ Glossary
 
      * ``colw`` is optional: column width
      * ``title`` is optional: column title
-     * ``format`` can contain a C like format string: e.g. format=".2f"
+     * ``format`` can contain a C like format string: e.g. ``format=".2f"``
 
    syslog_tag
      A syslog result type
@@ -645,12 +693,12 @@ Glossary
         <key format="..." title="...">...</key>
 
      * ``title`` is optional: alternative key title
-     * ``format`` can contain a C like format string: e.g. format=".2f"
+     * ``format`` can contain a C like format string: e.g. ``format=".2f"``
 
    parameter_space
      The parameter space for a specific benchmark run is the bundle of all possible parameter combinations.
      E.g. there are to different parameter: a = 1,2 and b= "p","q" then you will get four different parameter
-     combinations: a=1, b="p"; a=1, b="q"; a=2, b="p"; a=2, b="q".
+     combinations: ``a=1``, ``b="p"``; ``a=1``, ``b="q"``; ``a=2``, ``b="p"``; ``a=2``, ``b="q"``.
 
      The parameter space of a specific step will be one of these parameter combinations. To fulfill all combinations
      the step will be executed multible times (each time using a new combination). The specific combination of a step and
@@ -722,7 +770,7 @@ Glossary
               +- 000001_execute
               +- 000002_postprocessing
 
-   general_structure
+   general_structure_xml
 
       .. code-block:: xml
 
@@ -773,6 +821,54 @@ Glossary
            </benchmark>
            ...
          </jube>
+
+   general_structure_yaml
+
+      .. code-block:: yaml
+
+         # optional additional include paths
+         include-path:
+           ...
+
+         # optional benchmark selection 
+         selection:
+           only: ...
+           not: ...
+
+         # global sets
+         parameterset: 
+           ...
+         substitutionset:
+           ...
+         fileset:
+           ...
+         patternset:
+           ... 
+
+         benchmark: # can be skipped if only a single benchmark is handled
+           - name: ...
+             outpath: ...
+             # optional benchmark comment
+             comment: ...
+
+             # local sets
+             parameterset:
+               ...
+             substitutionset:
+               ...
+             fileset:
+               ...
+             patternset:
+               ...
+
+             # commands
+             step:
+               ...
+
+             analyser:
+               ...
+             result:
+               ...
 
    jube_pattern
       List of available jube pattern:
