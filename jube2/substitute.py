@@ -147,9 +147,9 @@ class Substituteset(object):
         return "Substitute({0})".format(self.__dict__)
     
 class Sub(object):
-    def __init__(self, source, type, dest):
+    def __init__(self, source, sub_type, dest):
         self._source = source
-        self._type = type
+        self._type = sub_type
         self._dest = dest
 
     @property

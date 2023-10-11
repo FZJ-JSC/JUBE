@@ -1600,10 +1600,10 @@ class Parser(object):
                     if dest is None:
                         dest = ""
                 dest = dest.strip() + ""
-                type = sub.get("type")
-                if type is None:
-                    type = "text"
-                subs.append(jube2.substitute.Sub(source, type, dest))
+                sub_type = sub.get("type")
+                if sub_type is None:
+                    sub_type = "text"
+                subs.append(jube2.substitute.Sub(source, sub_type, dest))
         return (files, subs)
 
     @staticmethod
