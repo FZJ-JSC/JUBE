@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -21,13 +21,16 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
+import multiprocessing as mp
 import xml.etree.ElementTree as ET
 import jube2.util.util
 import jube2.util.output
 import jube2.conf
 import jube2.log
 import jube2.parameter
+import jube2.step
 import os
+import re
 import stat
 import shutil
 
@@ -132,10 +135,20 @@ class Workpackage(object):
         """Return workpackage environment"""
         return self._env
 
+    @env.setter
+    def env(self, set_env):
+        """Replace own environment by set_env"""
+        self._env = set_env
+
     @property
     def cycle(self):
         """Return current loop cycle"""
         return self._cycle
+
+    @cycle.setter
+    def cycle(self, set_cycle):
+        """Update loop cycle counter"""
+        self._cycle = set_cycle
 
     def allow_workpackage_dir_caching(self):
         """Enable workpackage dir cache"""
@@ -301,6 +314,11 @@ class Workpackage(object):
     def parameterset(self):
         """Return parameterset"""
         return self._parameterset
+
+    @parameterset.setter
+    def parameterset(self, set_parameterset):
+        """Set/overwrite parameterset"""
+        self._parameterset.add_parameterset(set_parameterset)
 
     def add_children(self, workpackage):
         """Add a children workpackage"""
@@ -494,7 +512,10 @@ class Workpackage(object):
                 self._benchmark.bench_dir, parameter_dict)
             # Create shared folder (if it not already exists)
             if not os.path.exists(shared_folder):
-                os.mkdir(shared_folder)
+                try:
+                    os.mkdir(shared_folder)
+                except FileExistsError:
+                    pass
 
             # Create shared folder link
             if parameter_dict is not None:
@@ -555,10 +576,12 @@ class Workpackage(object):
         else:
             return None
 
-    def _run_operations(self, parameter, work_dir):
+    def _run_operations(self, parameter, work_dir, pid=None):
         """Run all available operations"""
         continue_op = True
         continue_cycle = True
+        doLog = jube2.step.DoLog(log_dir=os.path.dirname(
+            self.work_dir), log_file=self.step._do_log_file, initial_env=self.env, cycle=self._cycle)
         for operation_number, operation in enumerate(self._step.operations):
             # Check if the operation is activated
             active = operation.active(parameter)
@@ -632,7 +655,8 @@ class Workpackage(object):
                             work_dir=shared_dir,
                             environment=self._env,
                             only_check_pending=self.operation_done(
-                                operation_number))
+                                operation_number),
+                            dolog=doLog)
 
                         # update all workpackages
                         for workpackage in self._benchmark.workpackages[
@@ -659,29 +683,43 @@ class Workpackage(object):
                         parameter_dict=parameter, work_dir=work_dir,
                         environment=self._env,
                         only_check_pending=self.operation_done(
-                            operation_number))
+                            operation_number), pid=pid,
+                        dolog=doLog)
                     self.operation_done(operation_number, True)
             if not continue_op or not continue_cycle:
                 break
         return continue_op, continue_cycle
 
-    def run(self):
-        """Run step and use current parameter space"""
+    def run(self, mode='s'):
+        """Run step and use current parameter space
+            mode: s = seriell (default); p = parallel
+        """
+
+        proc_id = None
+        # create individual log files for each processor in a parallel run
+        if mode == "p":
+            proc_id = mp.current_process()._identity[0]
+            log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
+            jube2.log.change_logfile_name(os.path.join(
+                self.benchmark.bench_dir,
+                log_fname.replace('.', '_{}.').format(proc_id) if (('_'+str(proc_id)) not in log_fname) else log_fname))
 
         # Workpackage already done or error?
         if self.done or self.error:
-            return
+            # the return value is only relevant for the parallel case, for now
+            # for the serial case the return value is not used at all
+            return {"id": self._id, "step_name": self._step.name}
 
         continue_op = True
         continue_cycle = True
         while (continue_cycle and continue_op):
 
-            stepstr = ("{0} ( iter:{2} | id:{1} | parents:{3} | cycle:{4} )"
+            stepstr = ("{0} ( iter:{2} | id:{1} | parents:{3} | cycle:{4} | procs:{5} )"
                        .format(self._step.name, self._id, self._iteration,
                                ",".join([parent.step.name + "(" +
                                          str(parent.id) + ")"
                                          for parent in self._parents]),
-                               self._cycle))
+                               self._cycle, self._step.procs))
             stepstr = "----- {0} -----".format(stepstr)
             LOGGER.debug(stepstr)
 
@@ -746,11 +784,21 @@ class Workpackage(object):
             # --- Create alternativ working dir ---
             alt_work_dir = self.alt_work_dir(parameter)
             if alt_work_dir is not None:
+                # Check if given work directory contains any remaining variable
+                if re.search(jube2.parameter.Parameter.parameter_regex,
+                             alt_work_dir):
+                    raise IOError(("Given work directory {0} contains a " +
+                                   "unknown JUBE or environment variable.")
+                                  .format(alt_work_dir))
                 LOGGER.debug("  switch to alternativ work dir: \"{0}\""
                              .format(alt_work_dir))
+
                 if not jube2.conf.DEBUG_MODE and \
                         not os.path.exists(alt_work_dir):
-                    os.makedirs(alt_work_dir)
+                    try:
+                        os.makedirs(alt_work_dir)
+                    except FileExistsError:
+                        pass
                     # Get group_id if available (given by JUBE_GROUP_NAME)
                     group_id = jube2.util.util.check_and_get_group_id()
                     if group_id is not None:
@@ -802,7 +850,7 @@ class Workpackage(object):
                 #     others in shared operation
                 # continue_cycle = false -> loop cycle was interrupted
                 continue_op, continue_cycle = \
-                    self._run_operations(parameter, work_dir)
+                    self._run_operations(parameter, work_dir, pid=proc_id)
 
                 # --- Check cycle limit ---
                 if self._cycle + 1 >= self._step.cycles:
@@ -815,14 +863,32 @@ class Workpackage(object):
                 elif continue_op:
                     # --- Write information file to mark end of work ---
                     self.done = True
-            except RuntimeError as re:
-                self.set_error(True, str(re))
+            except RuntimeError as e:
+                self.set_error(True, str(e))
                 continue_cycle = False
                 if jube2.conf.EXIT_ON_ERROR:
-                    raise(RuntimeError(str(re)))
+                    raise(RuntimeError(str(e)))
                 else:
                     LOGGER.debug(
-                        "{0}\n{1}\n{2}".format(40 * "-", str(re), 40 * "-"))
+                        "{0}\n{1}\n{2}".format(40 * "-", str(e), 40 * "-"))
+
+        # Delete parameters, which contain a method being
+        # a function of a class. This avoids excessive memory
+        # usage when the data is sent back to the main process.
+        # It happens here, that these parameters are static and
+        # therefore not changed within this workpackage execution.
+        if mode == 'p':
+            parameterDeletionList = list()
+            for p in self._parameterset.all_parameters:
+                if(p.search_method(propertyString="eval_helper",
+                                   recursiveProperty="based_on")):
+                    parameterDeletionList.append(p)
+            for p in parameterDeletionList:
+                self._parameterset.delete_parameter(p)
+            parameterDeletionList = None
+
+        return {"id": self._id, "step_name": self._step.name, "env": self._env,
+                "cycle": self._cycle, "parameterset": self._parameterset}
 
     @staticmethod
     def reduce_workpackage_id_counter():

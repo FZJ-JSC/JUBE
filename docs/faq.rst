@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -35,6 +35,12 @@ E.g. you have two parameters:
 
    <parameter name="foo">10,100</parameter>
    <parameter name="bar">20,200</parameter>
+
+.. code-block:: yaml
+
+   parameter:
+     - { name: foo,  _: '10,100' }
+     - { name: bar,  _: '20,200' }
    
 Without any additional change, *JUBE* will run four paramater combinations (
 ``foo=10,bar=20``, ``foo=100,bar=20``, ``foo=10,bar=200``, ``foo=100,bar=200``).
@@ -48,6 +54,13 @@ For this you can use the parameter dependencies feature and small *Python* snipp
    <parameter name="foo" mode="python">[10,100][$i]</parameter>
    <parameter name="bar" mode="python">[20,200][$i]</parameter>
    
+.. code-block:: yaml
+
+   parameter:
+     - { name: i,                 _: '0,1' }
+     - { name: foo, mode: python, _: '[10,100][$i]' }
+     - { name: bar, mode: python, _: '[20,200][$i]' }
+
 Instead of using a numerical index, you can also use a string value for selection:
 
 .. code-block:: xml
@@ -62,6 +75,26 @@ Instead of using a numerical index, you can also use a string value for selectio
        "tock" : 200}["${key}"]
    </parameter>
 
+.. code-block:: yaml
+
+   parameter:
+     - { name: key, _: 'tick,tock' }
+     - name: foo
+       mode: python
+       _: |
+           {
+             "tick" : 10,
+             "tock" : 100
+           }["${key}"]
+     - name: bar
+       mode: python
+       _: |
+           {
+             "tick" : 20,
+             "tock" : 200
+           }["${key}"]
+
+
 Also default values are possible:
 
 .. code-block:: xml
@@ -70,6 +103,17 @@ Also default values are possible:
       {"tick" : 10,
        "tock" : 100}.get("${key}",0)
    </parameter>
+
+.. code-block:: yaml
+
+   parameter:
+     - name: foo
+       mode: python
+       _: |
+           {
+             "tick" : 10,
+             "tock" : 100
+           }.get("${key}",0)
 
 .. index:: workdir change
 
@@ -87,6 +131,12 @@ directories e.g. by using the :term:`jube_variables`.
       ...
    </step>
 
+.. code-block:: yaml
+
+   step:
+     name: a_step
+     work_dir: "bench_run/${jube_benchmark_padid}/${jube_wp_padid}_${jube_step_name}"
+
 Using the ``*_padid`` variables will help to create a sorted directory structure.
 
 *JUBE* does not create any symbolic links inside the changed work directories. If you want to access files, out of
@@ -98,6 +148,13 @@ a dependend step, you can use a ``<fileset>`` and the ``rel_path_ref``-attribute
       <link rel_path_ref="internal">dependent_step_name/a_file</link>
    </files>
 
+.. code-block:: yaml
+
+   fileset:
+     name: needed_files
+     link:
+       - {rel_path_ref: internal, _: dependent_step_name/a_file}
+
 This will create a link inside your alternative working dir and the link target path will be seen relative towards
 the original *JUBE* directory structure. So here you can use the normal automatic created link to access all
 dependend files.
@@ -108,10 +165,12 @@ use it within a path definition.
 
 .. index:: XML character handling
 
+.. _XML_character_handling:
+
 XML character handling
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The *JUBE* input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
+The *JUBE* *XML* based input format bases on the general *XML* rules. Here some hints for typical *XML* problems:
 
 Linebreaks are not allowed inside a tag-option (e.g. ``<sub ... dest="...\n...">`` is not possible). Inside a tag
 multiple lines are no problem (e.g. inside of ``<parameter>...</parameter>``). Often multiple lines are also needed
@@ -133,6 +192,42 @@ Some characters are not allowed inside an *XML* script or at least not inside a 
 * ``&`` : ``&amp;``
 * ``"`` : ``&quot;``
 * ``'`` : ``&apos;``
+
+.. index:: YAML character handling
+
+.. _YAML_character_handling:
+
+YAML character handling
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The *JUBE* *YAML* based input format bases on the general *YAML* rules.
+   
+Instead of tags in the *XML* format the *YAML* format uses keys which values are a list of elements or other keys.
+
+The files used for this example can be found inside ``examples/yaml``.
+
+The input file ``hello_world.yaml``:
+
+.. literalinclude:: ../examples/yaml/hello_world.yaml
+   :language: yaml
+
+You can use different styles of writing key value pairs:
+In the example, the ``parameter`` is declared in one line using ``{}``.
+Mutliple key value pairs can be stored per element. The main content attribute is marked by using ``_``.
+As an alternative you can write the key value pairs amongst multiple lines using the same indent as the preceding line, 
+like the key ``do`` in the example.
+If a key like ``use`` has only a value, you can write it in one line without using the special ``_`` key.
+
+Is list of elements can be specifiec by using ``[]`` or by using ``-`` amongst multiple lines (always keeping the same indent).
+
+*YAML* also has a number of spcial characters which can be integrated by using quotation marks:
+
+The input file ``special_values.yaml``:
+
+.. literalinclude:: ../examples/yaml/special_values.yaml
+   :language: yaml
+   
+Anytime you have a symbol like ``#``, ``'``, ``,``, ``:`` or ``{}`` you have to enclose the entire value in quotation marks. 
 
 .. index:: analyse multiple files
 
@@ -180,14 +275,14 @@ Due to the independet result_entries, you will end up with the following result 
 
 .. code-block:: none
 
-   pattern1_of_A | pattern2_of_A | pattern1_of_B
-   --------------+---------------+--------------
-               1 |             A |
-               2 |             B |
-                 |               |           10
-                 |               |           11
-                 |               |           12
-                 |               |           13
+   | pattern1_of_A | pattern2_of_A | pattern1_of_B |
+   |---------------+---------------+---------------|
+   |             1 |             A |               |
+   |             2 |             B |               |
+   |               |               |            10 |
+   |               |               |            11 |
+   |               |               |            12 |
+   |               |               |            13 |
 
 The different ``<analyse>`` were not combined. So you end up with independet result lines for each workpackage. *JUBE*
 does not see possible step dependencies in this point the user has to set the dependcies manually:
@@ -206,12 +301,12 @@ correct result:
 
 .. code-block:: none
 
-   pattern1_of_A | pattern2_of_A | pattern1_of_B
-   --------------+---------------+--------------
-              1  |             A |           10
-              2  |             B |           11
-              1  |             A |           12
-              2  |             B |           13
+   | pattern1_of_A | pattern2_of_A | pattern1_of_B |
+   |---------------|---------------|---------------|
+   |            1  |             A |            10 |
+   |            2  |             B |            11 |
+   |            1  |             A |            12 |
+   |            2  |             B |            13 |
 
 .. index:: extract specifc block
 
@@ -240,10 +335,17 @@ This is possible by using ``\s`` within the pattern for each individual newline 
 
    <pattern name="a_pattern" dotall="true">blockB:.*?time=$jube_pat_int</pattern>
 
+.. code-block:: yaml
+
+   pattern:
+     - {name: a_pattern, dotall: true, _: 'blockB:.*?time=$jube_pat_int'}
+
 This only extracts ``30`` from ``blockB``. Setting ``dotall="true"`` allows to use the ``.`` to take care of all newline characters in between (by default newline characters are 
 not matched by ``.``).
 
 .. index:: restart workpackage
+
+.. _restart_workpackage:
 
 Restart a workpackage execution
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

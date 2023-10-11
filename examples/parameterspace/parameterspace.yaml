@@ -1,0 +1,17 @@
+name: parameterspace
+outpath: bench_run
+comment: A parameterspace example
+
+#Configuration
+parameterset:
+  name: param_set
+  #Create a parameterspace out of two template parameter
+  parameter:
+    - {name: number, type: int, _: "1,2,4"} #comma separated integer must be quoted
+    - {name: text, separator: ;, _: Hello;World}
+
+#Operation
+step:
+  name: say_hello
+  use: param_set #use existing parameterset
+  do: echo "$text $number" #shell command

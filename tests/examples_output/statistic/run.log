@@ -1,0 +1,53 @@
+[2022-08-19 17:16:08,694]:DEBUG: Create initial workpackages
+[2022-08-19 17:16:08,714]:DEBUG: Store initial workpackage information
+[2022-08-19 17:16:08,737]:DEBUG: Start benchmark run
+[2022-08-19 17:16:08,737]:INFO: ######################################################################
+[2022-08-19 17:16:08,737]:INFO: # benchmark: reduce_example
+[2022-08-19 17:16:08,737]:INFO: # id: 0
+[2022-08-19 17:16:08,737]:INFO: #
+[2022-08-19 17:16:08,737]:INFO: # A result reduce example
+[2022-08-19 17:16:08,737]:INFO: ######################################################################
+[2022-08-19 17:16:08,737]:DEBUG: ----- write_some_numbers ( iter:0 | id:0 | parents: | cycle:0 | procs:1 ) -----
+[2022-08-19 17:16:08,790]:DEBUG:   available parameter:
+[2022-08-19 17:16:08,790]:DEBUG:          | parameter             | value                                    |
+[2022-08-19 17:16:08,790]:DEBUG:          |-----------------------|------------------------------------------|
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_benchmark_home   | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-19 17:16:08,790]:DEBUG:          |                       | ube/examples/statistic                   |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_benchmark_id     | 0                                        |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_benchmark_name   | reduce_example                           |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_benchmark_padid  | 000000                                   |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_benchmark_rundir | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-19 17:16:08,790]:DEBUG:          |                       | ube/examples/statistic/bench_run/000000  |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_benchmark_start  | 2022-08-19T17:16:08                      |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_step_cycles      | 1                                        |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_step_iterations  | 1                                        |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_step_name        | write_some_numbers                       |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_wp_abspath       | /p/project/ccstao/cstao08/jube_devs/rc/j |
+[2022-08-19 17:16:08,790]:DEBUG:          |                       | ube/examples/statistic/bench_run/000000/ |
+[2022-08-19 17:16:08,790]:DEBUG:          |                       | 000000_write_some_numbers/work           |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_wp_cycle         | 0                                        |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_wp_envlist       |                                          |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_wp_envstr        |                                          |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_wp_id            | 0                                        |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_wp_iteration     | 0                                        |
+[2022-08-19 17:16:08,790]:DEBUG:          | jube_wp_padid         | 000000                                   |
+[2022-08-19 17:16:08,791]:DEBUG:          | jube_wp_relpath       | bench_run/000000/000000_write_some_numbe |
+[2022-08-19 17:16:08,791]:DEBUG:          |                       | rs/work                                  |
+[2022-08-19 17:16:08,836]:DEBUG: >>> echo "1 2 3 4 5 6 7 8 9 10"
+[2022-08-19 17:16:08,836]:DEBUG:     stdout: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/statistic/bench_run/000000/000000_write_some_numbers/work/stdout
+[2022-08-19 17:16:08,836]:DEBUG:     stderr: /p/project/ccstao/cstao08/jube_devs/rc/jube/examples/statistic/bench_run/000000/000000_write_some_numbers/work/stderr
+[2022-08-19 17:16:08,958]:DEBUG: Create new workpackages for workpackage write_some_numbers(0)
+[2022-08-19 17:16:08,959]:DEBUG:   0 new workpackages created
+[2022-08-19 17:16:08,960]:INFO:   |           stepname | all | open | wait | error | done |
+[2022-08-19 17:16:08,963]:INFO:   |--------------------|-----|------|------|-------|------|
+[2022-08-19 17:16:08,964]:INFO:   | write_some_numbers |   1 |    0 |    0 |     0 |    1 |
+[2022-08-19 17:16:08,964]:INFO: 
+[2022-08-19 17:16:08,964]:INFO: >>>> Benchmark information and further useful commands:
+[2022-08-19 17:16:08,964]:INFO: >>>>       id: 0
+[2022-08-19 17:16:08,964]:INFO: >>>>   handle: bench_run
+[2022-08-19 17:16:08,964]:INFO: >>>>      dir: bench_run/000000
+[2022-08-19 17:16:08,964]:INFO: >>>>  analyse: jube analyse bench_run --id 0
+[2022-08-19 17:16:08,964]:INFO: >>>>   result: jube result bench_run --id 0
+[2022-08-19 17:16:08,964]:INFO: >>>>     info: jube info bench_run --id 0
+[2022-08-19 17:16:08,964]:INFO: >>>>      log: jube log bench_run --id 0
+[2022-08-19 17:16:08,964]:INFO: ######################################################################

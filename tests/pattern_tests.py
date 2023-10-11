@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2016
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -23,7 +23,6 @@ from __future__ import (print_function,
                         division)
 
 import re
-
 import unittest
 import jube2.pattern
 

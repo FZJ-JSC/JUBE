@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -289,6 +289,7 @@ class Analyser(object):
                             default = float(default)
                         new_result_dict[pattern.name] = default
                         new_result_dict[pattern.name + "_cnt"] = 0
+                        new_result_dict[pattern.name + "_first"] = default
                         new_result_dict[pattern.name + "_last"] = default
                         if pattern.content_type in ["int", "float"]:
                             new_result_dict.update(
@@ -441,10 +442,16 @@ class Analyser(object):
                             match_dict[pattern.name]["sum"] += match
                         else:
                             match_dict[pattern.name]["sum"] = match
-                        if "sum2" in match_dict[pattern.name]:
-                            match_dict[pattern.name]["sum2"] += match ** 2
-                        else:
-                            match_dict[pattern.name]["sum2"] = match ** 2
+                        try:
+                            if "sum2" in match_dict[pattern.name]:
+                                match_dict[pattern.name]["sum2"] += match ** 2
+                            else:
+                                match_dict[pattern.name]["sum2"] = match ** 2
+                        except OverflowError:
+                            LOGGER.warning(
+                                "Squared sum cannot be represented, " +
+                                "numerical result out of range.")
+                            match_dict[pattern.name]["sum2"] = math.nan
 
                     if "cnt" in match_dict[pattern.name]:
                         match_dict[pattern.name]["cnt"] += 1
@@ -458,11 +465,14 @@ class Analyser(object):
                              match_dict[pattern.name]["cnt"])
 
                     if match_dict[pattern.name]["cnt"] > 1:
-                        match_dict[pattern.name]["std"] = math.sqrt(
-                            (abs(match_dict[pattern.name]["sum2"] -
-                                 (match_dict[pattern.name]["sum"] ** 2 /
-                                  match_dict[pattern.name]["cnt"])) /
-                             (match_dict[pattern.name]["cnt"] - 1)))
+                        try:
+                            match_dict[pattern.name]["std"] = math.sqrt(
+                                (abs(match_dict[pattern.name]["sum2"] -
+                                     (match_dict[pattern.name]["sum"] ** 2 /
+                                      match_dict[pattern.name]["cnt"])) /
+                                 (match_dict[pattern.name]["cnt"] - 1)))
+                        except OverflowError:
+                            match_dict[pattern.name]["std"] = 0
                     else:
                         match_dict[pattern.name]["std"] = 0
 
@@ -483,9 +493,9 @@ class Analyser(object):
         for pattern_name in match_dict:
             for option in match_dict[pattern_name]:
                 if option == "first":
-                    name = pattern_name
-                else:
-                    name = "{0}_{1}".format(pattern_name, option)
+                    result_dict[pattern_name] = \
+                        match_dict[pattern_name][option]
+                name = "{0}_{1}".format(pattern_name, option)
                 result_dict[name] = match_dict[pattern_name][option]
 
         return result_dict, match_dict
@@ -495,6 +505,8 @@ class Analyser(object):
         stepname -> workpackage_id -> filename -> patternname -> value
         """
         etree = list()
+        if self._analyse_result is None:
+            return etree
         for stepname in self._analyse_result:
             step_etree = ET.Element("step")
             step_etree.attrib["name"] = stepname

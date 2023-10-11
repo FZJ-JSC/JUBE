@@ -1,0 +1,24 @@
+name: scripting_parameter
+outpath: bench_run
+comment: A scripting parameter example
+
+#Configuration
+parameterset:
+  name: param_set
+  parameter:
+    #Normal template
+    - {name: number, type: int, _: "1,2,4"} 
+    #A template created by a scripting parameter
+    - {name: additional_number, mode: python, type: int, _: '",".join(str(a*${number}) for a in [1,2])'}
+    #A scripting parameter
+    - {name: number_mult, mode: python, type: float, _: "${number}*${additional_number}"}
+    #Reuse another parameter
+    - {name: text, _: "Number: $number"}
+
+#Operation
+step:
+  name: operation
+  use: param_set #use existing parameterset
+  do:
+    - 'echo "number: $number, additional_number: $additional_number"' 
+    - 'echo "number_mult: $number_mult, text: $text"'

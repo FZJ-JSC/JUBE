@@ -1,0 +1,15 @@
+name: parallel_workpackages
+outpath: bench_run
+comment: A parallel workpackages demo
+
+parameterset:
+  name: param_set
+  parameter: {name: i, type: int, mode: python, _: "\",\".join([ str(i) for i in range(0,10)])"}
+step:
+  name: parallel_execution
+  suffix: ${i}
+  procs: 4
+  use: param_set
+  do:
+  - "echo \"${i}\""
+  - "N=1000000 ; a=1; k=0; while [ "$k" -lt $N ]; do echo $(( 2*k + 1 + $a )) ; k=$(( k + 1 )) ; done"

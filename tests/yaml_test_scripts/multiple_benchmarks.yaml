@@ -1,0 +1,12 @@
+- name: multiple_benchmarks_1
+  outpath: bench_run_1
+  
+  step:
+    name: execute
+    do: echo test_1
+- name: multiple_benchmarks_2
+  outpath: bench_run_2
+  
+  step:
+    name: execute
+    do: echo test_2
