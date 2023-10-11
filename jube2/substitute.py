@@ -140,6 +140,7 @@ class Substituteset(object):
         for sub in self._sub_list:
             sub_etree = ET.SubElement(substituteset_etree, "sub")
             sub_etree.attrib["source"] = sub.source
+            sub_etree.attrib["type"] = sub.type
             sub_etree.text = sub.dest
         return substituteset_etree
 
