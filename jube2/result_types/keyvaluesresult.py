@@ -205,9 +205,15 @@ class KeyValuesResult(Result):
         self._keys.append(KeyValuesResult.DataKey(name, title, format_string,
                                                   unit))
 
-    def create_result_data(self, display_only = None, masking = None):
+    def create_result_data(self, select=None, exclude=None):
         """Create result data"""
         result_data = KeyValuesResult.KeyValuesData(self._name)
+
+        if select is None:
+            select = [key.name for key in self._keys]
+
+        if exclude is None:
+            exclude = []
 
         # Read pattern/parameter units if available
         units = self._load_units([key.name for key in self._keys])
@@ -239,12 +245,10 @@ class KeyValuesResult(Result):
             row = list()
             cnt = 0
             for key in self._keys:
-                if display_only and key.name not in display_only:
-                    key.show = False
-                if masking and key.name in masking:
-                    key.show = False
-                        
-                if key.name in dataset and key.show:
+                if key.name not in select or key.name in exclude:
+                    self._keys.remove(key)
+                    continue
+                if key.name in dataset:
                     # Cnt number of final entries to avoid complete empty
                     # result entries
                     cnt += 1
@@ -261,13 +265,9 @@ class KeyValuesResult(Result):
                     row.append(value)
                 else:
                     row.append(None)
-                
-                if not key.show:
-                    self._keys.remove(key)
 
             if cnt > 0:
                 table_data.append(row)
-        
 
         # Add data to toe result set
         result_data.add_key_value_data(self._keys, table_data,

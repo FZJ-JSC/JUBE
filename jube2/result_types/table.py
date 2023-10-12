@@ -137,23 +137,11 @@ class Table(KeyValuesResult):
             KeyValuesResult.DataKey.__init__(self, name, title, format_string,
                                              unit)
             self._colw = colw
-            self._show = True
 
         @property
         def colw(self):
             """Column width"""
             return self._colw
-        
-        @property
-        def show(self):
-            """Get show"""
-            return self._show
-        
-        @show.setter
-        def show(self, show):
-            """Set show"""
-            self._show = show    
-
 
         def etree_repr(self):
             """Return etree object representation"""
@@ -181,9 +169,9 @@ class Table(KeyValuesResult):
         """Add an additional key to the dataset"""
         self._keys.append(Table.Column(name, title, None, format_string))
 
-    def create_result_data(self, style, display_only = None, masking = None):
+    def create_result_data(self, style, select=None, exclude=None):
         """Create result data"""
-        result_data = KeyValuesResult.create_result_data(self, display_only, masking)
+        result_data = KeyValuesResult.create_result_data(self, select, exclude)
         return Table.TableData(result_data,
                                style if style is not None else self._style,
                                self._separator, self._transpose)

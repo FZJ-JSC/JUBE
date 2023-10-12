@@ -162,9 +162,15 @@ class GenericResult(Result):
         """Add an additional key to the dataset"""
         self._keys.append(GenericResult.DataKey(name, title, unit))
 
-    def create_result_data(self):
+    def create_result_data(self, select, exclude):
         """Create result data"""
         result_data = GenericResult.KeyValuesData(self._name)
+
+        if select is None:
+            select = [key.name for key in self._keys]
+
+        if exclude is None:
+            exclude = []
 
         # Read pattern/parameter units if available
         units = self._load_units([key.name for key in self._keys])
@@ -178,6 +184,8 @@ class GenericResult(Result):
             new_data = dict()
             cnt = 0
             for key in self._keys:
+                if key.name not in select or key.name in exclude:
+                    continue
                 if key.name in dataset:
                     # Cnt number of final entries to avoid complete empty
                     # result entries
