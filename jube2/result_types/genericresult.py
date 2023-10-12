@@ -185,6 +185,7 @@ class GenericResult(Result):
             cnt = 0
             for key in self._keys:
                 if key.name not in select or key.name in exclude:
+                    self._keys.remove(key)
                     continue
                 if key.name in dataset:
                     # Cnt number of final entries to avoid complete empty
