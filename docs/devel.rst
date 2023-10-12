@@ -1,5 +1,5 @@
 .. # JUBE Benchmarking Environment
-   # Copyright (C) 2008-2020
+   # Copyright (C) 2008-2022
    # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
    # http://www.fz-juelich.de/jsc/jube
    #
@@ -32,7 +32,7 @@ Coding standards
 * use ``format`` instead of ``%``
 * avoid very long methods
 * use multiple files for completely different classes
-* try to stay **Python2.6** conform
+* try to stay **Python3.2** conform
 * ``import`` of package files should use the complete path (avoid ``from``)
 * all files must include the **Python3** compatible header:
 
@@ -72,8 +72,8 @@ Another possibility is to copy or link the file to the default search
 path ``~/.config/flake8`` to use it globally.
 
 
-Coverage
---------
+Coverage and testing
+--------------------
 
 To produce a coverage report the ``coverage`` packet must be
 installed. Run
@@ -89,9 +89,10 @@ folder ``htmlcov`` with html files visualizing the code coverage by
 adding colors for covered and uncovered regions of the code. The
 summary can be viewed in ``index.html``.
 
-You might want to replace ``python`` with ``python2`` or ``python3``
-respectively to explicitly test different python versions and make
-sure both versions are still working.
+Testing for multiprocessing parts need to be performed manually. The 
+corresponding file is located in ``tests/multiprocessing_tests.py``
+
+Make sure to add tests for your developments.
 
 
 Documentation creation

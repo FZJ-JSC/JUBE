@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <benchmark name="parallel_workpackages" outpath="bench_run">
+    <comment>A parallel workpackages demo</comment>
+
+    <parameterset name="param_set">
+      <parameter name="i" type="int" mode="python">",".join([ str(i) for i in range(0,10)])</parameter>
+    </parameterset>
+
+    <step name="parallel_execution" suffix="${i}" procs="4">
+      <use>param_set</use>
+      <do>echo "${i}"</do>
+      <do>N=1000000 ; a=1; k=0; while [ "$k" -lt $N ]; do echo $(( 2*k + 1 + $a )) ; k=$(( k + 1 )) ; done</do>
+    </step>
+  </benchmark>
+</jube>

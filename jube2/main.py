@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -239,7 +239,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
 
     # Read existing benchmark configuration
     try:
-        parser = jube2.jubeio.XMLParser(os.path.join(
+        parser = jube2.jubeio.Parser(os.path.join(
             benchmark_folder, jube2.conf.CONFIGURATION_FILENAME),
             force=args.force, strict=args.strict)
         benchmarks = parser.benchmarks_from_xml()[0]
@@ -260,7 +260,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
     if restore_workpackages:
         # Read existing workpackage information
         try:
-            parser = jube2.jubeio.XMLParser(os.path.join(
+            parser = jube2.jubeio.Parser(os.path.join(
                 benchmark_folder, jube2.conf.WORKPACKAGES_FILENAME),
                 force=args.force, strict=args.strict)
             workpackages, work_stat = parser.workpackages_from_xml(benchmark)
@@ -272,7 +272,7 @@ def _load_existing_benchmark(args, benchmark_folder, restore_workpackages=True,
     if load_analyse and os.path.isfile(os.path.join(
             benchmark_folder, jube2.conf.ANALYSE_FILENAME)):
         # Read existing analyse data
-        parser = jube2.jubeio.XMLParser(os.path.join(
+        parser = jube2.jubeio.Parser(os.path.join(
             benchmark_folder, jube2.conf.ANALYSE_FILENAME),
             force=args.force, strict=args.strict)
         analyse_result = parser.analyse_result_from_xml()
@@ -397,8 +397,8 @@ def run_new_benchmark(args):
                               args.include_path if include_path != ""]
         else:
             include_pathes = None
-        parser = jube2.jubeio.XMLParser(path, tags, include_pathes, args.force,
-                                        args.strict)
+        parser = jube2.jubeio.Parser(path, tags, include_pathes,
+                                     args.force, args.strict)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
@@ -577,8 +577,8 @@ def _update_analyse_and_result(args, benchmark):
                               args.include_path if include_path != ""]
         else:
             include_pathes = None
-        parser = jube2.jubeio.XMLParser(args.update, tags, include_pathes,
-                                        args.force, args.strict)
+        parser = jube2.jubeio.Parser(args.update, tags, include_pathes,
+                                     args.force, args.strict)
         benchmarks = parser.benchmarks_from_xml()[0]
 
         # Update benchmark
@@ -795,7 +795,7 @@ def gen_subparser_conf():
                 {"type": int, "help": "show only last N benchmarks"},
             ("-s", "--style"):
                 {"help": "overwrites table style type",
-                 "choices": ["pretty", "csv"]},
+                 "choices": ["pretty", "csv", "aligned"]},
             ("-d", "--display_only"):
                 {"nargs": "+", "help": "display only given columns",
                 "default": []},
@@ -905,8 +905,7 @@ def gen_subparser_conf():
 
     # completion subparser
     subparser_configuration["complete"] = {
-        "help": "generate shell completion "
-                'usage: eval "$(jube complete)"',
+        "help": "generate shell completion ",
         "func": complete,
         "arguments": {
             ('--command-name', "-c"):

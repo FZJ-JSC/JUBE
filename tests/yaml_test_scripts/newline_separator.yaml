@@ -1,0 +1,16 @@
+name: newline
+outpath: bench_run
+
+parameterset:
+    name: params
+    parameter:
+        - name: cases
+          separator: "\n"
+          _: |
+            parameter1
+            parameter2
+
+step:
+    name: execute
+    use: params
+    do: echo $cases

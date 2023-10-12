@@ -1,0 +1,9 @@
+parameterset: 
+  - name: param_set
+    parameter: {name: number, type: int, _: "1,2,4"}
+  - name: param_set2
+    parameter: {name: text, _: Hello}
+
+dos:
+  - echo Test
+  - echo $number

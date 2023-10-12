@@ -10,7 +10,7 @@
 <!ATTLIST not           tag CDATA #IMPLIED>
 <!ELEMENT tag (#PCDATA)>
 <!ATTLIST tag           tag CDATA #IMPLIED>
-<!ELEMENT include-path (path*)>
+<!ELEMENT include-path (#PCDATA|path)*>
 <!ATTLIST include-path  tag CDATA #IMPLIED>
 <!ELEMENT path (#PCDATA)>
 <!ATTLIST path          tag CDATA #IMPLIED>
@@ -24,6 +24,7 @@
 <!ELEMENT parameterset ((parameter|include)*)>
 <!ATTLIST parameterset  name CDATA #REQUIRED
                         init_with CDATA #IMPLIED
+                        duplicate (replace|error|concat) #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT parameter (#PCDATA)>
 <!ATTLIST parameter     name CDATA #REQUIRED
@@ -32,6 +33,7 @@
                         export (true|false|True|False) #IMPLIED
                         update_mode (never|use|step|cycle|always) #IMPLIED
                         separator CDATA #IMPLIED
+                        duplicate (none|replace|error|concat) #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT substituteset ((iofile|sub|include)*)>
 <!ATTLIST substituteset name CDATA #REQUIRED
@@ -98,6 +100,8 @@
                         active CDATA #IMPLIED
                         suffix CDATA #IMPLIED
                         work_dir CDATA #IMPLIED
+                        procs CDATA #IMPLIED
+                        do_log_file CDATA #IMPLIED
                         shared CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT analyzer ((use|analyse|include)*)>
@@ -123,12 +127,12 @@
 <!ELEMENT analyse ((file|include)*)>
 <!ATTLIST analyse       step CDATA #REQUIRED
                         tag CDATA #IMPLIED>
-<!ELEMENT result ((use|table|syslog|include)*)>
+<!ELEMENT result ((use|table|database|syslog|include)*)>
 <!ATTLIST result        result_dir CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT table ((column|include)*)>
 <!ATTLIST table         name CDATA #REQUIRED
-                        style (csv|pretty) #IMPLIED
+                        style (csv|pretty|aligned) #IMPLIED
                         separator CDATA #IMPLIED
                         transpose (true|false|True|False) #IMPLIED
                         sort CDATA #IMPLIED
@@ -138,6 +142,12 @@
 <!ATTLIST column        colw CDATA #IMPLIED
                         format CDATA #IMPLIED
                         title CDATA #IMPLIED
+                        tag CDATA #IMPLIED>
+<!ELEMENT database ((key|include)*)>
+<!ATTLIST database      name CDATA #REQUIRED
+                        primekeys CDATA #IMPLIED
+                        file CDATA #IMPLIED
+                        filter CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT syslog ((key|include)*)>
 <!ATTLIST syslog        name CDATA #REQUIRED

@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -93,13 +93,15 @@ class Table(KeyValuesResult):
             data = list()
             data.append([column.resulting_name for column in self._columns])
             data += self._data
+            data = [['' if c is None else c for c in r] for r in data]
             if self._style == "pretty":
                 output = "{0}:\n".format(self.name)
             else:
                 output = ""
+
             output += jube2.util.output.text_table(
                 data, use_header_line=True, auto_linebreak=False, colw=colw,
-                indent=0, pretty=(self._style == "pretty"),
+                indent=0, style=self._style,
                 separator=self._separator, transpose=self._transpose)
 
             return output

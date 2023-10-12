@@ -1,5 +1,5 @@
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2020
+# Copyright (C) 2008-2022
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
@@ -29,6 +29,7 @@ import xml.etree.ElementTree as ET
 import jube2.util.util
 import jube2.conf
 import jube2.log
+import jube2.parameter
 
 LOGGER = jube2.log.get_logger(__name__)
 
@@ -42,7 +43,7 @@ class Step(object):
 
     def __init__(self, name, depend, iterations=1, alt_work_dir=None,
                  shared_name=None, export=False, max_wps="0",
-                 active="true", suffix="", cycles=1):
+                 active="true", suffix="", cycles=1, procs=1, do_log_file=None):
         self._name = name
         self._use = list()
         self._operations = list()
@@ -55,6 +56,8 @@ class Step(object):
         self._active = active
         self._suffix = suffix
         self._cycles = cycles
+        self._procs = procs
+        self._do_log_file = do_log_file
 
     def etree_repr(self):
         """Return etree object representation"""
@@ -79,6 +82,10 @@ class Step(object):
             step_etree.attrib["iterations"] = str(self._iterations)
         if self._cycles > 1:
             step_etree.attrib["cycles"] = str(self._cycles)
+        if self._procs != 1:
+            step_etree.attrib["procs"] = str(self._procs)
+        if self._do_log_file != None:
+            step_etree.attrib["do_log_file"] = str(self._do_log_file)
         for use in self._use:
             use_etree = ET.SubElement(step_etree, "use")
             use_etree.text = jube2.conf.DEFAULT_SEPARATOR.join(use)
@@ -127,6 +134,11 @@ class Step(object):
         return self._cycles
 
     @property
+    def procs(self):
+        """Return number of procs"""
+        return self._procs
+
+    @property
     def shared_link_name(self):
         """Return shared link name"""
         return self._shared_name
@@ -135,6 +147,11 @@ class Step(object):
     def max_wps(self):
         """Return maximum number of simultaneous workpackages"""
         return self._max_wps
+
+    @property
+    def do_log_file(self):
+        """Return do log file name"""
+        return self._do_log_file
 
     def get_used_sets(self, available_sets, parameter_dict=None):
         """Get list of all used sets, which can be found in available_sets"""
@@ -455,7 +472,7 @@ class Operation(object):
         return jube2.util.util.eval_bool(active_str)
 
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
-                environment=None):
+                environment=None, pid=None, dolog=None):
         """Execute the operation. work_dir must be set to the given context
         path. The parameter_dict used for inline substitution.
         If only_check_pending is set to True, the operation will not be
@@ -509,15 +526,27 @@ class Operation(object):
                 self._work_dir, parameter_dict)
             new_work_dir = os.path.expandvars(os.path.expanduser(new_work_dir))
             work_dir = os.path.join(work_dir, new_work_dir)
+            if re.search(jube2.parameter.Parameter.parameter_regex, work_dir):
+                raise IOError(("Given work directory {0} contains a unknown " +
+                               "JUBE or environment variable.").format(
+                    work_dir))
+
             # Create directory if it does not exist
             if not jube2.conf.DEBUG_MODE and not os.path.exists(work_dir):
-                os.makedirs(work_dir)
+                try:
+                    os.makedirs(work_dir)
+                except FileExistsError:
+                    pass
 
         if not only_check_pending:
 
+            if pid is not None:
+                env_file_name = jube2.conf.ENVIRONMENT_INFO.replace(
+                    '.', '_{}.'.format(pid))
+            else:
+                env_file_name = jube2.conf.ENVIRONMENT_INFO
             abs_info_file_path = \
-                os.path.abspath(os.path.join(work_dir,
-                                             jube2.conf.ENVIRONMENT_INFO))
+                os.path.abspath(os.path.join(work_dir, env_file_name))
 
             # Select unix shell
             shell = jube2.conf.STANDARD_SHELL
@@ -538,6 +567,11 @@ class Operation(object):
                         stdout_handle = subprocess.PIPE
                     else:
                         stdout_handle = stdout
+
+                    if dolog != None:
+                        dolog.store_do(do=do, shell=shell, work_dir=os.path.abspath(
+                            work_dir), parameter_dict=parameter_dict, shared=self.shared)
+
                     sub = subprocess.Popen(
                         [shell, "-c",
                          "{0} && env > \"{1}\"".format(do,
@@ -561,11 +595,20 @@ class Operation(object):
                         if (not read_out):
                             break
                         else:
-                            print(read_out.decode(errors="ignore"), end="")
+                            try:
+                                print(read_out.decode(errors="ignore"), end="")
+                            except TypeError:
+                                print(read_out.decode("utf-8", "ignore"),
+                                      end="")
                             try:
                                 stdout.write(read_out)
                             except TypeError:
-                                stdout.write(read_out.decode(errors="ignore"))
+                                try:
+                                    stdout.write(read_out.decode(
+                                        errors="ignore"))
+                                except TypeError:
+                                    stdout.write(read_out.decode("utf-8",
+                                                                 "ignore"))
                             time.sleep(jube2.conf.VERBOSE_STDOUT_POLL_SLEEP)
                     sub.communicate()
 
@@ -575,7 +618,7 @@ class Operation(object):
                 stdout.close()
                 stderr.close()
 
-                env = Operation.read_process_environment(work_dir)
+                env = Operation.read_process_environment(work_dir, pid=pid)
 
                 # Read and store new environment
                 if (environment is not None) and (returncode == 0):
@@ -637,7 +680,7 @@ class Operation(object):
                 else:
                     continue_op = False
 
-        #Search for error file
+        # Search for error file
         if self._error_filename is not None:
             error_filename = jube2.util.util.substitution(
                 self._error_filename, parameter_dict)
@@ -682,11 +725,16 @@ class Operation(object):
         return self._do
 
     @staticmethod
-    def read_process_environment(work_dir, remove_after_read=True):
+    def read_process_environment(work_dir, remove_after_read=True, pid=None):
         """Read standard environment info file in given directory."""
         env = dict()
         last = None
-        env_file_path = os.path.join(work_dir, jube2.conf.ENVIRONMENT_INFO)
+        if pid is not None:
+            env_file_name = jube2.conf.ENVIRONMENT_INFO.replace(
+                '.', '_{}.'.format(pid))
+        else:
+            env_file_name = jube2.conf.ENVIRONMENT_INFO
+        env_file_path = os.path.join(work_dir, env_file_name)
         if os.path.isfile(env_file_path):
             env_file = open(env_file_path, "r")
             for line in env_file:
@@ -701,3 +749,96 @@ class Operation(object):
             if remove_after_read:
                 os.remove(env_file_path)
         return env
+
+
+class DoLog(object):
+
+    """A DoLog class containing the operations and information for setting up the do log."""
+
+    def __init__(self, log_dir, log_file, initial_env, cycle=0):
+        self._log_dir = log_dir
+        if log_file != None:
+            if log_file[-1] == '/':
+                raise ValueError(
+                    "The path of do_log_file is ending with / which is a invalid file path.")
+        self._log_file = log_file
+        self._initial_env = initial_env
+        self._work_dir = None
+        self._cycle = cycle
+        self._log_path = None
+
+    @property
+    def log_path(self):
+        """Get log directory"""
+        return self._log_path
+
+    @property
+    def log_file(self):
+        """Get log file"""
+        return self._log_file
+
+    @property
+    def log_path(self):
+        """Get log path"""
+        return self._log_path
+
+    @property
+    def work_dir(self):
+        """Get last work directory"""
+        return self._work_dir
+
+    @property
+    def initial_env(self):
+        """Get initial env"""
+        return self._initial_env
+
+    def initialiseFile(self, shell):
+        """Initialise file if not yet existent."""
+        fdologout = open(self.log_path, 'a')
+        fdologout.write('#!'+shell+'\n\n')
+        for envVarName, envVarValue in self.initial_env.items():
+            fdologout.write('set '+envVarName+"='" +
+                            envVarValue.replace('\n', '\\n')+"'\n")
+        fdologout.write('\n')
+        fdologout.close()
+
+    def store_do(self, do, shell, work_dir, parameter_dict=None, shared=False):
+        """Store the current execution directive to the do log and set up the environment if file does not yet exist."""
+        if self._log_file == None:
+            return
+
+        if self._log_path == None:
+            if parameter_dict:
+                new_log_file = jube2.util.util.substitution(
+                    self._log_file, parameter_dict)
+                new_log_file = os.path.expandvars(
+                    os.path.expanduser(new_log_file))
+                self._log_file = new_log_file
+                if re.search(jube2.parameter.Parameter.parameter_regex, self._log_file):
+                    raise IOError(("Given do_log_file path {0} contains a unknown " +
+                                   "JUBE or environment variable.").format(
+                        self._log_file))
+
+            if self._log_file[0] == '/':
+                self._log_path = self._log_file
+            elif '/' not in self._log_file:
+                self._log_path = os.path.join(self._log_dir, self._log_file)
+            else:
+                self._log_path = os.path.join(os.getcwd(), self._log_file)
+
+        # create directory if not yet existent
+        if not os.path.exists(os.path.dirname(self.log_path)):
+            os.makedirs(os.path.dirname(self.log_path))
+
+        if not os.path.exists(self.log_path):
+            self.initialiseFile(shell)
+
+        fdologout = open(self.log_path, 'a')
+        if work_dir != self.work_dir:
+            fdologout.write('cd '+work_dir+'\n')
+            self._work_dir = work_dir
+        fdologout.write(do)
+        if shared:
+            fdologout.write(' # shared execution')
+        fdologout.write('\n')
+        fdologout.close()
