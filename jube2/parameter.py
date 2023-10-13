@@ -119,7 +119,7 @@ class Parameterset(object):
                 value.sort()
                 return jube2.parameter.TemplateParameter(
                             parameter._name, value, parameter._separator, parameter._type,
-                            parameter._mode, parameter._export,
+                            parameter._mode, "", parameter._export,
                             parameter._update_mode, parameter._idx,
                             parameter._eval_helper, parameter._duplicate)
         else:
