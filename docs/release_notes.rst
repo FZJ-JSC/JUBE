@@ -25,7 +25,8 @@ Version 2.5.2
 ~~~~~~~~~~~~~
 Release: 2023-10-13
 
-* update `result_creation` example.
+* The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.
+* The `result_creation` example has been updated.
 * The `jube complete` help output was debugged.
 * The tests were refactored and debugged.
 * Backward compatibility for floating number value definitions of parameters of type int was restored such that only warning messages are printed in this case.
