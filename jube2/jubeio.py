@@ -665,7 +665,7 @@ class Parser(object):
         LOGGER.debug("  Parsing <include-path>")
         valid_tags = ["path"]
         pathes = []
-        if len(include_path_etree.text.strip()) > 0:
+        if (include_path_etree.text) and len(include_path_etree.text.strip()) > 0:
             pathes.append(include_path_etree.text.strip())
         for element in include_path_etree:
             Parser._check_tag(element, valid_tags)
