@@ -457,10 +457,11 @@ Glossary
 
      .. code-block:: xml
 
-        <sub source="..." dest="..." />
+        <sub source="..." dest="..." type="..."/>
 
      * ``source``-string will be replaced by ``dest``-string
      * both can contain parameter: ``... $nameofparameter ...``
+     * ``type`` is optional and can be used to switch between text substitution and regex substitution
 
    step_tag
      A step give a list of *Shell* operations and a corresponding parameter environment.

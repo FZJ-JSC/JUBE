@@ -25,6 +25,7 @@ Version 2.5.2
 ~~~~~~~~~~~~~
 Release: 2023-10-13
 
+* A new attribute type has been added to the sub-tag, which allows for specific substitution using regex.
 * The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.
 * The `result_creation` example has been updated.
 * The `jube complete` help output was debugged.
