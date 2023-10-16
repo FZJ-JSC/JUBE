@@ -50,10 +50,10 @@ Schema usage:
 .. code-block:: xml
    :linenos:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   <?xml version="1.0" encoding="UTF-8"?>
+   <jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="<jube.xsd path>">
-    ...
+   ...
 
 RELAX NG Compact Syntax (RNC for emacs nxml-mode) usage:
 
@@ -70,7 +70,7 @@ create a ``schema.xml`` file which looks like
 
    <?xml version="1.0"?>
    <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
-      <uri resource="jube-file.xml" uri="../schema/jube.rnc"/>
+     <uri resource="jube-file.xml" uri="../schema/jube.rnc"/>
    </locatingRules>
 
 The next time you open the same xml file emacs will find the correct
@@ -84,11 +84,11 @@ Example validation tools:
 
   * For validation (using the DTD)::
 
-       >>> xmllint --noout --valid <xml input file>
+      >>> xmllint --noout --valid <xml input file>
 
   * For validation (using the DTD and Schema)::
 
-       >>> xmllint --noout --valid --schema <schema file> <xml input file>
+      >>> xmllint --noout --valid --schema <schema file> <xml input file>
 
 .. index:: scripting, perl, python, shell
 
@@ -256,7 +256,7 @@ There are two new attributes:
     ``<do>`` containing a ``done_file`` attribute *JUBE* will return directly and will not continue automatically until the ``done_file`` exists. If you want to check the current status
     of your running steps and continue the benchmark process if possible you can type::
 
-       >>> jube continue bench_run
+      >>> jube continue bench_run
 
     This will continue your benchmark execution (``bench_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relatively seen towards the work directory.
   * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory gets a unique name. When changing the directory the user must select a
@@ -342,24 +342,37 @@ It will search for the files to include inside four different positions, in the 
 
 * inside a directory given over the command line interface::
 
-     >>> jube run --include-path some_path another_path -- main.xml
+      >>> jube run --include-path some_path another_path -- main.xml
 
-* inside any path given by an ``<include-path>``-tag:
+* inside any path given by an ``<include-path>``- or ``include-path:``-tag in *XML* or *YAML*, respectively:
 
   .. code-block:: xml
      :linenos:
 
      <?xml version="1.0" encoding="UTF-8"?>
-     <benchmarks>
+     <jube>
        <include-path>
          <path>some_path</path>
          <path>another_path</path>
        </include-path>
        ...
+     </jube>
+
+
+  .. code-block:: yaml
+     :linenos:
+  
+     ...
+     include-path:
+       path:
+         - "some path"
+         - "another path"
+     ...
+
 
 * inside any path given with the ``JUBE_INCLUDE_PATH`` environment variable (see :ref:`configuration`)::
 
-     >>> export JUBE_INCLUDE_PATH=some_path:another_path
+      >>> export JUBE_INCLUDE_PATH=some_path:another_path
 
 * inside the same directory of your ``main.xml``
 
@@ -398,7 +411,7 @@ The result (if no ``tag`` is set on the commandline) inside the ``stdout`` file 
 .. code-block:: none
 
    Hallo $world_str
-   
+
 because ``!deu+eng`` and ``eng`` will be ``false`` and there is no other input available for ``$world_str``. ``deu|!eng`` will be ``true``.  
 
 When running the same example using a specific ``tag``::
@@ -452,6 +465,18 @@ input file. This can be mixed using the tagging-feature:
      </include-path>
      ...
    </jube>
+
+Or in *YAML*:
+
+.. code-block:: yaml
+   :linenos:
+
+   ...
+   include-path:
+     path:
+       - {tag: plat1,  _: "some path"}
+       - {tag: plat2,  _: "another path"}
+   ...
 
 Now you can run your benchmark using::
 
