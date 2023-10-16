@@ -33,8 +33,8 @@ Installation
 
 Requirements: *JUBE* needs **Python 3.2** (or any higher version)
 
-If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml-module <https://pyyaml.org>`_ to
-your *Python* module library.
+If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml` module `<https://pyyaml.org>`_ to
+your *Python* module library. Additionally the `ruamel` module `https://pypi.org/project/ruamel.yaml` is optional. If installed it is used to verify the validity of the *YAML* files.
 
 To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in different ways:
 
@@ -466,14 +466,14 @@ The input file ``result_creation.yaml``:
 .. literalinclude:: ../examples/result_creation/result_creation.yaml
    :language: yaml
 
-Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``stdout``.
+Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``en`` and ``Zahl: $number`` to ``de``.
 
-Now we want to parse these ``stdout`` files to extract information (in this example case the written number). First of all we have to declare a
+Now we want to parse these ``en`` and ``de`` files to extract information (in this example case the written number). First of all we have to declare a
 ``<patternset>``. Here we can describe a set of ``<pattern>``. A ``<pattern>`` is a regular expression which will be used to parse your result files
-and search for a given string. In this example we only have the ``<pattern>`` ``number_pat``. The name of the pattern must be unique (based on the usage of the ``<patternset>``).
-The ``type`` is optional. It is used when the extracted data will be sorted. The regular expression can contain other patterns or parameters. The example uses ``$jube_pat_int`` which
-is a *JUBE* :term:`default pattern <jube_pattern>` matching integer values. The pattern can contain a group, given by brackets ``(...)``, to declare the extraction part
-(``$jube_pat_int`` already contains these brackets).
+and search for a given string. In this example we have the ``<pattern>`` ``number_pat`` which matches both file contents and the more specific version ``number_pat_en`` and ``number_pat_de``.
+The name of the pattern must be unique (based on the usage of the ``<patternset>``). The ``type`` is optional. It is used when the extracted data will be sorted. 
+The regular expression can contain other patterns or parameters. The example uses ``$jube_pat_int`` which is a *JUBE* :term:`default pattern <jube_pattern>` matching integer values. 
+The pattern can contain a group, given by brackets ``(...)``, to declare the extraction part (``$jube_pat_int`` already contains these brackets).
 
 E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
 
@@ -482,11 +482,12 @@ E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
    <pattern name="jube_pat_int" type="int">([+-]?\d+)</pattern>
    <pattern name="jube_pat_fp" type="float">([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)</pattern>
 
-If there are multiple matches inside a single file you can add a :term:`reduce option <analyser_tag>`. By default, only the first match will be extracted.
+A complete list of predefined patterns is in the glossary. If there are multiple matches inside a single file you can add a :term:`reduce option <analyser_tag>`. 
+By default, only the first match will be extracted.
 
 To use your ``<patternset>`` you have to specify the files which should be parsed. This can be done using the ``<analyser>``.
-It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
-will create its own result entry.
+It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination and every analyser
+will create its own result entry. Additional ``<patternset>`` can be used inside the ``<file>`` tag in order to apply this set only to one file.
 
 The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to include additional ``<parameterset>`` 
 that have not been already used within the analysed ``<step>``.
