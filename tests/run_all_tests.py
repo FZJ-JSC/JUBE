@@ -28,7 +28,7 @@ from multiprocessing_tests import TestMultiprocessing
 from pattern_tests import TestPattern
 from benchmark_tests import TestBenchmark
 from result_database_tests import TestResultDatabase
-from examples_tests import TestExamples
+from examples_tests import TestExample
 from yaml_tests import TestYAMLScripts
 from xml_tests import TestXMLScripts
 from step_tests import TestOperation

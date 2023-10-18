@@ -26,21 +26,21 @@ import unittest
 import os
 import shutil
 import jube2.main
-from examples_tests import * 
+from examples_tests import TestExample 
 
-class TestCycleExample(TestExample):
+class TestFilesAndSubExample(TestExample):
 
     """Class for testing the cycle example"""
 
     def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "cycle")
-        self._xml_file = os.path.join(self._path, "cycle.xml")
-        self._yaml_file = os.path.join(self._path, "cycle.yaml")
+        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "files_and_sub")
+        self._xml_file = os.path.join(self._path, "files_and_sub.xml")
+        self._yaml_file = os.path.join(self._path, "files_and_sub.yaml")
         self._bench_run_path = os.path.join(self._path, "bench_run")
         self._commands = ["run -e {0}".format(file).split() \
                           for file in [self._xml_file, self._yaml_file]]
         self._wp_paths = None
-        self._stdout = "0\n1\n2\n3"
+        self._stdout = ["Number: "+i for i in ["1", "2", "4"]]
 
     def test_example(self):
         for command in self._commands:
@@ -51,16 +51,30 @@ class TestCycleExample(TestExample):
             #check for done file and no error file in workpackage folder
             self._test_for_status_files_in_wp_folders()
 
-            #check also for done file in workpackage work folder
-            self._test_for_status_files_in_work_folders()
-
-            #check stdout content in work directory
+            #check also for content in work directory
             for wp_id, wp_path in self._wp_paths.items():
                 work_path = self._get_work_path(wp_path)
+                #check for content of stdout
                 stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout,
-                                 "Error: stdout file in work for workpackage with "
-                                 "id {0} has not the right content".format(wp_id))
+                self.assertEqual(stdout, self._stdout[wp_id],
+                                 "Error: stdout file in work for workpackage "
+                                 "with id {0} has not the right content"
+                                 .format(wp_id))
+
+                #check for content of file.in
+                origin_file_in = self._content_of_file(os.path.join(self._path, "file.in"))
+                actual_file_in = self._content_of_file(os.path.join(work_path, "file.in"))
+                self.assertEqual(actual_file_in, origin_file_in,
+                                 "Error: file.in in work for workpackage "
+                                 "with id {0} has not the right content"
+                                 .format(wp_id))
+
+                #check for content of file.out -> sub successful?
+                file_out = self._content_of_file(os.path.join(work_path, "file.out"))
+                self.assertEqual(file_out, self._stdout[wp_id],
+                                 "Error: file.out in work for workpackage "
+                                 "with id {0} has not the right content"
+                                 .format(wp_id))
 
     def tearDown(self):
         #remove bench_run folder after all tests for this example

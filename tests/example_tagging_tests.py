@@ -26,24 +26,31 @@ import unittest
 import os
 import shutil
 import jube2.main
-from examples_tests import * 
+from examples_tests import TestExample 
 
-class TestCycleExample(TestExample):
+class TestTaggingExample(TestExample):
 
     """Class for testing the cycle example"""
 
     def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "cycle")
-        self._xml_file = os.path.join(self._path, "cycle.xml")
-        self._yaml_file = os.path.join(self._path, "cycle.yaml")
+        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "tagging")
+        self._xml_file = os.path.join(self._path, "tagging.xml")
+        self._yaml_file = os.path.join(self._path, "tagging.yaml")
         self._bench_run_path = os.path.join(self._path, "bench_run")
+        self._tags = ["deu", "eng", "deu eng"]
         self._commands = ["run -e {0}".format(file).split() \
                           for file in [self._xml_file, self._yaml_file]]
+        self._commands += ["run -e {0} --tag {1}".format(file, tag).split() \
+                          for file in [self._xml_file, self._yaml_file]
+                          for tag in self._tags]
         self._wp_paths = None
-        self._stdout = "0\n1\n2\n3"
+        self._stdout = ["Hallo $world_str" , "Hallo $world_str",
+                        "Hallo $world_str", "Hello World",
+                        "Hallo World", "Hallo $world_str",
+                        "Hello World", "Hallo World"]
 
     def test_example(self):
-        for command in self._commands:
+        for id, command in enumerate(self._commands):
             #execute jube run
             jube2.main.main(command)
             self._run_path = self._get_run_path(self._bench_run_path)
@@ -51,20 +58,21 @@ class TestCycleExample(TestExample):
             #check for done file and no error file in workpackage folder
             self._test_for_status_files_in_wp_folders()
 
-            #check also for done file in workpackage work folder
-            self._test_for_status_files_in_work_folders()
-
-            #check stdout content in work directory
+            #check also for content in work directory
             for wp_id, wp_path in self._wp_paths.items():
                 work_path = self._get_work_path(wp_path)
                 stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout,
-                                 "Error: stdout file in work for workpackage with "
-                                 "id {0} has not the right content".format(wp_id))
+                self.assertEqual(stdout, self._stdout[id],
+                                 "Error: stdout file in work for workpackage "
+                                 "with id {0} has not the right content {1}"
+                                 .format(wp_id, wp_path))
+
+            #TODO: Check for result
 
     def tearDown(self):
         #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
+        #shutil.rmtree(self._bench_run_path)
+        pass
 
 
 if __name__ == "__main__":
