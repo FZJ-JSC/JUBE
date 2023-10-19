@@ -23,6 +23,7 @@ from __future__ import (print_function,
                         division)
 
 import unittest
+import sqlite3
 import os
 import shutil
 import jube2.main
@@ -41,6 +42,8 @@ class TestResultDatabaseExample(TestExample):
                           for file in [self._xml_file, self._yaml_file]]
         self._wp_paths = None
         self._stdout = ["Number: "+ number for number in ["1", "2", "4"]]
+        self._key_names = ["number", "number_pat"]
+        self._keys = [[1, 2, 4], [1, 2, 4]]
 
     def test_example(self):
         for command in self._commands:
@@ -61,11 +64,28 @@ class TestResultDatabaseExample(TestExample):
                                  "with id {0} has not the right content"
                                  .format(wp_id))
 
-            #TODO: Check for result
+            self._test_for_equal_result_data()
+
+    def _test_for_equal_result_data(self):
+        #check existence of database file
+        database_path = "result_database.dat"
+        self.assertTrue(os.path.exists(database_path))
+
+        #check column names and database table content of database file
+        con = sqlite3.connect(database_path)
+        cur = con.cursor()
+        cur.execute("SELECT * FROM {}".format("results"))
+        db_col_names = [tup[0] for tup in cur.description]
+        db_content = cur.fetchall()
+        db_content = [list(i) for i in db_content]
+        db_content = list(map(list, zip(*db_content)))
+        con.close()
+        self.assertEqual(db_col_names, self._key_names)
+        self.assertEqual(db_content, self._keys)
 
     def tearDown(self):
         #remove bench_run folder after all tests for this example
-        os.remove('result_database.dat')
+        os.remove("result_database.dat")
         shutil.rmtree(self._bench_run_path)
 
 

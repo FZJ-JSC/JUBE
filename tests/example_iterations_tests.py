@@ -24,6 +24,7 @@ from __future__ import (print_function,
 
 import unittest
 import os
+import re
 import shutil
 import jube2.main
 from examples_tests import TestExample 
@@ -33,6 +34,8 @@ class TestIterationsExample(TestExample):
     """Class for testing the cycle example"""
 
     def setUp(self):
+        self._name = "iterations"
+        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, self._name)
         self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "iterations")
         self._xml_file = os.path.join(self._path, "iterations.xml")
         self._yaml_file = os.path.join(self._path, "iterations.yaml")
@@ -64,11 +67,30 @@ class TestIterationsExample(TestExample):
                                  "with id {0} has not the right content"
                                  .format(wp_id))
 
-            #TODO: Check for result
+            self._test_for_equal_result_data()
+
+    def _test_for_equal_result_data(self):
+        origin_result_file = open(os.path.join("examples_result_output",
+                                               self._name, "result.dat"))
+        origin_result_content = \
+            [re.findall(r'(\|.+ \| .+ \|)(?: [^|]+ \| [^|]+ \| [^|]+ )(\| .+ \|)'
+                        ,line) for line in origin_result_file]
+        origin_result_file.close()
+
+        run_result_file = open(os.path.join(self._run_path, "result",
+                                            "result.dat"))
+        run_result_content = \
+            [re.findall(r'(\|.+ \| .+ \|)(?: [^|]+ \| [^|]+ \| [^|]+ )(\| .+ \|)'
+                        ,line) for line in run_result_file]
+        run_result_file.close()
+
+        for run_line in run_result_content:
+            self.assertTrue(run_line in origin_result_content, "Result for "
+                            "example {} not correct".format(self._name))
 
     def tearDown(self):
         #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
+        pass#shutil.rmtree(self._bench_run_path)
 
 
 if __name__ == "__main__":

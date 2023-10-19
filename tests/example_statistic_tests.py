@@ -33,11 +33,12 @@ class TestStatisticExample(TestExample):
     """Class for testing the cycle example"""
 
     def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "statistic")
+        self._name = "statistic"
+        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, self._name)
         self._xml_file = os.path.join(self._path, "statistic.xml")
         self._yaml_file = os.path.join(self._path, "statistic.yaml")
         self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._commands = ["run -e {0}".format(file).split() \
+        self._commands = ["run -e {0} -r".format(file).split() \
                           for file in [self._xml_file, self._yaml_file]]
         self._wp_paths = None
         self._stdout = ["1 2 3 4 5 6 7 8 9 10"]
@@ -61,7 +62,7 @@ class TestStatisticExample(TestExample):
                                  "with id {0} has not the right content"
                                  .format(wp_id))
 
-            #TODO: Check for result
+            self._test_for_equal_result_data()
 
     def tearDown(self):
         #remove bench_run folder after all tests for this example

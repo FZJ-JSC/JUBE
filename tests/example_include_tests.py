@@ -33,7 +33,8 @@ class TestIncludeExample(TestExample):
     """Class for testing the cycle example"""
 
     def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "include")
+        self._name = "include"
+        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, self._name)
         self._xml_file = os.path.join(self._path, "main.xml")
         self._yaml_file = os.path.join(self._path, "main.yaml")
         self._bench_run_path = os.path.join(self._path, "bench_run")

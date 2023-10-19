@@ -67,12 +67,9 @@ class TestTaggingExample(TestExample):
                                  "with id {0} has not the right content {1}"
                                  .format(wp_id, wp_path))
 
-            #TODO: Check for result
-
     def tearDown(self):
         #remove bench_run folder after all tests for this example
-        #shutil.rmtree(self._bench_run_path)
-        pass
+        shutil.rmtree(self._bench_run_path)
 
 
 if __name__ == "__main__":

@@ -33,7 +33,8 @@ class TestResultCreationExample(TestExample):
     """Class for testing the cycle example"""
 
     def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "result_creation")
+        self._name = "result_creation"
+        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, self._name)
         self._xml_file = os.path.join(self._path, "result_creation.xml")
         self._yaml_file = os.path.join(self._path, "result_creation.yaml")
         self._bench_run_path = os.path.join(self._path, "bench_run")
@@ -71,7 +72,7 @@ class TestResultCreationExample(TestExample):
                                  "with id {0} has not the right content"
                                  .format(wp_id))
 
-            #TODO: Check for result
+            self._test_for_equal_result_data()
 
     def tearDown(self):
         #remove bench_run folder after all tests for this example

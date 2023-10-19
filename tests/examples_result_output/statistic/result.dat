@@ -1,0 +1,4 @@
+result:
+| number_pat | number_pat_first | number_pat_last | number_pat_min | number_pat_max | number_pat_sum | number_pat_cnt | number_pat_avg | number_pat_std |
+|------------|------------------|-----------------|----------------|----------------|----------------|----------------|----------------|----------------|
+|          1 |                1 |              10 |              1 |             10 |             55 |             10 |            5.5 |           3.03 |
