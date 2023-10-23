@@ -23,47 +23,24 @@ from __future__ import (print_function,
                         division)
 
 import unittest
-import os
-import shutil
-import jube2.main
-from examples_tests import TestExample 
+from examples_tests import TestCase 
 
-class TestEnvironmentExample(TestExample):
+class TestEnvironmentExample(TestCase.TestExample):
 
-    """Class for testing the cycle example"""
+    """Class for testing the environment example"""
 
-    def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "environment")
-        self._xml_file = os.path.join(self._path, "environment.xml")
-        self._yaml_file = os.path.join(self._path, "environment.yaml")
-        self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._commands = ["run -e {0}".format(file).split() \
-                          for file in [self._xml_file, self._yaml_file]]
-        self._wp_paths = None
-        self._stdout = ["Hello world", "VALUE\nHello again"]
+    @classmethod
+    def setUpClass(cls):
+        '''
+        Automatically called method before tests in the class are run.
 
-    def test_example(self):
-        for command in self._commands:
-            #execute jube run
-            jube2.main.main(command)
-            self._run_path = self._get_run_path(self._bench_run_path)
-
-            #check for done file and no error file in workpackage folder
-            self._test_for_status_files_in_wp_folders()
-
-            #check also for content of stdout
-            for wp_id, wp_path in self._wp_paths.items():
-                work_path = self._get_work_path(wp_path)
-                stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout[wp_id],
-                                 "Error: stdout file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
-
-    def tearDown(self):
-        #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
-
+        Create the necessary variables and paths for the specific example
+        '''
+        cls._name = "environment"
+        cls._stdout = [["Hello world", "VALUE\nHello again"],
+                       ["Hello world", "VALUE\nHello again"]]
+        super(TestEnvironmentExample, cls).setUpClass()
+        super(TestEnvironmentExample, cls)._execute_commands()
 
 if __name__ == "__main__":
     unittest.main()

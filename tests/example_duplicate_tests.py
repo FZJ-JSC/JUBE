@@ -23,56 +23,34 @@ from __future__ import (print_function,
                         division)
 
 import unittest
-import os
-import shutil
-import jube2.main
-from examples_tests import TestExample 
+from examples_tests import TestCase
 
-class TestDuplicateExample(TestExample):
+class TestDuplicateExample(TestCase.TestExample):
 
-    """Class for testing the cycle example"""
+    """Class for testing the duplicate example"""
 
-    def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "duplicate")
-        self._xml_file = os.path.join(self._path, "duplicate.xml")
-        self._yaml_file = os.path.join(self._path, "duplicate.yaml")
-        self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._tags = ["few", "many", "few many"]
-        self._commands = ["run -e {0}".format(file).split() \
-                          for file in [self._xml_file, self._yaml_file]]
-        self._commands += ["run -e {0} --tag {1}".format(file, tag).split() \
-                          for file in [self._xml_file, self._yaml_file]
-                          for tag in self._tags]
-        self._wp_paths = None
-        self._stdout = [["1"], ["1"], ["1", "3", "6", "10"],
-                        ["1", "210", "465", "820"],
-                        ["1", "3", "210", "6", "465", "10", "820"],
+    @classmethod
+    def setUpClass(cls):
+        '''
+        Automatically called method before tests in the class are run.
+
+        Create the necessary variables and paths for the specific example
+        '''
+        cls._name = "duplicate"
+        cls._stdout = [["1"], ["1"], ["1", "3", "6", "10"],
                         ["1", "3", "6", "10"],
                         ["1", "210", "465", "820"],
+                        ["1", "210", "465", "820"],
+                        ["1", "3", "210", "6", "465", "10", "820"],
                         ["1", "3", "210", "6", "465", "10", "820"]]
+        super(TestDuplicateExample, cls).setUpClass()
 
-    def test_example(self):
-        for id, command in enumerate(self._commands):
-            #execute jube run
-            jube2.main.main(command)
-            self._run_path = self._get_run_path(self._bench_run_path)
-
-            #check for done file and no error file in workpackage folder
-            self._test_for_status_files_in_wp_folders()
-
-            #check also for content of stdout
-            for wp_id, wp_path in self._wp_paths.items():
-                work_path = self._get_work_path(wp_path)
-                stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout[id][wp_id],
-                                 "Error: stdout file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
-
-    def tearDown(self):
-        #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
-
+        #Create suffix for commands with all tag combinations
+        tags = ["few", "many", "few many"]
+        suffix = [""]
+        for tag in tags:
+            suffix.append("--tag "+tag)
+        super(TestDuplicateExample, cls)._execute_commands(suffix)
 
 if __name__ == "__main__":
     unittest.main()

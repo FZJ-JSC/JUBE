@@ -25,53 +25,37 @@ from __future__ import (print_function,
 import unittest
 import sqlite3
 import os
-import shutil
-import jube2.main
-from examples_tests import TestExample 
+from examples_tests import TestCase
 
-class TestResultDatabaseExample(TestExample):
+class TestResultDatabaseExample(TestCase.TestExample):
 
-    """Class for testing the cycle example"""
+    """Class for testing the result_database example"""
 
-    def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "result_database")
-        self._xml_file = os.path.join(self._path, "result_database.xml")
-        self._yaml_file = os.path.join(self._path, "result_database.yaml")
-        self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._commands = ["run -e {0} -r".format(file).split() \
-                          for file in [self._xml_file, self._yaml_file]]
-        self._wp_paths = None
-        self._stdout = ["Number: "+ number for number in ["1", "2", "4"]]
-        self._key_names = ["number", "number_pat"]
-        self._keys = [[1, 2, 4], [1, 2, 4]]
+    @classmethod
+    def setUpClass(cls):
+        '''
+        Automatically called method before tests in the class are run.
 
-    def test_example(self):
-        for command in self._commands:
-            #execute jube run
-            jube2.main.main(command)
-            self._run_path = self._get_run_path(self._bench_run_path)
+        Create the necessary variables and paths for the specific example
+        '''
+        cls._name = "result_database"
+        cls._stdout = ["Number: "+ number for number in ["1", "2", "4"]]
+        cls._stdout = [cls._stdout, cls._stdout]
+        super(TestResultDatabaseExample, cls).setUpClass()
+        super(TestResultDatabaseExample, cls)._execute_commands(["-r"])
 
-            #check for done file and no error file in workpackage folder
-            self._test_for_status_files_in_wp_folders()
-
-            #check also for content in work directory
-            for wp_id, wp_path in self._wp_paths.items():
-                work_path = self._get_work_path(wp_path)
-                #check for content of stdout file
-                stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout[wp_id],
-                                 "Error: stdout file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
-
-            self._test_for_equal_result_data()
-
-    def _test_for_equal_result_data(self):
-        #check existence of database file
+    def test_for_equal_result_data(self):
+        '''
+        Overwrites the actual test for the result output to allow
+        an example specific test.
+        '''
+        key_names = ["number", "number_pat"]
+        keys = [[1, 2, 4], [1, 2, 4]]
+        #Check existence of database file
         database_path = "result_database.dat"
         self.assertTrue(os.path.exists(database_path))
 
-        #check column names and database table content of database file
+        #Check column names and database table content of database file
         con = sqlite3.connect(database_path)
         cur = con.cursor()
         cur.execute("SELECT * FROM {}".format("results"))
@@ -80,14 +64,11 @@ class TestResultDatabaseExample(TestExample):
         db_content = [list(i) for i in db_content]
         db_content = list(map(list, zip(*db_content)))
         con.close()
-        self.assertEqual(db_col_names, self._key_names)
-        self.assertEqual(db_content, self._keys)
+        self.assertEqual(db_col_names, key_names)
+        self.assertEqual(db_content, keys)
 
-    def tearDown(self):
-        #remove bench_run folder after all tests for this example
+        #Delete database file
         os.remove("result_database.dat")
-        shutil.rmtree(self._bench_run_path)
-
 
 if __name__ == "__main__":
     unittest.main()

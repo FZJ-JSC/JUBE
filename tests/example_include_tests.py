@@ -24,48 +24,26 @@ from __future__ import (print_function,
 
 import unittest
 import os
-import shutil
-import jube2.main
-from examples_tests import TestExample 
+from examples_tests import TestCase
 
-class TestIncludeExample(TestExample):
+class TestIncludeExample(TestCase.TestExample):
 
-    """Class for testing the cycle example"""
+    """Class for testing the include example"""
 
-    def setUp(self):
-        self._name = "include"
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, self._name)
-        self._xml_file = os.path.join(self._path, "main.xml")
-        self._yaml_file = os.path.join(self._path, "main.yaml")
-        self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._commands = ["run -e {0}".format(file).split() \
-                          for file in [self._xml_file, self._yaml_file]]
-        self._wp_paths = None
-        self._stdout = ["bar\nTest\n1", "bar\nTest\n2", "bar\nTest\n4"]
+    @classmethod
+    def setUpClass(cls):
+        '''
+        Automatically called method before tests in the class are run.
 
-    def test_example(self):
-        for command in self._commands:
-            #execute jube run
-            jube2.main.main(command)
-            self._run_path = self._get_run_path(self._bench_run_path)
-
-            #check for done file and no error file in workpackage folder
-            self._test_for_status_files_in_wp_folders()
-
-            #check also for content in work directory
-            for wp_id, wp_path in self._wp_paths.items():
-                work_path = self._get_work_path(wp_path)
-                #check for content of stdout
-                stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout[wp_id],
-                                 "Error: stdout file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
-
-    def tearDown(self):
-        #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
-
+        Create the necessary variables and paths for the specific example
+        '''
+        cls._name = "include"
+        cls._stdout = [["bar\nTest\n1", "bar\nTest\n2", "bar\nTest\n4"],
+                       ["bar\nTest\n1", "bar\nTest\n2", "bar\nTest\n4"]]
+        super(TestIncludeExample, cls).setUpClass()
+        cls._xml_file = os.path.join(cls._path, "main.xml")
+        cls._yaml_file = os.path.join(cls._path, "main.yaml")
+        super(TestIncludeExample, cls)._execute_commands()
 
 if __name__ == "__main__":
     unittest.main()

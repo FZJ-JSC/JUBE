@@ -24,60 +24,49 @@ from __future__ import (print_function,
 
 import unittest
 import os
-import shutil
 import jube2.main
-from examples_tests import TestExample 
+from examples_tests import TestCase
 
-class TestResultCreationExample(TestExample):
+class TestResultCreationExample(TestCase.TestExample):
 
-    """Class for testing the cycle example"""
+    """Class for testing the result_creation example"""
 
-    def setUp(self):
-        self._name = "result_creation"
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, self._name)
-        self._xml_file = os.path.join(self._path, "result_creation.xml")
-        self._yaml_file = os.path.join(self._path, "result_creation.yaml")
-        self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._commands = ["run -e {0} -r".format(file).split() \
-                          for file in [self._xml_file, self._yaml_file]]
-        self._wp_paths = None
-        self._stdout = [[text + ": "+ number for text in ["Zahl", "Number"]]
+    @classmethod
+    def setUpClass(cls):
+        '''
+        Automatically called method before tests in the class are run.
+
+        Create the necessary variables and paths for the specific example
+        '''
+        cls._name = "result_creation"
+        cls._stdout = [["", "", ""], ["", "", ""]]
+        super(TestResultCreationExample, cls).setUpClass()
+        super(TestResultCreationExample, cls)._execute_commands(["-r"])
+
+    def test_additional(self):
+        '''
+        Additional test to check the content of the de and en files
+        '''
+        origin_stdout = [[text + ": "+ number for text in ["Zahl", "Number"]]
                         for number in ["1", "2", "4"]]
-
-    def test_example(self):
-        for command in self._commands:
-            #execute jube run
-            jube2.main.main(command)
-            self._run_path = self._get_run_path(self._bench_run_path)
-
-            #check for done file and no error file in workpackage folder
-            self._test_for_status_files_in_wp_folders()
-
-            #check also for content in work directory
-            for wp_id, wp_path in self._wp_paths.items():
+        for run_path, command_wps in self._wp_paths.items():
+            for wp_id, wp_path in command_wps.items():
                 work_path = self._get_work_path(wp_path)
-                #check for content of de file
+                #Check for content of de file
                 de_file = os.path.join(work_path, "de")
                 stdout = self._content_of_file(de_file)
-                self.assertEqual(stdout, self._stdout[wp_id][0],
+                self.assertEqual(stdout, origin_stdout[wp_id][0],
                                  "Error: de file in work for workpackage "
                                  "with id {0} has not the right content"
                                  .format(wp_id))
 
-                #check for content of en file
+                #Check for content of en file
                 en_file = os.path.join(work_path, "en")
                 stdout = self._content_of_file(en_file)
-                self.assertEqual(stdout, self._stdout[wp_id][1],
+                self.assertEqual(stdout, origin_stdout[wp_id][1],
                                  "Error: en file in work for workpackage "
                                  "with id {0} has not the right content"
                                  .format(wp_id))
-
-            self._test_for_equal_result_data()
-
-    def tearDown(self):
-        #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
-
 
 if __name__ == "__main__":
     unittest.main()

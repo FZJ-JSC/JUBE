@@ -23,51 +23,24 @@ from __future__ import (print_function,
                         division)
 
 import unittest
-import os
-import shutil
-import jube2.main
-from examples_tests import TestExample 
+from examples_tests import TestCase
 
-class TestScriptingPatternExample(TestExample):
+class TestScriptingPatternExample(TestCase.TestExample):
 
-    """Class for testing the cycle example"""
+    """Class for testing the scripting pattern example"""
 
-    def setUp(self):
-        self._name = "scripting_pattern"
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, self._name)
-        self._xml_file = os.path.join(self._path, "scripting_pattern.xml")
-        self._yaml_file = os.path.join(self._path, "scripting_pattern.yaml")
-        self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._commands = ["run -e {0} -r".format(file).split() \
-                          for file in [self._xml_file, self._yaml_file]]
-        self._wp_paths = None
-        self._stdout = [str(i) for i in range(3)]
+    @classmethod
+    def setUpClass(cls):
+        '''
+        Automatically called method before tests in the class are run.
 
-    def test_example(self):
-        for command in self._commands:
-            #execute jube run
-            jube2.main.main(command)
-            self._run_path = self._get_run_path(self._bench_run_path)
-
-            #check for done file and no error file in workpackage folder
-            self._test_for_status_files_in_wp_folders()
-
-            #check also for content in work directory
-            for wp_id, wp_path in self._wp_paths.items():
-                work_path = self._get_work_path(wp_path)
-                #check for content of stdout file
-                stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout[wp_id],
-                                 "Error: stdout file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
-
-            self._test_for_equal_result_data()
-
-    def tearDown(self):
-        #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
-
+        Create the necessary variables and paths for the specific example
+        '''
+        cls._name = "scripting_pattern"
+        cls._stdout = [str(i) for i in range(3)]
+        cls._stdout = [cls._stdout, cls._stdout]
+        super(TestScriptingPatternExample, cls).setUpClass()
+        super(TestScriptingPatternExample, cls)._execute_commands(["-r"])
 
 if __name__ == "__main__":
     unittest.main()

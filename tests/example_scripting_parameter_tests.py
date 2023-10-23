@@ -23,50 +23,26 @@ from __future__ import (print_function,
                         division)
 
 import unittest
-import os
-import shutil
-import jube2.main
-from examples_tests import TestExample 
+from examples_tests import TestCase
 
-class TestScriptingParameterExample(TestExample):
+class TestScriptingParameterExample(TestCase.TestExample):
 
-    """Class for testing the cycle example"""
+    """Class for testing the scripting_parameter example"""
 
-    def setUp(self):
-        self._path = os.path.join(TestExample.EXAMPLES_PREFIX, "scripting_parameter")
-        self._xml_file = os.path.join(self._path, "scripting_parameter.xml")
-        self._yaml_file = os.path.join(self._path, "scripting_parameter.yaml")
-        self._bench_run_path = os.path.join(self._path, "bench_run")
-        self._commands = ["run -e {0}".format(file).split() \
-                          for file in [self._xml_file, self._yaml_file]]
-        self._wp_paths = None
-        self._stdout = ["number: "+str(i)+", additional_number: "+str(i*a)+
-                        "\nnumber_mult: "+str(i*a*i)+", text: Number: "
-                        +str(i) for i in [1, 2, 4] for a in [1,2]]
+    @classmethod
+    def setUpClass(cls):
+        '''
+        Automatically called method before tests in the class are run.
 
-    def test_example(self):
-        for command in self._commands:
-            #execute jube run
-            jube2.main.main(command)
-            self._run_path = self._get_run_path(self._bench_run_path)
-
-            #check for done file and no error file in workpackage folder
-            self._test_for_status_files_in_wp_folders()
-
-            #check also for content in work directory
-            for wp_id, wp_path in self._wp_paths.items():
-                work_path = self._get_work_path(wp_path)
-                #check for content of stdout file
-                stdout = self._content_of_file(self._get_stdout_file(work_path))
-                self.assertEqual(stdout, self._stdout[wp_id],
-                                 "Error: stdout file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
-
-    def tearDown(self):
-        #remove bench_run folder after all tests for this example
-        shutil.rmtree(self._bench_run_path)
-
+        Create the necessary variables and paths for the specific example
+        '''
+        cls._name = "scripting_parameter"
+        cls._stdout = ["number: "+str(i)+", additional_number: "+str(i*a)+
+                       "\nnumber_mult: "+str(i*a*i)+", text: Number: "
+                       +str(i) for i in [1, 2, 4] for a in [1,2]]
+        cls._stdout = [cls._stdout, cls._stdout]
+        super(TestScriptingParameterExample, cls).setUpClass()
+        super(TestScriptingParameterExample, cls)._execute_commands()
 
 if __name__ == "__main__":
     unittest.main()
