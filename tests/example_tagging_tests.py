@@ -43,12 +43,12 @@ class TestTaggingExample(TestCase.TestExample):
                        ["Hallo World"], ["Hallo World"]]
         super(TestTaggingExample, cls).setUpClass()
 
-        #Create suffix for commands with all tag combinations
+        #Create run arguments for commands with all tag combinations
         tags = ["deu", "eng", "deu eng"]
-        suffix = [""]
+        run_args = [""]
         for tag in tags:
-            suffix.append("--tag "+tag)
-        super(TestTaggingExample, cls)._execute_commands(suffix)
+            run_args.append("--tag "+tag)
+        super(TestTaggingExample, cls)._execute_commands(run_args)
 
 if __name__ == "__main__":
     unittest.main()

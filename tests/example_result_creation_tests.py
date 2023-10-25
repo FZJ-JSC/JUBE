@@ -43,7 +43,7 @@ class TestResultCreationExample(TestCase.TestExample):
         super(TestResultCreationExample, cls).setUpClass()
         super(TestResultCreationExample, cls)._execute_commands(["-r"])
 
-    def test_additional(self):
+    def test_for_de_and_en_files(self):
         '''
         Additional test to check the content of the de and en files
         '''
@@ -57,16 +57,16 @@ class TestResultCreationExample(TestCase.TestExample):
                 stdout = self._content_of_file(de_file)
                 self.assertEqual(stdout, origin_stdout[wp_id][0],
                                  "Error: de file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
+                                 "with id {0} in directory {1} has not the "
+                                 "right content".format(wp_id, de_file))
 
                 #Check for content of en file
                 en_file = os.path.join(work_path, "en")
                 stdout = self._content_of_file(en_file)
                 self.assertEqual(stdout, origin_stdout[wp_id][1],
                                  "Error: en file in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
+                                 "with id {0} in directory {1} has not the "
+                                 "right content".format(wp_id, de_file))
 
 if __name__ == "__main__":
     unittest.main()

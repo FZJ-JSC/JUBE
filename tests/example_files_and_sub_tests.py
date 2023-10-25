@@ -43,7 +43,7 @@ class TestFilesAndSubExample(TestCase.TestExample):
         super(TestFilesAndSubExample, cls).setUpClass()
         super(TestFilesAndSubExample, cls)._execute_commands()
 
-    def test_additional(self):
+    def test_for_file_in_and_file_out(self):
         '''
         Additional test to check the content of the file.in and file.out files
         '''
@@ -59,16 +59,16 @@ class TestFilesAndSubExample(TestCase.TestExample):
                                                                     "file.in"))
                 self.assertEqual(actual_file_in, origin_file_in,
                                  "Error: file.in in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
+                                 "with id {0} in directory {1} has not the "
+                                 "right content".format(wp_id, work_path))
 
                 #Check for content of file.out -> sub successful?
                 file_out = self._content_of_file(os.path.join(work_path,
                                                               "file.out"))
                 self.assertEqual(file_out, self._stdout[command_id][wp_id],
                                  "Error: file.out in work for workpackage "
-                                 "with id {0} has not the right content"
-                                 .format(wp_id))
+                                 "with id {0} in directory {1} has not the "
+                                 "right content".format(wp_id, work_path))
 
 if __name__ == "__main__":
     unittest.main()

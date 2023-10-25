@@ -46,8 +46,8 @@ class TestResultDatabaseExample(TestCase.TestExample):
 
     def test_for_equal_result_data(self):
         '''
-        Overwrites the actual test for the result output to allow
-        an example specific test.
+        Overwrites the original test (TestExample.test_for_equal_result_data())
+        for the result output to allow an example specific test.
         '''
         key_names = ["number", "number_pat"]
         keys = [[1, 2, 4], [1, 2, 4]]
@@ -55,7 +55,7 @@ class TestResultDatabaseExample(TestCase.TestExample):
         database_path = "result_database.dat"
         self.assertTrue(os.path.exists(database_path))
 
-        #Check column names and database table content of database file
+        #Get column names and database table content of database file
         con = sqlite3.connect(database_path)
         cur = con.cursor()
         cur.execute("SELECT * FROM {}".format("results"))
@@ -64,8 +64,12 @@ class TestResultDatabaseExample(TestCase.TestExample):
         db_content = [list(i) for i in db_content]
         db_content = list(map(list, zip(*db_content)))
         con.close()
-        self.assertEqual(db_col_names, key_names)
-        self.assertEqual(db_content, keys)
+
+        #Get column names and database table content of database file
+        self.assertEqual(db_col_names, key_names, "Error: Database in file {0}"
+                         "contains the wrong keys".format(database_path))
+        self.assertEqual(db_content, keys, "Error: Database in file {0}"
+                         "has the wrong content".format(database_path))
 
         #Delete database file
         os.remove("result_database.dat")

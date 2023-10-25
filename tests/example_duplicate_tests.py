@@ -45,12 +45,12 @@ class TestDuplicateExample(TestCase.TestExample):
                         ["1", "3", "210", "6", "465", "10", "820"]]
         super(TestDuplicateExample, cls).setUpClass()
 
-        #Create suffix for commands with all tag combinations
+        #Create run arguments for commands with all tag combinations
         tags = ["few", "many", "few many"]
-        suffix = [""]
+        run_args = [""]
         for tag in tags:
-            suffix.append("--tag "+tag)
-        super(TestDuplicateExample, cls)._execute_commands(suffix)
+            run_args.append("--tag "+tag)
+        super(TestDuplicateExample, cls)._execute_commands(run_args)
 
 if __name__ == "__main__":
     unittest.main()

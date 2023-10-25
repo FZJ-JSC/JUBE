@@ -43,7 +43,7 @@ class TestDoLogExample(TestCase.TestExample):
         super(TestDoLogExample, cls).setUpClass()
         super(TestDoLogExample, cls)._execute_commands()
 
-    def test_additional(self):
+    def test_for_do_log_and_stdout_files(self):
         '''
         Additional test to check the existence of the do_log files,
         the contents of the stdout files in the shared directory
@@ -56,25 +56,26 @@ class TestDoLogExample(TestCase.TestExample):
                 do_log_path = os.path.join(wp_path, 'do_log')
                 self.assertTrue(self._existing_file(do_log_path),
                                 "Error: do_log file for workpackage with "
-                                "id {0} does not exist".format(wp_id))
+                                "id {0} in directory {1} does not exist"
+                                .format(wp_id, do_log_path))
 
             #Check for the contents of the stdout files in the shared directory
             shared_path = os.path.join(run_path, "execute_shared")
             stdout = self._content_of_file(self._get_stdout_file(shared_path))
             self.assertEqual(stdout, "loreipsum4", "Error: stdout file for "
-                             "shared folder {0} has not the right content"
+                             "shared directory {0} has not the right content"
                              .format(shared_path))
             #Check for the existence and contents of the loreipsum files
             for i in range(1, 6):
                 loreipsum_path = os.path.join(shared_path, "loreipsum"+str(i))
                 self.assertTrue(self._existing_file(loreipsum_path),
                                 "Error: loreipsum"+str(i)+" file for shared "
-                                "folder {0} does not exist".format(shared_path))
+                                "directory {0} does not exist".format(shared_path))
                 self.assertEqual(self._content_of_file(os.path.join(
                                  self._path, "loreipsum"+str(i))),
                                  self._content_of_file(loreipsum_path),
                                  "Error: loreipsum"+str(i)+" file for shared "
-                                 "folder {0} has not the right content"
+                                 "directory {0} has not the right content"
                                  .format(shared_path))
 
 if __name__ == "__main__":

@@ -41,5 +41,25 @@ class TestCycleExample(TestCase.TestExample):
         super(TestCycleExample, cls).setUpClass()
         super(TestCycleExample, cls)._execute_commands()
 
+    def test_for_status_files_in_work_folders(self):
+        '''
+        Additional test to check that there is a done file and
+        no error files in the working directories.
+        '''
+        for run_path, command_wps in self._wp_paths.items():
+            for wp_id, wp_path in command_wps.items():
+                #get work directory
+                work_path = self._get_work_path(wp_path)
+                self.assertTrue(self._existing_done_file(work_path),
+                                "Failed to successfully complete "
+                                "workpackage with id {0}: Missing "
+                                "done file in work directory {1}"
+                                .format(wp_id, work_path))
+                self.assertFalse(self._existing_error_file(work_path),
+                                "Failed to successfully complete "
+                                "workpackage with id {0}: Missing "
+                                "done file in work directory {1}"
+                                .format(wp_id, work_path))
+
 if __name__ == "__main__":
     unittest.main()

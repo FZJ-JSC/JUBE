@@ -41,6 +41,7 @@ class TestIncludeExample(TestCase.TestExample):
         cls._stdout = [["bar\nTest\n1", "bar\nTest\n2", "bar\nTest\n4"],
                        ["bar\nTest\n1", "bar\nTest\n2", "bar\nTest\n4"]]
         super(TestIncludeExample, cls).setUpClass()
+        #Change input file names
         cls._xml_file = os.path.join(cls._path, "main.xml")
         cls._yaml_file = os.path.join(cls._path, "main.yaml")
         super(TestIncludeExample, cls)._execute_commands()

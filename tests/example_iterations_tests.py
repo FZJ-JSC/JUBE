@@ -49,8 +49,8 @@ class TestIterationsExample(TestCase.TestExample):
 
     def test_for_equal_result_data(self):
         '''
-        Overwrites the actual test for the result output to allow
-        an example specific test.
+        Overwrites the original test (TestExample.test_for_equal_result_data())
+        for the result output to allow an example specific test.
         '''
         for run_path, command_wps in self._wp_paths.items():
             #Get content of target result output

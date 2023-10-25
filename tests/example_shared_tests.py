@@ -43,7 +43,7 @@ class TestSharedExample(TestCase.TestExample):
         super(TestSharedExample, cls).setUpClass()
         super(TestSharedExample, cls)._execute_commands()
 
-    def test_additional(self):
+    def test_for_shared_directories(self):
         '''
         Additional test to check the content of the shared directories
         '''
@@ -55,17 +55,17 @@ class TestSharedExample(TestCase.TestExample):
             id_file = os.path.join(shared_path, "all_ids")
             self.assertTrue(self._existing_file(id_file),
                             "Error: id file for shared "
-                            "folder {0} does not exist".format(shared_path))
+                            "directory {0} does not exist".format(shared_path))
             #Check for content of id file
             id_content = self._content_of_file(id_file)
             self.assertEqual(id_content, "0\n1\n2",
-                             "Error: id file for shared folder {0} "
+                             "Error: id file for shared directory {0} "
                              "has not the right content".format(shared_path))
 
             #Check for content of stdout file
             stdout = self._content_of_file(self._get_stdout_file(shared_path))
             self.assertEqual(stdout, "0\n1\n2",
-                             "Error: stdout for shared folder {0} "
+                             "Error: stdout for shared directory {0} "
                              "has not the right content".format(shared_path))
 
 if __name__ == "__main__":
