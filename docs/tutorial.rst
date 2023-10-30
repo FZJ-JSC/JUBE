@@ -525,7 +525,7 @@ Output of the given example:
    |      2 |          2 |
    |      4 |          4 |
 
-If you want to hide or show only certain output columns, you can use the ``--exclude`` and ``--select`` options. For example, you can use the following commands to display only the number column of the result table:
+If you want to hide or show only certain output columns, you can use the ``--exclude`` and ``--select`` options. For example, you can use the following commands to display only the ``number`` column of the result table:
 
    >>> jube result bench_run --exclude number_pat
 
