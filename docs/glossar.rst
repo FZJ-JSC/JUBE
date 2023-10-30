@@ -461,7 +461,7 @@ Glossary
 
      * ``source``-string will be replaced by ``dest``-string
      * both can contain parameter: ``... $nameofparameter ...``
-     * ``mode`` is optional and can be used to switch between text substitution and regex substitution
+     * ``mode`` is optional (default: ``text``). Can be used to switch between text and regex substitution
 
    step_tag
      A step give a list of *Shell* operations and a corresponding parameter environment.
