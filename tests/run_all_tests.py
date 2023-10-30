@@ -35,6 +35,7 @@ from step_tests import TestOperation
 from step_tests import TestDoLog
 from util_tests import TestUtil
 from conf_tests import TestConf
+from substitute_tests import TestSubstitute
 
 
 if __name__ == "__main__":
