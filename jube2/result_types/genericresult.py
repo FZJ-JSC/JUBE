@@ -178,15 +178,16 @@ class GenericResult(Result):
             if key.name in units:
                 key.unit = units[key.name]
 
+        #select and exclude table columns
+        self._keys = [key for key in self._keys if key.name in select and \
+                                                   key.name not in exclude]
+
         # Create result data
         data = dict()
         for dataset in self._analyse_data():
             new_data = dict()
             cnt = 0
             for key in self._keys:
-                if key.name not in select or key.name in exclude:
-                    self._keys.remove(key)
-                    continue
                 if key.name in dataset:
                     # Cnt number of final entries to avoid complete empty
                     # result entries

@@ -239,15 +239,16 @@ class KeyValuesResult(Result):
                        [jube2.util.util.CompType(x[sort_name])
                         for sort_name in self._sort_names])
 
+        #select and exclude table columns
+        self._keys = [key for key in self._keys if key.name in select and \
+                                                   key.name not in exclude]
+
         # Create table data
         table_data = list()
         for dataset in sort_data:
             row = list()
             cnt = 0
             for key in self._keys:
-                if key.name not in select or key.name in exclude:
-                    self._keys.remove(key)
-                    continue
                 if key.name in dataset:
                     # Cnt number of final entries to avoid complete empty
                     # result entries
@@ -268,7 +269,6 @@ class KeyValuesResult(Result):
 
             if cnt > 0:
                 table_data.append(row)
-
         # Add data to toe result set
         result_data.add_key_value_data(self._keys, table_data,
                                        self._benchmark.id)
