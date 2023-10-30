@@ -78,7 +78,7 @@ class Substituteset(object):
                 new_source = jube2.util.util.substitution(sub.source, parameter_dict)
                 new_dest = jube2.util.util.substitution(
                     sub.dest, parameter_dict)
-                sub_list.append(Sub(new_source, sub.type, new_dest))
+                sub_list.append(Sub(new_source, sub.mode, new_dest))
         else:
             sub_list = self._sub_list
 
@@ -116,7 +116,7 @@ class Substituteset(object):
 
                 # Substitute
                 for sub in sub_list:
-                    if sub.type == "text":
+                    if sub.mode == "text":
                         text = text.replace(sub.source, sub.dest)
                     else:
                         text = re.sub(sub.source, sub.dest, text)
@@ -140,7 +140,7 @@ class Substituteset(object):
         for sub in self._sub_list:
             sub_etree = ET.SubElement(substituteset_etree, "sub")
             sub_etree.attrib["source"] = sub.source
-            sub_etree.attrib["type"] = sub.type
+            sub_etree.attrib["mode"] = sub.mode
             sub_etree.text = sub.dest
         return substituteset_etree
 
@@ -148,9 +148,9 @@ class Substituteset(object):
         return "Substitute({0})".format(self.__dict__)
     
 class Sub(object):
-    def __init__(self, source, sub_type, dest):
+    def __init__(self, source, sub_mode, dest):
         self._source = source
-        self._type = sub_type
+        self._mode = sub_mode
         self._dest = dest
 
     @property
@@ -159,9 +159,9 @@ class Sub(object):
         return self._source
     
     @property
-    def type(self):
+    def mode(self):
         """Return type of Sub"""
-        return self._type
+        return self._mode
     
     @property
     def dest(self):
@@ -171,7 +171,7 @@ class Sub(object):
     def __eq__(self, other):
         return (self._source == other.source \
                and self._dest == other.dest \
-               and self.type == othe.type)
+               and self.mode == othe.mode)
     
     def __hash__(self):
         return hash(self._source)

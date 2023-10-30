@@ -1600,7 +1600,7 @@ class Parser(object):
                     if dest is None:
                         dest = ""
                 dest = dest.strip() + ""
-                sub_type = sub.get("type", default="text").strip()
+                sub_type = sub.get("mode", default="text").strip()
                 subs.append(jube2.substitute.Sub(source, sub_type, dest))
         return (files, subs)
 
