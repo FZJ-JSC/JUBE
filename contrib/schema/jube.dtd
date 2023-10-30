@@ -47,7 +47,7 @@
 <!ELEMENT sub (#PCDATA)>
 <!ATTLIST sub           source CDATA #REQUIRED
                         dest CDATA #IMPLIED
-                        mode CDATA #IMPLIED
+                        mode (text|regex) #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT fileset ((copy|link|prepare|include)*)>
 <!ATTLIST fileset       name CDATA #REQUIRED

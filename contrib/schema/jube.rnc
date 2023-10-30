@@ -82,7 +82,7 @@ sub = element sub { attlist.sub, any }
 attlist.sub &=
   attribute source { text },
   attribute dest { text }?,
-  attribute mode { text }?,
+  attribute mode { "text" | "regex" }?,
   attribute tag { text }?
 fileset = element fileset { attlist.fileset, (copy | link | prepare | \include)* }
 attlist.fileset &=
