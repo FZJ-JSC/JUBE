@@ -178,7 +178,22 @@ class GenericResult(Result):
             if key.name in units:
                 key.unit = units[key.name]
 
-        #select and exclude table columns
+        # Check if given names to select or exclude exist
+        key_names = [key.name for key in self._keys]
+        for select_name in select:
+            if select_name not in key_names:
+                LOGGER.warning("The result output does not contain a pattern "
+                               "or parameter with the name '{0}'. This "
+                               "name is ignored when selecting output."
+                               .format(select_name))
+        for exclude_name in exclude:
+            if exclude_name not in key_names:
+                LOGGER.warning("The result output does not contain a pattern "
+                               "or parameter with the name '{0}'. This "
+                               "name is ignored when excluding output."
+                               .format(exclude_name))
+
+        # Select and exclude table columns
         self._keys = [key for key in self._keys if key.name in select and \
                                                    key.name not in exclude]
 
