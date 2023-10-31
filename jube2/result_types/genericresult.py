@@ -182,15 +182,15 @@ class GenericResult(Result):
         key_names = [key.name for key in self._keys]
         for select_name in select:
             if select_name not in key_names:
-                LOGGER.warning("The result output does not contain a pattern "
+                LOGGER.warning("The result database does not contain a pattern "
                                "or parameter with the name '{0}'. This "
-                               "name is ignored when selecting output."
+                               "name will be ignored for selection."
                                .format(select_name))
         for exclude_name in exclude:
             if exclude_name not in key_names:
-                LOGGER.warning("The result output does not contain a pattern "
+                LOGGER.warning("The result database does not contain a pattern "
                                "or parameter with the name '{0}'. This "
-                               "name is ignored when excluding output."
+                               "name will be ignored for exclusion."
                                .format(exclude_name))
 
         # Select and exclude table columns

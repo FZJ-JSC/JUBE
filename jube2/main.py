@@ -798,10 +798,10 @@ def gen_subparser_conf():
                  "choices": ["pretty", "csv", "aligned"]},
             ("--select",):
                 {"nargs": "+", "help": "display only given columns "
-                 "(not only in the output, but also in the result file)"},
+                 "(changes also the output to the result file)"},
             ("--exclude",):
                 {"nargs": "+", "help": "excludes given columns from the result "
-                 "(not only in the output, but also in the result file)"}
+                 "(changes also the output to the result file)"}
         }
     }
 
