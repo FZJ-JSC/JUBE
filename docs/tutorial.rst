@@ -519,19 +519,19 @@ Output of the given example:
 
 .. code-block:: none
 
-   | number | number_pat |
-   |--------|------------|
-   |      1 |          1 |
-   |      2 |          2 |
-   |      4 |          4 |
+  | number | number_pat | Number | Zahl |
+  |--------|------------|--------|------|
+  |      1 |          1 |      1 |    1 |
+  |      2 |          2 |      2 |    2 |
+  |      4 |          4 |      4 |    4 |
 
-If you want to hide or show only certain output columns, you can use the ``--exclude`` and ``--select`` options. These options take parameter and pattern names as arguments. For example, you can use the following commands to display only the ``number`` column of the result table:
+If you want to hide or show only certain output columns, you can use the ``--select`` and ``--exclude`` options. These options take parameter and pattern names as arguments. For example, you can use the following commands to display only the ``number`` column of the result table:
 
-   >>> jube result bench_run --exclude number_pat
+   >>> jube result bench_run --select number
 
 or
 
-   >>> jube result bench_run --select number
+   >>> jube result bench_run --exclude number_pat number_pat_en number_pat_de
 
 The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in '--select' and not '--exclude' will be displayed.
 
