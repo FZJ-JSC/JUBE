@@ -533,5 +533,7 @@ or
 
    >>> jube result bench_run --select number
 
+The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in '--select' and not '--exclude' will be displayed.
+
 This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about
 including external sets, jobsystem representation and scripting parameter.
