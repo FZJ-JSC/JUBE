@@ -797,9 +797,11 @@ def gen_subparser_conf():
                 {"help": "overwrites table style type",
                  "choices": ["pretty", "csv", "aligned"]},
             ("--select",):
-                {"nargs": "+", "help": "display only given columns"},
+                {"nargs": "+", "help": "display only given columns "
+                 "(not only in the output, but also in the result file)"},
             ("--exclude",):
-                {"nargs": "+", "help": "excludes given columns from the result"}
+                {"nargs": "+", "help": "excludes given columns from the result "
+                 "(not only in the output, but also in the result file)"}
         }
     }
 
