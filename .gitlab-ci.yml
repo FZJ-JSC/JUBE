@@ -42,8 +42,7 @@ test:
     rules:
         - if: $CI_COMMIT_TAG =~ /^test-.*/
 
-
-.push_files: &push_files
+.clone_repo: &clone_repo
     before_script:
         # Cloning to a new folder to avoid caching issues
         - rm -r "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}" || true
@@ -56,6 +55,9 @@ test:
         # Changing cloned repo to current branch
         - cd "${CI_JOB_NAME#*:}"
         - git checkout ${CI_COMMIT_BRANCH}
+
+.push_files: &push_files
+    <<: *clone_repo
     after_script:
         - cd "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
         - git status
@@ -195,6 +197,30 @@ tests:util_tests:
 tests:conf_tests:
     <<: *run_test
 
+dist_package:
+    stage: deploy
+    needs: 
+        - build:year
+        - build:version
+    <<: *clone_repo
+    script:
+        - cd "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
+        - git status
+        # Add list of files
+        - python3 setup.py sdist
+    after_script:
+        - echo "Copying distribution package to web server"
+        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del dist/* apps_jube_docu:software/"
+        # Cleaning up
+        - cd ${CI_PROJECT_DIR}
+        - rm -r "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
+    tags:
+        - remote
+    artifacts:
+        paths:
+            - dist/*
+    rules:
+        - if: $CI_COMMIT_TAG =~ /^REL-.*/
 
 pages:
     stage: deploy
@@ -222,7 +248,7 @@ pages:production:
         - remote
     script:
         - echo "Deploying to production"
-        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del docs/_build/html/* apps_jube_docu:"
+        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del docs/_build/html/* apps_jube_docu:docs/"
     when: manual # Manually triggered
     environment:
         name: production
