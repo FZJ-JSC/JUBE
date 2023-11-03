@@ -33,6 +33,8 @@ dependencies:
         # PATH required for tests
         - export PYTHONPATH=${CI_PROJECT_DIR}/jube2:${PYTHONPATH}
 
+# Test job to be deleted later
+# This job should be triggered when a tag of the form 'test-X.X.X' is added
 test:
     stage: prepare
     script:
@@ -197,7 +199,7 @@ tests:util_tests:
 tests:conf_tests:
     <<: *run_test
 
-dist_package:
+deploy:dist_package:
     stage: deploy
     needs: 
         - build:year
@@ -206,7 +208,7 @@ dist_package:
     script:
         - cd "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
         - git status
-        # Add list of files
+        # Creating distribution package tarball
         - python3 setup.py sdist
     after_script:
         - echo "Copying distribution package to web server"
@@ -221,6 +223,28 @@ dist_package:
             - dist/*
     rules:
         - if: $CI_COMMIT_TAG =~ /^REL-.*/
+
+deploy:download_page:
+    stage: deploy
+    needs: 
+        - deploy:dist_package
+    before_script:
+        - echo "Getting 'download.php' from web server"
+        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP apps_jube_get_download_file:download.php ./"
+    script:
+        - export RELEASE=${CI_COMMIT_TAG#*-}
+        - sed -i "s/$current_version = \"[0-9].[0-9].[0-9]\";/$current_version = \"${RELEASE}\";/" download.php
+        - sed -i "s/^\$versions = array(\(.*\));$/\$versions = array(\1,\"${RELEASE}\");/" download.php
+        - sed -i "s/\$published_versions = array(/\$published_versions = array(\"${RELEASE}\",/" download.php
+        - echo $RELEASE > version
+    after_script:
+        - echo "Copying distribution package to web server"
+        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del download.php version apps_jube_docu:"
+    tags:
+        - remote
+    rules:
+        - if: $CI_COMMIT_TAG =~ /^REL-.*/
+
 
 pages:
     stage: deploy
