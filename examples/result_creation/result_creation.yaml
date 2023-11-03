@@ -6,26 +6,39 @@ comment: A result creation example
 parameterset:
   name: param_set
   #Create a parameterspace with one template parameter
-  parameter: {name: number, type: int, _: "1,2,4"} #comma separated integer must be quoted
+  parameter: {name: number, type: int, _: "1,2,4"} # comma separated integer must be quoted
 
 #Regex pattern
 patternset:
-  name: pattern
-  pattern: {name: number_pat, type: int, _: "Number: $jube_pat_int"} # ":" must be quoted
+- name: pattern_all
+  pattern:
+  - {name: number_pat, type: int, _: ".*? $jube_pat_int"} # "?" must be quoted
+- name: pattern_en
+  pattern:
+  - {name: number_pat_en, type: int, _: "Number: $jube_pat_int"} # ":" must be quoted
+- name: pattern_de
+  pattern:
+  - {name: number_pat_de, type: int, _: "Zahl: $jube_pat_int"}
 
 #Operation
 step:
   name: write_number
   use: param_set #use existing parameterset
-  do: 'echo "Number: $number"' #shell command
+  do:
+  - 'echo "Number: $number" > en'
+  - 'echo "Zahl: $number" > de' #shell commands
 
 #Analyse
 analyser:
-  name: analyse
-  use: pattern #use existing patternset
+- name: analyse
+  use: pattern_all #use existing patternset for all files
   analyse:
     step: write_number
-    file: stdout #file which should be scanned
+    file:
+    - use: pattern_en  #use patternset only for this file
+      _: en
+    - use: pattern_de
+      _: de
 
 #Create result table
 result:
@@ -34,5 +47,9 @@ result:
     name: result
     style: pretty
     sort: number
-    column: [number,number_pat]
+    column:
+    - number
+    - number_pat # Column with title same as pattern name
+    - { title: "Number", _: number_pat_en} # Column with costum title
+    - { title: "Zahl", _: number_pat_de}
 
