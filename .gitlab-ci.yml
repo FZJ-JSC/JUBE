@@ -33,17 +33,6 @@ dependencies:
         # PATH required for tests
         - export PYTHONPATH=${CI_PROJECT_DIR}/jube2:${PYTHONPATH}
 
-# Test job to be deleted later
-# This job should be triggered when a tag of the form 'test-X.X.X' is added
-test:
-    stage: prepare
-    script:
-        - echo "CI job triggered only when tag is added"
-        - echo RELEASE=${CI_COMMIT_TAG#*-}
-        - echo VERSION=${RELEASE%.*}
-    rules:
-        - if: $CI_COMMIT_TAG =~ /^test-.*/
-
 .clone_repo: &clone_repo
     before_script:
         # Cloning to a new folder to avoid caching issues
@@ -244,7 +233,6 @@ deploy:download_page:
         - remote
     rules:
         - if: $CI_COMMIT_TAG =~ /^REL-.*/
-
 
 pages:
     stage: deploy
