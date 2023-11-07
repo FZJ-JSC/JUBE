@@ -104,7 +104,8 @@ build:release_notes:
         - make update_release
     <<: *push_files
     rules:
-        - changes:
+        - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
+          changes:
             - docs/release_notes.rst
     resource_group: gitpush
 
@@ -118,7 +119,8 @@ build:help:
         - make update_help
     <<: *push_files
     rules:
-        - changes:
+        - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
+          changes:
             - docs/glossar.rst
     resource_group: gitpush
 
@@ -132,7 +134,8 @@ build:pdf:
         - make latexpdf
     <<: *push_files
     rules:
-        - changes:
+        - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
+          changes:
             - docs/**/* # all files under folder 'docs'
     resource_group: gitpush
 

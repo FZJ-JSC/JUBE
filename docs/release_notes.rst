@@ -21,10 +21,11 @@
 Release notes
 =============
 
-Version 2.5.2
-~~~~~~~~~~~~~
+Version 2.5.2 [Unreleased]
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 Release: 2023-10-13
 
+* Improved CI: separated tests and automatic tasks for releases
 * The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.
 * The `result_creation` example has been updated.
 * The `jube complete` help output was debugged.
