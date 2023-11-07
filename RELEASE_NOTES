@@ -2,10 +2,12 @@ Release notes
 *************
 
 
-Version 2.5.2
-=============
+Version 2.5.2 [Unreleased]
+==========================
 
 Release: 2023-10-13
+
+* Improved CI with separated tests and automatic tasks for release
 
 * The *include-path* for YAML scripts has been fixed and an usage
   example has been added to the advanced tutorial.
