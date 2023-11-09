@@ -178,20 +178,34 @@ class GenericResult(Result):
             if key.name in units:
                 key.unit = units[key.name]
 
-        # Check if given names to select or exclude exist
+        # Check for correctness of exclude and select names
         key_names = [key.name for key in self._keys]
         for select_name in select:
+            # Check if given names exist in keys
             if select_name not in key_names:
                 LOGGER.warning("The result database does not contain a pattern "
                                "or parameter with the name '{0}'. This "
                                "name will be ignored for selection."
                                .format(select_name))
+            # Check whether the given name occurs only once
+            if select.count(select_name)  > 1:
+                select.remove(select_name)
+                LOGGER.warning("The pattern or parameter name {} occurs more "
+                               "than once. These additional occurrences are "
+                               "ignored for selection.".format(select_name))
         for exclude_name in exclude:
+            # Check if given names exist in keys
             if exclude_name not in key_names:
                 LOGGER.warning("The result database does not contain a pattern "
                                "or parameter with the name '{0}'. This "
                                "name will be ignored for exclusion."
                                .format(exclude_name))
+            # Check whether the given name occurs only once
+            if exclude.count(exclude_name)  > 1:
+                exclude.remove(exclude_name)
+                LOGGER.warning("The pattern or parameter name {} occurs more "
+                               "than once. These additional occurrences are "
+                               "ignored for selection.".format(exclude_name))
 
         # Select and exclude table columns
         self._keys = [key for key in self._keys if key.name in select and \
