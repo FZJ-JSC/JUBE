@@ -2,10 +2,17 @@ Release notes
 *************
 
 
-Version 2.5.2
-=============
+Version 2.5.2 [Unreleased]
+==========================
 
-Release: 2022-09-01
+Release: 2023-10-13
+
+* Improved CI: separated tests and automatic tasks for releases
+
+* The *include-path* for YAML scripts has been fixed and an usage
+  example has been added to the advanced tutorial.
+
+* The *result_creation* example has been updated.
 
 * The *jube complete* help output was debugged.
 
@@ -21,8 +28,6 @@ Release: 2022-09-01
   introduced. This package is used if it is installed. Otherwise,
   there will be no validity check for yaml files and a corresponding
   warning.
-
-* add database element to schema files
 
 
 Version 2.5.1

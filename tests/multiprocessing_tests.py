@@ -44,7 +44,7 @@ class TestMultiprocessing(unittest.TestCase):
             parameter_type='int',
             parameter_mode='python')
         self.parallelParameterset = jube2.parameter.Parameterset(
-            name='paramet_set')
+            name='param_set')
         self.parallelParameterset.add_parameter(self.parallelParameter)
         self.parallelStep = jube2.step.Step(
             name='parallel_execution', depend=set(), procs=2)
