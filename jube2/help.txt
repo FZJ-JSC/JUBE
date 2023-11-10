@@ -584,7 +584,7 @@ parameter_tag
    environment (also called *parameter space*) for the different steps
    of the benchmark.
 
-      <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="..." duplicate="...">...</parameter>
+      <parameter name="..." mode="..." type="..." separator="..." export="..." unit="..." update_mode="..." duplicate="...">...</parameter>
 
    * a parameter can be seen as variable: Name is the name to use the
      variable, and the text between the tags will be the real content
@@ -632,6 +632,8 @@ parameter_tag
 
    * Templates can be created, using scripting e.g.:
      "",".join([str(2**i) for i in range(3)])"
+
+   * "unit" is optional, will be used in the result table
 
    * "update_mode" is optional (default: "never")
 

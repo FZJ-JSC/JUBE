@@ -167,7 +167,7 @@ class Table(KeyValuesResult):
 
     def add_key(self, name, format_string=None, title=None, unit=None):
         """Add an additional key to the dataset"""
-        self._keys.append(Table.Column(name, title, None, format_string))
+        self._keys.append(Table.Column(name, title, None, format_string, unit))
 
     def create_result_data(self, style):
         """Create result data"""

@@ -31,6 +31,7 @@
                         type (int|string|float) #IMPLIED
                         mode CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
+                        unit CDATA #IMPLIED
                         update_mode (never|use|step|cycle|always) #IMPLIED
                         separator CDATA #IMPLIED
                         duplicate (none|replace|error|concat) #IMPLIED
