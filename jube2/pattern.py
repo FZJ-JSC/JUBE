@@ -187,7 +187,6 @@ class Pattern(jube2.parameter.StaticParameter):
             self, name, value, parameter_type=content_type,
             parameter_mode=pattern_mode, unit=self._unit)
 
-
     @property
     def derived(self):
         """pattern is a derived pattern"""

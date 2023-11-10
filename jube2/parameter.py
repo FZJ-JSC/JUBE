@@ -675,7 +675,6 @@ class Parameter(object):
         if self._unit != "":
             parameter_etree.attrib["unit"] = self._unit
 
-
         return parameter_etree
 
     def __repr__(self):
