@@ -264,7 +264,7 @@ Glossary
 
       .. code-block:: xml
 
-         <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="..." duplicate="...">...</parameter>
+         <parameter name="..." mode="..." type="..." separator="..." export="..." unit="..." update_mode="..." duplicate="...">...</parameter>
 
       * a parameter can be seen as variable: Name is the name to use the variable, and the text between the tags
         will be the real content
@@ -273,6 +273,7 @@ Glossary
       * ``mode`` is optional (used for script-types, default: ``text``)
       * ``separator`` is optional, default: ``,``
       * ``export`` is optional, if set to ``true`` the parameter will be exported to the shell environment when using ``<do>``
+      * ``unit`` is optional, will be used in the result table
       * if the text contains the given (or the implicit) separator, a template will be created
       * use of another parameter:
 
@@ -594,6 +595,9 @@ Glossary
 
      * "<key>" must contain an single parameter or pattern name
 
+     * Unlike the result table, the unit attribute of a parameter or pattern
+       is not taken into account.
+
      * "primekeys" is optional: can contain a list of parameter or
        pattern names (separated by ,). Given parameters or patterns
        will be used as primary keys of the database table. All
@@ -684,6 +688,8 @@ Glossary
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
      * ``<key>`` must contain an single parameter- or patternname
+     * Unlike the result table, the unit attribute of a parameter or pattern
+       is not taken into account.
      * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    key_tag

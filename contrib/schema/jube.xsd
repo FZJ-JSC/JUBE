@@ -45,6 +45,7 @@
         <xs:attribute name="type" type="contentType" use="optional" />
         <xs:attribute name="mode" type="xs:string" use="optional" />
         <xs:attribute name="export" type="booleanType" use="optional" />
+        <xs:attribute name="unit" type="xs:string" use="optional" />
         <xs:attribute name="duplicate" type="xs:string" use="optional" />
         <xs:attribute name="update_mode" type="updateModeType"
           use="optional" />
