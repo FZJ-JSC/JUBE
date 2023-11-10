@@ -409,9 +409,10 @@ The ``<substituteset>`` describes the substitution process. The ``<iofile>`` con
 the sandbox directory. Because we do/should not know that location we use the fileset to copy ``file.in`` to this directory.
 
 The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
-use parameters inside the substitution. In addition to the standard text substitution (see ``<sub>`` with ``source`` "#NUMBER#"),
-regular expressions can also be used to enter ``source`` with ``mode="regex"``. This can be seen in the ``<sub>`` with the ``source`` "#[^NUMBER]+#".
-This regular expression searches for all capitalised texts between two ``#`` that are not NUMBER, in this case "#ZAHL#".
+use parameters inside the substitution. In addition to the standard ``text`` substitution (see ``<sub source="#NUMBER#" ... />``),
+the ``mode`` attribute (introduced in JUBE version 2.5.2) also allows regular expressions to be used for the substitution
+(see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``).  The regular expression in this example searches for a capitalised
+text enclosed in ``#``. It matches the following text in the file ``file.in``: ``#ZAHL#``.
 
 There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
 ``<sub>`` you must also add the corresponding ``<parameterset>`` inside the ``<step>`` where you use the ``<substituteset>``!
