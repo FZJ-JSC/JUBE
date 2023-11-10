@@ -1307,6 +1307,7 @@ class Parser(object):
                                   default=jube2.conf.DEFAULT_SEPARATOR)
             parameter_type = param.get("type", default="string").strip()
             parameter_mode = param.get("mode", default="text").strip()
+            parameter_unit = param.get("unit", default="").strip()
             parameter_update_mode = param.get("update_mode",
                                               default="never").strip()
             if parameter_update_mode not in jube2.parameter.UPDATE_MODES:
@@ -1354,7 +1355,7 @@ class Parser(object):
             parameter = \
                 jube2.parameter.Parameter.create_parameter(
                     name, value, separator, parameter_type, selected_value,
-                    parameter_mode, export, update_mode=parameter_update_mode,
+                    parameter_mode, parameter_unit, export, update_mode=parameter_update_mode,
                     idx=idx, eval_helper=None, fixed=False, duplicate=duplicate)
             parameters.append(parameter)
         return parameters
