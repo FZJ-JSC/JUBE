@@ -594,6 +594,9 @@ Glossary
 
      * "<key>" must contain an single parameter or pattern name
 
+     * Unlike the result table, the unit attribute of a parameter or pattern
+       is not taken into account.
+
      * "primekeys" is optional: can contain a list of parameter or
        pattern names (separated by ,). Given parameters or patterns
        will be used as primary keys of the database table. All
@@ -684,6 +687,8 @@ Glossary
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
      * ``<key>`` must contain an single parameter- or patternname
+     * Unlike the result table, the unit attribute of a parameter or pattern
+       is not taken into account.
      * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    key_tag
