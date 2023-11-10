@@ -298,6 +298,7 @@ class KeyValuesResult(Result):
 
             if cnt > 0:
                 table_data.append(row)
+
         # Add data to toe result set
         result_data.add_key_value_data(self._keys, table_data,
                                        self._benchmark.id)
