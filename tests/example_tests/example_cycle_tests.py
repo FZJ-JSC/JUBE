@@ -24,7 +24,6 @@ from __future__ import (print_function,
 
 import unittest
 from examples_tests import TestCase
-#import jube.tests.examples_tests
 
 class TestCycleExample(TestCase.TestExample):
 
