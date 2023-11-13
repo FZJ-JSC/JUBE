@@ -172,6 +172,13 @@ class GenericResult(Result):
         if exclude is None:
             exclude = []
 
+        # Check whether the same column name appears in select and exclude
+        if set(select) & set(exclude):
+            LOGGER.error("Error when checking the select and exclude names: "
+                         "A pattern or parameter name occurs in both select "
+                         "and exclude")
+            exit()
+
         # Read pattern/parameter units if available
         units = self._load_units([key.name for key in self._keys])
         for key in self._keys:
