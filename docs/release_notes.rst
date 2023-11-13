@@ -21,11 +21,12 @@
 Release notes
 =============
 
-Version 2.5.2 [Unreleased]
+Version 2.6.0 [Unreleased]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Release: 2023-11-10
+Release: 2023-11-13
 
 * The `jube result` command line call has been extended by the options `--select` and `--exclude` to show and hide selected result columns.
+* New command line option `jube output` has been added to print out the path and the contents of the files stdout and stderr.
 * A new `unit` attribute has been added to `parameter`, which has the same function as the `unit` attribute of `pattern`.
 * Improved CI: separated tests and automatic tasks for releases
 * The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.
