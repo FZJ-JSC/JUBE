@@ -54,8 +54,10 @@ class TestIterationsExample(TestCase.TestExample):
         '''
         for run_path, command_wps in self._wp_paths.items():
             #Get content of target result output
-            origin_result_file = open(os.path.join("examples_result_output",
-                                                   self._name, "result.dat"))
+            result_file_path = os.path.join(os.path.dirname(__file__),
+                                            "../examples_result_output",
+                                            self._name, "result.dat")
+            origin_result_file = open(result_file_path)
             origin_result_content = \
                 [re.findall(r'(\|.+ \| .+ \|)(?: [^|]+ \| [^|]+ \| [^|]+ )(\| .+ \|)'
                             ,line) for line in origin_result_file]
