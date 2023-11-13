@@ -879,10 +879,6 @@ The ``database`` tag takes the argument ``name``. ``name`` is also the name of t
    | 4      | 4          |
    +--------+------------+
 
-The argument ``file`` states the full path of a second copy of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.dat`` is created within the current working directory in which ``jube result`` was invoked. 
-
-Invocating ``jube result`` a second time updates the database given by the ``file`` parameter. Without the parameter ``primekeys`` three additional lines to the ``results`` table would have been added which are completely identical to the previous three lines. Adding the argument ``primekeys`` ensures that only if the column values stated within ``primekeys`` are not exactly the same in the database table, a new line is added to the database table. In this example no new lines are added. All the ``primekeys`` also need to be stated as ``key``. Updating the ``primekeys`` is not supported.
-
 The ``key`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern``. Information of columns of the database table ``results`` can be shown as follows.
 
 .. code-block:: none
@@ -894,6 +890,10 @@ The ``key`` tag adds columns to the database table having the same type as the c
    | 0   | number     | int  | 0       |            | 1  |
    | 1   | number_pat | int  | 0       |            | 2  |
    +-----+------------+------+---------+------------+----+
+
+The ``file`` argument takes a relative (to the current working directory) or absolute path to an alternative/user-defined location for the database file. Assuming that ``file="result_database.dat"`` was set in the above example, a file named ``result_database.dat`` would be created in the current working directory where ``jube result`` was invoked, containing a database named ``results``, and the file ``bench_run/000000/result/results.dat`` would no longer contain the database, but the path specified in the ``file`` attributes.
+
+Invocating ``jube result`` a second time updates the database given by the ``file`` parameter. Without the parameter ``primekeys`` three additional lines to the ``results`` table would have been added which are completely identical to the previous three lines. Adding the argument ``primekeys`` ensures that only if the column values stated within ``primekeys`` are not exactly the same in the database table, a new line is added to the database table. In this example no new lines are added. All the ``primekeys`` also need to be stated as ``key``. Updating the ``primekeys`` is not supported.
 
 To have a look into a database within a python script the python modules `sqalchemy <https://www.sqlalchemy.org/>`_ or `pandas <https://pandas.pydata.org>`_ can be used.
 

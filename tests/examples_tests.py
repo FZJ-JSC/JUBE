@@ -117,8 +117,6 @@ class ExampleChecker(object):
 
         shutil.rmtree(os.path.join(EXAMPLES_PREFIX,
                       os.path.join(self._bench_name, "bench_run")))
-        if self._bench_name == 'result_database':
-            os.remove('result_database.dat')
 
         return success
 

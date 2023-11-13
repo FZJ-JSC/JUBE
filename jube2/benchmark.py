@@ -363,7 +363,8 @@ class Benchmark(object):
         if show_info:
             LOGGER.info(">>> Analyse finished")
 
-    def create_result(self, only=None, show=False, data_list=None, style=None):
+    def create_result(self, only=None, show=False, data_list=None, style=None,
+                      select=None, exclude=None):
         """Show benchmark result"""
         if only is None:
             only = [result_name for result_name in self._results]
@@ -372,7 +373,7 @@ class Benchmark(object):
         for result_name in self._results_order:
             result = self._results[result_name]
             if result.name in only:
-                result_data = result.create_result_data(style)
+                result_data = result.create_result_data(style, select, exclude)
                 if result.result_dir is None:
                     result_dir = os.path.join(self.bench_dir,
                                               jube2.conf.RESULT_DIRNAME)

@@ -508,6 +508,10 @@ To create the result table you have to write::
 If you run the ``result`` command for the first time, the ``analyse`` step will be executed automatically, if it wasn't executed before. So it is not necessary to run the separate ``analyse`` step all the time. However you need the separate ``analyse`` 
 if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the first ``analyse`` will be used in the ``result`` step.
 
+The analyse and result instructions can be combined within one single command:
+
+   >>> jube result bench_run -a
+
 The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` is the default option and can also be replaced by a specific benchmark id.
 If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
 
@@ -515,15 +519,22 @@ Output of the given example:
 
 .. code-block:: none
 
-   | number | number_pat |
-   |--------|------------|
-   |      1 |          1 |
-   |      2 |          2 |
-   |      4 |          4 |
+  | number | number_pat | Number | Zahl |
+  |--------|------------|--------|------|
+  |      1 |          1 |      1 |    1 |
+  |      2 |          2 |      2 |    2 |
+  |      4 |          4 |      4 |    4 |
 
-The analyse and result instructions can be combined within one single command:
+If you want to hide or show only certain output columns, you can use the ``--select`` and ``--exclude`` options since JUBE version 2.5.2.
+These options take parameter and pattern names as arguments.
+For example, you can use the following commands to display only the ``number`` column of the result table:
 
-   >>> jube result bench_run -a
+   >>> jube result bench_run --select number
 
-This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about
-including external sets, jobsystem representation and scripting parameter.
+or
+
+   >>> jube result bench_run --exclude number_pat number_pat_en number_pat_de
+
+The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in '--select' and not '--exclude' will be displayed.
+
+This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about including external sets, jobsystem representation and scripting parameter.

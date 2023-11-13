@@ -27,9 +27,8 @@ result:
   database:
     # creating a database containing the columns "number" and "number_pat"
     # one table of the name "results" is created within the database
-    # a database file "result_database.dat" is created in the current working directory
+    # optionally, you can use the "file" attribute to specify an alternative storage location for the database
     name: results
-    file: result_database.dat
     primekeys: "number,number_pat"
     key:
     - number

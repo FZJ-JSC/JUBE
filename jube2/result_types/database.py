@@ -150,9 +150,9 @@ class Database(GenericResult):
         self._primekeys = primekeys
         self._db_file = db_file
 
-    def create_result_data(self, style=None):
+    def create_result_data(self, style=None, select=None, exclude=None):
         """Create result data"""
-        result_data = GenericResult.create_result_data(self)
+        result_data = GenericResult.create_result_data(self, select, exclude)
         return Database.DatabaseData(result_data, self._primekeys, self._db_file)
 
     def etree_repr(self):
