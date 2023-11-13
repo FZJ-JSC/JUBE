@@ -51,28 +51,29 @@ class TestResultDatabaseExample(TestCase.TestExample):
         '''
         key_names = ["number", "number_pat"]
         keys = [[1, 2, 4], [1, 2, 4]]
-        #Check existence of database file
-        database_path = "result_database.dat"
-        self.assertTrue(os.path.exists(database_path))
+        for run_path, command_wps in self._wp_paths.items():
+            #Get database file
+            database_path = os.path.join(run_path, "result",
+                                           "results.dat")
 
-        #Get column names and database table content of database file
-        con = sqlite3.connect(database_path)
-        cur = con.cursor()
-        cur.execute("SELECT * FROM {}".format("results"))
-        db_col_names = [tup[0] for tup in cur.description]
-        db_content = cur.fetchall()
-        db_content = [list(i) for i in db_content]
-        db_content = list(map(list, zip(*db_content)))
-        con.close()
-
-        #Get column names and database table content of database file
-        self.assertEqual(db_col_names, key_names, "Error: Database in file {0}"
-                         "contains the wrong keys".format(database_path))
-        self.assertEqual(db_content, keys, "Error: Database in file {0}"
-                         "has the wrong content".format(database_path))
-
-        #Delete database file
-        os.remove("result_database.dat")
+            #Check existence of database file
+            self.assertTrue(os.path.exists(database_path))
+    
+            #Get column names and database table content of database file
+            con = sqlite3.connect(database_path)
+            cur = con.cursor()
+            cur.execute("SELECT * FROM {}".format("results"))
+            db_col_names = [tup[0] for tup in cur.description]
+            db_content = cur.fetchall()
+            db_content = [list(i) for i in db_content]
+            db_content = list(map(list, zip(*db_content)))
+            con.close()
+    
+            #Get column names and database table content of database file
+            self.assertEqual(db_col_names, key_names, "Error: Database in file {0}"
+                             "contains the wrong keys".format(database_path))
+            self.assertEqual(db_content, keys, "Error: Database in file {0}"
+                             "has the wrong content".format(database_path))
 
 if __name__ == "__main__":
     unittest.main()
