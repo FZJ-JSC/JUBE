@@ -209,18 +209,18 @@ class KeyValuesResult(Result):
         """Create result data"""
         result_data = KeyValuesResult.KeyValuesData(self._name)
 
-        if select is None:
-            select = [key.name for key in self._keys]
-
         if exclude is None:
             exclude = []
 
-        # Check whether the same column name appears in select and exclude
-        if set(select) & set(exclude):
-            LOGGER.error("Error when checking the select and exclude names: "
-                         "A pattern or parameter name occurs in both select "
-                         "and exclude")
-            exit()
+        if select is None:
+            select = [key.name for key in self._keys]
+        else:
+            # Check whether the same column name appears in select and exclude
+            if set(select) & set(exclude):
+                LOGGER.error("Error when checking the select and exclude names: "
+                             "A pattern or parameter name occurs in both select "
+                             "and exclude")
+                exit()
 
         # Read pattern/parameter units if available
         units = self._load_units([key.name for key in self._keys])
