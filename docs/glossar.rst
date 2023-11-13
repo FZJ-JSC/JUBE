@@ -22,6 +22,11 @@ Glossary
 .. glossary::
    :sorted:
 
+   output
+      Shows path and content of the stdout and stderr files of the given benchmark.
+
+      If no benchmark id is given, last benchmark found in will be used.
+
    remove
       The given benchmark will be removed.
 
@@ -121,6 +126,18 @@ Glossary
       .. code-block:: xml
 
          <comment>...</comment>
+
+   check_tags_tag
+      Specify combination of tags that must be set.
+
+      .. code-block:: xml
+
+         <check_tags>...</check_tags>
+
+      * The combination is set using boolean algebra.
+      * For the logical operation 'conjunction', i.e. 'and', the sign ``+`` is used. Example: ``tag1 + tag2`` means that both tags must be set.
+      * For the logical operation 'disjunction', i.e. 'or', the character ``|`` is used. Example: ``tag1 | tag2`` means that one of the two or both tags must be set.
+      * In addition, the character ``!`` can be used for the logical operation 'negation', i.e. 'not'. Example: ``!tag1`` means that the tag ``tag1`` must not be set.
 
    selection_tag
       Select benchmarks by name.
@@ -795,6 +812,8 @@ Glossary
              <not>...</not>
              ...
            </selection>
+           <!-- optional must-have tag specification -->
+           <check_tags>...</check_tags>
            <!-- global sets -->
            <parameterset name="">...</parameterset>
            <substitutionset name="">...</substitutionset>
@@ -841,6 +860,10 @@ Glossary
          selection:
            only: ...
            not: ...
+
+         # optional must-have tag specification
+         check_tags:
+           ...
 
          # global sets
          parameterset: 

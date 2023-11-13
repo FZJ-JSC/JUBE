@@ -5,7 +5,7 @@ attlist.jube &= attribute xsi:noNamespaceSchemaLocation { text }?
 jube =
   element jube {
     attlist.jube,
-    (selection | include-path)*,
+    (selection | include-path | check_tags)*,
     (benchmark
      | parameterset
      | fileset
@@ -26,6 +26,7 @@ include-path = element include-path { attlist.include-path, mixed { path* } }
 attlist.include-path &= attribute tag { text }?
 path = element path { attlist.path, text }
 attlist.path &= attribute tag { text }?
+check_tags = element check_tags { attlist.check_tags, text }
 benchmark =
   element benchmark {
     attlist.benchmark,

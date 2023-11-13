@@ -73,6 +73,24 @@ benchmark_tag
 
      * the path will be relative to input file location
 
+check_tags_tag
+   Specify combination of tags that must be set.
+
+      <check_tags>...</check_tags>
+
+   * The combination is set using boolean algebra.
+
+   * For the logical operation 'conjunction', i.e. 'and', the sign "+"
+     is used. Example: "tag1 + tag2" means that both tags must be set.
+
+   * For the logical operation 'disjunction', i.e. 'or', the character
+     "|" is used. Example: "tag1 | tag2" means that one of the two or
+     both tags must be set.
+
+   * In addition, the character "!" can be used for the logical
+     operation 'negation', i.e. 'not'. Example: "!tag1" means that the
+     tag "tag1" must not be set.
+
 column_tag
    A line within a ASCII result table. The <column>-tag can contain
    the name of a pattern or the name of a parameter.
@@ -314,6 +332,8 @@ general_structure_xml
           <not>...</not>
           ...
         </selection>
+        <!-- optional must-have tag specification -->
+        <check_tags>...</check_tags>
         <!-- global sets -->
         <parameterset name="">...</parameterset>
         <substitutionset name="">...</substitutionset>
@@ -357,6 +377,10 @@ general_structure_yaml
       selection:
         only: ...
         not: ...
+
+      # optional must-have tag specification
+      check_tags:
+        ...
 
       # global sets
       parameterset:
@@ -567,6 +591,12 @@ log
    If no benchmark id is given, last benchmark found in directory will
    be used. If benchmark directory is missing, current directory will
    be used.
+
+output
+   Shows path and content of the stdout and stderr files of the given
+   benchmark.
+
+   If no benchmark id is given, last benchmark found in will be used.
 
 parameter_space
    The parameter space for a specific benchmark run is the bundle of

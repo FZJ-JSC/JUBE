@@ -349,6 +349,7 @@
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="include-path" type="includePathType" />
         <xs:element name="selection" type="selectionType" />
+        <xs:element name="check_tags" type="xs:string" />
       </xs:choice>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="parameterset" type="parametersetType" />

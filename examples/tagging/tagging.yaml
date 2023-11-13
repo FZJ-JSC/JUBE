@@ -1,3 +1,5 @@
+check_tags: deu|eng  #check if tag deu or eng was set
+
 name: tagging
 outpath: bench_run
 comment: Tags as logical combination

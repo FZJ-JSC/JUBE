@@ -21,11 +21,13 @@
 Release notes
 =============
 
-Version 2.5.2 [Unreleased]
+Version 2.6.0 [Unreleased]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Release: 2023-11-07
+Release: 2023-11-13
 
 * The new `mode` attribute has been added to the `sub`-tag, allowing `regex` substitution as an alternative to `text`-based substitution.
+* A new option `<check_tags>` has been added, which allows you to specify tags that must be set for the script to run.
+* New command line option `jube output` has been added to print out the path and the contents of the files stdout and stderr.
 * A new `unit` attribute has been added to `parameter`, which has the same function as the `unit` attribute of `pattern`.
 * Improved CI: separated tests and automatic tasks for releases.
 * The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.

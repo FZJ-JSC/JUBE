@@ -52,10 +52,10 @@ class YAML_Converter(object):
     allowed_tags = \
         {"/": ["benchmark", "parameterset", "comment", "step",
                "fileset", "substituteset", "analyser", "result", "patternset",
-               "selection", "include-path"],
+               "selection", "include-path", "check_tags"],
          "/benchmark": ["benchmark", "parameterset", "fileset",
                         "substituteset", "patternset", "selection",
-                        "include-path"],
+                        "include-path", "check_tags"],
          "benchmark": ["parameterset", "comment", "step", "fileset",
                        "substituteset", "analyser", "result", "patternset"],
          "analyse": ["file"], "analyser": ["use", "analyse"],
