@@ -135,7 +135,7 @@ class Parser(object):
                         return None, list(), list()
 
         valid_tags = ["selection", "include-path", "parameterset", "benchmark",
-                      "substituteset", "fileset", "include", "patternset"]
+                      "substituteset", "fileset", "include", "patternset", "check_tags"]
 
         # Save init include path (from command line)
         init_include_path = list(self._include_path)
@@ -211,12 +211,25 @@ class Parser(object):
         # Check for remaing <include> tags
         node = jube2.util.util.get_tree_element(tree.getroot(),
                                                 tag_path="include")
+                                                
         if node is not None:
             raise ValueError(("Remaining include element found, which " +
                               "was not replaced (e.g. due to a missing " +
                               "include-path):\n" +
                               "<include from=\"{0}\" ... />")
-                             .format(node.attrib["from"]))
+                             .format(node.attrib["from"]))   
+
+        # Read all global check_tags and check if necessary tags are given
+        check_tags = ""
+        for element in tree.findall("check_tags"):
+            check_tags += "(" + element.text + ") + "
+
+        if check_tags != "":
+            check_tags = check_tags[:-3] # Remove last +
+            if not jube2.util.util.valid_tags(check_tags, self._tags):
+                raise ValueError("The following tag combination is required: "
+                                 "{0}".format(check_tags.replace('|', ' or ')\
+                                 .replace('+', ' and ').replace('!', ' not ')))
 
         LOGGER.debug("  Preprocess done")
 
