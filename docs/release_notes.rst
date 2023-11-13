@@ -25,6 +25,7 @@ Version 2.5.2 [Unreleased]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Release: 2023-11-07
 
+* New command line option `jube output` has been added to print out the path and the contents of the files stdout and stderr.
 * A new `unit` attribute has been added to `parameter`, which has the same function as the `unit` attribute of `pattern`.
 * Improved CI: separated tests and automatic tasks for releases.
 * The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.

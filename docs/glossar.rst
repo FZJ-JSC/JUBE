@@ -22,6 +22,11 @@ Glossary
 .. glossary::
    :sorted:
 
+   output
+      Shows path and content of the stdout and stderr files of the given benchmark.
+
+      If no benchmark id is given, last benchmark found in will be used.
+
    remove
       The given benchmark will be removed.
 
