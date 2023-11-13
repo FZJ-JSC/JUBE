@@ -568,6 +568,12 @@ log
    be used. If benchmark directory is missing, current directory will
    be used.
 
+output
+   Shows path and content of the stdout and stderr files of the given
+   benchmark.
+
+   If no benchmark id is given, last benchmark found in will be used.
+
 parameter_space
    The parameter space for a specific benchmark run is the bundle of
    all possible parameter combinations. E.g. there are to different
