@@ -26,6 +26,7 @@ Version 2.6.0 [Unreleased]
 Release: 2023-11-13
 
 * The `jube result` command line call has been extended by the options `--select` and `--exclude` to show and hide selected result columns.
+* A new option `<check_tags>` has been added, which allows you to specify tags that must be set for the script to run.
 * New command line option `jube output` has been added to print out the path and the contents of the files stdout and stderr.
 * A new `unit` attribute has been added to `parameter`, which has the same function as the `unit` attribute of `pattern`.
 * Improved CI: separated tests and automatic tasks for releases

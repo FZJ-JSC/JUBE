@@ -385,7 +385,7 @@ It will search for the files to include inside four different positions, in the 
 Tagging
 ~~~~~~~
 
-:term:`Tagging <tagging>` is an easy way to hide selectable parts of your input file.
+:term:`Tagging <tagging>` is an easy way to hide selected parts of your input file.
 
 The files used for this example can be found inside ``examples/tagging``.
 
@@ -399,36 +399,36 @@ The input file ``tagging.yaml``:
 .. literalinclude:: ../examples/tagging/tagging.yaml
    :language: yaml
 
-When running this example::
+The ``tag`` attribute and the ``check_tags`` tag allow you to define more complex boolean expressions.
+For example:
+* ``!`` can be used for negation (``!deu`` stands for ``not deu``)
+* ``|`` can be used as an OR operator and ``+`` as an AND operator to combine tag values (e.g. XML: ``tag="!deu+eng"``; YAML: ``tag: "!deu+eng"``).
+* parentheses are also allowed
 
-   >>> jube run tagging.xml
+The ``tag`` attribute can be used within any ``<element>`` within the input file (except the ``<jube>``).
+If several different ``tag`` attribute values are used in a script, they can be specified as a list separated by spaces from the command line.
 
-All ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden if the tag results to ``false``. ``!deu`` stands for ``not deu``. 
-To connect the ``tags`` ``|`` can be used as the oprator OR and ``+`` for the operator AND. Also brackets are allowed.
+All ``<elements>`` which contain a special ``tag="..."`` attribute will be hidden if the value of the tag evaluates to ``false``.
+This means that JUBE will ignore the elements with these tags in its internal processing.
+Caution: This can lead to erroneous execution if you forget to set the necessary tags for execution, as JUBE will ignore e.g. a ``<parameter>`` provided with the corresponding ``tag`` attribute that evaluates to false.
 
-The result (if no ``tag`` is set on the commandline) inside the ``stdout`` file will be
+Careful: This can lead to erroneous execution if you forget to set the necessary tags for execution, as JUBE will no longer consider e.g. parameters provided with the corresponding ``tag`` attribute.
 
-.. code-block:: none
+To ensure that the user of the script specifies the necessary tag values that the script needs for successful execution, the ``check_tag`` element (added with JUBE version 2.5.2) can be used.
+It allows you to define tag values that must be specified when the script is called in order for it to run successfully.
+If none of the required ``tag`` combinations defined by ``check_tag`` are set by the user, an error message is displayed and the run is aborted.
 
-   Hallo $world_str
-
-because ``!deu+eng`` and ``eng`` will be ``false`` and there is no other input available for ``$world_str``. ``deu|!eng`` will be ``true``.  
-
-When running the same example using a specific ``tag``::
+In the example above, ``check_tags: deu|eng`` indicates that ``deu`` or ``eng`` must be set.
+When running the example using one of the specific ``tag`` values in ``<check_tags>`` (in this case ``--tag eng``):
 
    >>> jube run tagging.xml --tag eng
 
-the result inside the ``stdout`` file will be
+this results in the following output in the ``stdout`` file:
 
 .. code-block:: none
 
    Hello World
 
-A ``tag`` which results to ``false`` will trigger to complety ignore the corresponding ``<tag>``! If there is no alternative this can produce a wrong execution behaviour!
-
-Also a list of tags, separated by spaces, can be provided on the commandline.
-
-The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (except the ``<jube>``).
 
 .. index:: platform independent
 

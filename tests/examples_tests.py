@@ -52,7 +52,8 @@ class TestExamples(unittest.TestCase):
                 "files_and_sub", "files_and_sub"+i))
             examples_tasks.append(ExampleChecker(
                 "dependencies", "dependencies"+i))
-            examples_tasks.append(ExampleChecker("tagging", "tagging"+i))
+            examples_tasks.append(ExampleChecker(
+                "tagging", "tagging"+i, suffix="--tag deu"))
             examples_tasks.append(ExampleChecker(
                 "parameterspace", "parameterspace"+i))
             examples_tasks.append(ExampleChecker(
