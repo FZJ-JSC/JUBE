@@ -411,7 +411,7 @@ the sandbox directory. Because we do/should not know that location we use the fi
 The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
 use parameters inside the substitution. In addition to the standard ``text`` substitution (see ``<sub source="#NUMBER#" ... />``),
 the ``mode`` attribute (introduced in JUBE version 2.6.0) also allows regular expressions to be used for the substitution
-(see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``).  The regular expression in this example searches for a capitalised
+(see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``). The regular expression in this example searches for a capitalised
 text enclosed in ``#``. It matches the following text in the file ``file.in``: ``#ZAHL#``.
 
 There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
@@ -535,7 +535,7 @@ Output of the given example:
   |      2 |          2 |      2 |    2 |
   |      4 |          4 |      4 |    4 |
 
-If you want to hide or show only certain output columns, you can use the ``--select`` and ``--exclude`` options since JUBE version 2.5.2.
+If you want to hide or show only certain output columns, you can use the ``--select`` and ``--exclude`` options since JUBE version 2.6.0.
 These options take parameter and pattern names as arguments.
 For example, you can use the following commands to display only the ``number`` column of the result table:
 

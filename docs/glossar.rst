@@ -140,16 +140,18 @@ Glossary
       * In addition, the character ``!`` can be used for the logical operation 'negation', i.e. 'not'. Example: ``!tag1`` means that the tag ``tag1`` must not be set.
 
    selection_tag
-      Select benchmarks by name.
+      Specify tags or select benchmarks by name.
 
       .. code-block:: xml
 
          <selection>
            <only>...</only>
            <not>...</not>
+           <tag>...</tag>
            ...
          </selection>
 
+      * multiple <tag> are allowed to specify tags (see tagging)
       * select or unselect a benchmark by name
       * only selected benchmarks will run (when using the ``run`` command)
       * multiple ``<only>`` and ``<not>`` are allowed
@@ -448,7 +450,7 @@ Glossary
           ...
         </substituteset>
 
-     * init_with is optional
+     * ``init_with`` is optional
 
        * if the given filepath can be found inside of the ``JUBE_INCLUDE_PATH`` and if it contains a substituteset using the given name, all iofile and sub will be copied to the local set
        * local ``iofile`` will overwrite imported ones based on ``out``, local ``sub`` will overwrite imported ones based on ``source``
@@ -591,7 +593,7 @@ Glossary
      * the ``use`` argument inside the ``<file>`` tag is optional and can be used to specify a file specific patternset;
 
        * the global ``<use>`` and this local use will be combined and evaluated at the same time
-       * a ``from```subargument is not possible in this local ``use``
+       * a ``from`` subargument is not possible in this local ``use``
 
      * ``reduce`` is optional (default: ``true`` )
 
@@ -608,26 +610,26 @@ Glossary
           ...
         </database>
 
-     * "name": name of the table in the database
+     * ``name``: name of the table in the database
 
-     * "<key>" must contain an single parameter or pattern name
+     * ``<key>`` must contain an single parameter or pattern name
 
      * Unlike the result table, the unit attribute of a parameter or pattern
        is not taken into account.
 
-     * "primekeys" is optional: can contain a list of parameter or
-       pattern names (separated by ,). Given parameters or patterns
+     * ``primekeys`` is optional: can contain a list of parameter or
+       pattern names (separated by ``,``). Given parameters or patterns
        will be used as primary keys of the database table. All
-       primekeys have to be listed as a "<key>" as well. Modification
+       primekeys have to be listed as a ``<key>`` as well. Modification
        of primary keys of an existing table is not supported.
        If no primekeys are set then each `jube result` will add new rows
        to the database. Otherwise rows with matching primekeys will be updated.
 
-     * "file" is optional. The given value should hold the full path
+     * ``file`` is optional. The given value should hold the full path
        to the database file. If the file including the path does not
        exists it will be created. Absolute and relative paths are supported.
 
-     * "filter" is optional. It can contain a bool expression to show only specific result entries.
+     * ``filter`` is optional. It can contain a bool expression to show only specific result entries.
 
    result_tag
      The result tag is used to handle different visualisation types of your analysed data.
@@ -678,7 +680,7 @@ Glossary
      * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    column_tag
-     A line within a ASCII result table. The <column>-tag can contain the name of a pattern or
+     A line within a ASCII result table. The ``<column>``-tag can contain the name of a pattern or
      the name of a parameter.
 
      .. code-block:: xml
@@ -754,7 +756,7 @@ Glossary
           jube run <filename> --tag a b
 
         * ``<tags>`` which does not contain one of these names will be hidden inside the include file
-        * <tags> which does not contain any tag-attribute will stay inside the include file
+        * ``<tags>`` which does not contain any tag-attribute will stay inside the include file
 
       * "not" tags are more important than normal tags: ``tag="a,!b,c"`` and running with ``a b`` will hide the ``<tag>`` because
         the ``!b`` is more important than the ``a``
@@ -810,6 +812,7 @@ Glossary
            <selection>
              <only>...</only>
              <not>...</not>
+             <tag>...</tag>
              ...
            </selection>
            <!-- optional must-have tag specification -->
@@ -860,6 +863,7 @@ Glossary
          selection:
            only: ...
            not: ...
+           tag: ...
 
          # optional must-have tag specification
          check_tags:

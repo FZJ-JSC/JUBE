@@ -421,7 +421,7 @@ Caution: This can lead to erroneous execution if you forget to set the necessary
 
 Careful: This can lead to erroneous execution if you forget to set the necessary tags for execution, as JUBE will no longer consider e.g. parameters provided with the corresponding ``tag`` attribute.
 
-To ensure that the user of the script specifies the necessary tag values that the script needs for successful execution, the ``check_tag`` element (added with JUBE version 2.5.2) can be used.
+To ensure that the user of the script specifies the necessary tag values that the script needs for successful execution, the ``check_tag`` element (added with JUBE version 2.6.0) can be used.
 It allows you to define tag values that must be specified when the script is called in order for it to run successfully.
 If none of the required ``tag`` combinations defined by ``check_tag`` are set by the user, an error message is displayed and the run is aborted.
 
