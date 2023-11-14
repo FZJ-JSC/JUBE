@@ -1,0 +1,6 @@
+result:
+| value | value_pat | dep_pat | missing_pat | missing_dep_pat | missing_pat_def | missing_def_dep_pat |
+|-------|-----------|---------|-------------|-----------------|-----------------|---------------------|
+|     0 |         0 |       0 |             |             nan |               0 |                   0 |
+|     1 |         1 |       2 |             |             nan |               0 |                   0 |
+|     2 |         2 |       4 |             |             nan |               0 |                   0 |

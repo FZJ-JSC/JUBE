@@ -33,7 +33,7 @@ Release: 2023-11-13
 * The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.
 * The `result_creation` example has been updated.
 * The `jube complete` help output was debugged.
-* The tests were refactored and debugged.
+* The tests for the examples have been completely rewritten to avoid using `run.log' files.
 * Backward compatibility for floating number value definitions of parameters of type int was restored such that only warning messages are printed in this case.
 * Typos and bugs in the glossary and the help were fixed. 
 * A validity check by use of the pip package ruamel.yaml is introduced. This package is used if it is installed. Otherwise, there will be no validity check for yaml files and a corresponding warning.
