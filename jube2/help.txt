@@ -1039,11 +1039,14 @@ step_tag
 sub_tag
    A substition expression.
 
-      <sub source="..." dest="..." />
+      <sub source="..." dest="..." mode="..."/>
 
    * "source"-string will be replaced by "dest"-string
 
    * both can contain parameter: "... $nameofparameter ..."
+
+   * "mode" is optional (default: "text"). Can be used to switch
+     between "text" and "regex" substitution
 
 substituteset_tag
    A substituteset is a container to store a bundle of *sub* commands.
