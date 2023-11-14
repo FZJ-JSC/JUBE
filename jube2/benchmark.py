@@ -738,6 +738,9 @@ class Benchmark(object):
         # if possible)
         self._work_stat.update_queues(workpackage)
 
+        #Update workpackage status for jube parameter
+        workpackage.update_status()
+
         if not jube2.conf.HIDE_ANIMATIONS:
             status = self.benchmark_status
             jube2.util.output.print_loading_bar(
