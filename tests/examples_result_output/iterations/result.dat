@@ -1,0 +1,21 @@
+result:
+| jube_res_analyser | jube_wp_id_first_step | jube_wp_id | jube_wp_iteration_first_step | jube_wp_iteration | foo |
+|-------------------|-----------------------|------------|------------------------------|-------------------|-----|
+| analyse_no_reduce |                     0 |          6 |                            0 |                 0 |   1 |
+| analyse_no_reduce |                     0 |          7 |                            0 |                 1 |   1 |
+| analyse_no_reduce |                     1 |          8 |                            1 |                 2 |   1 |
+| analyse_no_reduce |                     1 |          9 |                            1 |                 3 |   1 |
+| analyse_no_reduce |                     2 |         10 |                            0 |                 0 |   2 |
+| analyse_no_reduce |                     2 |         11 |                            0 |                 1 |   2 |
+| analyse_no_reduce |                     3 |         12 |                            1 |                 2 |   2 |
+| analyse_no_reduce |                     3 |         13 |                            1 |                 3 |   2 |
+| analyse_no_reduce |                     4 |         14 |                            0 |                 0 |   4 |
+| analyse_no_reduce |                     4 |         15 |                            0 |                 1 |   4 |
+| analyse_no_reduce |                     5 |         16 |                            1 |                 2 |   4 |
+| analyse_no_reduce |                     5 |         17 |                            1 |                 3 |   4 |
+|           analyse |                     0 |          6 |                            0 |                 0 |   1 |
+|           analyse |                     1 |          8 |                            1 |                 2 |   1 |
+|           analyse |                     2 |         10 |                            0 |                 0 |   2 |
+|           analyse |                     3 |         13 |                            1 |                 3 |   2 |
+|           analyse |                     4 |         15 |                            0 |                 1 |   4 |
+|           analyse |                     5 |         17 |                            1 |                 3 |   4 |

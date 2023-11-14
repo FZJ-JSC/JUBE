@@ -1,4 +1,4 @@
-<!ELEMENT jube ((selection|include-path)* ,(benchmark|parameterset|fileset|substituteset|patternset|include)*)>
+<!ELEMENT jube ((selection|include-path|check_tags)* ,(benchmark|parameterset|fileset|substituteset|patternset|include)*)>
 <!ATTLIST jube          xmlns:xsi CDATA #IMPLIED
                         xsi:noNamespaceSchemaLocation CDATA #IMPLIED
                         version CDATA #IMPLIED>
@@ -14,6 +14,7 @@
 <!ATTLIST include-path  tag CDATA #IMPLIED>
 <!ELEMENT path (#PCDATA)>
 <!ATTLIST path          tag CDATA #IMPLIED>
+<!ELEMENT check_tags (#PCDATA)>
 <!ELEMENT benchmark (comment?,(parameterset|substituteset|fileset|step|patternset|analyser|analyzer|result|include)*)>
 <!ATTLIST benchmark     name CDATA #REQUIRED
                         outpath CDATA #REQUIRED
@@ -31,6 +32,7 @@
                         type (int|string|float) #IMPLIED
                         mode CDATA #IMPLIED
                         export (true|false|True|False) #IMPLIED
+                        unit CDATA #IMPLIED
                         update_mode (never|use|step|cycle|always) #IMPLIED
                         separator CDATA #IMPLIED
                         duplicate (none|replace|error|concat) #IMPLIED
@@ -47,6 +49,7 @@
 <!ELEMENT sub (#PCDATA)>
 <!ATTLIST sub           source CDATA #REQUIRED
                         dest CDATA #IMPLIED
+                        mode (text|regex) #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT fileset ((copy|link|prepare|include)*)>
 <!ATTLIST fileset       name CDATA #REQUIRED
@@ -127,7 +130,7 @@
 <!ELEMENT analyse ((file|include)*)>
 <!ATTLIST analyse       step CDATA #REQUIRED
                         tag CDATA #IMPLIED>
-<!ELEMENT result ((use|table|syslog|include)*)>
+<!ELEMENT result ((use|table|database|syslog|include)*)>
 <!ATTLIST result        result_dir CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT table ((column|include)*)>
@@ -142,6 +145,12 @@
 <!ATTLIST column        colw CDATA #IMPLIED
                         format CDATA #IMPLIED
                         title CDATA #IMPLIED
+                        tag CDATA #IMPLIED>
+<!ELEMENT database ((key|include)*)>
+<!ATTLIST database      name CDATA #REQUIRED
+                        primekeys CDATA #IMPLIED
+                        file CDATA #IMPLIED
+                        filter CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT syslog ((key|include)*)>
 <!ATTLIST syslog        name CDATA #REQUIRED

@@ -22,6 +22,11 @@ Glossary
 .. glossary::
    :sorted:
 
+   output
+      Shows path and content of the stdout and stderr files of the given benchmark.
+
+      If no benchmark id is given, last benchmark found in will be used.
+
    remove
       The given benchmark will be removed.
 
@@ -121,6 +126,18 @@ Glossary
       .. code-block:: xml
 
          <comment>...</comment>
+
+   check_tags_tag
+      Specify combination of tags that must be set.
+
+      .. code-block:: xml
+
+         <check_tags>...</check_tags>
+
+      * The combination is set using boolean algebra.
+      * For the logical operation 'conjunction', i.e. 'and', the sign ``+`` is used. Example: ``tag1 + tag2`` means that both tags must be set.
+      * For the logical operation 'disjunction', i.e. 'or', the character ``|`` is used. Example: ``tag1 | tag2`` means that one of the two or both tags must be set.
+      * In addition, the character ``!`` can be used for the logical operation 'negation', i.e. 'not'. Example: ``!tag1`` means that the tag ``tag1`` must not be set.
 
    selection_tag
       Select benchmarks by name.
@@ -264,7 +281,7 @@ Glossary
 
       .. code-block:: xml
 
-         <parameter name="..." mode="..." type="..." separator="..." export="..." update_mode="..." duplicate="...">...</parameter>
+         <parameter name="..." mode="..." type="..." separator="..." export="..." unit="..." update_mode="..." duplicate="...">...</parameter>
 
       * a parameter can be seen as variable: Name is the name to use the variable, and the text between the tags
         will be the real content
@@ -273,6 +290,7 @@ Glossary
       * ``mode`` is optional (used for script-types, default: ``text``)
       * ``separator`` is optional, default: ``,``
       * ``export`` is optional, if set to ``true`` the parameter will be exported to the shell environment when using ``<do>``
+      * ``unit`` is optional, will be used in the result table
       * if the text contains the given (or the implicit) separator, a template will be created
       * use of another parameter:
 
@@ -457,10 +475,11 @@ Glossary
 
      .. code-block:: xml
 
-        <sub source="..." dest="..." />
+        <sub source="..." dest="..." mode="..."/>
 
      * ``source``-string will be replaced by ``dest``-string
      * both can contain parameter: ``... $nameofparameter ...``
+     * ``mode`` is optional (default: ``text``). Can be used to switch between ``text`` and ``regex`` substitution
 
    step_tag
      A step give a list of *Shell* operations and a corresponding parameter environment.
@@ -593,6 +612,9 @@ Glossary
 
      * "<key>" must contain an single parameter or pattern name
 
+     * Unlike the result table, the unit attribute of a parameter or pattern
+       is not taken into account.
+
      * "primekeys" is optional: can contain a list of parameter or
        pattern names (separated by ,). Given parameters or patterns
        will be used as primary keys of the database table. All
@@ -683,6 +705,8 @@ Glossary
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
      * ``<key>`` must contain an single parameter- or patternname
+     * Unlike the result table, the unit attribute of a parameter or pattern
+       is not taken into account.
      * ``filter`` is optional, it can contain a bool expression to show only specific result entries
 
    key_tag
@@ -788,6 +812,8 @@ Glossary
              <not>...</not>
              ...
            </selection>
+           <!-- optional must-have tag specification -->
+           <check_tags>...</check_tags>
            <!-- global sets -->
            <parameterset name="">...</parameterset>
            <substitutionset name="">...</substitutionset>
@@ -834,6 +860,10 @@ Glossary
          selection:
            only: ...
            not: ...
+
+         # optional must-have tag specification
+         check_tags:
+           ...
 
          # global sets
          parameterset: 
@@ -903,6 +933,7 @@ Glossary
 
         * ``$jube_wp_id``: current workpackage id
         * ``$jube_wp_padid``: current workpackage id with preceding zeros
+        * ``$jube_wp_status``: current workpackage status
         * ``$jube_wp_iteration``: current iteration number (default: 0)
         * ``$jube_wp_parent_<parent_name>_id``: workpackage id of selected parent step
         * ``$jube_wp_relpath``: relative path to workpackage work directory (relative towards configuration file)

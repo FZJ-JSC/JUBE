@@ -33,8 +33,8 @@ Installation
 
 Requirements: *JUBE* needs **Python 3.2** (or any higher version)
 
-If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml-module <https://pyyaml.org>`_ to
-your *Python* module library.
+If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml` module `<https://pyyaml.org>`_ to
+your *Python* module library. Additionally the `ruamel` module `https://pypi.org/project/ruamel.yaml` is optional. If installed it is used to verify the validity of the *YAML* files.
 
 To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in different ways:
 
@@ -409,7 +409,10 @@ The ``<substituteset>`` describes the substitution process. The ``<iofile>`` con
 the sandbox directory. Because we do/should not know that location we use the fileset to copy ``file.in`` to this directory.
 
 The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
-use parameters inside the substitution.
+use parameters inside the substitution. In addition to the standard ``text`` substitution (see ``<sub source="#NUMBER#" ... />``),
+the ``mode`` attribute (introduced in JUBE version 2.6.0) also allows regular expressions to be used for the substitution
+(see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``).  The regular expression in this example searches for a capitalised
+text enclosed in ``#``. It matches the following text in the file ``file.in``: ``#ZAHL#``.
 
 There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
 ``<sub>`` you must also add the corresponding ``<parameterset>`` inside the ``<step>`` where you use the ``<substituteset>``!
@@ -432,19 +435,26 @@ The resulting directory-tree will be:
       |
       +- configuration.xml # the stored benchmark configuration
       +- workpackages.xml  # workpackage information
-      +- 000000_sub_step   # the workpackage ($number = 1)
+      +- 000000_sub_step   # the workpackage ($number = 1, $zahl = 2)
          |
          +- done           # workpackage finished marker
          +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands
-            +- stdout      # standard output of used shell commands (Number: 1)
+            +- stdout      # standard output of used shell commands (Number: 1 Zahl: 2)
             +- file.in     # the file copy
             +- file.out    # the substituted file
-      +- 000001_sub_step   # the workpackage ($number = 2)
+      +- 000001_sub_step   # the workpackage ($number = 1, $zahl = 4)
          |
          +- ...
       +- ...
+
+And the content of file ``file.out`` in ``000000_sub_step/work``:
+
+.. code-block:: none
+
+   Number: 1
+   Zahl: 2
 
 .. index:: analyse, result, table
 
@@ -466,14 +476,14 @@ The input file ``result_creation.yaml``:
 .. literalinclude:: ../examples/result_creation/result_creation.yaml
    :language: yaml
 
-Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``stdout``.
+Using ``<parameterset>`` and ``<step>`` we create three :term:`workpackages <workpackage>`. Each writing ``Number: $number`` to ``en`` and ``Zahl: $number`` to ``de``.
 
-Now we want to parse these ``stdout`` files to extract information (in this example case the written number). First of all we have to declare a
+Now we want to parse these ``en`` and ``de`` files to extract information (in this example case the written number). First of all we have to declare a
 ``<patternset>``. Here we can describe a set of ``<pattern>``. A ``<pattern>`` is a regular expression which will be used to parse your result files
-and search for a given string. In this example we only have the ``<pattern>`` ``number_pat``. The name of the pattern must be unique (based on the usage of the ``<patternset>``).
-The ``type`` is optional. It is used when the extracted data will be sorted. The regular expression can contain other patterns or parameters. The example uses ``$jube_pat_int`` which
-is a *JUBE* :term:`default pattern <jube_pattern>` matching integer values. The pattern can contain a group, given by brackets ``(...)``, to declare the extraction part
-(``$jube_pat_int`` already contains these brackets).
+and search for a given string. In this example we have the ``<pattern>`` ``number_pat`` which matches both file contents and the more specific version ``number_pat_en`` and ``number_pat_de``.
+The name of the pattern must be unique (based on the usage of the ``<patternset>``). The ``type`` is optional. It is used when the extracted data will be sorted. 
+The regular expression can contain other patterns or parameters. The example uses ``$jube_pat_int`` which is a *JUBE* :term:`default pattern <jube_pattern>` matching integer values. 
+The pattern can contain a group, given by brackets ``(...)``, to declare the extraction part (``$jube_pat_int`` already contains these brackets).
 
 E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
 
@@ -482,11 +492,12 @@ E.g. ``$jube_pat_int`` and ``$jube_pat_fp`` are defined in the following way:
    <pattern name="jube_pat_int" type="int">([+-]?\d+)</pattern>
    <pattern name="jube_pat_fp" type="float">([+-]?\d*\.?\d+(?:[eE][-+]?\d+)?)</pattern>
 
-If there are multiple matches inside a single file you can add a :term:`reduce option <analyser_tag>`. By default, only the first match will be extracted.
+A complete list of predefined patterns is in the glossary. If there are multiple matches inside a single file you can add a :term:`reduce option <analyser_tag>`. 
+By default, only the first match will be extracted.
 
 To use your ``<patternset>`` you have to specify the files which should be parsed. This can be done using the ``<analyser>``.
-It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination
-will create its own result entry.
+It uses relevant patternsets. Inside the ``<analyse>`` a step-name and a file inside this step is given. Every workpackage file combination and every analyser
+will create its own result entry. Additional ``<patternset>`` can be used inside the ``<file>`` tag in order to apply this set only to one file.
 
 The analyser automatically knows all parameters which were used in the given step and in depending steps. There is no ``<use>`` option to include additional ``<parameterset>`` 
 that have not been already used within the analysed ``<step>``.
@@ -507,6 +518,10 @@ To create the result table you have to write::
 If you run the ``result`` command for the first time, the ``analyse`` step will be executed automatically, if it wasn't executed before. So it is not necessary to run the separate ``analyse`` step all the time. However you need the separate ``analyse`` 
 if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the first ``analyse`` will be used in the ``result`` step.
 
+The analyse and result instructions can be combined within one single command:
+
+   >>> jube result bench_run -a
+
 The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` is the default option and can also be replaced by a specific benchmark id.
 If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
 
@@ -514,15 +529,22 @@ Output of the given example:
 
 .. code-block:: none
 
-   | number | number_pat |
-   |--------|------------|
-   |      1 |          1 |
-   |      2 |          2 |
-   |      4 |          4 |
+  | number | number_pat | Number | Zahl |
+  |--------|------------|--------|------|
+  |      1 |          1 |      1 |    1 |
+  |      2 |          2 |      2 |    2 |
+  |      4 |          4 |      4 |    4 |
 
-The analyse and result instructions can be combined within one single command:
+If you want to hide or show only certain output columns, you can use the ``--select`` and ``--exclude`` options since JUBE version 2.5.2.
+These options take parameter and pattern names as arguments.
+For example, you can use the following commands to display only the ``number`` column of the result table:
 
-   >>> jube result bench_run -a
+   >>> jube result bench_run --select number
 
-This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about
-including external sets, jobsystem representation and scripting parameter.
+or
+
+   >>> jube result bench_run --exclude number_pat number_pat_en number_pat_de
+
+The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in '--select' and not '--exclude' will be displayed.
+
+This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about including external sets, jobsystem representation and scripting parameter.

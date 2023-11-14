@@ -222,6 +222,12 @@ class Result(object):
                             pattern = patternset[alt_pattern_name]
                         if (pattern.unit is not None) and (pattern.unit != ""):
                             units[pattern_name] = pattern.unit
+
+        for parameterset_name in self._benchmark.parametersets:
+            parameterset = self._benchmark.parametersets[parameterset_name]
+            for parameter in parameterset:
+                if (parameter.unit is not None) and (parameter.unit != ""):
+                    units[parameter.name] = parameter.unit
         return units
 
     def etree_repr(self):

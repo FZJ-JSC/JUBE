@@ -69,7 +69,84 @@ def status(args):
         if benchmark is None:
             return
         jube2.info.print_benchmark_status(benchmark)
+        
+def output(args):
+    """Show output filename"""
+    found_workpackages = list()
+    stdout_paths = set()
+    stderr_paths = set()
+    paths = set()
+    found_workpackages = search_for_workpackage(args, True)
 
+    for wp in found_workpackages:
+        #create parameter dictionary
+        param_dict = dict()
+        #all parameter from the benchmark
+        for param_set in wp.benchmark.parametersets.values():
+            for param in param_set.all_parameters:
+                param_dict[param.name] = param.value
+        #all jube parameter from the workpackage
+        for param in wp.get_jube_parameterset():
+            param_dict[param.name] = param.value
+        #all jube parameter from the benchmark
+        for param in wp.benchmark.get_jube_parameterset():
+            param_dict[param.name] = param.value
+
+        #create work directory
+        if wp.step.alt_work_dir is None:
+            work_dir = [os.getcwd(), wp.work_dir]
+        else:
+            dir_cache = jube2.util.util.substitution(wp.step.alt_work_dir,
+                                                     param_dict)
+            dir_cache = os.path.expandvars(os.path.expanduser(dir_cache))
+            work_dir = [os.getcwd(), dir_cache]
+
+        for operation in wp.step.operations:
+            if operation.stdout_filename is not None:
+                stdout_filename = jube2.util.util.substitution(
+                    operation.stdout_filename, param_dict)
+                stdout_filename = \
+                    os.path.expandvars(os.path.expanduser(stdout_filename))
+            else:
+                stdout_filename = "stdout"
+
+            work_dir.append(stdout_filename)
+            stdout_paths.add(os.path.join(*work_dir))
+            work_dir.remove(stdout_filename)
+
+            if operation.stderr_filename is not None:
+                stderr_filename = jube2.util.util.substitution(
+                    operation.stderr_filename, param_dict)
+                stderr_filename = \
+                    os.path.expandvars(os.path.expanduser(stderr_filename))
+            else:
+                stderr_filename = "stderr"
+            work_dir.append(stderr_filename)
+            stderr_paths.add(os.path.join(*work_dir))
+            work_dir.remove(stderr_filename)
+
+    #show only error or done file
+    if args.only:
+        if args.only == "stdout":
+            paths.update(stdout_paths)
+        else:
+            paths.update(stderr_paths)
+    else:
+        paths.update(stdout_paths)
+        paths.update(stderr_paths)
+
+    #sort paths
+    paths = sorted(paths)
+
+    #show conten of file, not only filename
+    if args.display:
+        for path in paths:
+            LOGGER.info(path + "\n")
+            file = open(path)
+            LOGGER.info(file.read() + "\n")
+    else:
+        for path in paths:
+            LOGGER.info(path + "\n")
 
 def benchmarks_results(args):
     """Show benchmark results"""
@@ -344,8 +421,7 @@ def search_for_benchmarks(args):
     found_benchmarks.sort()
     return found_benchmarks
 
-
-def search_for_workpackage(args):
+def search_for_workpackage(args, search_for_step=False):
     """Search for existing workpackages"""
     found_benchmarks = search_for_benchmarks(args)
     found_workpackages = list()
@@ -354,16 +430,33 @@ def search_for_workpackage(args):
             _load_existing_benchmark(args, benchmark_folder,
                                      load_analyse=False)
         if benchmark is not None:
-            for wp_id in args.workpackage:
-                if benchmark.workpackage_by_id(int(wp_id)) is None:
-                    raise RuntimeError(("No workpackage \"{0}\" found " +
-                                        "in benchmark \"{1}\".")
-                                       .format(wp_id, benchmark.id))
-                else:
-                    found_workpackages.append(
-                        benchmark.workpackage_by_id(int(wp_id)))
+            if args.workpackage:
+                for wp_id in args.workpackage:
+                    if search_for_step and args.step:
+                        LOGGER.warning("The '-s' option is ignored if "
+                                       "workpackages are selected by their ID "
+                                       "using '-w'.")
+                    if benchmark.workpackage_by_id(int(wp_id)) is None:
+                        raise RuntimeError(("Workpackage ID \"{0}\" not " +
+                                            "found in benchmark \"{1}\".")
+                                           .format(wp_id, benchmark.id))
+                    else:
+                        found_workpackages.append(
+                            benchmark.workpackage_by_id(int(wp_id)))
+            elif search_for_step and args.step:
+                for step_name in args.step:
+                    if step_name not in benchmark.workpackages:
+                        LOGGER.warning("Step \"{0}\" not found in benchmark "
+                                     "\"{1}\".".format(step_name,
+                                                       benchmark.name))
+                    else:
+                        for wp in benchmark.workpackages[step_name]:
+                            found_workpackages.append(wp)
+            elif search_for_step:
+                for wp_name in benchmark.workpackages:
+                    for wp in benchmark.workpackages[wp_name]:
+                        found_workpackages.append(wp)
     return found_workpackages
-
 
 def run_new_benchmark(args):
     """Start a new benchmark run"""
@@ -549,7 +642,9 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
     # Create benchmark results
     result_list = benchmark.create_result(only=args.only,
                                           data_list=result_list,
-                                          style=args.style)
+                                          style=args.style,
+                                          select=args.select,
+                                          exclude=args.exclude)
 
     # Reset logging
     jube2.log.only_console_log()
@@ -790,7 +885,14 @@ def gen_subparser_conf():
                 {"type": int, "help": "show only last N benchmarks"},
             ("-s", "--style"):
                 {"help": "overwrites table style type",
-                 "choices": ["pretty", "csv", "aligned"]}
+                 "choices": ["pretty", "csv", "aligned"]},
+            ("--select",):
+                {"nargs": "+",
+                 "help": "display only given columns from the result "
+                 "(changes also the output to the result file)"},
+            ("--exclude",):
+                {"nargs": "+", "help": "excludes given columns from the result "
+                 "(changes also the output to the result file)"}
         }
     }
 
@@ -828,6 +930,30 @@ def gen_subparser_conf():
             ("-i", "--id"):
                 {"help": "use benchmarks given by id",
                  "nargs": "+"}
+        }
+    }
+    
+    #output subparser
+    subparser_configuration["output"] = {
+        "help": "show filename of output",
+        "func": output,
+        "arguments": {
+            ('dir',):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"help": "use benchmarks given by id",
+                 "nargs": "+"},
+            ("-s", "--step"):
+                {"help": "show filenames for given step", "nargs": "+"},
+            ("-w", "--workpackage"):
+                {"help": "show filenames for given workpackages id",
+                "nargs": "+"},
+            ("-d", "--display"):
+                {"help": "display content of output file" , "action": "store_true"},
+            ("-o", "--only"):
+                {"help": "show only stdour or stderr",
+                 "choices": ["stdout", "stderr"]}
         }
     }
 

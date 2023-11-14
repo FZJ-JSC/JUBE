@@ -26,7 +26,7 @@ import xml.dom.minidom as DOM
 try:
     import ruamel.yaml
 except ImportError:
-    print("Warning: The python package 'ruamel.yaml' is not installed. The validity of yaml files cannot be checked properly and silent errors can occur. Nevertheless, the execution is continued.")
+    pass
 try:
     import yaml
 except ImportError:
@@ -52,10 +52,10 @@ class YAML_Converter(object):
     allowed_tags = \
         {"/": ["benchmark", "parameterset", "comment", "step",
                "fileset", "substituteset", "analyser", "result", "patternset",
-               "selection", "include-path"],
+               "selection", "include-path", "check_tags"],
          "/benchmark": ["benchmark", "parameterset", "fileset",
                         "substituteset", "patternset", "selection",
-                        "include-path"],
+                        "include-path", "check_tags"],
          "benchmark": ["parameterset", "comment", "step", "fileset",
                        "substituteset", "analyser", "result", "patternset"],
          "analyse": ["file"], "analyser": ["use", "analyse"],
@@ -106,10 +106,9 @@ class YAML_Converter(object):
         # Check the validity of the yaml file
         with open(self._path, "r") as file_handle:
             try:
-                ruamel.yaml.add_constructor("!include", self.__yaml_include)
-                ruamel.yaml.load(file_handle, Loader=ruamel.yaml.Loader)
+                ruamel.yaml.YAML().load(file_handle)
             except NameError:
-                print("Warning: The file {0} could not be validated by use of the python package 'ruamel.yaml'. Continue execution without validation.".format(self._path))
+                pass
             except ruamel.yaml.constructor.DuplicateKeyError as e:
                 e.note=""
                 raise(e)

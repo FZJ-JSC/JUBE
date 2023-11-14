@@ -10,21 +10,29 @@
     </parameterset>
     
     <!-- Regex pattern -->
-    <patternset name="pattern">
-      <pattern name="number_pat" type="int">Number: $jube_pat_int</pattern>
+    <patternset name="pattern_all">
+      <pattern name="number_pat" type="int">.*? $jube_pat_int</pattern>
+    </patternset>
+    <patternset name="pattern_en">
+      <pattern name="number_pat_en" type="int">Number: $jube_pat_int</pattern>
+    </patternset>
+    <patternset name="pattern_de">
+      <pattern name="number_pat_de" type="int">Zahl: $jube_pat_int</pattern>
     </patternset>
     
     <!-- Operation -->
     <step name="write_number">
       <use>param_set</use> <!-- use existing parameterset -->
-      <do>echo "Number: $number"</do> <!-- shell command -->
+      <do>echo "Number: $number" > en </do> <!-- shell command -->
+      <do>echo "Zahl: $number" > de </do> <!-- shell command -->
     </step>
     
     <!-- Analyse -->
     <analyser name="analyse">
-      <use>pattern</use> <!-- use existing patternset -->
+      <use>pattern_all</use> <!-- use this patternset for all files -->
       <analyse step="write_number">
-        <file>stdout</file> <!-- file which should be scanned -->
+        <file use="pattern_en">en</file> <!-- file en will be scanned with pattern_all and pattern_en -->
+        <file use="pattern_de">de</file> <!-- file de will be scanned with pattern_all and pattern_de -->
       </analyse>
     </analyser>
     
@@ -33,7 +41,9 @@
       <use>analyse</use> <!-- use existing analyser -->
       <table name="result" style="pretty" sort="number">
         <column>number</column>
-        <column>number_pat</column>
+        <column>number_pat</column> <!-- Column with title same as pattern name -->
+        <column title="Number">number_pat_en</column> <!-- Column with costum title -->
+        <column title="Zahl">number_pat_de</column>
       </table>
     </result>
   </benchmark>

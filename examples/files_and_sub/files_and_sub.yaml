@@ -5,7 +5,9 @@ comment: A file copy and substitution example
 #Configuration
 parameterset:
   name: param_set
-  parameter: {name: number, type: int,  _: "1,2,4"} #comma separated integers must be quoted
+  parameter:
+    - {name: number, type: int,  _: "1,2,4"} #comma separated integers must be quoted
+    - {name: zahl, type: int,  _: "2,4,5"} #comma separated integers must be quoted
 
 #Files
 fileset:
@@ -16,7 +18,9 @@ fileset:
 substituteset:
   name: substitute
   iofile: {in: file.in, out: file.out}
-  sub: {source: "#NUMBER#", dest: $number} #"#" must be quoted
+  sub:
+    - {source: "#NUMBER#", dest: $number} #"#" must be quoted
+    - {source: "#[^NUMBER]+#", dest: $zahl, mode: "regex"} #"#" must be quoted
 
 #Operation
 step:

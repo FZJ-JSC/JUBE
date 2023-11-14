@@ -167,11 +167,11 @@ class Table(KeyValuesResult):
 
     def add_key(self, name, format_string=None, title=None, unit=None):
         """Add an additional key to the dataset"""
-        self._keys.append(Table.Column(name, title, None, format_string))
+        self._keys.append(Table.Column(name, title, None, format_string, unit))
 
-    def create_result_data(self, style):
+    def create_result_data(self, style, select=None, exclude=None):
         """Create result data"""
-        result_data = KeyValuesResult.create_result_data(self)
+        result_data = KeyValuesResult.create_result_data(self, select, exclude)
         return Table.TableData(result_data,
                                style if style is not None else self._style,
                                self._separator, self._transpose)

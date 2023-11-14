@@ -27,9 +27,9 @@
       <use>analyse</use>
       <!-- creating a database containing the columns "number" and "number_pat" -->
       <!-- one table of the name "results" is created within the database -->
-      <!-- a database file "result_database.dat" is created in the current working directory -->
+      <!-- optionally, you can use the "file" attribute to specify an alternative storage location for the database -->
       <!-- filter contains a condition which must be met to add this row into the database -->
-      <database name="results" file="result_database.dat" primekeys="number,number_pat" filter="$number!=1 or $number_pat==2">
+      <database name="results" primekeys="number,number_pat" filter="$number!=1 or $number_pat==2">
         <key>number</key>
         <key>number_pat</key>
       </database>

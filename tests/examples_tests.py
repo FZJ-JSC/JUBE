@@ -16,231 +16,200 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Test the examples"""
+"""Superclass for testing examples"""
 
 from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import sys
-import filecmp
-import re
-import glob
 import unittest
-import os
 import shutil
+import os
 import jube2.main
+import examples_tests
 
 EXAMPLES_PREFIX = os.path.join(os.path.dirname(__file__), "../examples")
 
+class TestCase:
 
-class TestExamples(unittest.TestCase):
+    class TestExample(unittest.TestCase):
 
-    """Class for testing the included examples"""
+        """Superclass for testing the included examples"""
 
-    def test_examples(self):
-        """Main function"""
-        examples_tasks = []
-        for i in [".xml", ".yaml"]:
-            examples_tasks.append(ExampleChecker(
-                "do_log", "do_log"+i))
-            examples_tasks.append(ExampleChecker(
-                "environment", "environment"+i))
-            examples_tasks.append(ExampleChecker(
-                "result_creation", "result_creation"+i))
-            examples_tasks.append(ExampleChecker(
-                "files_and_sub", "files_and_sub"+i))
-            examples_tasks.append(ExampleChecker(
-                "dependencies", "dependencies"+i))
-            examples_tasks.append(ExampleChecker("tagging", "tagging"+i))
-            examples_tasks.append(ExampleChecker(
-                "parameterspace", "parameterspace"+i))
-            examples_tasks.append(ExampleChecker(
-                "parameter_dependencies", "parameter_dependencies"+i))
-            examples_tasks.append(ExampleChecker(
-                "scripting_parameter", "scripting_parameter"+i))
-            examples_tasks.append(ExampleChecker(
-                "scripting_pattern", "scripting_pattern"+i))
-            examples_tasks.append(ExampleChecker("statistic", "statistic"+i))
-            examples_tasks.append(ExampleChecker("include", "main"+i))
-            examples_tasks.append(ExampleChecker("shared", "shared"+i))
-            examples_tasks.append(ExampleChecker(
-                "hello_world", "hello_world"+i))
-            examples_tasks.append(ExampleChecker("iterations", "iterations"+i))
-            examples_tasks.append(ExampleChecker("cycle", "cycle"+i))
-            examples_tasks.append(ExampleChecker(
-                "parameter_update", "parameter_update"+i))
-            examples_tasks.append(ExampleChecker(
-                "result_database", "result_database"+i))
-            examples_tasks.append(ExampleChecker(
-                "duplicate", "duplicate"+i, suffix="--tag few many"))
+        @classmethod
+        def setUpClass(cls):
+            '''
+            Automatically called method before tests in the class are run.
 
-        for checker in examples_tasks:
-            self.assertTrue(checker.run())
+            Create the required paths
+            '''
+            #Path to example directory, input files and run directory
+            cls._path = os.path.join(EXAMPLES_PREFIX, cls._name)
+            cls._xml_file = os.path.join(cls._path, cls._name + ".xml")
+            cls._yaml_file = os.path.join(cls._path, cls._name + ".yaml")
+            cls._bench_run_path = os.path.join(cls._path, "bench_run")
 
+        @classmethod
+        def _execute_commands(cls, run_args=[""]):
+            '''
+            Executes all commands to check the output
+            of the examples for correctness.
+            '''
+            #Delete all existing example runs first
+            if os.path.exists(cls._bench_run_path):
+                shutil.rmtree(cls._bench_run_path)
 
-class ExampleChecker(object):
+            #Create all commands with the specified files and suffixes
+            cls._commands = ["run -e --hide-animation {0} {1}".format(file, arg).split() \
+                              for arg in run_args \
+                              for file in [cls._xml_file, cls._yaml_file]]
 
-    """Class for checking examples"""
+            #Execute all commands and save the created worpackage directories
+            cls._wp_paths = {}
+            for command_id, command in enumerate(cls._commands):
+                jube2.main.main(command)
+                run_path = cls._get_run_path(cls, cls._bench_run_path, command_id)
+                cls._wp_paths[run_path] = cls._get_wp_pathes(cls, run_path)
 
-    def __init__(self, bench_path, xml_file, bench_run_path=None,
-                 check_function=True, debug=False, suffix="", log_files=["run.log"]):
-        """Init instance.
+            #Save run arguments for result test
+            cls._run_args = run_args
 
-        The check_function should return a bool value to indicate the
-        success of failure of the test.
+        def test_for_status_files_in_wp_folders(self):
+            '''
+            Checks that there is a done file and
+            no error files in the workpackage directories.
+            '''
+            for run_path, command_wps in self._wp_paths.items():
+                for wp_id, wp_path in command_wps.items():
+                    self.assertTrue(self._existing_done_file(wp_path),
+                                    "Failed to successfully complete "
+                                    "workpackage with id {0}: Missing "
+                                    "done file in workpackage directory {1}"
+                                    .format(wp_id, wp_path))
+                    self.assertFalse(self._existing_error_file(wp_path),
+                                    "Failed to successfully complete "
+                                    "workpackage with id {0}: Missing "
+                                    "done file in workpackage  directory {1}"
+                                    .format(wp_id, wp_path))
 
-        """
-        self._bench_name = bench_path
-        self._xml_file = os.path.join(EXAMPLES_PREFIX, bench_path, xml_file)
+        def test_for_stdout_content_in_work_folders(self):
+            '''
+            Checks that the contents of the stdout files in the working
+            directories matches the expected contents.
+            '''
+            for run_path, command_wps in self._wp_paths.items():
+                command_id = int(run_path[-2:])
+                for wp_id, wp_path in command_wps.items():
+                    work_path = self._get_work_path(wp_path)
+                    stdout_path = self._get_stdout_file(work_path)
+                    stdout = self._content_of_file(stdout_path)
+                    self.assertEqual(stdout, self._stdout[command_id][wp_id],
+                                     "Error: stdout file for workpackage with "
+                                     "id {0} in work directory {1} has not the "
+                                     "right content".format(wp_id, stdout_path))
 
-        self._bench_run_path = bench_run_path or os.path.join(
-            EXAMPLES_PREFIX, bench_path, "bench_run")
+        def test_for_equal_result_data(self):
+            '''Checks that the result output matches the target result output'''
+            #Checks only if a result output has been processed
+            if "-r" in self._run_args:
+                for run_path, command_wps in self._wp_paths.items():
+                    #Get content of target result output
+                    origin_result_path = os.path.join(os.path.dirname(__file__),
+                                                      "examples_result_output",
+                                                      self._name, "result.dat")
+                    origin_result_content = \
+                                    self._content_of_file(origin_result_path)
 
-        self._check_function = check_function
-        self._debug = debug
-        self._suffix = suffix
-        self._log_files = log_files
+                    #Get actual content of result output
+                    run_result_path = os.path.join(run_path, "result",
+                                                   "result.dat")
+                    run_result_content = self._content_of_file(run_result_path)
 
-    def run(self):
-        """Run example"""
-        success = True
-        debug = "--debug" if self._debug else ""
-        jube2.main.main(
-            "{0} run -e {1} -r {2}".format(debug, self._xml_file, self._suffix).split())
+                    #Check that both result outputs are the same
+                    self.assertEqual(run_result_content, origin_result_content,
+                                     "Result content for example {0} not "
+                                     "correct".format(self._name))
 
-        if self._check_function:
-            for log_file in self._log_files:
-                if self._check(log_file=log_file) == False:
-                    success=False
+        def _get_run_path(self, bench_run_path, command_id):
+            """Returns the path of the run directory for the given path and id"""
+            return os.path.join(bench_run_path, f"{command_id:06}")
 
-        shutil.rmtree(os.path.join(EXAMPLES_PREFIX,
-                      os.path.join(self._bench_name, "bench_run")))
-        if self._bench_name == 'result_database':
-            os.remove('result_database.dat')
+        def _get_wp_pathes(self, run_path):
+            """
+            Returns a dictionary with the path of the workpackage
+            directory in the given path to the corresponding
+            workpackage id
+            """
+            workpackages = {}
+            for wp_dir in os.listdir(run_path):
+                wp_path = os.path.join(run_path, wp_dir)
+                # check if directory and id in name
+                if os.path.isdir(wp_path) and (wp_dir[:6]).isdigit():
+                    #get wp id out of dir name
+                    wp_id = int(wp_dir[:6])
+                    workpackages[wp_id] = wp_path
+            return workpackages
 
-        return success
+        def _get_stdout_file(self, file_path):
+            '''Returns the path of the stdout file for the given path'''
+            return os.path.join(file_path, 'stdout')
 
-    # compare the output line-wise with check file
-    def _check(self, log_file=None):
-        success = True
+        def _get_work_path(self, file_path):
+            '''Returns the working folder path for the given path'''
+            return os.path.join(file_path, "work")
 
-        if log_file==None :
-            raise ValueError("log_file is not defined")
-        if type(log_file)!=str :
-            raise TypeError("log_file is not of type str")
+        def _existing_file(self, file_path):
+            '''Checks if the file exists in the given path'''
+            return os.path.exists(file_path)
 
-        if not self._debug:
-            latest_file = max(glob.glob(os.path.join(os.path.join(EXAMPLES_PREFIX, os.path.join(
-                self._bench_name, "bench_run")), '*/')), key=os.path.getmtime)
-            abspath_latest_file_tmp  = os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, log_file+".tmp")
-            abspath_example_file_tmp = os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, log_file+".tmp")
-            abspath_latest_file      = os.path.join(EXAMPLES_PREFIX, os.path.join(self._bench_name, "bench_run"), latest_file, log_file)
-            abspath_example_file     = os.path.join(os.path.dirname(__file__),"examples_output", self._bench_name, log_file)
+        def _existing_done_file(self, file_path):
+            '''Checks if the done file exists in the given path'''
+            done_file_path = os.path.join(file_path, 'done')
+            return self._existing_file(done_file_path)
 
-            # delete temporary files, if they are existing
-            if os.path.exists(abspath_latest_file_tmp):
-                os.remove(abspath_latest_file_tmp)
-            if os.path.exists(abspath_example_file_tmp):
-                os.remove(abspath_example_file_tmp)
+        def _existing_error_file(self, file_path):
+            '''Checks if the error file exists in the given path'''
+            error_file_path = os.path.join(file_path, 'error')
+            return self._existing_file(error_file_path)
 
-            # preprocess test and check file to care for line breaks within tables
-            ausgabe = open(abspath_latest_file_tmp, 'w')
-            check = open(abspath_example_file_tmp, 'w')
-            ausgabeOriginal = open(abspath_latest_file, 'r')
-            checkOriginal = open(abspath_example_file, 'r')
+        def _content_of_file(self, file_path):
+            '''Returns the contents of the given file'''
+            with open(file_path, 'r') as file:
+                output = file.read().strip()
+            return output
 
-            # leave out all jube printed tables rows, which have an emptry columns entry and therefore, are part of a line break
-            for fileHandle in [[ausgabeOriginal,ausgabe],[checkOriginal,check]]:
-                for line in fileHandle[0]:
-                    if re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', line) and re.match('^.*\|\s*\|.*$', line):
-                        pass
-                    else:
-                        fileHandle[1].write(line)
-                
-            # jump to start of the temporary output files
-            ausgabe.close()
-            check.close()
-            ausgabe = open(abspath_latest_file_tmp, 'r')
-            check = open(abspath_example_file_tmp, 'r')
-            ausgabeOriginal.close()
-            checkOriginal.close() 
+        @classmethod
+        def tearDownClass(cls):
+            '''
+            Automatically called method after all tests in the class have run.
 
-            success = self._tabfinder(ausgabe, check)
-            for l1, l2 in zip(ausgabe, check):
-                if not re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1) and "id" not in l1 and "dir" not in l1 and "handle" not in l1 and "copy" not in l1 and "Command:" not in l1 and "Version:" not in l1 and "Parsing" not in l1 and "path:" not in l1:
-                    ausgabeMatcher = re.match(
-                        '^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l1)
-                    checkMatcher = re.match(
-                        '^(?:.+?:){4}(.*?)(?:stdout.*?)?(?:stderr.*?)?$', l2)
-                    if ausgabeMatcher.group(1) != checkMatcher.group(1):
-                        check.close()
-                        ausgabe.close()
-                        # delete temporary files, if they are existing
-                        if os.path.exists(abspath_latest_file_tmp):
-                            os.remove(abspath_latest_file_tmp)
-                        if os.path.exists(abspath_example_file_tmp):
-                            os.remove(abspath_example_file_tmp)
-                        return False
-            check.close()
-            ausgabe.close()
+            Deletes the run folder and with it all of the
+            output from the examples.
+            '''
+            shutil.rmtree(cls._bench_run_path)
 
-            # delete temporary files, if they are existing
-            if os.path.exists(abspath_latest_file_tmp):
-                os.remove(abspath_latest_file_tmp)
-            if os.path.exists(abspath_example_file_tmp):
-                os.remove(abspath_example_file_tmp)
-
-        return success
-
-    # extract and compare tables
-    def _tabfinder(self,file1, file2):
-        success = True
-        ignore = ["_home", "_id", "_padid", "_rundir",
-                  "_start", "_abspath", "_relpath"]
-        vergleichbar = True
-        ausgabe = ""
-        ausgabeDic = {}
-        check = ""
-        checkDic = {}
-
-        for l1, l2 in zip(file1, file2):
-            if re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1):
-                ausgabe += l1
-            if re.match('^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l2):
-                check += l2
-
-        for l1, l2 in zip(ausgabe.split("\n"), check.split("\n")):
-            ausgabeTab = re.match(
-                '^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l1)
-            checkTab = re.match(
-                '^(?:.+?:){4}(?:\s){10}(.*)(?:.*?\||\+)(.*)', l2)
-            if ausgabeTab:
-                ausgabeDic[ausgabeTab.group(1).replace(
-                    " ", "")] = ausgabeTab.group(2).replace(" ", "")
-            if checkTab:
-                checkDic[checkTab.group(1).replace(
-                    " ", "")] = checkTab.group(2).replace(" ", "")
-                
-        for key in ausgabeDic:
-            for elem in ignore:
-                if elem in key:
-                    vergleichbar = False
-            if vergleichbar:
-                if key in checkDic:
-                    if ausgabeDic[key] == checkDic[key]:
-                        success = True
-                if success == False:
-                    file1.seek(0)
-                    file2.seek(0)
-
-                    return False
- 
-        # remove to beginning of the files
-        file1.seek(0)
-        file2.seek(0)
-        return success
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
+    '''Import all example tests to run all tests at once'''
+    #import to run all example tests
+    from example_tests.example_cycle_tests import TestCycleExample
+    from example_tests.example_dependencies_tests import TestDependenciesExample
+    from example_tests.example_do_log_tests import TestDoLogExample
+    from example_tests.example_duplicate_tests import TestDuplicateExample
+    from example_tests.example_environment_tests import TestEnvironmentExample
+    from example_tests.example_files_and_sub_tests import TestFilesAndSubExample
+    from example_tests.example_hello_world_tests import TestHelloWorldExample
+    from example_tests.example_include_tests import TestIncludeExample
+    from example_tests.example_iterations_tests import TestIterationsExample
+    from example_tests.example_parameter_dependencies_tests import TestParameterDependenciesExample
+    from example_tests.example_parameter_update_tests import TestParameterUpdateExample
+    from example_tests.example_parameterspace_tests import TestParameterspaceExample
+    from example_tests.example_result_creation_tests import TestResultCreationExample
+    from example_tests.example_result_database_tests import TestResultDatabaseExample
+    from example_tests.example_scripting_parameter_tests import TestScriptingParameterExample
+    from example_tests.example_scripting_pattern_tests import TestScriptingPatternExample
+    from example_tests.example_shared_tests import TestSharedExample
+    from example_tests.example_statistic_tests import TestStatisticExample
+    from example_tests.example_tagging_tests import TestTaggingExample
     unittest.main()
+
+

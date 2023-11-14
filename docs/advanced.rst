@@ -50,10 +50,10 @@ Schema usage:
 .. code-block:: xml
    :linenos:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   <?xml version="1.0" encoding="UTF-8"?>
+   <jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="<jube.xsd path>">
-    ...
+   ...
 
 RELAX NG Compact Syntax (RNC for emacs nxml-mode) usage:
 
@@ -70,7 +70,7 @@ create a ``schema.xml`` file which looks like
 
    <?xml version="1.0"?>
    <locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
-      <uri resource="jube-file.xml" uri="../schema/jube.rnc"/>
+     <uri resource="jube-file.xml" uri="../schema/jube.rnc"/>
    </locatingRules>
 
 The next time you open the same xml file emacs will find the correct
@@ -84,11 +84,11 @@ Example validation tools:
 
   * For validation (using the DTD)::
 
-       >>> xmllint --noout --valid <xml input file>
+      >>> xmllint --noout --valid <xml input file>
 
   * For validation (using the DTD and Schema)::
 
-       >>> xmllint --noout --valid --schema <schema file> <xml input file>
+      >>> xmllint --noout --valid --schema <schema file> <xml input file>
 
 .. index:: scripting, perl, python, shell
 
@@ -256,7 +256,7 @@ There are two new attributes:
     ``<do>`` containing a ``done_file`` attribute *JUBE* will return directly and will not continue automatically until the ``done_file`` exists. If you want to check the current status
     of your running steps and continue the benchmark process if possible you can type::
 
-       >>> jube continue bench_run
+      >>> jube continue bench_run
 
     This will continue your benchmark execution (``bench_run`` is the benchmarks directory in this example). The position of the ``done_file`` is relatively seen towards the work directory.
   * ``work_dir`` can be used to change the sandbox work directory of a step. In normal cases *JUBE* checks that every work directory gets a unique name. When changing the directory the user must select a
@@ -342,24 +342,37 @@ It will search for the files to include inside four different positions, in the 
 
 * inside a directory given over the command line interface::
 
-     >>> jube run --include-path some_path another_path -- main.xml
+      >>> jube run --include-path some_path another_path -- main.xml
 
-* inside any path given by an ``<include-path>``-tag:
+* inside any path given by an ``<include-path>``- or ``include-path:``-tag in *XML* or *YAML*, respectively:
 
   .. code-block:: xml
      :linenos:
 
      <?xml version="1.0" encoding="UTF-8"?>
-     <benchmarks>
+     <jube>
        <include-path>
          <path>some_path</path>
          <path>another_path</path>
        </include-path>
        ...
+     </jube>
+
+
+  .. code-block:: yaml
+     :linenos:
+  
+     ...
+     include-path:
+       path:
+         - "some path"
+         - "another path"
+     ...
+
 
 * inside any path given with the ``JUBE_INCLUDE_PATH`` environment variable (see :ref:`configuration`)::
 
-     >>> export JUBE_INCLUDE_PATH=some_path:another_path
+      >>> export JUBE_INCLUDE_PATH=some_path:another_path
 
 * inside the same directory of your ``main.xml``
 
@@ -372,7 +385,7 @@ It will search for the files to include inside four different positions, in the 
 Tagging
 ~~~~~~~
 
-:term:`Tagging <tagging>` is an easy way to hide selectable parts of your input file.
+:term:`Tagging <tagging>` is an easy way to hide selected parts of your input file.
 
 The files used for this example can be found inside ``examples/tagging``.
 
@@ -386,36 +399,36 @@ The input file ``tagging.yaml``:
 .. literalinclude:: ../examples/tagging/tagging.yaml
    :language: yaml
 
-When running this example::
+The ``tag`` attribute and the ``check_tags`` tag allow you to define more complex boolean expressions.
+For example:
+* ``!`` can be used for negation (``!deu`` stands for ``not deu``)
+* ``|`` can be used as an OR operator and ``+`` as an AND operator to combine tag values (e.g. XML: ``tag="!deu+eng"``; YAML: ``tag: "!deu+eng"``).
+* parentheses are also allowed
 
-   >>> jube run tagging.xml
+The ``tag`` attribute can be used within any ``<element>`` within the input file (except the ``<jube>``).
+If several different ``tag`` attribute values are used in a script, they can be specified as a list separated by spaces from the command line.
 
-All ``<tags>`` which contain a special ``tag="..."`` attribute will be hidden if the tag results to ``false``. ``!deu`` stands for ``not deu``. 
-To connect the ``tags`` ``|`` can be used as the oprator OR and ``+`` for the operator AND. Also brackets are allowed.
+All ``<elements>`` which contain a special ``tag="..."`` attribute will be hidden if the value of the tag evaluates to ``false``.
+This means that JUBE will ignore the elements with these tags in its internal processing.
+Caution: This can lead to erroneous execution if you forget to set the necessary tags for execution, as JUBE will ignore e.g. a ``<parameter>`` provided with the corresponding ``tag`` attribute that evaluates to false.
 
-The result (if no ``tag`` is set on the commandline) inside the ``stdout`` file will be
+Careful: This can lead to erroneous execution if you forget to set the necessary tags for execution, as JUBE will no longer consider e.g. parameters provided with the corresponding ``tag`` attribute.
 
-.. code-block:: none
+To ensure that the user of the script specifies the necessary tag values that the script needs for successful execution, the ``check_tag`` element (added with JUBE version 2.5.2) can be used.
+It allows you to define tag values that must be specified when the script is called in order for it to run successfully.
+If none of the required ``tag`` combinations defined by ``check_tag`` are set by the user, an error message is displayed and the run is aborted.
 
-   Hallo $world_str
-   
-because ``!deu+eng`` and ``eng`` will be ``false`` and there is no other input available for ``$world_str``. ``deu|!eng`` will be ``true``.  
-
-When running the same example using a specific ``tag``::
+In the example above, ``check_tags: deu|eng`` indicates that ``deu`` or ``eng`` must be set.
+When running the example using one of the specific ``tag`` values in ``<check_tags>`` (in this case ``--tag eng``):
 
    >>> jube run tagging.xml --tag eng
 
-the result inside the ``stdout`` file will be
+this results in the following output in the ``stdout`` file:
 
 .. code-block:: none
 
    Hello World
 
-A ``tag`` which results to ``false`` will trigger to complety ignore the corresponding ``<tag>``! If there is no alternative this can produce a wrong execution behaviour!
-
-Also a list of tags, separated by spaces, can be provided on the commandline.
-
-The ``tag`` attribute can be used inside every ``<tag>`` inside the input file (except the ``<jube>``).
 
 .. index:: platform independent
 
@@ -452,6 +465,18 @@ input file. This can be mixed using the tagging-feature:
      </include-path>
      ...
    </jube>
+
+Or in *YAML*:
+
+.. code-block:: yaml
+   :linenos:
+
+   ...
+   include-path:
+     path:
+       - {tag: plat1,  _: "some path"}
+       - {tag: plat2,  _: "another path"}
+   ...
 
 Now you can run your benchmark using::
 
@@ -854,10 +879,6 @@ The ``database`` tag takes the argument ``name``. ``name`` is also the name of t
    | 4      | 4          |
    +--------+------------+
 
-The argument ``file`` states the full path of a second copy of the database file. The path can be stated relative or absolute. In this case the database file ``result_database.dat`` is created within the current working directory in which ``jube result`` was invoked. 
-
-Invocating ``jube result`` a second time updates the database given by the ``file`` parameter. Without the parameter ``primekeys`` three additional lines to the ``results`` table would have been added which are completely identical to the previous three lines. Adding the argument ``primekeys`` ensures that only if the column values stated within ``primekeys`` are not exactly the same in the database table, a new line is added to the database table. In this example no new lines are added. All the ``primekeys`` also need to be stated as ``key``. Updating the ``primekeys`` is not supported.
-
 The ``key`` tag adds columns to the database table having the same type as the corresponding ``parameter`` or ``pattern``. Information of columns of the database table ``results`` can be shown as follows.
 
 .. code-block:: none
@@ -869,6 +890,10 @@ The ``key`` tag adds columns to the database table having the same type as the c
    | 0   | number     | int  | 0       |            | 1  |
    | 1   | number_pat | int  | 0       |            | 2  |
    +-----+------------+------+---------+------------+----+
+
+The ``file`` argument takes a relative (to the current working directory) or absolute path to an alternative/user-defined location for the database file. Assuming that ``file="result_database.dat"`` was set in the above example, a file named ``result_database.dat`` would be created in the current working directory where ``jube result`` was invoked, containing a database named ``results``, and the file ``bench_run/000000/result/results.dat`` would no longer contain the database, but the path specified in the ``file`` attributes.
+
+Invocating ``jube result`` a second time updates the database given by the ``file`` parameter. Without the parameter ``primekeys`` three additional lines to the ``results`` table would have been added which are completely identical to the previous three lines. Adding the argument ``primekeys`` ensures that only if the column values stated within ``primekeys`` are not exactly the same in the database table, a new line is added to the database table. In this example no new lines are added. All the ``primekeys`` also need to be stated as ``key``. Updating the ``primekeys`` is not supported.
 
 To have a look into a database within a python script the python modules `sqalchemy <https://www.sqlalchemy.org/>`_ or `pandas <https://pandas.pydata.org>`_ can be used.
 

@@ -12,4 +12,4 @@ step:
   use: param_set
   do:
   - "echo \"${i}\""
-  - "N=1000000 ; a=1 ; for (( k = 0 ; k < $N ; ++k )); do a=$(( 2*k + 1 + $a )) ; done"
+  - "N=1000000 ; a=1; k=0; while [ "$k" -lt $N ]; do echo $(( 2*k + 1 + $a )) ; k=$(( k + 1 )) ; done"

@@ -384,6 +384,27 @@ class Workpackage(object):
     def step(self):
         """Return Step data"""
         return self._step
+    
+    def status(self):
+        """return FINISHED, RUNNING or DONE dependign on the workpackage status"""
+        if self.done:
+            return "DONE"
+        elif self.error:
+            return "ERROR"
+        else:
+            return "RUNNING"
+
+    def update_status(self):
+        """Update status in jube parameter"""
+        parameterset = jube2.parameter.Parameterset()
+
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_status", self.status(),
+                             parameter_type="string",
+                             update_mode=jube2.parameter.JUBE_MODE))
+
+        self.parameterset.update_parameterset(parameterset)
 
     def get_jube_cycle_parameterset(self):
         """Return parameterset which contains cycle related
@@ -423,6 +444,13 @@ class Workpackage(object):
             jube2.parameter.Parameter.
             create_parameter("jube_wp_padid",
                              jube2.util.util.id_dir("", self._id),
+                             parameter_type="string",
+                             update_mode=jube2.parameter.JUBE_MODE))
+        
+        # workpackage status
+        parameterset.add_parameter(
+            jube2.parameter.Parameter.
+            create_parameter("jube_wp_status", self.status(),
                              parameter_type="string",
                              update_mode=jube2.parameter.JUBE_MODE))
 

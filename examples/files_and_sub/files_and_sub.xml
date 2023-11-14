@@ -6,6 +6,7 @@
     <!-- Configuration -->
     <parameterset name="param_set">
       <parameter name="number" type="int">1,2,4</parameter>
+      <parameter name="zahl" type="int">2,4,5</parameter>
     </parameterset>
 
     <!-- Files -->
@@ -19,6 +20,7 @@
       <iofile in="file.in" out="file.out" />
       <!-- Substitute commands -->
       <sub source="#NUMBER#" dest="$number" />
+      <sub source="#[^NUMBER]+#" dest="$zahl" mode="regex"/>
     </substituteset>
 
     <!-- Operation -->

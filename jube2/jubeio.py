@@ -135,7 +135,7 @@ class Parser(object):
                         return None, list(), list()
 
         valid_tags = ["selection", "include-path", "parameterset", "benchmark",
-                      "substituteset", "fileset", "include", "patternset"]
+                      "substituteset", "fileset", "include", "patternset", "check_tags"]
 
         # Save init include path (from command line)
         init_include_path = list(self._include_path)
@@ -211,12 +211,25 @@ class Parser(object):
         # Check for remaing <include> tags
         node = jube2.util.util.get_tree_element(tree.getroot(),
                                                 tag_path="include")
+                                                
         if node is not None:
             raise ValueError(("Remaining include element found, which " +
                               "was not replaced (e.g. due to a missing " +
                               "include-path):\n" +
                               "<include from=\"{0}\" ... />")
-                             .format(node.attrib["from"]))
+                             .format(node.attrib["from"]))   
+
+        # Read all global check_tags and check if necessary tags are given
+        check_tags = ""
+        for element in tree.findall("check_tags"):
+            check_tags += "(" + element.text + ") + "
+
+        if check_tags != "":
+            check_tags = check_tags[:-3] # Remove last +
+            if not jube2.util.util.valid_tags(check_tags, self._tags):
+                raise ValueError("The following tag combination is required: "
+                                 "{0}".format(check_tags.replace('|', ' or ')\
+                                 .replace('+', ' and ').replace('!', ' not ')))
 
         LOGGER.debug("  Preprocess done")
 
@@ -665,7 +678,7 @@ class Parser(object):
         LOGGER.debug("  Parsing <include-path>")
         valid_tags = ["path"]
         pathes = []
-        if len(include_path_etree.text.strip()) > 0:
+        if (include_path_etree.text) and len(include_path_etree.text.strip()) > 0:
             pathes.append(include_path_etree.text.strip())
         for element in include_path_etree:
             Parser._check_tag(element, valid_tags)
@@ -1223,7 +1236,7 @@ class Parser(object):
                         jube2.substitute.Substituteset(name, files, subs)
                 else:
                     result_set.update_files(files)
-                    result_set.update_substitute(subs)
+                    result_set.update_subs(subs)
             elif set_type == "fileset":
                 if result_set is None:
                     result_set = jube2.fileset.Fileset(name)
@@ -1307,6 +1320,7 @@ class Parser(object):
                                   default=jube2.conf.DEFAULT_SEPARATOR)
             parameter_type = param.get("type", default="string").strip()
             parameter_mode = param.get("mode", default="text").strip()
+            parameter_unit = param.get("unit", default="").strip()
             parameter_update_mode = param.get("update_mode",
                                               default="never").strip()
             if parameter_update_mode not in jube2.parameter.UPDATE_MODES:
@@ -1354,7 +1368,7 @@ class Parser(object):
             parameter = \
                 jube2.parameter.Parameter.create_parameter(
                     name, value, separator, parameter_type, selected_value,
-                    parameter_mode, export, update_mode=parameter_update_mode,
+                    parameter_mode, parameter_unit, export, update_mode=parameter_update_mode,
                     idx=idx, eval_helper=None, fixed=False, duplicate=duplicate)
             parameters.append(parameter)
         return parameters
@@ -1560,7 +1574,7 @@ class Parser(object):
                     self._extract_extern_set(parts[0], "substituteset", name,
                                              search_name)
                 substitutesets[name].update_files(files)
-                substitutesets[name].update_substitute(subs)
+                substitutesets[name].update_subs(subs)
             else:
                 substitutesets[name] = \
                     jube2.substitute.Substituteset(name, files, subs)
@@ -1574,7 +1588,7 @@ class Parser(object):
         """
         valid_tags = ["iofile", "sub"]
         files = list()
-        subs = dict()
+        subs = list()
         for sub in etree_substituteset:
             Parser._check_tag(sub, valid_tags)
             if sub.tag == "iofile":
@@ -1600,7 +1614,8 @@ class Parser(object):
                     if dest is None:
                         dest = ""
                 dest = dest.strip() + ""
-                subs[source] = dest
+                sub_type = sub.get("mode", default="text").strip()
+                subs.append(jube2.substitute.Sub(source, sub_type, dest))
         return (files, subs)
 
     @staticmethod
