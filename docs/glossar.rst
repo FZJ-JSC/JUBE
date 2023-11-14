@@ -932,6 +932,7 @@ Glossary
 
         * ``$jube_wp_id``: current workpackage id
         * ``$jube_wp_padid``: current workpackage id with preceding zeros
+        * ``$jube_wp_status``: current workpackage status
         * ``$jube_wp_iteration``: current iteration number (default: 0)
         * ``$jube_wp_parent_<parent_name>_id``: workpackage id of selected parent step
         * ``$jube_wp_relpath``: relative path to workpackage work directory (relative towards configuration file)
