@@ -410,7 +410,7 @@ the sandbox directory. Because we do/should not know that location we use the fi
 
 The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
 use parameters inside the substitution. In addition to the standard ``text`` substitution (see ``<sub source="#NUMBER#" ... />``),
-the ``mode`` attribute (introduced in JUBE version 2.5.2) also allows regular expressions to be used for the substitution
+the ``mode`` attribute (introduced in JUBE version 2.6.0) also allows regular expressions to be used for the substitution
 (see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``).  The regular expression in this example searches for a capitalised
 text enclosed in ``#``. It matches the following text in the file ``file.in``: ``#ZAHL#``.
 
