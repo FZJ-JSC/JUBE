@@ -115,3 +115,8 @@ config = {'name': 'JUBE',
 config.update(add_opt)
 
 setup(**config)
+
+try:
+    import ruamel.yaml
+except ImportError:
+    print("Warning: The python package 'ruamel.yaml' is not installed. The validity of yaml files cannot be checked properly and silent errors can occur. Nevertheless, the installation is complete.")
