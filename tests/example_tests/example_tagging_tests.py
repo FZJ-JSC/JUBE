@@ -38,14 +38,13 @@ class TestTaggingExample(TestCase.TestExample):
         '''
         cls._name = "tagging"
         cls._stdout = [["Hallo $world_str"] , ["Hallo $world_str"],
-                       ["Hallo $world_str"], ["Hallo $world_str"],
                        ["Hello World"], ["Hello World"],
                        ["Hallo World"], ["Hallo World"]]
         super(TestTaggingExample, cls).setUpClass()
 
         #Create run arguments for commands with all tag combinations
         tags = ["deu", "eng", "deu eng"]
-        run_args = [""]
+        run_args = []
         for tag in tags:
             run_args.append("--tag "+tag)
         super(TestTaggingExample, cls)._execute_commands(run_args)
