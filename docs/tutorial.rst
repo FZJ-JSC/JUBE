@@ -409,7 +409,10 @@ The ``<substituteset>`` describes the substitution process. The ``<iofile>`` con
 the sandbox directory. Because we do/should not know that location we use the fileset to copy ``file.in`` to this directory.
 
 The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
-use parameters inside the substitution.
+use parameters inside the substitution. In addition to the standard ``text`` substitution (see ``<sub source="#NUMBER#" ... />``),
+the ``mode`` attribute (introduced in JUBE version 2.6.0) also allows regular expressions to be used for the substitution
+(see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``).  The regular expression in this example searches for a capitalised
+text enclosed in ``#``. It matches the following text in the file ``file.in``: ``#ZAHL#``.
 
 There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
 ``<sub>`` you must also add the corresponding ``<parameterset>`` inside the ``<step>`` where you use the ``<substituteset>``!
@@ -432,19 +435,26 @@ The resulting directory-tree will be:
       |
       +- configuration.xml # the stored benchmark configuration
       +- workpackages.xml  # workpackage information
-      +- 000000_sub_step   # the workpackage ($number = 1)
+      +- 000000_sub_step   # the workpackage ($number = 1, $zahl = 2)
          |
          +- done           # workpackage finished marker
          +- work           # user sandbox folder
             |
             +- stderr      # standard error messages of used shell commands
-            +- stdout      # standard output of used shell commands (Number: 1)
+            +- stdout      # standard output of used shell commands (Number: 1 Zahl: 2)
             +- file.in     # the file copy
             +- file.out    # the substituted file
-      +- 000001_sub_step   # the workpackage ($number = 2)
+      +- 000001_sub_step   # the workpackage ($number = 1, $zahl = 4)
          |
          +- ...
       +- ...
+
+And the content of file ``file.out`` in ``000000_sub_step/work``:
+
+.. code-block:: none
+
+   Number: 1
+   Zahl: 2
 
 .. index:: analyse, result, table
 

@@ -38,7 +38,9 @@ class TestFilesAndSubExample(TestCase.TestExample):
         Create the necessary variables and paths for the specific example
         '''
         cls._name = "files_and_sub"
-        cls._stdout = ["Number: "+i for i in ["1", "2", "4"]]
+        cls._stdout = ["Number: "+i+ "\nZahl: "+j
+                       for i in ["1", "2", "4"]
+                       for j in ["2", "4", "5"]]
         cls._stdout = [cls._stdout, cls._stdout]
         super(TestFilesAndSubExample, cls).setUpClass()
         super(TestFilesAndSubExample, cls)._execute_commands()
