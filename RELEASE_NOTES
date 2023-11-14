@@ -28,7 +28,8 @@ Release: 2023-11-13
 
 * The *jube complete* help output was debugged.
 
-* The tests were refactored and debugged.
+* The tests for the examples have been completely rewritten to avoid
+  using >>`<<run.log' files.
 
 * Backward compatibility for floating number value definitions of
   parameters of type int was restored such that only warning messages
