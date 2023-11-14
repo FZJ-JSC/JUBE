@@ -160,9 +160,7 @@ def benchmarks_results(args):
         if (args.num is None) or (cnt < args.num):
             result_list = _benchmark_result(benchmark_folder=benchmark_folder,
                                             args=args,
-                                            result_list=result_list,
-                                            select = args.select,
-                                            exclude = args.exclude)
+                                            result_list=result_list)
             cnt += 1
     for result_data in result_list:
         result_data.create_result(reverse=args.reverse)
@@ -615,8 +613,7 @@ def _analyse_benchmark(benchmark_folder, args):
     jube2.log.only_console_log()
 
 
-def _benchmark_result(benchmark_folder, args, result_list=None,
-                      select=None, exclude=None):
+def _benchmark_result(benchmark_folder, args, result_list=None):
     """Show benchmark result"""
     benchmark = _load_existing_benchmark(args, benchmark_folder)
     if result_list is None:
@@ -646,8 +643,8 @@ def _benchmark_result(benchmark_folder, args, result_list=None,
     result_list = benchmark.create_result(only=args.only,
                                           data_list=result_list,
                                           style=args.style,
-                                          select=select,
-                                          exclude=exclude)
+                                          select=args.select,
+                                          exclude=args.exclude)
 
     # Reset logging
     jube2.log.only_console_log()
