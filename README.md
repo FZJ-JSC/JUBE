@@ -26,6 +26,8 @@ You need Python 3.2 (or a higher version) to run the program.
 
 JUBE is not compatible to Python2.x any longer.
 
+You will also need SQLite version 3.35.0 (or higher) to use the database as a result output.
+
 # Installation
 
 After download, unpack the distribution file `JUBE-<version>.tar.gz` with:

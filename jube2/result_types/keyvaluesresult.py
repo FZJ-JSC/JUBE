@@ -205,9 +205,22 @@ class KeyValuesResult(Result):
         self._keys.append(KeyValuesResult.DataKey(name, title, format_string,
                                                   unit))
 
-    def create_result_data(self):
+    def create_result_data(self, select=None, exclude=None):
         """Create result data"""
         result_data = KeyValuesResult.KeyValuesData(self._name)
+
+        if exclude is None:
+            exclude = []
+
+        if select is None:
+            select = [key.name for key in self._keys]
+        else:
+            # Check whether the same column name appears in select and exclude
+            if set(select) & set(exclude):
+                LOGGER.error("Error when checking the select and exclude names: "
+                             "A pattern or parameter name occurs in both select "
+                             "and exclude")
+                exit()
 
         # Read pattern/parameter units if available
         units = self._load_units([key.name for key in self._keys])
@@ -232,6 +245,50 @@ class KeyValuesResult(Result):
                        key=lambda x:
                        [jube2.util.util.CompType(x[sort_name])
                         for sort_name in self._sort_names])
+
+        # Check for correctness of exclude and select names
+        key_names = [key.name for key in self._keys]
+        # Help lists for multiple columns
+        unique_select = []
+        multiple_select = []
+        for select_name in select:
+            # Check if given names exist in keys
+            if select_name not in key_names:
+                LOGGER.warning("The result table does not contain a pattern "
+                               "or parameter with the name '{0}'. This "
+                               "name will be ignored for selection."
+                               .format(select_name))
+            # Check whether the given name occurs only once
+            if select_name not in unique_select:
+                unique_select.append(select_name)
+            elif select_name not in multiple_select:
+                multiple_select.append(select_name)
+                LOGGER.warning("The pattern or parameter name {} occurs more "
+                               "than once. These additional occurrences are "
+                               "ignored for selection.".format(select_name))
+
+        # Help lists for multiple columns
+        unique_exclude = []
+        multiple_exclude = []
+        for exclude_name in exclude:
+            # Check if given names exist in keys
+            if exclude_name not in key_names:
+                LOGGER.warning("The result table does not contain a pattern "
+                               "or parameter with the name '{0}'. This "
+                               "name will be ignored for exclusion."
+                               .format(exclude_name))
+            # Check whether the given name occurs only once
+            if exclude_name not in unique_exclude:
+                unique_exclude.append(exclude_name)
+            elif exclude_name not in multiple_exclude:
+                multiple_exclude.append(exclude_name)
+                LOGGER.warning("The pattern or parameter name {} occurs more "
+                               "than once. These additional occurrences are "
+                               "ignored for exclusion.".format(exclude_name))
+
+        # Select and exclude table columns
+        self._keys = [key for key in self._keys if key.name in select and \
+                                                   key.name not in exclude]
 
         # Create table data
         table_data = list()

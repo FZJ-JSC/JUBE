@@ -23,17 +23,18 @@ Release notes
 
 Version 2.6.0 [Unreleased]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Release: 2023-11-13
+Release: 2023-11-14
 
 * The new `mode` attribute has been added to the `sub`-tag, allowing `regex` substitution as an alternative to `text`-based substitution.
+* The `jube result` command line call has been extended by the options `--select` and `--exclude` to show and hide selected result columns.
 * A new option `<check_tags>` has been added, which allows you to specify tags that must be set for the script to run.
 * New command line option `jube output` has been added to print out the path and the contents of the files stdout and stderr.
 * A new `unit` attribute has been added to `parameter`, which has the same function as the `unit` attribute of `pattern`.
-* Improved CI: separated tests and automatic tasks for releases.
+* Improved CI: separated tests and automatic tasks for releases
 * The `include-path` for YAML scripts has been fixed and an usage example has been added to the advanced tutorial.
 * The `result_creation` example has been updated.
 * The `jube complete` help output was debugged.
-* The tests were refactored and debugged.
+* The tests for the examples have been completely rewritten to avoid using `run.log' files.
 * Backward compatibility for floating number value definitions of parameters of type int was restored such that only warning messages are printed in this case.
 * Typos and bugs in the glossary and the help were fixed. 
 * A validity check by use of the pip package ruamel.yaml is introduced. This package is used if it is installed. Otherwise, there will be no validity check for yaml files and a corresponding warning.

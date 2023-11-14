@@ -160,7 +160,9 @@ def benchmarks_results(args):
         if (args.num is None) or (cnt < args.num):
             result_list = _benchmark_result(benchmark_folder=benchmark_folder,
                                             args=args,
-                                            result_list=result_list)
+                                            result_list=result_list,
+                                            select = args.select,
+                                            exclude = args.exclude)
             cnt += 1
     for result_data in result_list:
         result_data.create_result(reverse=args.reverse)
@@ -613,7 +615,8 @@ def _analyse_benchmark(benchmark_folder, args):
     jube2.log.only_console_log()
 
 
-def _benchmark_result(benchmark_folder, args, result_list=None):
+def _benchmark_result(benchmark_folder, args, result_list=None,
+                      select=None, exclude=None):
     """Show benchmark result"""
     benchmark = _load_existing_benchmark(args, benchmark_folder)
     if result_list is None:
@@ -642,7 +645,9 @@ def _benchmark_result(benchmark_folder, args, result_list=None):
     # Create benchmark results
     result_list = benchmark.create_result(only=args.only,
                                           data_list=result_list,
-                                          style=args.style)
+                                          style=args.style,
+                                          select=select,
+                                          exclude=exclude)
 
     # Reset logging
     jube2.log.only_console_log()
@@ -883,7 +888,14 @@ def gen_subparser_conf():
                 {"type": int, "help": "show only last N benchmarks"},
             ("-s", "--style"):
                 {"help": "overwrites table style type",
-                 "choices": ["pretty", "csv", "aligned"]}
+                 "choices": ["pretty", "csv", "aligned"]},
+            ("--select",):
+                {"nargs": "+",
+                 "help": "display only given columns from the result "
+                 "(changes also the output to the result file)"},
+            ("--exclude",):
+                {"nargs": "+", "help": "excludes given columns from the result "
+                 "(changes also the output to the result file)"}
         }
     }
 
