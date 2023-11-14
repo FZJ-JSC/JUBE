@@ -25,7 +25,8 @@ Version 2.6.0 [Unreleased]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Release: 2023-11-14
 
-* The new `mode` attribute has been added to the `sub`-tag, allowing `regex` substitution as an alternative to `text`-based substitution.
+* A new optional `mode` attribute has been added to the `sub`-tag, allowing `regex` substitution as an alternative to `text`-based substitution. The latter remains the default.
+* New jube variable `$jube_wp_status` has been added which contains the status of the current workpackage at the time the variable is evaluated.
 * The `jube result` command line call has been extended by the options `--select` and `--exclude` to show and hide selected result columns.
 * A new option `<check_tags>` has been added, which allows you to specify tags that must be set for the script to run.
 * New command line option `jube output` has been added to print out the path and the contents of the files stdout and stderr.
