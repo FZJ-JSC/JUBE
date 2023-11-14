@@ -405,9 +405,12 @@ The input file ``tagging.yaml``:
 
 The ``tag`` attribute and the ``check_tags`` tag allow you to define more complex boolean expressions.
 For example:
+
 * ``!`` can be used for negation (``!deu`` stands for ``not deu``)
+
 * ``|`` can be used as an OR operator and ``+`` as an AND operator to combine tag values (e.g. XML: ``tag="!deu+eng"``; YAML: ``tag: "!deu+eng"``).
-* parentheses are also allowed
+
+* Parentheses are also allowed
 
 The ``tag`` attribute can be used within any ``<element>`` within the input file (except the ``<jube>``).
 If several different ``tag`` attribute values are used in a script, they can be specified as a list separated by spaces from the command line.
