@@ -406,6 +406,11 @@
                     "description": "The dest-string will replace the *source*.",
                     "type": "string"
                 },
+                "mode": {
+                    "description": "It can be used to switch between \"text\" and \"regex\" substitution (default: \"text\").",
+                    "type": "string",
+                    "pattern": "^(text|regex)$"
+                },
                 "tag": {
                     "$ref": "#/$defs/tag"
                 }
