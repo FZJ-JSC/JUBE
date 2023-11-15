@@ -176,6 +176,17 @@
 					"description": "It is used to add a benchmark specific comment. These comment will be stored inside the benchmark directory.",
 					"type": "string"
 				},
+				"check_tags": {
+					"description": "It specifies a combination of tags that must be set (logical operations: \"+\" (conjunction), \"|\" (disjunction), \"!\" (negation))",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"type": "string"
+						}	
+					}, {
+						"type": "string"	
+					}]
+				},
 				"file_path_ref": {
 					"description": "Unknown functionality",
 					"type": "string"
