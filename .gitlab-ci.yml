@@ -70,13 +70,13 @@ dependencies:
 build:year:
     variables:
         FILE_LIST: -u
-        COMMIT_MESSAGE: "Checking if year must be updated"
+        COMMIT_MESSAGE: "Updating Year"
     stage: build
     script:
         # Updating all Copyright years
-        - find ${CI_PROJECT_DIR} -type f -exec sed -i "s/Copyright (C) 2008-[0-9]\{4\}/Copyright (C) 2008-`date +%Y`/g" {} \;
+        - find ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:} -type f -exec sed -i "s/Copyright (C) 2008-[0-9]\{4\}/Copyright (C) 2008-`date +%Y`/g" {} \;
         # Updating years on documentation
-        - sed -i "s/[0-9]\{4\}, JUBE Developer Team/`date +%Y`, JUBE Developer Team/g" ${CI_PROJECT_DIR}/docs/conf.py
+        - sed -i "s/[0-9]\{4\}, JUBE Developer Team/`date +%Y`, JUBE Developer Team/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
     <<: *push_files
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
@@ -85,19 +85,19 @@ build:year:
 build:version:
     variables:
         FILE_LIST: jube2/conf.py docs/conf.py setup.py
-        COMMIT_MESSAGE: "Checking if version must be updated"
+        COMMIT_MESSAGE: "Updating Version"
     stage: build
     script:
-        - export RELEASE=`grep -o -m1 "Version \d\.\d\.\d\(-[^ ]\+\)\?" docs/release_notes.rst | cut -d " " -f2`
+        - export RELEASE=`grep -o -m1 -P "Version \d.\d.\d(-[^ ]+)?" docs/release_notes.rst | cut -d " " -f2`
         - export VERSION=${RELEASE%.*}
         - |
-            echo "Last version on docs/release_notes.rst: $RELEASE"
+            echo "Last version on docs/release_notes.rst: ${RELEASE}"
         # Updating version in files
         - |
-            sed -i "s/'version': '.*'/'version': '$RELEASE'/g" ${CI_PROJECT_DIR}/setup.py
-        - sed -i "s/JUBE_VERSION = \".*\"/JUBE_VERSION = \"${RELEASE}\"/g" ${CI_PROJECT_DIR}/jube2/conf.py
-        - sed -i "s/version = '.*'/version = '$VERSION'/g" ${CI_PROJECT_DIR}/docs/conf.py
-        - sed -i "s/release = '.*'/release = '$RELEASE'/g" ${CI_PROJECT_DIR}/docs/conf.py
+            sed -i "s/'version': '.*'/'version': '${RELEASE}'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/setup.py
+        - sed -i "s/JUBE_VERSION = \".*\"/JUBE_VERSION = \"${RELEASE}\"/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/jube2/conf.py
+        - sed -i "s/version = '.*'/version = '${VERSION}'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
+        - sed -i "s/release = '.*'/release = '${RELEASE}'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
     <<: *push_files
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
@@ -233,10 +233,10 @@ deploy:download_page:
         - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP apps_jube_get_download_file:download.php ./"
     script:
         - export RELEASE=${CI_COMMIT_TAG#*-}
-        - sed -i "s/$current_version = \"[0-9].[0-9].[0-9]\";/$current_version = \"${RELEASE}\";/" download.php
+        - sed -i "s/^\$current_version = \"[0-9].[0-9].[0-9]\";/\$current_version = \"${RELEASE}\";/" download.php
         - sed -i "s/^\$versions = array(\(.*\));$/\$versions = array(\1,\"${RELEASE}\");/" download.php
-        - sed -i "s/\$published_versions = array(/\$published_versions = array(\"${RELEASE}\",/" download.php
-        - echo $RELEASE > version
+        - sed -i "s/^\$published_versions = array(/\$published_versions = array(\"${RELEASE}\",/" download.php
+        - echo ${RELEASE} > version
     after_script:
         - echo "Copying distribution package to web server"
         - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del download.php version apps_jube_docu:"
