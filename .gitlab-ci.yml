@@ -74,9 +74,9 @@ build:year:
     stage: build
     script:
         # Updating all Copyright years
-        - find ${CI_PROJECT_DIR} -type f -exec sed -i "s/Copyright (C) 2008-[0-9]\{4\}/Copyright (C) 2008-`date +%Y`/g" {} \;
+        - find ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:} -type f -exec sed -i "s/Copyright (C) 2008-[0-9]\{4\}/Copyright (C) 2008-`date +%Y`/g" {} \;
         # Updating years on documentation
-        - sed -i "s/[0-9]\{4\}, JUBE Developer Team/`date +%Y`, JUBE Developer Team/g" ${CI_PROJECT_DIR}/docs/conf.py
+        - sed -i "s/[0-9]\{4\}, JUBE Developer Team/`date +%Y`, JUBE Developer Team/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
     <<: *push_files
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
@@ -94,10 +94,10 @@ build:version:
             echo "Last version on docs/release_notes.rst: $RELEASE"
         # Updating version in files
         - |
-            sed -i "s/'version': '.*'/'version': '$RELEASE'/g" ${CI_PROJECT_DIR}/setup.py
-        - sed -i "s/JUBE_VERSION = \".*\"/JUBE_VERSION = \"${RELEASE}\"/g" ${CI_PROJECT_DIR}/jube2/conf.py
-        - sed -i "s/version = '.*'/version = '$VERSION'/g" ${CI_PROJECT_DIR}/docs/conf.py
-        - sed -i "s/release = '.*'/release = '$RELEASE'/g" ${CI_PROJECT_DIR}/docs/conf.py
+            sed -i "s/'version': '.*'/'version': '$RELEASE'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/setup.py
+        - sed -i "s/JUBE_VERSION = \".*\"/JUBE_VERSION = \"${RELEASE}\"/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/jube2/conf.py
+        - sed -i "s/version = '.*'/version = '$VERSION'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
+        - sed -i "s/release = '.*'/release = '$RELEASE'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
     <<: *push_files
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch

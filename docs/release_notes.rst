@@ -23,7 +23,7 @@ Release notes
 
 Version 2.6.0 [Unreleased]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-Release: 2023-11-14
+Release: 2023-11-15
 
 * Add `database`-tag to schema files
 * A new optional `mode` attribute has been added to the `sub`-tag, allowing `regex` substitution as an alternative to `text`-based substitution. The latter remains the default.
