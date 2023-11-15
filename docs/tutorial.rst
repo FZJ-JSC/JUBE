@@ -516,14 +516,15 @@ To create the result table you have to write::
    >>> jube result bench_run -i last
 
 If you run the ``result`` command for the first time, the ``analyse`` step will be executed automatically, if it wasn't executed before. So it is not necessary to run the separate ``analyse`` step all the time. However you need the separate ``analyse`` 
-if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the first ``analyse`` will be used in the ``result`` step.
+if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the previous ``analyse`` will be used in the ``result`` step.
 
 The analyse and result instructions can be combined within one single command:
 
    >>> jube result bench_run -a
 
-The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` is the default option and can also be replaced by a specific benchmark id.
-If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
+The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``.
+
+The ``--id`` or ``-i`` option can be used to output the result of a specific benchmark ID. If this option is not set, the result of the last benchmark will be shown (i.e. the default is ``last``).
 
 Output of the given example:
 
@@ -545,6 +546,6 @@ or
 
    >>> jube result bench_run --exclude number_pat number_pat_en number_pat_de
 
-The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in '--select' and not '--exclude' will be displayed.
+The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in ``--select`` and not ``--exclude`` will be displayed.
 
 This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about including external sets, jobsystem representation and scripting parameter.

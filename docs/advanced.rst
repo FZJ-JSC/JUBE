@@ -199,7 +199,7 @@ Statistic pattern values
 Normally a pattern should only match a single entry in your result files. But sometimes there are multiple
 similar entries (e.g. if the benchmark uses some iteration feature).
 
-*JUBE* will create the statistical values ``last``, ``min``, ``max``, ``avg``, ``std``, ``cnt`` and ``sum`` automatically.
+*JUBE* will create the statistical values ``first``, ``last``, ``min``, ``max``, ``avg``, ``std``, ``cnt`` and ``sum`` automatically.
 To use these values, the user have to specify the pattern name followed by ``_<statistic_option>``,
 e.g. ``pattern_name_last`` (the pattern_name itself will always be the first match).
 
@@ -778,6 +778,11 @@ The files used for this example can be found inside ``examples/cycle``.
 The input file ``cycle.xml``:
 
 .. literalinclude:: ../examples/cycle/cycle.xml
+   :language: yaml
+
+The input file ``cycle.yaml``:
+
+.. literalinclude:: ../examples/cycle/cycle.yaml
    :language: xml
 
 The ``cycles`` attribute allows to repeat all ``<do>`` commands within a step multiple times. The ``break_file`` can be used to cancel the loop and all following commands in the current cycle (the command
@@ -805,10 +810,13 @@ which belong to the expansions of a step, the argument ``procs`` of ``<step>``
 can be used.  
 
 The files used for this example can be found inside ``examples/parallel_workpackages``.
+
 The input file ``parallel_workpackages.xml``:
 
 .. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.xml
    :language: xml
+
+The input file ``parallel_workpackages.yaml``:
 
 .. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.yaml
    :language: yaml
