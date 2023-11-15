@@ -324,6 +324,10 @@
 					"description": "If export is set to true, the *parameter* will be exported to the shell environment when using *do*.",
 					"type": "boolean"
 				},
+				"unit": {
+					"description": "The unit will be used in the result table.",
+					"type": "string"
+				},
 				"duplicate": {
 					"description": "It is of relevance, if there are more than one *parameter* definitions with the same name within one *parameterset*. This duplicate option has higher priority than the duplicte option of the *parameterset*. It must contain one of the following four options: none, replace , concat , error",
 					"type": "string",
