@@ -821,9 +821,9 @@ class StaticParameter(Parameter):
         env_str = ""
         for var_name, var_value in re.findall(
                 r"^export (.+?)\s*=\s*?(.+?)?\s*?$", value, re.MULTILINE):
-            # Excluding variables with empty values
-            if not var_value: continue
-            if (var_value[0] == "'" and var_value[-1] == "'") or \
+            if not var_value: # Exporting empty variables
+                env_str += "export {0}=\"\"\n".format(var_name)
+            elif (var_value[0] == "'" and var_value[-1] == "'") or \
                     (var_value[0] == "\"" and var_value[-1] == "\""):
                 env_str += "export {0}={1}\n".format(var_name, var_value)
             else:
