@@ -322,7 +322,8 @@
 				},
 				"export": {
 					"description": "If export is set to true, the *parameter* will be exported to the shell environment when using *do*.",
-					"type": "boolean"
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
 				},
 				"unit": {
 					"description": "The unit will be used in the result table.",
@@ -702,7 +703,8 @@
 				},
 				"dotall": {
 					"description": "It can be used to specify if a '.' within the regular expression should also match newline characters.",
-					"type": "boolean"
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
 				},
 				"_": {
 					"description": "Real content of the *pattern*",
@@ -746,7 +748,8 @@
 				},
 				"export": {
 					"description": "If export is set to true, the environment of the current *step* will be exported to an dependent *step*.",
-					"type": "boolean"
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
 				},
 				"shared": {
 					"description": "This attribte can be used to create a shared folder which can be accessed by all workpackages based on this *step*.",
@@ -860,8 +863,8 @@
 				},
 				"shared": {
 					"description": "If shared is set to true, the *do* will be executed inside the shared folder once (synchronize all workpackages).",
-					"type": "string",
-					"pattern": "^true$"
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
 				},
 				"work_dir": {
 					"description": "The work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
@@ -884,7 +887,8 @@
 				},
 				"reduce": {
 					"description": "It declares, if the *result* lines for each iteration will be combined.",
-					"type": "boolean"
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
 				},
 				"tag": {
 					"$ref": "#/$defs/tag"
@@ -1059,7 +1063,8 @@
 				},
 				"transpose": {
 					"description": "If transpose is set to true, the *table* is transposed (rows and columns are swapped).",
-					"type": "boolean"
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
 				},
 				"tag": {
 					"$ref": "#/$defs/tag"
