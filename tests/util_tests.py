@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # JUBE Benchmarking Environment
-# Copyright (C) 2008-2016
+# Copyright (C) 2008-2023
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
