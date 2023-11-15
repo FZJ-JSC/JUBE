@@ -445,6 +445,10 @@
 					"description": "The dest-string will replace the *source*.",
 					"type": "string"
 				},
+				"_": {
+					"description": "It will replace the *source* (should be used for multiline output).",
+					"type": "string"
+				},
 				"mode": {
 					"description": "It can be used to switch between \"text\" and \"regex\" substitution (default: \"text\").",
 					"type": "string",
@@ -455,7 +459,10 @@
 				}
 			},
 			"required": [ "source" ],
-			"additionalProperties": false
+			"additionalProperties": false,
+			"not": {
+				"required": [ "dest", "_"]
+			}
 		},
 
 		"fileset": {
