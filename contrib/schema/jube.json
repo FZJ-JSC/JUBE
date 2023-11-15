@@ -1,1206 +1,1271 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "title": "JUBE",
+	"$schema": "http://json-schema.org/draft-07/schema",
+	"title": "JUBE",
 
-    "anyOf": [{
-        "description": "JUBE script/benchmark definition. It is a container for all benchmark information.",
-        "anyOf": [{
-            "type": "array",
-            "items": {
-                "$ref": "#/$defs/benchmark_object"
-            }
-        }, {
-            "$ref": "#/$defs/benchmark_object"
-        }]
-    },
-    {
-        "$ref": "#/$defs/jube_object"
-    }],
+	"anyOf": [{
+		"description": "JUBE script/benchmark definition. It is a container for all benchmark information.",
+		"anyOf": [{
+			"type": "array",
+			"items": {
+				"$ref": "#/$defs/benchmark_object"
+			}
+		}, {
+			"$ref": "#/$defs/benchmark_object"
+		}]
+	},
+	{
+		"$ref": "#/$defs/jube_object"
+	}],
 
-    "$defs": {
-        "jube_object": {
-            "description": "JUBE script definition",
-            "type": "object",
-            "properties": {
-                "include-path": {
-                    "description": "It is used to add some include paths where to search for include files.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/include-path_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/include-path_object"
-                    }, {
-                        "type": "string"
-                    }]
-                }, 
-                "selection": {
-                    "description": "It is used to select or unselect *benchmarks* by name.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/selection_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/selection_object"
-                    }, {
-                        "type": "string"
-                    }]
-                }, 
-                "parameterset": {
-                    "$ref": "#/$defs/parameterset"
-                },
-                "patternset": {
-                    "$ref": "#/$defs/patternset"
-                },
-                "substituteset": {
-                    "$ref": "#/$defs/substituteset"
-                },
-                "fileset": {
-                    "$ref": "#/$defs/fileset"
-                },
-                "benchmark": {
-                    "description": "The main benchmark definition. It is a container for all benchmark information.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/benchmark_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/benchmark_object"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                },
-                "version": {
-                    "description": "Version of the JUBE script",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
+	"$defs": {
+		"jube_object": {
+			"description": "JUBE script definition",
+			"type": "object",
+			"properties": {
+				"include-path": {
+					"description": "It is used to add some include paths where to search for include files.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/include-path_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/include-path_object"
+					}, {
+						"type": "string"
+					}]
+				}, 
+				"selection": {
+					"description": "It is used to select or unselect *benchmarks* by name.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/selection_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/selection_object"
+					}, {
+						"type": "string"
+					}]
+				}, 
+				"parameterset": {
+					"$ref": "#/$defs/parameterset"
+				},
+				"patternset": {
+					"$ref": "#/$defs/patternset"
+				},
+				"substituteset": {
+					"$ref": "#/$defs/substituteset"
+				},
+				"fileset": {
+					"$ref": "#/$defs/fileset"
+				},
+				"benchmark": {
+					"description": "The main benchmark definition. It is a container for all benchmark information.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/benchmark_object"
+						}
+					}, {
+						"$ref": "#/$defs/benchmark_object"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				},
+				"version": {
+					"description": "Version of the JUBE script",
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "include-path_object": {
-            "type": "object",
-            "properties": {
-                "path": {
-                    "description": "The path will be scanned for include files.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/string_tag_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/string_tag_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                }
-            },
-            "additionalProperties": false
-        },
+		"include-path_object": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"description": "The path will be scanned for include files.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/string_tag_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "selection_object": {
-            "type": "object",
-            "properties": {
-                "only": {
-                    "description": "Only selected *benchmarks* will run. It can contain a name list divided by ','.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/string_tag_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/string_tag_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "not": {
-                    "description": "Selected *benchmarks* will not run. It can contain a name list divided by ','.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/string_tag_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/string_tag_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                }
-            },
-            "additionalProperties": false
-        },
+		"selection_object": {
+			"type": "object",
+			"properties": {
+				"only": {
+					"description": "Only selected *benchmarks* will run. It can contain a name list divided by ','.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/string_tag_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"not": {
+					"description": "Selected *benchmarks* will not run. It can contain a name list divided by ','.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/string_tag_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "benchmark_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Unique name of the benchmark",
-                    "type": "string"
-                },
-                "outpath": {        
-                    "description": "It contains the path to the root folder for benchmark runs. The path will be relative to the input file location. Inside this given outpath every benchmark and every (new) run will create a new folder.",
-                    "type": "string"
-                },
-                "comment": {
-                    "description": "It is used to add a benchmark specific comment. These comment will be stored inside the benchmark directory.",
-                    "type": "string"
-                },
-                "file_path_ref": {
-                    "description": "Unknown functionality",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "parameterset": {
-                    "$ref": "#/$defs/parameterset"
-                },
-                "patternset": {
-                    "$ref": "#/$defs/patternset"
-                },
-                "substituteset": {
-                    "$ref": "#/$defs/substituteset"
-                },
-                "fileset": {
-                    "$ref": "#/$defs/fileset"
-                },
-                "step": {
-                    "description": "A *step* gives a list of Shell operations and a corresponding parameter environment.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/step_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/step_object"
-                    }]
-                },
-                "analyser": {
-                    "description": "The *analyser* describes the *steps* and files which should be scanned using a set of *pattern*.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/analyser_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/analyser_object"
-                    }]
-                },
-                "result": {
-                    "description": "The *result* is used to handle different visualisation types of your analysed data.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/result_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/result_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name", "outpath" ],
-            "additionalProperties": false
-        },
+		"benchmark_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "Unique name of the benchmark",
+					"type": "string"
+				},
+				"outpath": {        
+					"description": "It contains the path to the root folder for benchmark runs. The path will be relative to the input file location. Inside this given outpath every benchmark and every (new) run will create a new folder.",
+					"type": "string"
+				},
+				"comment": {
+					"description": "It is used to add a benchmark specific comment. These comment will be stored inside the benchmark directory.",
+					"type": "string"
+				},
+				"file_path_ref": {
+					"description": "Unknown functionality",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"parameterset": {
+					"$ref": "#/$defs/parameterset"
+				},
+				"patternset": {
+					"$ref": "#/$defs/patternset"
+				},
+				"substituteset": {
+					"$ref": "#/$defs/substituteset"
+				},
+				"fileset": {
+					"$ref": "#/$defs/fileset"
+				},
+				"step": {
+					"description": "A *step* gives a list of Shell operations and a corresponding parameter environment.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/step_object"
+						}
+					}, {
+						"$ref": "#/$defs/step_object"
+					}]
+				},
+				"analyser": {
+					"description": "The *analyser* describes the *steps* and files which should be scanned using a set of *pattern*.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/analyser_object"
+						}
+					}, {
+						"$ref": "#/$defs/analyser_object"
+					}]
+				},
+				"result": {
+					"description": "The *result* is used to handle different visualisation types of your analysed data.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/result_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/result_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name", "outpath" ],
+			"additionalProperties": false
+		},
 
-        "parameterset": {
-            "description": "A *parameterset* is a container to store a bundle of *parameters*.",
-            "anyOf": [{
-                "type": "array",
-                "items": {
-                    "$ref": "#/$defs/parameterset_object"
-                }
-            }, {
-                "$ref": "#/$defs/parameterset_object"
-            }]
-        },
+		"parameterset": {
+			"description": "A *parameterset* is a container to store a bundle of *parameters*.",
+			"anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/parameterset_object"
+				}
+			}, {
+				"$ref": "#/$defs/parameterset_object"
+			}]
+		},
 
-        "parameterset_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Unique name of the *parameterset*",
-                    "type": "string"
-                },
-                "init_with": {
-                    "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *parameterset* using the given name, all *parameters* will be copied to the local set.",
-                    "type": "string"
-                },
-                "duplicate": {
-                    "description": "It is of relevance, if there are more than one *parameter* definitions with the same name within one *parameterset*. This duplicate option has lower priority than the duplicte option of the *parameters*. It must contain one of the following three options: replace, concat, error",
-                    "type": "string",
-                    "pattern": "^(replace|concat|error)$"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "parameter": {
-                    "description": "A *parameter* can be used to store *benchmark* configuration data. A set of different *parameters* will create a specific parameter environment (also called parameter space) for the different *steps* of the *benchmark*.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/parameter_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/parameter_object"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": "name",
-            "additionalProperties": false
-        },
+		"parameterset_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "Unique name of the *parameterset*",
+					"type": "string"
+				},
+				"init_with": {
+					"description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *parameterset* using the given name, all *parameters* will be copied to the local set.",
+					"type": "string"
+				},
+				"duplicate": {
+					"description": "It is of relevance, if there are more than one *parameter* definitions with the same name within one *parameterset*. This duplicate option has lower priority than the duplicte option of the *parameters*. It must contain one of the following three options: replace, concat, error",
+					"type": "string",
+					"pattern": "^(replace|concat|error)$"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"parameter": {
+					"description": "A *parameter* can be used to store *benchmark* configuration data. A set of different *parameters* will create a specific parameter environment (also called parameter space) for the different *steps* of the *benchmark*.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/parameter_object"
+						}
+					}, {
+						"$ref": "#/$defs/parameter_object"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": "name",
+			"additionalProperties": false
+		},
 
-        "parameter_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "The name must be unique inside the given *parameterset*.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "It is only used for sorting. Following types are allowed: string, int, float",
-                    "type": "string",
-                    "pattern": "^(string|int|float)$"
-                },
-                "mode": {
-                    "description": "The mode is used for script-types. Following modes are allowed: python, perl, shell, env, tag, text",
-                    "type": "string",
-                    "pattern": "^(python|perl|shell|env|tag|text)$"
-                },
-                "export": {
-                    "description": "If export is set to true, the *parameter* will be exported to the shell environment when using *do*.",
-                    "type": "boolean"
-                },
-                "duplicate": {
-                    "description": "It is of relevance, if there are more than one *parameter* definitions with the same name within one *parameterset*. This duplicate option has higher priority than the duplicte option of the *parameterset*. It must contain one of the following four options: none, replace , concat , error",
-                    "type": "string",
-                    "pattern": "^(none|replace|concat|error)$"
-                },
-                "update_mode": {
-                    "description": "Depending on the update_mode the *parameter* will be reevaluated. Following settings are allowed: never, use, step, cycle, always",
-                    "type": "string",
-                    "pattern": "^(never|use|step|cycle|always)$"
-                },
-                "separator": {
-                    "description": "The default separator ',' can be changed by using this.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "_": {
-                    "description": "Real content of the *parameter*",
-                    "type": "string"
-                }
-            },    
-            "required": "name",
-            "additionalProperties": false
-        },
+		"parameter_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "The name must be unique inside the given *parameterset*.",
+					"type": "string"
+				},
+				"type": {
+					"description": "It is only used for sorting. Following types are allowed: string, int, float",
+					"type": "string",
+					"pattern": "^(string|int|float)$"
+				},
+				"mode": {
+					"description": "The mode is used for script-types. Following modes are allowed: python, perl, shell, env, tag, text",
+					"type": "string",
+					"pattern": "^(python|perl|shell|env|tag|text)$"
+				},
+				"export": {
+					"description": "If export is set to true, the *parameter* will be exported to the shell environment when using *do*.",
+					"type": "boolean"
+				},
+				"duplicate": {
+					"description": "It is of relevance, if there are more than one *parameter* definitions with the same name within one *parameterset*. This duplicate option has higher priority than the duplicte option of the *parameterset*. It must contain one of the following four options: none, replace , concat , error",
+					"type": "string",
+					"pattern": "^(none|replace|concat|error)$"
+				},
+				"update_mode": {
+					"description": "Depending on the update_mode the *parameter* will be reevaluated. Following settings are allowed: never, use, step, cycle, always",
+					"type": "string",
+					"pattern": "^(never|use|step|cycle|always)$"
+				},
+				"separator": {
+					"description": "The default separator ',' can be changed by using this.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"_": {
+					"description": "Real content of the *parameter*",
+					"type": ["string", "number"]
+				}
+			},    
+			"required": "name",
+			"additionalProperties": false
+		},
 
-        "substituteset": {
-            "description": "A *substituteset* is a container to store a bundle of *sub* commands.",
-            "anyOf": [{
-                "type": "array",
-                "items": {
-                    "$ref": "#/$defs/substituteset_object"
-                }
-            }, {
-                "$ref": "#/$defs/substituteset_object"
-            }]
-        },
+		"substituteset": {
+			"description": "A *substituteset* is a container to store a bundle of *sub* commands.",
+			"anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/substituteset_object"
+				}
+			}, {
+				"$ref": "#/$defs/substituteset_object"
+			}]
+		},
 
-        "substituteset_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Unique name of the *substituteset*",
-                    "type": "string"
-                },
-                "init_with": {
-                    "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *substituteset* using the given name, all *iofile* and *sub* will be copied to the local set.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "iofile": {
-                    "description": "A *iofile* declares the name (and path) of a file used for substitution.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/iofile_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/iofile_object"
-                    }]
-                },
-                "sub": {
-                    "description": "A substitution expression",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/sub_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/sub_object"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": "name",
-            "additionalProperties": false
-        },
+		"substituteset_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "Unique name of the *substituteset*",
+					"type": "string"
+				},
+				"init_with": {
+					"description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *substituteset* using the given name, all *iofile* and *sub* will be copied to the local set.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"iofile": {
+					"description": "A *iofile* declares the name (and path) of a file used for substitution.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/iofile_object"
+						}
+					}, {
+						"$ref": "#/$defs/iofile_object"
+					}]
+				},
+				"sub": {
+					"description": "A substitution expression",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/sub_object"
+						}
+					}, {
+						"$ref": "#/$defs/sub_object"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": "name",
+			"additionalProperties": false
+		},
 
-        "iofile_object": {
-            "type": "object",
-            "properties": {
-                "in": {
-                    "description": "Relative filepath to the current work directory for every single *step*. It can be the same as *out*.",
-                    "type": "string"
-                },
-                "out": {
-                    "description": "Relative filepath to the current work directory for every single *step*. It can be the same as *in*.",
-                    "type": "string"
-                },
-                "out_mode": {
-                    "description": "It can be used to declare, if the out-file will be overridden (w) or appended (a).",
-                    "type": "string",
-                    "pattern": "^(w|a)$"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                }
-            },
-            "required": [ "in","out" ],
-            "additionalProperties": false
-        },
+		"iofile_object": {
+			"type": "object",
+			"properties": {
+				"in": {
+					"description": "Relative filepath to the current work directory for every single *step*. It can be the same as *out*.",
+					"type": "string"
+				},
+				"out": {
+					"description": "Relative filepath to the current work directory for every single *step*. It can be the same as *in*.",
+					"type": "string"
+				},
+				"out_mode": {
+					"description": "It can be used to declare, if the out-file will be overridden (w) or appended (a).",
+					"type": "string",
+					"pattern": "^(w|a)$"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				}
+			},
+			"required": [ "in","out" ],
+			"additionalProperties": false
+		},
 
-        "sub_object": {
-            "type": "object",
-            "properties": {
-                "source": {
-                    "description": "The source-string will be replaced by *dest*.",
-                    "type": "string"
-                },
-                "dest": {
-                    "description": "The dest-string will replace the *source*.",
-                    "type": "string"
-                },
-                "mode": {
-                    "description": "It can be used to switch between \"text\" and \"regex\" substitution (default: \"text\").",
-                    "type": "string",
-                    "pattern": "^(text|regex)$"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                }
-            },
-            "required": [ "source" ],
-            "additionalProperties": false
-        },
+		"sub_object": {
+			"type": "object",
+			"properties": {
+				"source": {
+					"description": "The source-string will be replaced by *dest*.",
+					"type": "string"
+				},
+				"dest": {
+					"description": "The dest-string will replace the *source*.",
+					"type": "string"
+				},
+				"mode": {
+					"description": "It can be used to switch between \"text\" and \"regex\" substitution (default: \"text\").",
+					"type": "string",
+					"pattern": "^(text|regex)$"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				}
+			},
+			"required": [ "source" ],
+			"additionalProperties": false
+		},
 
-        "fileset": {
-            "description": "A *fileset* is a container to store a bundle of *links* and *copy* commands.",
-            "anyOf": [{
-                "type": "array",
-                "items": {
-                    "$ref": "#/$defs/fileset_object"
-                }
-            }, {
-                "$ref": "#/$defs/fileset_object"
-            }]
-        },
+		"fileset": {
+			"description": "A *fileset* is a container to store a bundle of *links* and *copy* commands.",
+			"anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/fileset_object"
+				}
+			}, {
+				"$ref": "#/$defs/fileset_object"
+			}]
+		},
 
-        "fileset_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "The name must be unique.",
-                    "type": "string"
-                },
-                "init_with": {
-                    "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *fileset* using the given name, all *link* and *copy* will be copied to the local set.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "copy": {
-                    "description": "A *copy* can be used to copy a file or directory from your normal filesytem to your sandbox work directory. It can contain a list of filenames (or directories).",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/file_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/file_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "link": {
-                    "description": "A *link* can be used to create a symbolic link from your sandbox work directory to a file or directory inside your normal filesystem. It can contain a list of filenames (or directories).",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/file_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/file_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "prepare": {
-                    "description": "It can contain any Shell command you want. It will be executed like a normal *do* inside the *step* where the corresponding *fileset* is used. The only difference towards the normal *do* is, that it will be executed before the substitution will be executed.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/prepare_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/prepare_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false
-        },
+		"fileset_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "The name must be unique.",
+					"type": "string"
+				},
+				"init_with": {
+					"description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *fileset* using the given name, all *link* and *copy* will be copied to the local set.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"copy": {
+					"description": "A *copy* can be used to copy a file or directory from your normal filesytem to your sandbox work directory. It can contain a list of filenames (or directories).",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/file_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/file_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"link": {
+					"description": "A *link* can be used to create a symbolic link from your sandbox work directory to a file or directory inside your normal filesystem. It can contain a list of filenames (or directories).",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/file_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/file_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"prepare": {
+					"description": "It can contain any Shell command you want. It will be executed like a normal *do* inside the *step* where the corresponding *fileset* is used. The only difference towards the normal *do* is, that it will be executed before the substitution will be executed.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/prepare_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/prepare_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false
+		},
 
-        "file_object": {
-            "type": "object",
-            "properties": {
-                "directory": {
-                    "description": "It will be used as a prefix for the source filenames. It does not allow *parameter* substitution (deprecated; new attribut: *source_dir*).",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "It can be used to rename the file inside your work directory (it will be ignored if you use shell extensions in your pathname).",
-                    "type": "string"
-                },
-                "rel_path_ref": {
-                    "description": "It declares, if relative paths will be based on the position of the JUBE script (external) or the current work directory (internal).",
-                    "type": "string",
-                    "pattern": "^(external|internal)$"
-                },
-                "file_path_ref": {
-                    "description": "Unknown functionality",
-                    "type": "string"
-                },
-                "active": {
-                    "description": "It can be used to enable or disable the single command.",
-                    "type": "string"
-                },
-                "source_dir": {
-                    "description": "It will be used as a prefix for the source filenames. It allows *parameter* substitution.",
-                    "type": "string"
-                },
-                "target_dir": {
-                    "description": "It will be used as a prefix for the target filenames.",
-                    "type": "string"
-                },
-                "separator": {
-                    "description": "It can be used to change the default separator ','.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "_": {
-                    "description": "It can contain a list of filenames (or directories).",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
+		"file_object": {
+			"type": "object",
+			"properties": {
+				"directory": {
+					"description": "It will be used as a prefix for the source filenames. It does not allow *parameter* substitution (deprecated; new attribut: *source_dir*).",
+					"type": "string"
+				},
+				"name": {
+					"description": "It can be used to rename the file inside your work directory (it will be ignored if you use shell extensions in your pathname).",
+					"type": "string"
+				},
+				"rel_path_ref": {
+					"description": "It declares, if relative paths will be based on the position of the JUBE script (external) or the current work directory (internal).",
+					"type": "string",
+					"pattern": "^(external|internal)$"
+				},
+				"file_path_ref": {
+					"description": "Unknown functionality",
+					"type": "string"
+				},
+				"active": {
+					"description": "It can be used to enable or disable the single command.",
+					"type": ["string", "boolean"]
+				},
+				"source_dir": {
+					"description": "It will be used as a prefix for the source filenames. It allows *parameter* substitution.",
+					"type": "string"
+				},
+				"target_dir": {
+					"description": "It will be used as a prefix for the target filenames.",
+					"type": "string"
+				},
+				"separator": {
+					"description": "It can be used to change the default separator ','.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"_": {
+					"description": "It can contain a list of filenames (or directories).",
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "prepare_object": {
-            "type": "object",
-            "properties": {
-                "stdout": {
-                    "description": "Standard out file",
-                    "type": "string"
-                },
-                "stderr": {
-                    "description": "Standard error file",
-                    "type": "string"
-                },
-                "active": {
-                    "description": "It can be used to enable or disable the single command.",
-                    "type": "string"
-                },
-                "work_dir": {
-                    "description": "The work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "_": {
-                    "description": "It contains the Shell command that will be executed.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
+		"prepare_object": {
+			"type": "object",
+			"properties": {
+				"stdout": {
+					"description": "Standard out file",
+					"type": "string"
+				},
+				"stderr": {
+					"description": "Standard error file",
+					"type": "string"
+				},
+				"active": {
+					"description": "It can be used to enable or disable the single command.",
+					"type": ["string", "boolean"]
+				},
+				"work_dir": {
+					"description": "The work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"_": {
+					"description": "It contains the Shell command that will be executed.",
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "patternset": {
-            "description": "A *patternset* is a container to store a bundle of *patterns*.",
-            "anyOf": [{
-                "type": "array",
-                "items": {
-                    "$ref": "#/$defs/patternset_object"
-                }
-            }, {
-                "$ref": "#/$defs/patternset_object"
-            }]
-        },
+		"patternset": {
+			"description": "A *patternset* is a container to store a bundle of *patterns*.",
+			"anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/patternset_object"
+				}
+			}, {
+				"$ref": "#/$defs/patternset_object"
+			}]
+		},
 
-        "patternset_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Unique name of the *patternset*",
-                    "type": "string"
-                },
-                "init_with": {
-                    "description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *patternset* using the given name, all *pattern* will be copied to the local set.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "pattern": {
-                    "description": "A *pattern* is used to parse your output files and create your *result* data.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/pattern_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/pattern_object"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false
-        },
+		"patternset_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "Unique name of the *patternset*",
+					"type": "string"
+				},
+				"init_with": {
+					"description": "If the given filepath can be found inside of the JUBE_INCLUDE_PATH and if it contains a *patternset* using the given name, all *pattern* will be copied to the local set.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"pattern": {
+					"description": "A *pattern* is used to parse your output files and create your *result* data.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/pattern_object"
+						}
+					}, {
+						"$ref": "#/$defs/pattern_object"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false
+		},
 
-        "pattern_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "The name must be unique.",
-                    "type": "string"
-                },
-                "unit": {
-                    "description": "The unit will be used in the result table.",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "It is only used for sorting. Following types are allowed: string, int, float",
-                    "type": "string",
-                    "pattern": "^(string|int|float)$"
-                },
-                "mode": {
-                    "description": "The mode is used for script-types. Following modes are allowed: python, perl, shell, env, tag, text",
-                    "type": "string",
-                    "pattern": "^(python|perl|shell|env|tag|text)$"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "default": {
-                    "description": "It is used to specify a default value if *pattern* cannot be found or if it cannot be evaluated.",
-                    "type": "string"
-                },
-                "dotall": {
-                    "description": "It can be used to specify if a '.' within the regular expression should also match newline characters.",
-                    "type": "boolean"
-                },
-                "_": {
-                    "description": "Real content of the *pattern*",
-                    "type": "string"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false
-        },
+		"pattern_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "The name must be unique.",
+					"type": "string"
+				},
+				"unit": {
+					"description": "The unit will be used in the result table.",
+					"type": "string"
+				},
+				"type": {
+					"description": "It is only used for sorting. Following types are allowed: string, int, float",
+					"type": "string",
+					"pattern": "^(string|int|float)$"
+				},
+				"mode": {
+					"description": "The mode is used for script-types. Following modes are allowed: python, perl, shell, env, tag, text",
+					"type": "string",
+					"pattern": "^(python|perl|shell|env|tag|text)$"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"default": {
+					"description": "It is used to specify a default value if *pattern* cannot be found or if it cannot be evaluated.",
+					"type": ["string", "number"]
+				},
+				"dotall": {
+					"description": "It can be used to specify if a '.' within the regular expression should also match newline characters.",
+					"type": "boolean"
+				},
+				"_": {
+					"description": "Real content of the *pattern*",
+					"type": ["string", "number"]
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false
+		},
 
-        "step_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "The name must be unique.",
-                    "type": "string"
-                },
-                "iterations": {
-                    "description": "Iterations can be used to execute all workpackages within this *step* multiple times.",
-                    "type": "integer"
-                },
-                "max_async": {
-                    "description": "It can contain a number (or a *parameter*) which describe how many workpackages can be executed asynchronously (default: 0 means no limitation). This option is only important if a *do* inside the step contains a done_file attribute and should be executed in the background (or managed by a jobsystem).",
-                    "type": "string"
-                },
-                "depend": {
-                    "description": "It can contain a list of other *step* names which must be executed before the current *step*.",
-                    "type": "string"
-                },
-                "work_dir": {
-                    "description": "The work_dir can be used to switch to an alternative work directory.",
-                    "type": "string"
-                },
-                "active": {
-                    "description": "It can be used to enable or disable the single command.",
-                    "type": "string"
-                },
-                "suffix": {
-                    "description": "The suffix can contain a string (*parameters* are allowed) which will be attached to the default workpackage directory name.",
-                    "type": "string"
-                },
-                "export": {
-                    "description": "If export is set to true, the environment of the current *step* will be exported to an dependent *step*.",
-                    "type": "boolean"
-                },
-                "shared": {
-                    "description": "This attribte can be used to create a shared folder which can be accessed by all workpackages based on this *step*.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "cycles": {
-                    "description": "Cycles can be used to execute all *do* commands within the *step* multiple times.",
-                    "type": "integer"
-                },
-                "procs": {
-                    "description": "Amount of processes used to execute the *parameter* expansions of the corresponding *step* in parallel.",
-                    "type": "integer"
-                },
-                "do_log_file": {
-                    "description": "Name or path of a do log file trying to mimick the *do* steps and the environment of a workpacakge of a *step* to produce an executable script.",
-                    "type": "string"
-                },
-                "use": {
-                    "description": "It declares, which *parametersets*, *filesets* and *substitutionsets* are usable.",
-                    "$ref": "#/$defs/use"
-                },
-                "do": {
-                    "description": "A *do* contains an executable Shell operation.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/do_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/do_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false
-        },
+		"step_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "The name must be unique.",
+					"type": "string"
+				},
+				"iterations": {
+					"description": "Iterations can be used to execute all workpackages within this *step* multiple times.",
+					"type": "integer"
+				},
+				"max_async": {
+					"description": "It can contain a number (or a *parameter*) which describe how many workpackages can be executed asynchronously (default: 0 means no limitation). This option is only important if a *do* inside the step contains a done_file attribute and should be executed in the background (or managed by a jobsystem).",
+					"type": "string"
+				},
+				"depend": {
+					"description": "It can contain a list of other *step* names which must be executed before the current *step*.",
+					"type": "string"
+				},
+				"work_dir": {
+					"description": "The work_dir can be used to switch to an alternative work directory.",
+					"type": "string"
+				},
+				"active": {
+					"description": "It can be used to enable or disable the single command.",
+					"type": ["string", "boolean"]
+				},
+				"suffix": {
+					"description": "The suffix can contain a string (*parameters* are allowed) which will be attached to the default workpackage directory name.",
+					"type": "string"
+				},
+				"export": {
+					"description": "If export is set to true, the environment of the current *step* will be exported to an dependent *step*.",
+					"type": "boolean"
+				},
+				"shared": {
+					"description": "This attribte can be used to create a shared folder which can be accessed by all workpackages based on this *step*.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"cycles": {
+					"description": "Cycles can be used to execute all *do* commands within the *step* multiple times.",
+					"type": "integer"
+				},
+				"procs": {
+					"description": "Amount of processes used to execute the *parameter* expansions of the corresponding *step* in parallel.",
+					"type": "integer"
+				},
+				"do_log_file": {
+					"description": "Name or path of a do log file trying to mimick the *do* steps and the environment of a workpacakge of a *step* to produce an executable script.",
+					"type": "string"
+				},
+				"use": {
+					"description": "It declares, which *parametersets*, *filesets* and *substitutionsets* are usable.",
+					"$ref": "#/$defs/use"
+				},
+				"do": {
+					"description": "A *do* contains an executable Shell operation.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/do_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/do_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false
+		},
 
-        "use": {
-            "anyOf": [{
-                "type": "array",
-                "items": {
-                    "$ref": "#/$defs/use_object"
-                }
-            }, {
-                "$ref": "#/$defs/use_object"
-            }, {
-                "type": "string"
-            }]
-        },
-        
-        "use_object": {
-            "type": "object",
-            "properties": {
-                "from": {
-                    "description": "The attribute can be used to specify an external set source.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "_": {
-                    "description": "It contains the names of usable *sets* and/or *analysers*.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
+		"use": {
+			"anyOf": [{
+				"type": "array",
+				"items": {
+					"anyOf": [{
+						"$ref": "#/$defs/use_object"
+					}, {
+						"type": "string"
+					}]
+				}
+			}, {
+				"$ref": "#/$defs/use_object"
+			}, {
+				"type": "string"
+			}]
+		},
+		
+		"use_object": {
+			"type": "object",
+			"properties": {
+				"from": {
+					"description": "The attribute can be used to specify an external set source.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"_": {
+					"description": "It contains the names of usable *sets* and/or *analysers*.",
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "do_object": {
-            "type": "object",
-            "properties": {
-                "done_file": {
-                    "description": "By using done_file the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.",
-                    "type": "string"
-                },
-                "error_file": {
-                    "description": "By using error_file the operation will produce a error if the named file can be found inside the work directory.",
-                    "type": "string"
-                },
-                "break_file": {
-                    "description": "By using break_file the user can stop further cycle runs. the current *step* will be directly marked with finalized and further *do* will be ignored.",
-                    "type": "string"
-                },
-                "stdout": {
-                    "description": "Standard out file",
-                    "type": "string"
-                },
-                "stderr": {
-                    "description": "Standard error file",
-                    "type": "string"
-                },
-                "active": {
-                    "description": "It can be used to enable or disable the single command.",
-                    "type": "string"
-                },
-                "shared": {
-                    "description": "If shared is set to true, the *do* will be executed inside the shared folder once (synchronize all workpackages).",
-                    "type": "boolean"
-                },
-                "work_dir": {
-                    "description": "The work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
-                    "type": "string"
-                },
-                "_": {
-                    "description": "It contains the Shell command that will be executed.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
+		"do_object": {
+			"type": "object",
+			"properties": {
+				"done_file": {
+					"description": "By using done_file the user can mark async-steps. The operation will stop until the script will create the named file inside the work directory.",
+					"type": "string"
+				},
+				"error_file": {
+					"description": "By using error_file the operation will produce a error if the named file can be found inside the work directory.",
+					"type": "string"
+				},
+				"break_file": {
+					"description": "By using break_file the user can stop further cycle runs. the current *step* will be directly marked with finalized and further *do* will be ignored.",
+					"type": "string"
+				},
+				"stdout": {
+					"description": "Standard out file",
+					"type": "string"
+				},
+				"stderr": {
+					"description": "Standard error file",
+					"type": "string"
+				},
+				"active": {
+					"description": "It can be used to enable or disable the single command.",
+					"type": ["string", "boolean"]
+				},
+				"shared": {
+					"description": "If shared is set to true, the *do* will be executed inside the shared folder once (synchronize all workpackages).",
+					"type": "string",
+					"pattern": "^true$"
+				},
+				"work_dir": {
+					"description": "The work_dir can be used to change the work directory of this single command (relativly seen towards the original work directory).",
+					"type": "string"
+				},
+				"_": {
+					"description": "It contains the Shell command that will be executed.",
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "analyser_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Unique name of the *analyser*",
-                    "type": "string"
-                },
-                "reduce": {
-                    "description": "It declares, if the *result* lines for each iteration will be combined.",
-                    "type": "boolean"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "use": {
-                    "description": "It declares, which *patternsets* are usable.",
-                    "$ref": "#/$defs/use"
-                },
-                "analyse": {
-                    "description": "It declares, which *step* and files will be analysed.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/analyse_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/analyse_object"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false
-        },
+		"analyser_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "Unique name of the *analyser*",
+					"type": "string"
+				},
+				"reduce": {
+					"description": "It declares, if the *result* lines for each iteration will be combined.",
+					"type": "boolean"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"use": {
+					"description": "It declares, which *patternsets* are usable.",
+					"$ref": "#/$defs/use"
+				},
+				"analyse": {
+					"description": "It declares, which *step* and files will be analysed.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/analyse_object"
+						}
+					}, {
+						"$ref": "#/$defs/analyse_object"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false
+		},
 
-        "analyse_object": {
-            "type": "object",
-            "properties": {
-                "step": {
-                    "description": "The *step* contains the *step* that will be analysed.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "file": {
-                    "description": "The file-attribute contains the files that will be analysed. Each file using each workpackage will be scanned seperatly.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/analyseFile_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/analyseFile_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "step" ],
-            "additionalProperties": false
-        },
+		"analyse_object": {
+			"type": "object",
+			"properties": {
+				"step": {
+					"description": "The *step* contains the *step* that will be analysed.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"file": {
+					"description": "The file-attribute contains the files that will be analysed. Each file using each workpackage will be scanned seperatly.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/analyseFile_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/analyseFile_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "step" ],
+			"additionalProperties": false
+		},
 
-        "analyseFile_object": {
-            "type": "object",
-            "properties": {
-                "use": {
-                    "description": "The use argument inside the file-tag can be used to specify a file specific *patternset*. The global *use* and this local *use* will be combined and evaluated at the same time.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "_": {
-                    "description": "It contains the filenames of the files that will be analysed.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
+		"analyseFile_object": {
+			"type": "object",
+			"properties": {
+				"use": {
+					"description": "The use argument inside the file-tag can be used to specify a file specific *patternset*. The global *use* and this local *use* will be combined and evaluated at the same time.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"_": {
+					"description": "It contains the filenames of the files that will be analysed.",
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "result_object": {
-            "description": "The *result* is used to handle different visualisation types of your analysed data.",
-            "type": "object",
-            "properties": {
-                "result_dir": {
-                    "description": "The result_dir can be used to specify an different output directory. Inside of this directory a subfolder named by the current benchmark id will be created.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "use": {
-                    "description": "It declares, which *analyser* are usable.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/string_tag_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/string_tag_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "table": {
-                    "description": "A simple ASCII based *table* ouput",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/table_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/table_object"
-                    }]
-                },
-                "database": {
-                    "description": "Creates sqlite3 database",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/database_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/database_object"
-                    }]
-                },
-                "syslog": {
-                    "description": "A syslog result type",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/syslog_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/syslog_object"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "additionalProperties": false
-        },
+		"result_object": {
+			"description": "The *result* is used to handle different visualisation types of your analysed data.",
+			"type": "object",
+			"properties": {
+				"result_dir": {
+					"description": "The result_dir can be used to specify an different output directory. Inside of this directory a subfolder named by the current benchmark id will be created.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"use": {
+					"description": "It declares, which *analyser* are usable.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/string_tag_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"table": {
+					"description": "A simple ASCII based *table* ouput",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/table_object"
+						}
+					}, {
+						"$ref": "#/$defs/table_object"
+					}]
+				},
+				"database": {
+					"description": "Creates sqlite3 database",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/database_object"
+						}
+					}, {
+						"$ref": "#/$defs/database_object"
+					}]
+				},
+				"syslog": {
+					"description": "A syslog result type",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/syslog_object"
+						}
+					}, {
+						"$ref": "#/$defs/syslog_object"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "table_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "Unique name of the *table*",
-                    "type": "string"
-                },
-                "style": {
-                    "description": "Allowed styles: csv, pretty, aligned",
-                    "type": "string",
-                    "pattern": "^(csv|pretty|aligned)$"
-                },
-                "sort": {
-                    "description": "It can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting.",
-                    "type": "string"
-                },
-                "filter": {
-                    "description": "It can contain a bool expression to show only specific result entries.",
-                    "type": "string"
-                },
-                "separator": {
-                    "description": "This attribute can be used to change the default separator ',' (only used in csv-style).",
-                    "type": "string"
-                },
-                "transpose": {
-                    "description": "If transpose is set to true, the *table* is transposed (rows and columns are swapped).",
-                    "type": "boolean"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "column": {
-                    "description": "A line within a ASCII result table. The *column* can contain the name of a *pattern* or the name of a parameter.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/column_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/column_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false
-        },
+		"table_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "Unique name of the *table*",
+					"type": "string"
+				},
+				"style": {
+					"description": "Allowed styles: csv, pretty, aligned",
+					"type": "string",
+					"pattern": "^(csv|pretty|aligned)$"
+				},
+				"sort": {
+					"description": "It can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting.",
+					"type": "string"
+				},
+				"filter": {
+					"description": "It can contain a bool expression to show only specific result entries.",
+					"type": "string"
+				},
+				"separator": {
+					"description": "This attribute can be used to change the default separator ',' (only used in csv-style).",
+					"type": "string"
+				},
+				"transpose": {
+					"description": "If transpose is set to true, the *table* is transposed (rows and columns are swapped).",
+					"type": "boolean"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"column": {
+					"description": "A line within a ASCII result table. The *column* can contain the name of a *pattern* or the name of a parameter.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/column_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/column_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false
+		},
 
-        "database_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "The name of the table in the database.",
-                    "type": "string"
-                },
-                "primekeys": {
-                    "description": "The primekeys can contain a list of *parameter* or *pattern* names (separated by ,). Given *parameters* or patterns will be used as primary keys of the database table. All primekeys have to be listed as a *key* as well. Modification of primary keys of an existing table is not supported. If no primekeys are set then each jube result will add new rows to the database. Otherwise rows with matching primekeys will be updated.",
-                    "type": "string"
-                },
-                "file": {
-                    "description": "The given value should hold the full path to the database file. If the file including the path does not exists it will be created. Absolute and relative paths are supported.",
-                    "type": "string"
-                },
-                "filter": {
-                    "description": "The filter can contain a bool expression to show only specific result entries.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "key": {
-                    "description": "The *key* must contain a single *parameter* or *pattern* name.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/string_tag_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/string_tag_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false
-        },
+		"database_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "The name of the table in the database.",
+					"type": "string"
+				},
+				"primekeys": {
+					"description": "The primekeys can contain a list of *parameter* or *pattern* names (separated by ,). Given *parameters* or patterns will be used as primary keys of the database table. All primekeys have to be listed as a *key* as well. Modification of primary keys of an existing table is not supported. If no primekeys are set then each jube result will add new rows to the database. Otherwise rows with matching primekeys will be updated.",
+					"type": "string"
+				},
+				"file": {
+					"description": "The given value should hold the full path to the database file. If the file including the path does not exists it will be created. Absolute and relative paths are supported.",
+					"type": "string"
+				},
+				"filter": {
+					"description": "The filter can contain a bool expression to show only specific result entries.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"key": {
+					"description": "The *key* must contain a single *parameter* or *pattern* name.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/string_tag_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/string_tag_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false
+		},
 
-        "syslog_object": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "description": "The name for the *syslog*.",
-                    "type": "string"
-                },
-                "address": {
-                    "description": "The socket adress that gives a syslog daemon (the combination of *host*/*port* and *address* is not allowed).",
-                    "type": "string"
-                },
-                "host": {
-                    "description": "The host can give a syslog daemon in combination with *port* (the combination of *host*/*port* and *address* is not allowed).",
-                    "type": "string"
-                },
-                "port": {
-                    "description": "The port can give a syslog daemon in combination with *host* (the combination of *host*/*port* and *address* is not allowed).",
-                    "type": "integer"
-                },
-                "format": {
-                    "description": "The format can contain a log format written in a pythonic way.",
-                    "type": "string"
-                },
-                "sort": {
-                    "description": "It can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting.",
-                    "type": "string"
-                },
-                "filter": {
-                    "description": "The filter can contain a bool expression to show only specific result entries.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "key": {
-                    "description": "A syslog result key. It must contain a single parameter- or patternname.",
-                    "anyOf": [{
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/$defs/column_object"
-                        }
-                    }, {
-                        "$ref": "#/$defs/column_object"
-                    }, {
-                        "type": "string"
-                    }]
-                },
-                "include": {
-                    "$ref": "#/$defs/include"
-                }
-            },
-            "required": [ "name" ],
-            "additionalProperties": false,
-            "anyOf": [{
-                "allOf": [{
-                    "not": {
-                        "required": [ "host" ]
-                    }
-                }, {
-                    "not": {
-                        "required": [ "port" ]
-                    }
-                }]
-            }, {
-                "allOf": [{
-                    "not": {
-                        "required": [ "address" ]
-                    }
-                }, {
-                    "required": [ "host","port" ]
-                }]
-            }]
-        },
+		"syslog_object": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"description": "The name for the *syslog*.",
+					"type": "string"
+				},
+				"address": {
+					"description": "The socket adress that gives a syslog daemon (the combination of *host*/*port* and *address* is not allowed).",
+					"type": "string"
+				},
+				"host": {
+					"description": "The host can give a syslog daemon in combination with *port* (the combination of *host*/*port* and *address* is not allowed).",
+					"type": "string"
+				},
+				"port": {
+					"description": "The port can give a syslog daemon in combination with *host* (the combination of *host*/*port* and *address* is not allowed).",
+					"type": "integer"
+				},
+				"format": {
+					"description": "The format can contain a log format written in a pythonic way.",
+					"type": "string"
+				},
+				"sort": {
+					"description": "It can contain a list of parameter- or patternnames (separated by ,). Given pattern- or parametertypes will be used for sorting.",
+					"type": "string"
+				},
+				"filter": {
+					"description": "The filter can contain a bool expression to show only specific result entries.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"key": {
+					"description": "A syslog result key. It must contain a single parameter- or patternname.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/column_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/column_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"include": {
+					"$ref": "#/$defs/include"
+				}
+			},
+			"required": [ "name" ],
+			"additionalProperties": false,
+			"anyOf": [{
+				"allOf": [{
+					"not": {
+						"required": [ "host" ]
+					}
+				}, {
+					"not": {
+						"required": [ "port" ]
+					}
+				}]
+			}, {
+				"allOf": [{
+					"not": {
+						"required": [ "address" ]
+					}
+				}, {
+					"required": [ "host","port" ]
+				}]
+			}]
+		},
 
-        "column_object": {
-            "type": "object",
-            "properties": {
-                "colw": {
-                    "description": "Column width",
-                    "type": "integer"
-                },
-                "format": {
-                    "description": "The format can contain a C like format string: e.g. '.2f'",
-                    "type": "string"
-                },
-                "title": {
-                    "description": "Alternative title",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                },
-                "_": {
-                    "description": "It can contain the name of a single pattern or parameter.",
-                    "type": "string"
-                }
-            },
-            "additionalProperties": false
-        },
+		"column_object": {
+			"type": "object",
+			"properties": {
+				"colw": {
+					"description": "Column width",
+					"type": "integer"
+				},
+				"format": {
+					"description": "The format can contain a C like format string: e.g. '.2f'",
+					"type": "string"
+				},
+				"title": {
+					"description": "Alternative title",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				},
+				"_": {
+					"description": "It can contain the name of a single pattern or parameter.",
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
 
-        "include": {
-            "description": "It can be used to include an external XML-structure into the current file.",
-            "anyOf": [{
-                "type": "array",
-                "items": {
-                    "$ref": "#/$defs/include_object"
-                }
-            }, {
-                "$ref": "#/$defs/include_object"
-            }]
-        },
+		"include": {
+			"description": "It can be used to include an external XML-structure into the current file.",
+			"anyOf": [{
+				"type": "array",
+				"items": {
+					"$ref": "#/$defs/include_object"
+				}
+			}, {
+				"$ref": "#/$defs/include_object"
+			}]
+		},
 
-        "include_object": {
-            "type": "object",
-            "properties": {
-                "from": {
-                    "description": "The attribute is used to specify an external set source.",
-                    "type": "string"
-                },
-                "path": {
-                    "description": "The path can be used to give an alternative xml-path inside the include-file.",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                }
-            },
-            "required": [ "from" ],
-            "additionalProperties": false
-        },
+		"include_object": {
+			"type": "object",
+			"properties": {
+				"from": {
+					"description": "The attribute is used to specify an external set source.",
+					"type": "string"
+				},
+				"path": {
+					"description": "The path can be used to give an alternative xml-path inside the include-file.",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				}
+			},
+			"required": [ "from" ],
+			"additionalProperties": false
+		},
 
-        "string_tag_object": {
-            "type": "object",
-            "properties": {
-                "_": {
-                    "description": "Real content of the tag",
-                    "type": "string"
-                },
-                "tag": {
-                    "$ref": "#/$defs/tag"
-                 }
-             },
-            "additionalProperties": false
-        },
+		"string_tag_object": {
+			"type": "object",
+			"properties": {
+				"_": {
+					"description": "Real content of the tag",
+					"type": "string"
+				},
+				"tag": {
+					"$ref": "#/$defs/tag"
+				 }
+			 },
+			"additionalProperties": false
+		},
 
-        "tag": {
-            "description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
-            "type": "string"
-        }
-    }
+		"tag": {
+			"description": "A *tag* can be used to mark parts of your input file to be includable or excludable ('not' *tags* are more important than normal *tags*). It can contain a list of names.",
+			"type": "string"
+		}
+	}
 }
