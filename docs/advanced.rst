@@ -31,9 +31,13 @@ read the general :doc:`tutorial` first.
 
 Schema validation
 ~~~~~~~~~~~~~~~~~
-To validate your *XML* based input files you can use DTD or schema validation. You will find ``jube.dtd``, ``jube.xsd``
-and ``jube.rnc`` inside the ``schema`` folder. You have to add these schema information to your input files
-which you want to validate.
+
+To validate your *YAML* based input files you can use schema validation.
+You can find ``jube.json`` in the ``contrib/schema`` folder.
+
+To validate your *XML* based input files you can use DTD or schema validation.
+You can find ``jube.dtd``, ``jube.xsd`` and ``jube.rnc`` in the ``contrib/schema`` folder.
+You have to add these schema information to your input files which you want to validate.
 
 DTD usage:
 
