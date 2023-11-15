@@ -52,10 +52,17 @@ dependencies:
     after_script:
         - cd "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
         - git status
-        # Add list of files
-        - git add ${FILE_LIST}
-        - git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
-        - git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}
+        # Add list of files and commit, if there are changes
+        - |
+            if [[ -z $(git status --untracked-files=no --porcelain) ]]
+            then 
+                echo "Nothing to commit"
+            else
+                git diff
+                git add ${FILE_LIST}
+                git commit -m "${COMMIT_MESSAGE} (Runner ID:${CI_RUNNER_ID})"
+                git push -o ci.skip https://gitlab-ci-token:${GIT_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}
+            fi
         # Cleaning up
         - cd ${CI_PROJECT_DIR}
         - rm -r "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
@@ -63,26 +70,28 @@ dependencies:
 build:year:
     variables:
         FILE_LIST: -u
-        COMMIT_MESSAGE: "Updating Year"
+        COMMIT_MESSAGE: "Checking if year must be updated"
     stage: build
     script:
         # Updating all Copyright years
-        - find ${CI_PROJECT_DIR} -type f -exec sed -i "s/Copyright (C) 2008-$((`date +%Y`-1))/Copyright (C) 2008-`date +%Y`/g" {} \;
+        - find ${CI_PROJECT_DIR} -type f -exec sed -i "s/Copyright (C) 2008-[0-9]\{4\}/Copyright (C) 2008-`date +%Y`/g" {} \;
         # Updating years on documentation
-        - sed -i "s/$((`date +%Y`-1))/`date +%Y`/g" ${CI_PROJECT_DIR}/docs/conf.py
+        - sed -i "s/[0-9]\{4\}, JUBE Developer Team/`date +%Y`, JUBE Developer Team/g" ${CI_PROJECT_DIR}/docs/conf.py
     <<: *push_files
     rules:
-        - if: $CI_COMMIT_TAG =~ /^REL-.*/
+        - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
     resource_group: gitpush
 
 build:version:
     variables:
         FILE_LIST: jube2/conf.py docs/conf.py setup.py
-        COMMIT_MESSAGE: "Updating Version"
+        COMMIT_MESSAGE: "Checking if version must be updated"
     stage: build
     script:
-        - export RELEASE=${CI_COMMIT_TAG#*-}
+        - export RELEASE=`grep -o -m1 "Version \d\.\d\.\d\(-[^ ]\+\)\?" docs/release_notes.rst | cut -d " " -f2`
         - export VERSION=${RELEASE%.*}
+        - |
+            echo "Last version on docs/release_notes.rst: $RELEASE"
         # Updating version in files
         - |
             sed -i "s/'version': '.*'/'version': '$RELEASE'/g" ${CI_PROJECT_DIR}/setup.py
@@ -91,7 +100,9 @@ build:version:
         - sed -i "s/release = '.*'/release = '$RELEASE'/g" ${CI_PROJECT_DIR}/docs/conf.py
     <<: *push_files
     rules:
-        - if: $CI_COMMIT_TAG =~ /^REL-.*/
+        - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
+          changes:
+            - docs/release_notes.rst
     resource_group: gitpush
 
 build:release_notes:
