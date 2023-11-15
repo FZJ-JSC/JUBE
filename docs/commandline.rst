@@ -200,7 +200,8 @@ Run the result creation.
 
    jube result [-h] [-i ID [ID ...]] [-a] [-r] [-u UPDATE_FILE] [-n NUM]
                [-s {pretty,csv,aligned}] [--include-path INCLUDE_PATH [INCLUDE_PATH ...]]
-               [-t TAG [TAG ...]] [-o RESULT_NAME [RESULT_NAME ...]] [DIRECTORY]
+               [-t TAG [TAG ...]] [-o RESULT_NAME [RESULT_NAME ...]]
+               [--select SELECT [SELECT ...]] [--exclude EXCLUDE [EXCLUDE ...]] [DIRECTORY]
 
 
 
@@ -234,8 +235,50 @@ Run the result creation.
 ``-o RESULT_NAME [RESULT_NAME ...]``, ``-only RESULT_NAME [RESULT_NAME ...]``
    only create specific results given by name
 
+``--select SELECT [SELECT ...]``
+   display only given columns from the result (changes also the output to the result file)
+
+``--exclude EXCLUDE [EXCLUDE ...]``
+   excludes given columns from the result (changes also the output to the result file)
+
 ``DIRECTORY``
    directory which contains benchmarks, default: ``.``
+
+.. index:: output
+
+output
+~~~~~~
+
+Shows path and content of the stdout and stderr files of the given benchmark.
+
+.. code-block:: none
+
+   jube output [-h] [-i ID [ID ...]] [-s STEP [STEP ...]] [-w WORKPACKAGE [WORKPACKAGE ...]]
+               [-d] [-o {stdout,stderr}] [DIRECTORY]
+
+
+
+``-h``, ``--help``
+   show command help information
+
+``-i ID [ID ...]``, ``--id ID [ID ...]``
+   |ID_DESCRIPTION|
+
+``-s STEP [STEP ...]``, ``--step STEP [STEP ...]``
+   show filenames for given step
+
+``-w WORKPACKAGE [WORKPACKAGE ...]``, ``--workpackage WORKPACKAGE [WORKPACKAGE ...]``
+   show filenames for given workpackages id
+
+``-d``, ``--display``
+   display content of output file
+
+``-o {stdout,stderr}``, ``--only {stdout,stderr}``
+   show only stdour or stderr
+
+``DIRECTORY``
+   directory which contains benchmarks, default: ``.``
+
 
 .. index:: comment
 
@@ -272,7 +315,7 @@ Remove an existing benchmark
 
 .. code-block:: none
 
-   jube remove [-h] [-i ID [ID ...]] [-f] [DIRECTORY]
+   jube remove [-h] [-i ID [ID ...]] [-w WORKPACKAGE [WORKPACKAGE ...]] [-f] [DIRECTORY]
 
 ``-h``, ``--help``
    show command help information
