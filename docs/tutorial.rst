@@ -34,7 +34,7 @@ Installation
 Requirements: *JUBE* needs **Python 3.2** (or any higher version)
 
 If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml` module `<https://pyyaml.org>`_ to
-your *Python* module library. Additionally the `ruamel` module `<https://pypi.org/project/ruamel.yaml>`_ is optional. If installed it is used to verify the validity of the *YAML* files.
+your *Python* module library. Additionally the `ruamel.yaml` module `<https://pypi.org/project/ruamel.yaml>`_ is optional. If installed it is used to verify the validity of the *YAML* files.
 
 To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in different ways:
 
