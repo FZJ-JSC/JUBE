@@ -21,8 +21,8 @@
 Release notes
 =============
 
-Version 2.6.0 [Unreleased]
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Version 2.6.0
+~~~~~~~~~~~~~
 Release: 2023-11-16
 
 * Added: New option `<check_tags>`, which allows you to specify tags that must be set for the script to run.
