@@ -41,6 +41,7 @@ Release: 2023-11-15
 * Backward compatibility for floating number value definitions of parameters of type int was restored such that only warning messages are printed in this case.
 * Typos and bugs in the glossary and the help were fixed. 
 * A validity check by use of the pip package ruamel.yaml is introduced. This package is used if it is installed. Otherwise, there will be no validity check for yaml files and a corresponding warning.
+* Fixed export of an empty parameter (Issue #3 on GitHub)
 
 Version 2.5.1
 ~~~~~~~~~~~~~
