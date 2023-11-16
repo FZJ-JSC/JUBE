@@ -45,7 +45,7 @@ analyser_tag
      * the global "<use>" and this local use will be combined and
        evaluated at the same time
 
-     * a "from```subargument is not possible in this local ``use"
+     * a "from" subargument is not possible in this local "use"
 
    * "reduce" is optional (default: "true" )
 
@@ -92,7 +92,7 @@ check_tags_tag
      tag "tag1" must not be set.
 
 column_tag
-   A line within a ASCII result table. The <column>-tag can contain
+   A line within a ASCII result table. The "<column>"-tag can contain
    the name of a pattern or the name of a parameter.
 
       <column colw="..." format="..." title="...">...</column>
@@ -188,11 +188,11 @@ database_tag
      pattern is not taken into account.
 
    * "primekeys" is optional: can contain a list of parameter or
-     pattern names (separated by ,). Given parameters or patterns will
-     be used as primary keys of the database table. All primekeys have
-     to be listed as a "<key>" as well. Modification of primary keys
-     of an existing table is not supported. If no primekeys are set
-     then each *jube result* will add new rows to the database.
+     pattern names (separated by ","). Given parameters or patterns
+     will be used as primary keys of the database table. All primekeys
+     have to be listed as a "<key>" as well. Modification of primary
+     keys of an existing table is not supported. If no primekeys are
+     set then each *jube result* will add new rows to the database.
      Otherwise rows with matching primekeys will be updated.
 
    * "file" is optional. The given value should hold the full path to
@@ -330,6 +330,7 @@ general_structure_xml
         <selection>
           <only>...</only>
           <not>...</not>
+          <tag>...</tag>
           ...
         </selection>
         <!-- optional must-have tag specification -->
@@ -377,6 +378,7 @@ general_structure_yaml
       selection:
         only: ...
         not: ...
+        tag: ...
 
       # optional must-have tag specification
       check_tags:
@@ -514,7 +516,8 @@ jube_variables
 
      * "$jube_wp_padid": current workpackage id with preceding zeros
 
-     * "$jube_wp_status": current workpackage status
+     * "$jube_wp_status": current workpackage status [RUNNING, DONE,
+       ERROR]
 
      * "$jube_wp_iteration": current iteration number (default: 0)
 
@@ -903,13 +906,16 @@ run
    Start a new benchmark run by parsing the given *JUBE* input file.
 
 selection_tag
-   Select benchmarks by name.
+   Specify tags or select benchmarks by name.
 
       <selection>
         <only>...</only>
         <not>...</not>
+        <tag>...</tag>
         ...
       </selection>
+
+   * multiple <tag> are allowed to specify tags (see tagging)
 
    * select or unselect a benchmark by name
 
@@ -1058,7 +1064,7 @@ substituteset_tag
         ...
       </substituteset>
 
-   * init_with is optional
+   * "init_with" is optional
 
      * if the given filepath can be found inside of the
        "JUBE_INCLUDE_PATH" and if it contains a substituteset using
@@ -1142,7 +1148,7 @@ tagging
      * "<tags>" which does not contain one of these names will be
        hidden inside the include file
 
-     * <tags> which does not contain any tag-attribute will stay
+     * "<tags>" which does not contain any tag-attribute will stay
        inside the include file
 
    * "not" tags are more important than normal tags: "tag="a,!b,c""
