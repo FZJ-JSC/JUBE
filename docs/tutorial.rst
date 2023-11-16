@@ -34,7 +34,7 @@ Installation
 Requirements: *JUBE* needs **Python 3.2** (or any higher version)
 
 If you plan to use *YAML* based *JUBE* input files, you have to add the `pyyaml` module `<https://pyyaml.org>`_ to
-your *Python* module library. Additionally the `ruamel` module `https://pypi.org/project/ruamel.yaml` is optional. If installed it is used to verify the validity of the *YAML* files.
+your *Python* module library. Additionally the `ruamel.yaml` module `<https://pypi.org/project/ruamel.yaml>`_ is optional. If installed it is used to verify the validity of the *YAML* files.
 
 To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the position of the *JUBE* package. This can be achieved in different ways:
 
@@ -411,7 +411,7 @@ the sandbox directory. Because we do/should not know that location we use the fi
 The ``<sub>`` specifies the substitution. All occurrences of ``source`` will be substituted by ``dest``. As you can see, you can
 use parameters inside the substitution. In addition to the standard ``text`` substitution (see ``<sub source="#NUMBER#" ... />``),
 the ``mode`` attribute (introduced in JUBE version 2.6.0) also allows regular expressions to be used for the substitution
-(see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``).  The regular expression in this example searches for a capitalised
+(see ``<sub mode="regex" source="#[^NUMBER]+#" ... />``). The regular expression in this example searches for a capitalised
 text enclosed in ``#``. It matches the following text in the file ``file.in``: ``#ZAHL#``.
 
 There is no ``<use>`` inside any set. The combination of all sets will be done inside the ``<step>``. So if you use a parameter inside a
@@ -516,14 +516,15 @@ To create the result table you have to write::
    >>> jube result bench_run -i last
 
 If you run the ``result`` command for the first time, the ``analyse`` step will be executed automatically, if it wasn't executed before. So it is not necessary to run the separate ``analyse`` step all the time. However you need the separate ``analyse`` 
-if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the first ``analyse`` will be used in the ``result`` step.
+if you want to force a re-run of the ``analyse`` step, otherwise only the stored values of the previous ``analyse`` will be used in the ``result`` step.
 
 The analyse and result instructions can be combined within one single command:
 
    >>> jube result bench_run -a
 
-The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``. The ``last`` is the default option and can also be replaced by a specific benchmark id.
-If the id selection is missing a combined result table of all available benchmark runs from the ``bench_run`` directory will be created.
+The result table will be written to ``STDOUT`` and into a ``result.dat`` file inside ``bench_run/<id>/result``.
+
+The ``--id`` or ``-i`` option can be used to output the result of a specific benchmark ID. If this option is not set, the result of the last benchmark will be shown (i.e. the default is ``last``).
 
 Output of the given example:
 
@@ -535,7 +536,7 @@ Output of the given example:
   |      2 |          2 |      2 |    2 |
   |      4 |          4 |      4 |    4 |
 
-If you want to hide or show only certain output columns, you can use the ``--select`` and ``--exclude`` options since JUBE version 2.5.2.
+If you want to hide or show only certain output columns, you can use the ``--select`` and ``--exclude`` options since JUBE version 2.6.0.
 These options take parameter and pattern names as arguments.
 For example, you can use the following commands to display only the ``number`` column of the result table:
 
@@ -545,6 +546,6 @@ or
 
    >>> jube result bench_run --exclude number_pat number_pat_en number_pat_de
 
-The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in '--select' and not '--exclude' will be displayed.
+The specified columns are hidden not only in the output, but also in the results file. Both options can be given on the command line, and only the columns included in ``--select`` and not ``--exclude`` will be displayed.
 
 This was the last example of the basic *JUBE* tutorial. Next you can start the :doc:`advanced tutorial <advanced>` to get more information about including external sets, jobsystem representation and scripting parameter.

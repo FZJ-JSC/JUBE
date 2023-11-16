@@ -199,7 +199,7 @@ Statistic pattern values
 Normally a pattern should only match a single entry in your result files. But sometimes there are multiple
 similar entries (e.g. if the benchmark uses some iteration feature).
 
-*JUBE* will create the statistical values ``last``, ``min``, ``max``, ``avg``, ``std``, ``cnt`` and ``sum`` automatically.
+*JUBE* will create the statistical values ``first``, ``last``, ``min``, ``max``, ``avg``, ``std``, ``cnt`` and ``sum`` automatically.
 To use these values, the user have to specify the pattern name followed by ``_<statistic_option>``,
 e.g. ``pattern_name_last`` (the pattern_name itself will always be the first match).
 
@@ -405,9 +405,12 @@ The input file ``tagging.yaml``:
 
 The ``tag`` attribute and the ``check_tags`` tag allow you to define more complex boolean expressions.
 For example:
+
 * ``!`` can be used for negation (``!deu`` stands for ``not deu``)
+
 * ``|`` can be used as an OR operator and ``+`` as an AND operator to combine tag values (e.g. XML: ``tag="!deu+eng"``; YAML: ``tag: "!deu+eng"``).
-* parentheses are also allowed
+
+* Parentheses are also allowed
 
 The ``tag`` attribute can be used within any ``<element>`` within the input file (except the ``<jube>``).
 If several different ``tag`` attribute values are used in a script, they can be specified as a list separated by spaces from the command line.
@@ -418,7 +421,7 @@ Caution: This can lead to erroneous execution if you forget to set the necessary
 
 Careful: This can lead to erroneous execution if you forget to set the necessary tags for execution, as JUBE will no longer consider e.g. parameters provided with the corresponding ``tag`` attribute.
 
-To ensure that the user of the script specifies the necessary tag values that the script needs for successful execution, the ``check_tag`` element (added with JUBE version 2.5.2) can be used.
+To ensure that the user of the script specifies the necessary tag values that the script needs for successful execution, the ``check_tag`` element (added with JUBE version 2.6.0) can be used.
 It allows you to define tag values that must be specified when the script is called in order for it to run successfully.
 If none of the required ``tag`` combinations defined by ``check_tag`` are set by the user, an error message is displayed and the run is aborted.
 
@@ -775,6 +778,11 @@ The files used for this example can be found inside ``examples/cycle``.
 The input file ``cycle.xml``:
 
 .. literalinclude:: ../examples/cycle/cycle.xml
+   :language: yaml
+
+The input file ``cycle.yaml``:
+
+.. literalinclude:: ../examples/cycle/cycle.yaml
    :language: xml
 
 The ``cycles`` attribute allows to repeat all ``<do>`` commands within a step multiple times. The ``break_file`` can be used to cancel the loop and all following commands in the current cycle (the command
@@ -802,10 +810,13 @@ which belong to the expansions of a step, the argument ``procs`` of ``<step>``
 can be used.  
 
 The files used for this example can be found inside ``examples/parallel_workpackages``.
+
 The input file ``parallel_workpackages.xml``:
 
 .. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.xml
    :language: xml
+
+The input file ``parallel_workpackages.yaml``:
 
 .. literalinclude:: ../examples/parallel_workpackages/parallel_workpackages.yaml
    :language: yaml

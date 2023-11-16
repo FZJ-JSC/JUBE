@@ -28,6 +28,8 @@ JUBE is not compatible to Python2.x any longer.
 
 You will also need SQLite version 3.35.0 (or higher) to use the database as a result output.
 
+When using YAML, it is also recommended to install the optional pip package `ruamel.yaml` to enable validation of the YAML scripts.
+
 # Installation
 
 After download, unpack the distribution file `JUBE-<version>.tar.gz` with:
