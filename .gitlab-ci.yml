@@ -159,7 +159,8 @@ build:site:
         paths:
             - docs/_build/html
     rules:
-        - changes:
+        - if: $CI_PIPELINE_SOURCE != 'merge_request_event'
+          changes:
             - docs/**/* # all files under folder 'docs'
 
 
@@ -253,7 +254,8 @@ pages:
         paths:
             - public
     rules:
-        - changes:
+        - if: $CI_PIPELINE_SOURCE != 'merge_request_event'
+          changes:
             - docs/**/* # all files under folder 'docs'
 
 pages:production:
