@@ -212,12 +212,11 @@ deploy:dist_package:
         - python3 setup.py sdist
     after_script:
         - echo "Copying distribution package to web server"
+        - cd "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
         - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del dist/* apps_jube_docu:software/"
         # Cleaning up
         - cd ${CI_PROJECT_DIR}
         - rm -r "${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}"
-    tags:
-        - remote
     artifacts:
         paths:
             - dist/*
@@ -240,8 +239,6 @@ deploy:download_page:
     after_script:
         - echo "Copying distribution package to web server"
         - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del download.php version apps_jube_docu:"
-    tags:
-        - remote
     rules:
         - if: $CI_COMMIT_TAG =~ /^REL-.*/
 
@@ -265,14 +262,13 @@ pages:production:
         - build:site
     rules:
         - if: '$CI_COMMIT_BRANCH == "master"' # Only on the master branch
+          when: manual # Manually triggered
           changes:
             - docs/**/* # all files under folder 'docs'
-    tags:
-        - remote
+        - if: $CI_COMMIT_TAG =~ /^REL-.*/
     script:
         - echo "Deploying to production"
-        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del docs/_build/html/* apps_jube_docu:docs/"
-    when: manual # Manually triggered
+        - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del docs/_build/html/* apps_jube_docu:docu/"
     environment:
         name: production
         url: https://apps.fz-juelich.de/jsc/jube/jube2/docu/
