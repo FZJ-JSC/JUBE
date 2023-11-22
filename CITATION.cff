@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Breuer"
+  given-names: "Thomas"
+  orcid: "https://orcid.org/0000-0003-3979-4795"
+- family-names: "Wellmann"
+  given-names: "Julia"
+  orcid: "https://orcid.org/0000-0001-6631-8220"
+- family-names: "Guimarães"
+  given-names: "Filipe"
+  orcid: "https://orcid.org/0000-0002-5618-6727"
+- family-names: "Himmels"
+  given-names: "Carina"
+  orcid: "https://orcid.org/0009-0009-8095-7112"
+- family-names: "Luehrs"
+  given-names: "Sebastian"
+  orcid: "https://orcid.org/0000-0001-8496-8630"
+title: "JUBE"
+version: 2.6.0
+doi: 10.5281/zenodo.7534372
+date-released: 2023-11-16
+url: "https://github.com/FZJ-JSC/JUBE"
