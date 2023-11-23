@@ -305,6 +305,71 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
                 print("\n")
 
 
+def print_workpackage_info(benchmark, workpackage):
+    """Print information concerning a single workpackage in a specific benchmark"""
+    print(jube2.util.output.text_boxed(
+            "{0} Workpackage with ID {1}".format(benchmark.name, workpackage.id)))
+    print("Step: {}".format(workpackage.step.name))
+    print("")
+
+    # Get and print workpackage status
+    if workpackage.error:
+        status = "ERROR"
+    elif not workpackage.done:
+        status = "RUNNING"
+    else:
+        status = "DONE"
+    print("Status: {}".format(status))
+    print("")
+    print("Iteration {}".format(workpackage.iteration))
+    print("Cycle {}".format(workpackage.cycle))
+    print("")
+
+    # Print parents id
+    if workpackage.parents:
+        parent_str = "Workpackage Parents by ID: "
+        for parent in workpackage.parents:
+            parent_str += "{}".format(parent.id)
+        print(parent_str)
+
+    # Print sibling id
+    if workpackage.iteration_siblings:
+        sibling_str = "Iteration Sibling by ID: "
+        for sibling in workpackage.iteration_siblings:
+            sibling_str += "{}".format(sibling.id)
+        print(sibling_str)
+    print("")
+
+    # Print parameterization
+    print("Parameterization:")
+    for parameter in workpackage.parameterset:
+        if parameter.name != "id":
+            print("  {0}: {1}".format(parameter.name, parameter.value))
+    print("")
+
+    # Print environments
+    if workpackage.env:
+        env_str = ""
+        for env_name, value in workpackage.env.items():
+            if (env_name not in ["PWD", "OLDPWD", "_"]) and \
+               (env_name not in os.environ or os.environ[env_name] != value):
+                env_str += "  {0}: {1}\n".format(env_name, value)
+        if env_str:
+            print("Environment:")
+            print(env_str)
+            print("")
+    if os.environ:
+        env_str = ""
+        for env_name in os.environ:
+            if (env_name not in ["PWD", "OLDPWD", "_"]) and \
+               (env_name not in workpackage.env):
+                env_str += "  {0}\n".format(env_name)
+        if env_str:
+            print("Environment:")
+            print(env_str)
+            print("")
+
+
 def print_benchmark_status(benchmark):
     """Print overall workpackage status in the following order
         RUNNING: At least one WP is still active

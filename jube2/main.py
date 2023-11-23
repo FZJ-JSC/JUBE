@@ -211,6 +211,10 @@ def command_help(args):
 def info(args):
     """Benchmark information"""
     if args.id is None:
+        if args.step is not None or args.workpackage is not None:
+                LOGGER.warning("The -s and -w options are ignored if no "
+                               "benchmark ID is given. Information for all "
+                               "benchmarks is printed out.")
         jube2.info.print_benchmarks_info(args.dir)
     else:
         found_benchmarks = search_for_benchmarks(args)
@@ -220,9 +224,10 @@ def info(args):
                                          load_analyse=False)
             if benchmark is None:
                 continue
-            if args.step is None:
+            if args.step is None and args.workpackage is None:
                 jube2.info.print_benchmark_info(benchmark)
-            else:
+            elif args.workpackage is None:
+                # Display step information
                 if args.step:
                     steps = args.step
                 else:
@@ -236,7 +241,30 @@ def info(args):
                         benchmark, step_name,
                         parametrization_only=args.parametrization,
                         parametrization_only_csv=args.csv_parametrization)
-
+            else:
+                # Display workpackage information
+                if args.step:
+                    steps = args.step
+                else:
+                    steps = benchmark.steps.keys()
+                if args.workpackage:
+                    wp_ids = [int(id) for id in args.workpackage]
+                else:
+                    wp_ids = [wp.id for wps in benchmark.workpackages.values()
+                                    for wp in wps]
+                for wp_id in wp_ids:
+                    workpackage = benchmark.workpackage_by_id(wp_id)
+                    if workpackage:
+                        if workpackage.step.name in steps:
+                            jube2.info.print_workpackage_info(benchmark, workpackage)
+                        else:
+                            LOGGER.warning("Workpackage with ID is ignored for "
+                                           "further execution. It was not found in "
+                                           "the specified steps.".format(wp_id))
+                    else:
+                        LOGGER.warning("Workpackage with ID is ignored for "
+                                       "further execution. It was not found in "
+                                       "the specified benchmark.".format(wp_id))
 
 def update_check(args):
     """Check if a newer JUBE version is available."""
@@ -915,7 +943,10 @@ def gen_subparser_conf():
             ("-c", "--csv-parametrization"):
                 {"help": "display only parametrization of given step " +
                  "using csv format", "nargs": "?", "default": False,
-                 "metavar": "SEPARATOR"}
+                 "metavar": "SEPARATOR"},
+            ("-w", "--workpackage"):
+                {"help": "show information for given workpackage id",
+                 "nargs": "*"}
         }
     }
 
