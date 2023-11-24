@@ -40,12 +40,14 @@ class TestSubstitute(unittest.TestCase):
         self.std_sub = jube2.substitute.Sub("#NUMBER#", "text", "1")
         self.std_sub_set = jube2.substitute.Substituteset("sub_set",
                                                           self.std_files_data,
-                                                          [self.std_sub])
+                                                          {"#NUMBER#": self.std_sub})
+        self.std_sub_set.substitute({}, None)
         self.regex_files_data = [["regex_file.out", "file.in", "w"]]
         self.regex_sub = jube2.substitute.Sub("#.*#", "regex", "1")
         self.regex_sub_set = jube2.substitute.Substituteset("regex_set",
                                                             self.regex_files_data,
-                                                            [self.regex_sub])
+                                                            {"#.*#": self.regex_sub})
+        self.regex_sub_set.substitute({}, None)
 
     def test_substitute(self):
         """Test standard and regex substitute"""

@@ -1236,7 +1236,7 @@ class Parser(object):
                         jube2.substitute.Substituteset(name, files, subs)
                 else:
                     result_set.update_files(files)
-                    result_set.update_subs(subs)
+                    result_set.update_substitute(subs)
             elif set_type == "fileset":
                 if result_set is None:
                     result_set = jube2.fileset.Fileset(name)
@@ -1574,7 +1574,7 @@ class Parser(object):
                     self._extract_extern_set(parts[0], "substituteset", name,
                                              search_name)
                 substitutesets[name].update_files(files)
-                substitutesets[name].update_subs(subs)
+                substitutesets[name].update_substitute(subs)
             else:
                 substitutesets[name] = \
                     jube2.substitute.Substituteset(name, files, subs)
@@ -1588,7 +1588,7 @@ class Parser(object):
         """
         valid_tags = ["iofile", "sub"]
         files = list()
-        subs = list()
+        subs = dict()
         for sub in etree_substituteset:
             Parser._check_tag(sub, valid_tags)
             if sub.tag == "iofile":
@@ -1615,7 +1615,7 @@ class Parser(object):
                         dest = ""
                 dest = dest.strip() + ""
                 sub_type = sub.get("mode", default="text").strip()
-                subs.append(jube2.substitute.Sub(source, sub_type, dest))
+                subs[source] = jube2.substitute.Sub(source, sub_type, dest)
         return (files, subs)
 
     @staticmethod
