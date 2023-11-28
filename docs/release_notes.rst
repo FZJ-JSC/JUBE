@@ -21,6 +21,12 @@
 Release notes
 =============
 
+[UNRELEASED]
+~~~~~~~~~~~~~
+Release: 2023-XX-XX
+
+* Fixed: Overwrite the `sub` with the same source, so that the substitution with init_with will work.
+
 Version 2.6.0
 ~~~~~~~~~~~~~
 Release: 2023-11-16
