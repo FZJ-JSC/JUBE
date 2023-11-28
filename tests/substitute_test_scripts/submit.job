@@ -1,0 +1,43 @@
+#!/bin/bash -x
+#SBATCH --job-name="platform_test_run_0"
+#SBATCH --mail-user=
+#SBATCH --mail-type=NONE
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=2
+#SBATCH --time=00:30:00
+#SBATCH --output=job.out
+#SBATCH --error=job.err
+#SBATCH --partition=batch
+#SBATCH --gres=NONE
+
+
+
+export OMP_NUM_THREADS="2"
+
+
+module load GCC
+
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    touch error
+    exit $JUBE_ERR_CODE
+fi
+
+time -p srun   
+
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    touch error
+    exit $JUBE_ERR_CODE
+fi
+
+
+
+JUBE_ERR_CODE=$?
+if [ $JUBE_ERR_CODE -ne 0 ]; then
+    touch error
+    exit $JUBE_ERR_CODE
+fi
+
+touch ready

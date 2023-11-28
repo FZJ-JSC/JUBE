@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jube>
+  <include-path>
+    <path>../../platform/slurm</path>
+  </include-path>
+  <benchmark name="platform_test" outpath="bench_run">
+
+    <parameterset name="systemParameter" init_with="platform.xml">
+      <parameter name="modules">module load GCC</parameter>
+      <parameter name="threadspertask">2</parameter>
+    </parameterset>
+
+    <substituteset name="executesub" init_with="platform.xml">
+        <sub source="#PREPROCESS#" dest="$modules"/>
+        <sub source="#MEASUREMENT#" dest="time -p "/>
+    </substituteset>
+
+    <step name="run">
+        <use>systemParameter</use>
+        <use from="platform.xml">jobfiles</use>
+        <use from="platform.xml">executeset</use>
+        <use>executesub</use>
+        <do>cat $submit_script</do>
+    </step>
+
+  </benchmark>
+</jube>

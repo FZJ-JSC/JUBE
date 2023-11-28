@@ -38,10 +38,10 @@ class Substituteset(object):
 
     """A Substituteset contains all information"""
 
-    def __init__(self, name, file_data, sub_list):
+    def __init__(self, name, file_data, substitute_dict):
         self._name = name
         self._files = file_data
-        self._sub_list = sub_list
+        self._substitute_dict = substitute_dict
 
     @property
     def name(self):
@@ -59,9 +59,9 @@ class Substituteset(object):
                                if fdat[0] != data[0]]
                 self._files.append(data)
 
-    def update_subs(self, sub_list):
+    def update_substitute(self, substitute_dict):
         """Update substitute_dict"""
-        self._sub_list += sub_list
+        self._substitute_dict.update(substitute_dict)
 
     def substitute(self, parameter_dict=None, work_dir=None):
         """Do substitution. The work_dir can be set to a given context path.
@@ -73,14 +73,13 @@ class Substituteset(object):
 
         # Do pre-substitution of source and destination-variables
         if parameter_dict is not None:
-            sub_list = list()
-            for sub in self._sub_list:
+            substitute_dict = dict()
+            for name, sub in self._substitute_dict.items():
                 new_source = jube2.util.util.substitution(sub.source, parameter_dict)
-                new_dest = jube2.util.util.substitution(
-                    sub.dest, parameter_dict)
-                sub_list.append(Sub(new_source, sub.mode, new_dest))
+                new_dest = jube2.util.util.substitution(sub.dest, parameter_dict)
+                substitute_dict[new_source] = Sub(new_source, sub.mode, new_dest)
         else:
-            sub_list = self._sub_list
+            substitute_dict = self._substitute_dict
 
         # Do file substitution
         for data in self._files:
@@ -99,7 +98,7 @@ class Substituteset(object):
                          jube2.util.output.text_table(
                              [("source", "dest")] + [(sub.source, sub.dest)
                                                      for sub in
-                                                     self._sub_list],
+                                                     substitute_dict.values()],
                              use_header_line=True, indent=9,
                              align_right=False))
             if not jube2.conf.DEBUG_MODE:
@@ -115,7 +114,7 @@ class Substituteset(object):
                 file_handle.close()
 
                 # Substitute
-                for sub in sub_list:
+                for name, sub in substitute_dict.items():
                     if sub.mode == "text":
                         text = text.replace(sub.source, sub.dest)
                     else:
@@ -137,7 +136,7 @@ class Substituteset(object):
             iofile_etree.attrib["in"] = data[1]
             iofile_etree.attrib["out"] = data[0]
             iofile_etree.attrib["out_mode"] = data[2]
-        for sub in self._sub_list:
+        for name, sub in self._substitute_dict.items():
             sub_etree = ET.SubElement(substituteset_etree, "sub")
             sub_etree.attrib["source"] = sub.source
             sub_etree.attrib["mode"] = sub.mode
@@ -157,23 +156,19 @@ class Sub(object):
     def source(self):
         """Return source of Sub"""
         return self._source
-    
+
     @property
     def mode(self):
         """Return type of Sub"""
         return self._mode
-    
+
     @property
     def dest(self):
         """Return dest of Sub"""
         return self._dest
-    
+
     def __eq__(self, other):
-        return (self._source == other.source \
-               and self._dest == other.dest \
-               and self.mode == othe.mode)
-    
+        return self._source == other.source
+
     def __hash__(self):
         return hash(self._source)
-
-    
