@@ -24,7 +24,7 @@ from __future__ import (print_function,
 
 import unittest
 import jube2.conf
-from packaging.version import Version
+from distutils.version import StrictVersion
 
 class TestConf(unittest.TestCase):
 
@@ -32,7 +32,7 @@ class TestConf(unittest.TestCase):
 
     def test_version_number(self):
         """version number testing"""
-        Version(jube2.conf.JUBE_VERSION)
+        StrictVersion(jube2.conf.JUBE_VERSION)
 
 
 if __name__ == "__main__":
