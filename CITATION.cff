@@ -1,5 +1,16 @@
 cff-version: 1.2.0
+title: "JUBE"
 message: "If you use this software, please cite it as below."
+type: software
+identifiers:
+  - description: "The concept DOI of this software"
+    type: doi
+    value: 10.5281/zenodo.7534372
+repository-code: 'https://github.com/FZJ-JSC/JUBE'
+url: 'https://www.fz-juelich.de/jsc/jube'
+license: GPLv3
+contact:
+  - email: jube.jsc@fz-juelich.de
 authors:
 - family-names: "Breuer"
   given-names: "Thomas"
@@ -7,7 +18,7 @@ authors:
 - family-names: "Wellmann"
   given-names: "Julia"
   orcid: "https://orcid.org/0000-0001-6631-8220"
-- family-names: "Guimarães"
+- family-names: "Souza Mendes Guimarães"
   given-names: "Filipe"
   orcid: "https://orcid.org/0000-0002-5618-6727"
 - family-names: "Himmels"
@@ -16,8 +27,3 @@ authors:
 - family-names: "Luehrs"
   given-names: "Sebastian"
   orcid: "https://orcid.org/0000-0001-8496-8630"
-title: "JUBE"
-version: 2.6.0
-doi: 10.5281/zenodo.7534372
-date-released: 2023-11-16
-url: "https://github.com/FZJ-JSC/JUBE"
