@@ -71,7 +71,8 @@ config = {'name': 'JUBE',
           'package_data': {'jube2': ['help.txt']},
           'data_files': ([(os.path.join(SHARE_PATH, 'docu'),
                            ['docs/JUBE.pdf']),
-                          (SHARE_PATH, ['AUTHORS','LICENSE','RELEASE_NOTES'])] +
+                          (SHARE_PATH,
+                          ['AUTHORS','LICENSE','RELEASE_NOTES','CITATION.cff'])] +
                          rel_path("examples", SHARE_PATH) +
                          rel_path("contrib", SHARE_PATH) +
                          rel_path("platform", SHARE_PATH)),
