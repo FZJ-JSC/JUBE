@@ -2,16 +2,21 @@ Release notes
 *************
 
 
-[UNRELEASED]
-============
+Version 2.6.1
+=============
 
-Release: 2023-XX-XX
+Release: 2023-11-28
+
+* Added: CITATION.cff file
 
 * Added: New argument *-w* for command line option *jube info* to
   print information about the given workpackage.
 
-* Fixed: Overwrite the *sub* with the same source, so that the
-  substitution with init_with will work.
+* Fixed: Overwrite the *sub* with the same *source*, so that the
+  substitution with *init_with* will work again.
+
+* Changed: The *substitute_tests* has been adapted so that the tests
+  fail when the bug fixed in this release occurs.
 
 
 Version 2.6.0
