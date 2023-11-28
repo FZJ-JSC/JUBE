@@ -25,6 +25,7 @@ Release notes
 ~~~~~~~~~~~~~
 Release: 2023-XX-XX
 
+* Added: New argument `-w` for command line option `jube info` to print information about the given workpackage.
 * Fixed: Overwrite the `sub` with the same source, so that the substitution with init_with will work.
 
 Version 2.6.0

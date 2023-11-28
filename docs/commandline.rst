@@ -341,7 +341,7 @@ Get benchmark specific information
 
 .. code-block:: none
 
-   jube info [-h] [-i ID [ID ...]] [-s STEP [STEP ...]] [-p] [-c [SEPARATOR]] [DIRECTORY]
+   jube info [-h] [-i ID [ID ...]] [-s STEP [STEP ...]] [-p] [-c [SEPARATOR]] [-w WORKPACKAGE [WORKPACKAGE ...]] [DIRECTORY]
 
 ``-h``, ``--help``
    show command help information
@@ -358,6 +358,9 @@ Get benchmark specific information
 
 ``-p``, ``--parametrization``
    display only parametrization of given step
+
+``-w WORKPACKAGE [WORKPACKAGE ...]``, ``--workpackage WORKPACKAGE [WORKPACKAGE ...]``
+   show workpackage specific information by given id
 
 ``DIRECTORY``
    show directory specific information
