@@ -169,7 +169,11 @@ build:site:
     script:
         - cd ${CI_PROJECT_DIR}/tests/
         - export PYTHONPATH=${CI_PROJECT_DIR}:${PYTHONPATH}
-        - python3 ${CI_JOB_NAME#*:}.py
+        - python3 ${CI_JOB_NAME#*:}.py 2>&1 | tee output
+        - if [[ ! -z $(grep "Warning\|warning" output) ]] ; then echo "Warnings in the output" ; echo "exit 21" ; else echo "No warnings" ; fi
+    allow_failure:
+        exit_codes:
+            - 21
 
 tests:parameter_tests:
     <<: *run_test
