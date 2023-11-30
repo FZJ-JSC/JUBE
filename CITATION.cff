@@ -1,29 +1,29 @@
 cff-version: 1.2.0
-title: "JUBE"
-message: "If you use this software, please cite it as below."
+title: JUBE
+message: 'If you use this software, please cite it as below.'
 type: software
+authors:
+  - family-names: Breuer
+    given-names: Thomas
+    orcid: 'https://orcid.org/0000-0003-3979-4795'
+  - family-names: Wellmann
+    given-names: Julia
+    orcid: 'https://orcid.org/0000-0001-6631-8220'
+  - family-names: Souza Mendes Guimarães
+    given-names: Filipe
+    orcid: 'https://orcid.org/0000-0002-5618-6727'
+  - family-names: Himmels
+    given-names: Carina
+    orcid: 'https://orcid.org/0009-0009-8095-7112'
+  - family-names: Luehrs
+    given-names: Sebastian
+    orcid: 'https://orcid.org/0000-0001-8496-8630'
 identifiers:
-  - description: "The concept DOI of this software"
-    type: doi
+  - type: doi
     value: 10.5281/zenodo.7534372
+    description: The concept DOI of this software
 repository-code: 'https://github.com/FZJ-JSC/JUBE'
 url: 'https://www.fz-juelich.de/jsc/jube'
-license: GPLv3
+license: GPL-3.0-or-later
 contact:
   - email: jube.jsc@fz-juelich.de
-authors:
-  - family-names: "Breuer"
-    given-names: "Thomas"
-    orcid: "https://orcid.org/0000-0003-3979-4795"
-  - family-names: "Wellmann"
-    given-names: "Julia"
-    orcid: "https://orcid.org/0000-0001-6631-8220"
-  - family-names: "Souza Mendes Guimarães"
-    given-names: "Filipe"
-    orcid: "https://orcid.org/0000-0002-5618-6727"
-  - family-names: "Himmels"
-    given-names: "Carina"
-    orcid: "https://orcid.org/0009-0009-8095-7112"
-  - family-names: "Luehrs"
-    given-names: "Sebastian"
-    orcid: "https://orcid.org/0000-0001-8496-8630"
