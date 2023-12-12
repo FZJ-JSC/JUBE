@@ -570,6 +570,25 @@ class Parser(object):
                 additional_parametersets=[workpackage.parameterset],
                 final_sub=True)
             workpackage.parameterset.update_parameterset(jube_parameter)
+            # Update step parameter
+            update_parameter = workpackage.parameterset.get_updatable_parameter(
+                jube2.parameter.STEP_MODE)
+            if len(update_parameter) > 0:
+                fixed_parameterset = workpackage.parameterset.copy()
+                for parameter in update_parameter:
+                    fixed_parameterset.delete_parameter(parameter)
+                change = True
+                while change:
+                    change = False
+                    update_parameter.parameter_substitution(
+                        [fixed_parameterset])
+                    if update_parameter.has_templates:
+                        update_parameter = list(
+                            update_parameter.expand_templates())[0]
+                        change = True
+                update_parameter.parameter_substitution(
+                    [fixed_parameterset], final_sub=True)
+                workpackage.parameterset.update_parameterset(update_parameter)
 
         # Store workpackage data
         work_stat = jube2.util.util.WorkStat()
