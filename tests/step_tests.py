@@ -28,7 +28,132 @@ import shutil
 import os
 import sys
 import jube2.step
+import jube2.benchmark
+import jube2.parameter
+import jube2.workpackage
+import jube2.main
 import subprocess
+
+class TestStep(unittest.TestCase):
+
+    """Step test class"""
+
+    def setUp(self):
+        self.para_cluster = \
+            jube2.parameter.Parameter.create_parameter("cluster_module", "CM, DAM, ESB")
+        self.paramset_cluster = jube2.parameter.Parameterset("cluster")
+        self.paramset_cluster.add_parameter(self.para_cluster)
+
+        self.para_acc = \
+            jube2.parameter.Parameter.create_parameter("ACC",
+                                                       "{'CM': '66', 'DAM': '77', 'ESB': '88'}"+
+                                                       ".get('${cluster_module}', 0)",
+                                                       parameter_mode="python")
+        self.para_acc_step = \
+            jube2.parameter.Parameter.create_parameter("ACC_STEP",
+                                                       "{'sec': '${ACC}'}.get('$jube_step_name', 'NO_ACC')",
+                                                       parameter_mode="python",
+                                                       update_mode=jube2.parameter.STEP_MODE)
+        self.parameterset = jube2.parameter.Parameterset("update_test")
+        self.parameterset.add_parameter(self.para_acc)
+        self.parameterset.add_parameter(self.para_acc_step)
+
+        self.first_step = jube2.step.Step(name='first', depend=set())
+        self.first_step.add_uses(['cluster', 'update_test'])
+        operation = jube2.step.Operation('echo "${ACC}, ${ACC_STEP}"',
+                                         stdout_filename='stdout',
+                                         stderr_filename='stderr',
+                                         work_dir='.', error_filename='error')
+        self.first_step.add_operation(operation)
+
+        self.second_step = jube2.step.Step(name='sec', depend={"first"})
+        operation = jube2.step.Operation('echo "BEFORE ${ACC}, ${ACC_STEP}"',
+                                         stdout_filename='stdout',
+                                         stderr_filename='stderr',
+                                         work_dir='.', error_filename='error')
+        self.second_step.add_operation(operation)
+        operation = jube2.step.Operation('', stdout_filename='stdout',
+                                         stderr_filename='stderr',
+                                         async_filename='ready',
+                                         work_dir='.', error_filename='error')
+        self.second_step.add_operation(operation)
+        operation = jube2.step.Operation('echo "AFTER ${ACC}, ${ACC_STEP}"',
+                                         stdout_filename='stdout',
+                                         stderr_filename='stderr',
+                                         work_dir='.', error_filename='error')
+        self.second_step.add_operation(operation)
+        self.bench_run_path = os.path.join(os.path.dirname(__file__), "bench_run")
+        self.benchmark = jube2.benchmark.Benchmark(
+            name='update_test',
+            outpath=self.bench_run_path,
+            parametersets={'update_test': self.parameterset,
+                           "cluster": self.paramset_cluster},
+            substitutesets={},
+            filesets={},
+            patternsets={},
+            steps={'first': self.first_step, 'sec': self.second_step},
+            analyser={},
+            results={},
+            results_order=[])
+
+    def test_update_parameter(self):
+        """Test update parameter"""
+        if os.path.isdir(self.bench_run_path):
+            shutil.rmtree(self.bench_run_path)
+        self.benchmark.new_run()
+        self.run_path = os.path.join(self.bench_run_path, "000000")
+
+        # Test if first step was succesful
+        output = ["66, NO_ACC\n", "77, NO_ACC\n", "88, NO_ACC\n"]
+        for i, path in enumerate(["000000_first", "000001_first", "000002_first"]):
+            # Check done file
+            done_path = os.path.join(self.run_path, path, "done")
+            self.assertTrue(os.path.isfile(done_path))
+            # Check output
+            stdout_path = os.path.join(self.run_path, path, "work", "stdout")
+            f = open(stdout_path, "r")
+            stdout = f.read()
+            f.close()
+            self.assertEqual(stdout, output[i])
+
+
+        # Test if second step was succesful until done file
+        output = ["BEFORE 66, 66\n", "BEFORE 77, 77\n", "BEFORE 88, 88\n"]
+        for i, path in enumerate(["000003_sec", "000004_sec", "000005_sec"]):
+            # Check wp_done file
+            for wp in ['wp_done_00', 'wp_done_01']:
+                wp_done_path = os.path.join(self.run_path, path, wp)
+                self.assertTrue(os.path.isfile(wp_done_path))
+            # Check output
+            stdout_path = os.path.join(self.run_path, path, "work", "stdout")
+            f = open(stdout_path, "r")
+            stdout = f.read()
+            f.close()
+            self.assertEqual(stdout, output[i])
+            # Set ready-file to continue run
+            ready_path = os.path.join(self.run_path, path, "work", "ready")
+            f = open(ready_path, "w")
+            f.close()
+
+        # Continue run
+        jube2.main.main(["continue", self.bench_run_path])
+
+        # Test if continue was succesful
+        output = ["BEFORE 66, 66\nAFTER 66, 66\n", "BEFORE 77, 77\nAFTER 77, 77\n",
+                  "BEFORE 88, 88\nAFTER 88, 88\n"]
+        for i, path in enumerate(["000003_sec", "000004_sec", "000005_sec"]):
+            # Check done file
+            done_path = os.path.join(self.run_path, path, "done")
+            self.assertTrue(os.path.isfile(done_path))
+            # Check output
+            stdout_path = os.path.join(self.run_path, path, "work", "stdout")
+            f = open(stdout_path, "r")
+            stdout = f.read()
+            f.close()
+            self.assertEqual(stdout, output[i])
+
+    def tearDown(self)->None:
+        shutil.rmtree(self.bench_run_path)
 
 
 class TestOperation(unittest.TestCase):
