@@ -1,98 +1,63 @@
-# JUBE
+<div align="center">
+<img src="share/jube/logo/logo.svg" alt="JUBE" height="3em"/>
+
+</div>
+
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7534372.svg)](https://doi.org/10.5281/zenodo.7534372)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-JUBE Benchmarking Environment
-Copyright (C) 2008-2024
-Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
-http://www.fz-juelich.de/jsc/jube
+# What is JuBE?
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-any later version.
+The JUBE benchmarking environment provides a script based framework to easily create benchmark sets,
+run those sets on different computer systems and evaluate the results. It is actively developed by
+[Juelich Supercomputing Centre](https://www.fz-juelich.de/en/ias/jsc). It focuses on managing
+complexity of combinatorial benchmarks and ensuring reproducibility of the benchmarks. Jube provides
+support for varied workflows and ability to use vendor-supplied platform configurations. The
+benchmark configuration and scripts can be specified in either a YAML or an XML format. Jube works
+on linux and macOS and has first class support for supercomputer scheduling systems like Slurm and
+PBS.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see http://www.gnu.org/licenses/.
+## Documentation
 
-----
-
-# Prerequisites
-
-JUBE version 2 is written in the Python programming language.
-
-You need Python 3.2 (or a higher version) to run the program.
-
-JUBE is not compatible to Python2.x any longer.
-
-You will also need SQLite version 3.35.0 (or higher) to use the database as a result output.
-
-When using YAML, it is also recommended to install the optional pip package `ruamel.yaml` to enable validation of the YAML scripts.
-
-# Installation
-
-After download, unpack the distribution file `JUBE-<version>.tar.gz` with:
-
-```bash
-tar -xf JUBE-<version>.tar.gz
-```
-
-You can install the files to your `$HOME/.local` directory by using:
-
-```bash
-cd JUBE-<version>
-python setup.py install --user
-```
-
-`$HOME/.local/bin` must be inside your `$PATH` environment variable to use JUBE in an easy way.
-
-Instead you can also specify a self defined path prefix:
-
-```bash
-python setup.py install --prefix=<some_path>
-```
-
-You might be asked during the installation to add your path (and some subfolders) to the `$PYTHONPATH` environment variable (this should be stored in your profile settings):
-
-```bash
-export PYTHONPATH=<needed_path>:$PYTHONPATH
-```
-
-Another option is to use `pip[3]` for installation (including download):
-
-```bash
-pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --user
-# or
-pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --prefix=<some_path>
-```
-
-In addition it is useful to also set the `$PATH` variable again.
-
-To check the installation you can run:
-
+Jube is available on `pypi` and can be installed using `pip`. Jube needs **python 3.2** or higher.
 
 ```
-jube --version
+pip(x) install jube
 ```
 
-Without the `--user` or `--prefix` argument, JUBE will be installed in the standard system path for Python packages.
+The documentation for jube consists of two parts:
+- [User Guide](https://apps.fz-juelich.de/jsc/jube/jube2/docu/index.html) : The user guide explains how to use jube.
+- [Example](https://github.com/FZJ-JSC/jube-configs): Curated examples of JUBE benchmarks.
 
-# Acknowledgments  
+For more information on the design and architecture of Jube, please refer to the [paper
+paper](https://ebooks.iospress.nl/DOI/10.3233/978-1-61499-621-7-431).
+
+
+## Community and Contributing
+
+Jube is an open-source project and we welcome your questions, discussions and contributions.
+Questions can be asked on the discussion forum and issues can be reported in the issue tracker. We
+also welcome contributions in the form of pull requests. Contributions can be anything from
+bugfixers, to documentation to new features. If you are unsure about anything, please feel free to
+ask on the discussion forum first.
+
+- **[Issue Tracker](https://issue.com)**
+- **[Github Discussions](https://discussions.com)**
+- **[Pull Requests](https://pull.com)**
+
+Please ensure that your contributions  to Jube are compliant with the [developer guidelines](
+        https://apps.fz-juelich.de/jsc/jube/jube2/docu/devel.html).
+
+# Citing JuBE
+
+If you use Jube in your work, please cite [software release](https://zenodo.org/records/7534373)
+and the [paper](https://ebooks.iospress.nl/DOI/10.3233/978-1-61499-621-7-431).
+
+# Acknowledgments
 
 We gratefully acknowledge the following reserach projects and institutions for their support in the development of JUBE2 and granting compute time to develop JUBE2.
 
 - UNSEEN (BMWi project, ID: 03EI1004A-F)
-- Gauss Centre for Supercomputing e.V. (www.gauss-centre.eu) and the John von Neumann Institute for Computing (NIC) on the GCS Supercomputer JUWELS at Jülich Supercomputing Centre (JSC) 
-
-Furthermore, we gratefully acknowledge all the people and institutions having contributed to this project with their expertise, time and passion in any way. A subset of these people and institutions can be found within the AUTHORS file.
-
-# Further Information
-
-For further information please see the documentation: http://www.fz-juelich.de/jsc/jube
-
-Contact: [jube.jsc@fz-juelich.de](mailto:jube.jsc@fz-juelich.de)
+- Gauss Centre for Supercomputing e.V. (www.gauss-centre.eu) and the John von Neumann Institute for Computing (NIC) on the GCS Supercomputer JUWELS at Jülich Supercomputing Centre (JSC)
