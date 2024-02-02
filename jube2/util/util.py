@@ -279,7 +279,15 @@ def convert_type(value_type, value, stop=True):
 def script_evaluation(cmd, script_type):
     """cmd will be evaluated with given script language"""
     if script_type == "python":
-        return str(eval(cmd))
+        if "return " not in cmd:
+            try:
+                return str(eval(cmd))
+            except:
+                pass
+        loc = {}
+        i = cmd.rfind("return ")
+        exec(cmd[:i] + cmd[i:].replace("return ", "return_value = "), globals(), loc)
+        return str(loc["return_value"])
     elif script_type in ["perl", "shell"]:
         if script_type == "perl":
             cmd = "perl -e \"print " + cmd + "\""
