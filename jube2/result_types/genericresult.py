@@ -136,8 +136,8 @@ class GenericResult(Result):
                 name = self._title
             else:
                 name = self._name
-                if self._unit is not None:
-                    name += "[{0}]".format(self._unit)
+            if self._unit is not None:
+                name += "[{0}]".format(self._unit)
             return name
 
         def etree_repr(self):
