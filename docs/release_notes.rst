@@ -21,6 +21,12 @@
 Release notes
 =============
 
+[UNRELEASED]
+~~~~~~~~~~~~~
+Release: 2024-XX-XX
+
+* Fixed: Parameters of a dependent step with an update_mode `step` are updated when a `jube continue` is executed.
+
 Version 2.6.1
 ~~~~~~~~~~~~~
 Release: 2023-11-28

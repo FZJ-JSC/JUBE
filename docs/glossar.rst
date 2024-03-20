@@ -318,7 +318,7 @@ Glossary
           * ``never``: no reevaluation, even if the parameterset is used multiple times
           * ``use``: reevaluation if the parameterset is explicitly used
           * ``step``: reevaluation in each new step
-          * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+          * ``cycle``: reevaluation in each cycle, but not at the begin of a new step (number of workpackages will stay unchanged)
           * ``always``: reevaluation in each step and cycle
 
       * ``duplicate`` is optional and of relevance, if there are more than one parameter definitions with the same name within one parameterset. This ``duplicate`` option has higher priority than the ``duplicte`` option of the parameterset. ``duplicate`` must contain one of the following four options:
@@ -337,7 +337,7 @@ Glossary
       * ``never``: no reevaluation, even if the parameterset is used multiple times
       * ``use``: reevaluation if the parameterset is explicitly used
       * ``step``: reevaluation in each new step
-      * ``cycle``: reevaluation in each cycle (number of workpackages will stay unchanged)
+      * ``cycle``: reevaluation in each cycle, but not at the begin of a new step (number of workpackages will stay unchanged)
       * ``always``: reevaluation in each step and cycle
 
    fileset_tag
