@@ -686,8 +686,8 @@ parameter_tag
 
        * "step": reevaluation in each new step
 
-       * "cycle": reevaluation in each cycle (number of workpackages
-         will stay unchanged)
+       * "cycle": reevaluation in each cycle, but not at the begin of
+         a new step (number of workpackages will stay unchanged)
 
        * "always": reevaluation in each step and cycle
 
@@ -1186,8 +1186,8 @@ update_mode
 
    * "step": reevaluation in each new step
 
-   * "cycle": reevaluation in each cycle (number of workpackages will
-     stay unchanged)
+   * "cycle": reevaluation in each cycle, but not at the begin of a
+     new step (number of workpackages will stay unchanged)
 
    * "always": reevaluation in each step and cycle
 
