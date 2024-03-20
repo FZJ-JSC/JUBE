@@ -3,7 +3,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7534372.svg)](https://doi.org/10.5281/zenodo.7534372)
 
 JUBE Benchmarking Environment
-Copyright (C) 2008-2023
+Copyright (C) 2008-2024
 Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 http://www.fz-juelich.de/jsc/jube
 

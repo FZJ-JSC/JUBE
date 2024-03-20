@@ -1,5 +1,5 @@
 ## JUBE Benchmarking Environment
-# Copyright (C) 2008-2023
+# Copyright (C) 2008-2024
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
 # http://www.fz-juelich.de/jsc/jube
 #
