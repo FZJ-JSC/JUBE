@@ -57,8 +57,6 @@ class TestXMLScripts(unittest.TestCase):
         shutil.rmtree(os.path.join(os.path.dirname(__file__),
                       'xml_test_scripts', 'bench_run'))
 
-        return True
-
     def test_xml_test_01(self):
         """Testing the example xml script xml-test-01.xml"""
         thisfiledir = os.path.dirname(__file__)
@@ -106,8 +104,6 @@ class TestXMLScripts(unittest.TestCase):
 
         shutil.rmtree(os.path.join(os.path.dirname(__file__),
                       'benchmark_runs'))
-
-        return True
 
 
 if __name__ == "__main__":
