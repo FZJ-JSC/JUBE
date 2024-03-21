@@ -264,15 +264,12 @@ def convert_type(value_type, value, stop=True):
             result_value = value
     except ValueError:
         if stop:
-            raise ValueError(("\"{0}\" cannot be represented as a \"{1}\"")
-                             .format(value, value_type))
+            raise ValueError(f"\"{value}\" cannot be represented as a \"{value_type}\"")
         else:
             result_value = value
     if value_type_incorrect:
-        print("Warning: \"{0}\" is not of type \"{1}\" but the execution is continued to ensure backward compatibility.\n"
-                                 .format(value, value_type))
-        LOGGER.debug(("Warning: \"{0}\" is not of type \"{1}\" but the execution is continued to ensure backward compatibility.\n")
-                                 .format(value, value_type))
+        print(f"Warning: \"{value}\" was converted to type \"{value_type}\": {result_value}.\n")
+        LOGGER.debug(f"Warning: \"{value}\" was converted to type \"{value_type}\": {result_value}.\n")
     return result_value
 
 
