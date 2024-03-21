@@ -124,12 +124,12 @@ html_theme = 'default'
 html_theme_options = {
     "footerbgcolor": "#FFFFFF",
     "footertextcolor": "#000000",
-    "headtextcolor": "#005B82",
-    "relbarbgcolor": "#005B82",
+    "headtextcolor": "#023d6b",
+    "relbarbgcolor": "#023d6b",
     "sidebartextcolor": "#000000",
-    "sidebarlinkcolor": "#005B82",
+    "sidebarlinkcolor": "#023d6b",
     "sidebarbgcolor": "#FFFFFF",
-    "bgcolor": "#F9F9F9"
+    "bgcolor": "#ebebeb"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
