@@ -24,7 +24,7 @@ from __future__ import (print_function,
 
 import unittest
 import jube2.conf
-from distutils.version import StrictVersion
+from jube2.util.version import StrictVersion
 
 class TestConf(unittest.TestCase):
 
