@@ -26,7 +26,9 @@ Release notes
 Release: 2024-XX-XX
 
 * Added: JUBE logo in svg format
+* Fixed: Resolved deprecation warnings
 * Fixed: Parameters of a dependent step with an update_mode `step` are updated when a `jube continue` is executed.
+* Changed: Colors on website
 
 Version 2.6.1
 ~~~~~~~~~~~~~
