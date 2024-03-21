@@ -34,7 +34,7 @@ import sys
 import os
 import re
 import shutil
-from distutils.version import StrictVersion
+from jube2.util.version import StrictVersion
 
 try:
     from urllib.request import urlopen

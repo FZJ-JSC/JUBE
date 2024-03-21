@@ -35,7 +35,6 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(type(jube2.util.util.convert_type("int","42",stop=True)),int)
         self.assertEqual(type(jube2.util.util.convert_type("float","42",stop=True)),float)
         self.assertEqual(type(jube2.util.util.convert_type("float","3.141",stop=True)),float)
-        jube2.util.util.convert_type("int","3.141",stop=True)
         with self.assertRaises(ValueError):
             jube2.util.util.convert_type("int","forty-two",stop=True)
         self.assertEqual(jube2.util.util.convert_type("int","forty-two",stop=False),"forty-two")

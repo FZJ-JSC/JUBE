@@ -124,12 +124,12 @@ html_theme = 'default'
 html_theme_options = {
     "footerbgcolor": "#FFFFFF",
     "footertextcolor": "#000000",
-    "headtextcolor": "#005B82",
-    "relbarbgcolor": "#005B82",
+    "headtextcolor": "#023d6b",
+    "relbarbgcolor": "#023d6b",
     "sidebartextcolor": "#000000",
-    "sidebarlinkcolor": "#005B82",
+    "sidebarlinkcolor": "#023d6b",
     "sidebarbgcolor": "#FFFFFF",
-    "bgcolor": "#F9F9F9"
+    "bgcolor": "#ebebeb"
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -144,7 +144,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = 'JUBE-Logo.png'
+html_logo = 'logo/JUBE-Logo.svg'
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -224,7 +224,7 @@ latex_documents = [
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = 'JUBE-Logo.png'
+latex_logo = 'logo/JUBE-Logo.svg'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.

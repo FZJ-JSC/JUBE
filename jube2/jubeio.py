@@ -44,7 +44,7 @@ import re
 import copy
 import hashlib
 import jube2.log
-from distutils.version import StrictVersion
+from jube2.util.version import StrictVersion
 
 LOGGER = jube2.log.get_logger(__name__)
 
