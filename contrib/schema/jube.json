@@ -110,6 +110,9 @@
 						"type": "string"
 					}]
 				},
+				"include": {
+					"$ref": "#/$defs/include"
+				},
 				"tag": {
 					"$ref": "#/$defs/tag"
 				}

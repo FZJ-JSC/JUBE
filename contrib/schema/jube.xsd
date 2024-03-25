@@ -384,6 +384,7 @@
   <xs:complexType name="includePathType" mixed="true">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="path" type="stringTagType" />
+      <xs:element name="include" type="includeType" />
     </xs:choice>
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>

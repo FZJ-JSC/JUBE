@@ -700,6 +700,9 @@ class Parser(object):
         if (include_path_etree.text) and len(include_path_etree.text.strip()) > 0:
             pathes.append(include_path_etree.text.strip())
         for element in include_path_etree:
+            # Skip include tags that have not yet been replaced to allow include
+            if element.tag == "include":
+                continue
             Parser._check_tag(element, valid_tags)
             path = element.text
             if path is None:

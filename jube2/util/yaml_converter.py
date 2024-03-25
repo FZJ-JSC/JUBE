@@ -119,8 +119,8 @@ class YAML_Converter(object):
         # Read the yaml file and create an xml tree
         with open(self._path, "r") as file_handle:
             xmltree = etree.Element('jube')
-            YAML_Converter.create_headtags(
-                yaml.load(file_handle.read(), Loader=yaml.Loader), xmltree)
+            data = yaml.load(file_handle.read(), Loader=yaml.Loader)
+            YAML_Converter.create_headtags(data, xmltree, self._include_path)
             xml = jube2.util.output.element_tree_tostring(
                 xmltree, encoding="UTF-8")
             self._int_file.write(xml.encode('UTF-8'))
@@ -169,30 +169,30 @@ class YAML_Converter(object):
             if "include-path" in data:
                 if type(data["include-path"]) is not list:
                     data["include-path"] = [data["include-path"]]
-                for path in data["include-path"]:
-                    # path in include-path is optional
-                    # verify tags
-                    if type(path) is dict:
-                        if "tag" in path and not \
-                                jube2.util.util.valid_tags(path["tag"],
-                                                           self._tags):
-                            continue
-                        value = path["path"] if "path" in path else path["_"]
-                        if type(value) is not list:
-                            value = [value]
-                        for val in value:
-                            if type(val) is dict:
-                                if "tag" in val and not \
-                                    jube2.util.util.valid_tags(val["tag"],
-                                                               self._tags):
-                                    continue
-                                val = val["_"]
-                            include_pathes.append(os.path.join(
-                                os.path.dirname(self._path), val))
-                    else:
-                        include_pathes.append(os.path.join(
-                            os.path.dirname(self._path), path))
+                values = self.__search_for_pathes(data["include-path"])
+                for val in values:
+                    include_pathes.append(os.path.join(
+                        os.path.dirname(self._path), val))
         return include_pathes
+
+    def __search_for_pathes(self, data):
+        """Search in given data for stored path informations"""
+        paths = []
+        for path in data:
+            if type(path) is dict:
+                if "tag" in path and not jube2.util.util.valid_tags(path["tag"], self._tags):
+                    return
+                value = path["path"] if "path" in path else path["_"]
+                if type(value) is not list:
+                    value = [value]
+                path_val = self.__search_for_pathes(value)
+                paths.extend(path_val)
+            elif type(path) is list:
+                path_val = self.__search_for_pathes(path)
+                paths.extend(path_val)
+            else:
+                paths.append(path)
+        return paths
 
     # adapted from
     # http://code.activestate.com/recipes/577613-yaml-include-support/
@@ -226,12 +226,15 @@ class YAML_Converter(object):
                 raise ve
 
     @staticmethod
-    def create_headtags(data, parent_node):
+    def create_headtags(data, parent_node, include_pathes):
         """ Search for the headtags in given dictionary """
         if type(data) is not dict:
             data = {'benchmark': data}
         to_delete = list()
         for tag in data.keys():
+            # Override include-path with parsed include-path
+            if tag == "include-path":
+                data[tag] = include_pathes
             if type(data[tag]) is not list:
                 data[tag] = [data[tag]]
             # benchmark is optional on the top level, but if it is used only
