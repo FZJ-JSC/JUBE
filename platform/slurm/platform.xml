@@ -18,7 +18,8 @@
 
     <parameterset name="systemParameter">
         <!-- Default jobscript parameter -->
-        <parameter name="nodes" type="int">1</parameter>
+        <parameter name="jobname">${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}</parameter>
+	<parameter name="nodes" type="int">1</parameter>
         <parameter name="taskspernode" type="int">1</parameter>
         <parameter name="threadspertask" type="int">1</parameter>
         <parameter name="tasks" mode="python" type="int">
@@ -53,8 +54,7 @@
         <sub source="#ENV#" dest="$env" />
         <sub source="#NOTIFY_EMAIL#" dest="$mail" />
         <sub source="#NOTIFICATION_TYPE#" dest="$notification" />
-        <sub source="#BENCHNAME#"
-            dest="&quot;${jube_benchmark_name}_${jube_step_name}_${jube_wp_id}&quot;" />
+        <sub source="#BENCHNAME#" dest="&quot;${jobname}&quot;" />
         <sub source="#NODES#" dest="$nodes" />
         <sub source="#TASKS#" dest="$tasks" />
         <sub source="#NCPUS#" dest="$taskspernode" />
