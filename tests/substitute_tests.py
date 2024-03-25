@@ -107,7 +107,8 @@ class TestSubstitute(unittest.TestCase):
                          "with id 0 in work directory {0} has not the right "
                          "content".format(self._work_path))
         # Test for same submit.job.in
-        original_submit_file = os.path.join('../platform/slurm', 'submit.job.in')
+        original_submit_file = os.path.join(PATH_PREFIX,
+                                            '../platform/slurm/submit.job.in')
         with open(original_submit_file, 'r') as file:
             origin_submit_output = file.read().strip()
         check_submit_file = os.path.join (self._work_path, 'submit.job.in')
