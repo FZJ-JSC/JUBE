@@ -25,7 +25,7 @@ Release notes
 ~~~~~~~~~~~~~
 Release: 2024-XX-XX
 
-* Added: JUBE logo in svg format
+* Added: JUBE logo in svg and eps format
 * Fixed: Resolved deprecation warnings
 * Added: New `parameter` named `jobname` in `parameterset` `systemParameter` of file `platform/slurm/platform.xml` to modify the value of the `--job-name` argument in `submit.job`. During substitution in `executesub`, quotes are added around the value of `jobname`.
 * Fixed: Parameters of a dependent step with an update_mode `step` are updated when a `jube continue` is executed.
