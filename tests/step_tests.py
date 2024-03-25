@@ -189,13 +189,13 @@ class TestOperation(unittest.TestCase):
         self.work_dir = "bench_run/000000/000000_execute/work"
         self.environment = {'TEST': 'test'}
 
-    def test_operation_execution(self):
-        """Test operation execution"""
         if os.path.exists(os.path.join(self.currWorkDir, 'bench_run')):
             shutil.rmtree(os.path.join(self.currWorkDir, 'bench_run'))
         os.makedirs(os.path.join(self.currWorkDir,
                     'bench_run/000000/000000_execute/work'))
 
+    def test_operation_execution(self):
+        """Test operation execution"""
         self.operation.execute(self.parameter_dict,
                                self.work_dir, environment=self.environment)
 
@@ -215,6 +215,30 @@ class TestOperation(unittest.TestCase):
         self.assertTrue(line == '')
         stdoutFileHandle.close()
 
+    def test_wait_for_done_file(self):
+        """Test operation execution"""
+        # Set done file to wait for
+        self.operation._async_filename = 'ready'
+        # First run (done file not existing -> not done)
+        continue_op, continue_cycle = self.operation.execute(self.parameter_dict,
+                                         self.work_dir, environment=self.environment)
+        self.assertTrue(continue_cycle)
+        self.assertFalse(continue_op)
+        # Continue (done file not existing -> not done)
+        continue_op, continue_cycle = self.operation.execute(self.parameter_dict,
+                                         self.work_dir, environment=self.environment)
+        self.assertTrue(continue_cycle)
+        self.assertFalse(continue_op)
+        # Create ready file
+        open(os.path.join(self.currWorkDir, 'bench_run/000000/000000_execute/work',
+                          'ready'), 'a').close()
+        # Continue (done file existing -> done)
+        continue_op, continue_cycle = self.operation.execute(self.parameter_dict,
+                                         self.work_dir, environment=self.environment)
+        self.assertTrue(continue_cycle)
+        self.assertTrue(continue_op)
+
+    def tearDown(self):
         shutil.rmtree(os.path.join(self.currWorkDir, 'bench_run'))
 
 
