@@ -22,6 +22,9 @@ Release: 2024-XX-XX
 
 * Changed: Colors on website
 
+* Changed: The *unit* of a *parameter* or *pattern* will also be
+  displayed in the results output when a *title* is specified.
+
 
 Version 2.6.1
 =============
