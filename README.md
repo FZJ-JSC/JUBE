@@ -1,63 +1,85 @@
 <div align="center">
-<img src="share/jube/logo/logo.svg" alt="JUBE" height="3em"/>
-
+<img src="docs/logo/JUBE-Logo.svg" alt="JUBE" height="170em"/>
 </div>
-
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7534372.svg)](https://doi.org/10.5281/zenodo.7534372)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-# What is JuBE?
+# What is JUBE?
 
-The JUBE benchmarking environment provides a script based framework to easily create benchmark sets,
-run those sets on different computer systems and evaluate the results. It is actively developed by
-[Juelich Supercomputing Centre](https://www.fz-juelich.de/en/ias/jsc). It focuses on managing
-complexity of combinatorial benchmarks and ensuring reproducibility of the benchmarks. Jube provides
-support for varied workflows and ability to use vendor-supplied platform configurations. The
-benchmark configuration and scripts can be specified in either a YAML or an XML format. Jube works
-on linux and macOS and has first class support for supercomputer scheduling systems like Slurm and
-PBS.
-
+The JUBE benchmarking environment provides a script-based framework for easily
+creating benchmark and workflow sets, running those sets on different computer
+systems, and evaluating the results.
+It is actively developed by the [Juelich Supercomputing Centre](https://www.fz-juelich.de/en/ias/jsc).
+It focuses on managing the complexity of combinatorial benchmarks and ensuring reproducibility of the benchmarks.
+JUBE provides support for different workflows and the ability to use vendor-supplied platform configurations.
+The benchmark configuration and scripts can be specified in either YAML or XML format.
+JUBE is primarily designed for use on supercomputers with *scheduding* systems
+like Slurm or PBS, but also works on laptops running Linux or MacOS operating systems.
 
 ## Documentation
 
-Jube is available on `pypi` and can be installed using `pip`. Jube needs **python 3.2** or higher.
+JUBE is not (yet) available on `pypi` (it is work in progress).
+The source code can be downloaded from any of the following places:
+- [GitHub](https://github.com/FZJ-JSC/JUBE)
+- [JSC JUBE Webpage](https://www.fz-juelich.de/en/ias/jsc/services/user-support/software-tools/jube/download)
 
-```
-pip(x) install jube
-```
+JUBE can be installed using `pip` or `setup.py` and needs *python 3.2* or higher.
+You will also need *SQLite* version 3.35.0 (or higher) to use the database as a result output.
+Installation instructions can be found [here](https://apps.fz-juelich.de/jsc/jube/jube2/docu/tutorial.html#installation).
 
-The documentation for jube consists of two parts:
-- [User Guide](https://apps.fz-juelich.de/jsc/jube/jube2/docu/index.html) : The user guide explains how to use jube.
-- [Example](https://github.com/FZJ-JSC/jube-configs): Curated examples of JUBE benchmarks.
+The documentation for JUBE is split into Beginner Tutorial, Advanced Tutorial, 
+FAQ, CLI, and Glossary and can be found in the 
+**[User Guide](https://apps.fz-juelich.de/jsc/jube/jube2/docu/index.html)**.
 
-For more information on the design and architecture of Jube, please refer to the [paper
-paper](https://ebooks.iospress.nl/DOI/10.3233/978-1-61499-621-7-431).
+In addition to the documentation, there are also 
+[tutorial examples](examples)
+which are described in the tutorials of the user guide and 
+[benchmark examples](https://github.com/FZJ-JSC/jube-configs), which are curated
+examples of JUBE benchmarks (the latter will be either replaced or 
+updated/extended soon).
+
+For more information on the design and architecture of JUBE, please refer to
+this [paper](https://ebooks.iospress.nl/DOI/10.3233/978-1-61499-621-7-431).
 
 
 ## Community and Contributing
 
-Jube is an open-source project and we welcome your questions, discussions and contributions.
-Questions can be asked on the discussion forum and issues can be reported in the issue tracker. We
-also welcome contributions in the form of pull requests. Contributions can be anything from
-bugfixers, to documentation to new features. If you are unsure about anything, please feel free to
-ask on the discussion forum first.
+JUBE is an open-source project and we welcome your questions, discussions and contributions.
+Questions can be asked directly to the JSC JUBE developers via mail to
+[jube.jsc@fz-juelich.de](mailto:jube.jsc@fz-juelich.de) and issues can be
+reported in the issue tracker.
+We also welcome contributions in the form of pull requests.
+Contributions can include anything from bug fixes and documentation to new features.
 
-- **[Issue Tracker](https://issue.com)**
-- **[Github Discussions](https://discussions.com)**
-- **[Pull Requests](https://pull.com)**
+JUBE development is currently still taking place on an internal GitLab instance.
+However, we are in a transition phase to move development to GitHub. The complete
+move will take some time. In the meantime, we will decide individually how to
+proceed with Pull Requests opened on GitHub. Before you start implementing new
+features, we would recommended to contact us, as we still have several open
+branches in GitLab.
 
-Please ensure that your contributions  to Jube are compliant with the [developer guidelines](
-        https://apps.fz-juelich.de/jsc/jube/jube2/docu/devel.html).
+- **[GitHub Issue Tracker](https://github.com/FZJ-JSC/JUBE/issues)**
+- **[Github Discussions](https://github.com/FZJ-JSC/JUBE/discussions)**
+- **[GitHub Pull Requests](https://github.com/FZJ-JSC/JUBE/pulls)**
 
-# Citing JuBE
+Please ensure that your contributions to JUBE are compliant with the 
+[contribution](CONTRIBUTING.md), 
+[developer](https://apps.fz-juelich.de/jsc/jube/jube2/docu/devel.html) and 
+[community](CODE_OF_CONDUCT.md) guidelines.
 
-If you use Jube in your work, please cite [software release](https://zenodo.org/records/7534373)
+# Citing JUBE
+
+If you use JUBE in your work, please cite the
+[software release](https://zenodo.org/records/7534372)
 and the [paper](https://ebooks.iospress.nl/DOI/10.3233/978-1-61499-621-7-431).
 
 # Acknowledgments
 
-We gratefully acknowledge the following reserach projects and institutions for their support in the development of JUBE2 and granting compute time to develop JUBE2.
+We gratefully acknowledge the support of the following research projects and 
+institutions in the development of JUBE and for granting compute time to develop JUBE. 
 
 - UNSEEN (BMWi project, ID: 03EI1004A-F)
-- Gauss Centre for Supercomputing e.V. (www.gauss-centre.eu) and the John von Neumann Institute for Computing (NIC) on the GCS Supercomputer JUWELS at Jülich Supercomputing Centre (JSC)
+- Gauss Centre for Supercomputing e.V. (www.gauss-centre.eu) and the John von
+Neumann Institute for Computing (NIC) on the GCS Supercomputer JUWELS at
+Jülich Supercomputing Centre (JSC)
