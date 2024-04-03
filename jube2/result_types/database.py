@@ -24,7 +24,7 @@ import sqlite3
 import ast
 import os
 
-from jube2.result_types.genericresult import GenericResult
+from jube2.result_types.keyvaluesresult import KeyValuesResult
 from jube2.result import Result
 import xml.etree.ElementTree as ET
 import jube2.log
@@ -32,22 +32,22 @@ import jube2.log
 LOGGER = jube2.log.get_logger(__name__)
 
 
-class Database(GenericResult):
+class Database(KeyValuesResult):
 
     """A database result"""
 
-    class DatabaseData(GenericResult.KeyValuesData):
+    class DatabaseData(KeyValuesResult.KeyValuesData):
 
         """Database data"""
 
         def __init__(self, name_or_other, primekeys, db_file):
-            if type(name_or_other) is GenericResult.KeyValuesData:
+            if type(name_or_other) is KeyValuesResult.KeyValuesData:
                 self._name = name_or_other.name
-                #self._keys = name_or_other.keys
+                self._keys = name_or_other.keys
                 self._data = name_or_other.data
                 self._benchmark_ids = name_or_other.benchmark_ids
             else:
-                GenericResult.KeyValuesData.__init__(self, name_or_other)
+                KeyValuesResult.KeyValuesData.__init__(self, name_or_other)
             self._primekeys = primekeys
             self._db_file = None if db_file == "None" else db_file
 
@@ -59,7 +59,7 @@ class Database(GenericResult):
             # All keys: print([key.name for key in self._keys])
             #col_names = [key.name for key in self._keys]
             # All data: print(self.data)
-            keys = [k.name for k in self._data.keys()]
+            keys = [k.name for k in self.keys]
 
             # check if all primekeys are in keys
             if not set(self._primekeys).issubset(set(keys)):
@@ -88,8 +88,8 @@ class Database(GenericResult):
             cur = con.cursor()
 
             # create a string of keys and their data type to create the database table
-            key_dtypes = {k.name: type(v[0]).__name__.replace(
-                'str', 'text') for (k, v) in self._data.items()}
+            key_dtypes = {keys[i]: type(self.data[0][i]).__name__.replace(
+                'str', 'text') for i in range(len(self.keys))}
             db_col_insert_types = str(key_dtypes).replace(
                 '{', '(').replace('}', ')').replace("'", '').replace(':', '')
 
@@ -136,7 +136,7 @@ class Database(GenericResult):
                 self.name, tuple(keys)) + "{}".format('?,'*len(keys))[:-1] + ");"
             LOGGER.debug(replace_query)
             cur.executemany(
-                replace_query, [d for d in list(zip(*self._data.values()))])
+                replace_query, [d for d in self.data])
 
             con.commit()
             con.close()
@@ -146,13 +146,14 @@ class Database(GenericResult):
                 self._benchmark_ids[0], db_file))
 
     def __init__(self, name, res_filter=None, primekeys=None, db_file=None):
-        GenericResult.__init__(self, name, res_filter)
+        KeyValuesResult.__init__(self, name, None, res_filter)
         self._primekeys = primekeys
         self._db_file = db_file
 
     def create_result_data(self, style=None, select=None, exclude=None):
         """Create result data"""
-        result_data = GenericResult.create_result_data(self, select, exclude)
+        result_data = KeyValuesResult.create_result_data(self, select, exclude,
+                                                         preserve_datatype=True)
         return Database.DatabaseData(result_data, self._primekeys, self._db_file)
 
     def etree_repr(self):
