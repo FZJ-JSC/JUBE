@@ -274,6 +274,7 @@
       <xs:extension base="stringTagType">
         <xs:attribute name="format" type="xs:string" use="optional" />
         <xs:attribute name="title" type="xs:string" use="optional" />
+        <xs:attribute name="primekey" type="booleanType" use="optional" />
       </xs:extension> 
     </xs:complexContent>
   </xs:complexType>

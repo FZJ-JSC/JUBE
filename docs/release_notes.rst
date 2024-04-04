@@ -28,8 +28,11 @@ Release: XXXX-XX-XX
 * Added: A new operator `^` (exclusive disjunction (`xor`)) for the `tag` attribute and `<check_tags>`.
 * Added: New environment variable `JUBE_VERBOSE` to set the verbosity level.
 * Added: Warning when the current verbosity level from the command line or environment variable is out of range.
+* Added: New `primekey` attribute for the `key`-tag of the `database` to define whether this `key` is a primary key of the database or not. Can be set to `true` or `false` (default: `false`).
 * Changed: The convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
-* Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^`,  `+` and `!`.
+* Changed: If the `title` attribute of a database `key` is set, then this title is used as the name of the database column instead of the parameter or pattern name.
+* Deprecated: The `primekeys` attribute of the `database` is no longer supported. Use the new `primekey` attribute of the `database` `key` instead.
+* Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^` `+` and `!`.
 
 Version 2.6.2
 ~~~~~~~~~~~~~
