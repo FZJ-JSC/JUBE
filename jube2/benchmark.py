@@ -653,6 +653,9 @@ class Benchmark(object):
                     name = workpackage.step.name
                     pool = mp.Pool(processes=procs)
 
+                    # save current logfile name to restore logs in the right logfile
+                    current_logfile_name = jube2.log.LOGFILE_NAME
+
                     # add wps to the parallel pool as long as they have the same name
                     while True:
                         pool.apply_async(workpackage.run, args=('p',),
@@ -681,8 +684,7 @@ class Benchmark(object):
                              if file.startswith(log_fname.split('.')[0]) and
                              file != log_fname]
                 filenames.sort(key=lambda o: int(re.split('_|\.', o)[1]))
-                with open(os.path.join(self.bench_dir,
-                                       jube2.conf.LOGFILE_RUN_NAME), 'a') as outfile:
+                with open(current_logfile_name, 'a') as outfile:
                     for fname in filenames:
                         with open(os.path.join(self.bench_dir, fname), 'r') as infile:
                             contents = infile.read()
