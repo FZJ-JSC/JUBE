@@ -43,9 +43,9 @@ class TestResultDatabase(unittest.TestCase):
             self.dataBaseTableName)
         databaseDataInstance = jube2.result_types.database.Database.DatabaseData(
             keyValuesDataInstance, [], None)
-        datakey1 = jube2.result_types.keyvaluesresult.KeyValuesResult.DataKey(
+        datakey1 = jube2.result_types.database.Database.Column(
             self.dataKeyNames[0], None, None)
-        datakey2 = jube2.result_types.keyvaluesresult.KeyValuesResult.DataKey(
+        datakey2 = jube2.result_types.database.Database.Column(
             self.dataKeyNames[1], None, None)
         databaseDataInstance._keys = [datakey1, datakey2]
         databaseDataInstance._data = [d for d in list(zip(*self.dataKeys))]

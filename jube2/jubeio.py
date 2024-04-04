@@ -1086,7 +1086,12 @@ class Parser(object):
             format_string = element.get("format")
             if format_string is not None:
                 format_string = format_string.strip()
-            database.add_key(key_name, format_string, title)
+            primekey = element.get("primekey")
+            if primekey is not None:
+                primekey = primekey.strip().lower() == "true"
+            else:
+                primekey = False
+            database.add_key(key_name, format_string, title, primekey)
         return database
 
     @staticmethod

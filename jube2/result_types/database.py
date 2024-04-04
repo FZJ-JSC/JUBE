@@ -93,9 +93,15 @@ class Database(KeyValuesResult):
             db_col_insert_types = str(key_dtypes).replace(
                 '{', '(').replace('}', ')').replace("'", '').replace(':', '')
 
+            # Add key with primekey=true to primekeys and use set to remove duplicates
+            self._primekeys = list(set(self._primekeys + [k.resulting_name for k in self._keys if k.primekey]))
+
             if len(self._primekeys) > 0:
                 db_col_insert_types = db_col_insert_types[:-1] + \
                     ", PRIMARY KEY ({}))".format(', '.join(map(repr, self._primekeys)))
+                LOGGER.warning("The `primekeys` attribute of the `<database>`-tag is deprecated. "
+                               "Instead, use the new `primekey` attribute of the `<key>`-tag. "
+                               "(<key primekey=\"true\"|\"false\">..</key>)")
             # create new table with a name of stored in variable self.name if it does not exists
             LOGGER.debug("CREATE TABLE IF NOT EXISTS {} {};".format(
                 self.name, db_col_insert_types))
@@ -145,10 +151,36 @@ class Database(KeyValuesResult):
             LOGGER.info("Database location of id {}: {}".format(
                 self._benchmark_ids[0], db_file))
 
+    class Column(KeyValuesResult.DataKey):
+
+        """Class represents one database column"""
+
+        def __init__(self, name, title=None, format_string=None, primekey=False):
+            KeyValuesResult.DataKey.__init__(self, name, title, format_string,
+                                             None)
+            self._primekey = primekey
+
+        @property
+        def primekey(self):
+            """Column width"""
+            return self._primekey
+
+        def etree_repr(self):
+            """Return etree object representation"""
+            column_etree = KeyValuesResult.DataKey.etree_repr(self)
+            if self._primekey:
+                column_etree.attrib["primekey"] = str(self._primekey).lower()
+            return column_etree
+
     def __init__(self, name, res_filter=None, primekeys=None, db_file=None):
         KeyValuesResult.__init__(self, name, None, res_filter)
         self._primekeys = primekeys
         self._db_file = db_file
+
+    def add_key(self, name, format_string=None, title=None, primekey=False):
+        """Add an additional key to the dataset"""
+        self._keys.append(Database.Column(name, title, format_string,
+                                                  primekey))
 
     def create_result_data(self, style=None, select=None, exclude=None):
         """Create result data"""
