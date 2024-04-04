@@ -59,7 +59,7 @@ class Database(KeyValuesResult):
             # All keys: print([key.name for key in self._keys])
             #col_names = [key.name for key in self._keys]
             # All data: print(self.data)
-            keys = [k.name for k in self.keys]
+            keys = [k.resulting_name for k in self.keys]
 
             # check if all primekeys are in keys
             if not set(self._primekeys).issubset(set(keys)):

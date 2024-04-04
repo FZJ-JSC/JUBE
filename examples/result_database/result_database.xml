@@ -28,9 +28,9 @@
       <!-- creating a database containing the columns "number" and "number_pat" -->
       <!-- one table of the name "results" is created within the database -->
       <!-- optionally, you can use the "file" attribute to specify an alternative storage location for the database -->
-      <database name="results" primekeys="number,number_pat">
-        <key>number</key>
-        <key>number_pat</key>
+      <database name="results" primekeys="NUM">
+        <key primekey="true">number</key>
+        <key title="NUM">number_pat</key>
       </database>
     </result>
   </benchmark>
