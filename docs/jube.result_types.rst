@@ -1,7 +1,7 @@
-jube2\.result\_types package
+jube\.result\_types package
 ============================
 
-.. automodule:: jube2.result_types
+.. automodule:: jube.result_types
     :members:
     :undoc-members:
     :show-inheritance:
@@ -9,26 +9,26 @@ jube2\.result\_types package
 Submodules
 ----------
 
-jube2\.result\_types\.keyvaluesresult module
+jube\.result\_types\.keyvaluesresult module
 --------------------------------------------
 
-.. automodule:: jube2.result_types.keyvaluesresult
+.. automodule:: jube.result_types.keyvaluesresult
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.result\_types\.syslog module
+jube\.result\_types\.syslog module
 -----------------------------------
 
-.. automodule:: jube2.result_types.syslog
+.. automodule:: jube.result_types.syslog
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.result\_types\.table module
+jube\.result\_types\.table module
 ----------------------------------
 
-.. automodule:: jube2.result_types.table
+.. automodule:: jube.result_types.table
     :members:
     :undoc-members:
     :show-inheritance:

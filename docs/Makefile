@@ -37,7 +37,7 @@ help:
 	@echo "  changes    		to make an overview of all changed/added/deprecated items"
 	@echo "  linkcheck  		to check all external links for integrity"
 	@echo "  doctest    		to run all doctests embedded in the documentation (if enabled)"
-	@echo "  update_help    	to update the help.txt file under jube2"
+	@echo "  update_help    	to update the help.txt file under jube"
 	@echo "  update_release    	to update the release notes file RELEASE_NOTES"
 
 clean:
@@ -79,17 +79,17 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/JUBE2.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/JUBE.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/JUBE2.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/JUBE.qhc"
 
 devhelp:
 	$(SPHINXBUILD) -b devhelp $(ALLSPHINXOPTS) $(BUILDDIR)/devhelp
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/JUBE2"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/JUBE2"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/JUBE"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/JUBE"
 	@echo "# devhelp"
 
 epub:
@@ -117,7 +117,7 @@ text:
 	@echo "Build finished. The text files are in $(BUILDDIR)/text."
 
 update_help: text
-	cp $(BUILDDIR)/text/glossar.txt ../jube2/help.txt
+	cp $(BUILDDIR)/text/glossar.txt ../jube/help.txt
 
 update_release: text
 	cp $(BUILDDIR)/text/release_notes.txt ../RELEASE_NOTES

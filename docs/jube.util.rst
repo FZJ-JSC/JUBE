@@ -1,7 +1,7 @@
-jube2\.util package
+jube\.util package
 ===================
 
-.. automodule:: jube2.util
+.. automodule:: jube.util
     :members:
     :undoc-members:
     :show-inheritance:
@@ -9,26 +9,26 @@ jube2\.util package
 Submodules
 ----------
 
-jube2\.util\.output module
+jube\.util\.output module
 --------------------------
 
-.. automodule:: jube2.util.output
+.. automodule:: jube.util.output
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.util\.util module
+jube\.util\.util module
 ------------------------
 
-.. automodule:: jube2.util.util
+.. automodule:: jube.util.util
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.util\.yaml\_converter module
+jube\.util\.yaml\_converter module
 -----------------------------------
 
-.. automodule:: jube2.util.yaml_converter
+.. automodule:: jube.util.yaml_converter
     :members:
     :undoc-members:
     :show-inheritance:

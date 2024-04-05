@@ -1,7 +1,7 @@
-jube2 package
+jube package
 =============
 
-.. automodule:: jube2
+.. automodule:: jube
     :members:
     :undoc-members:
     :show-inheritance:
@@ -11,136 +11,136 @@ Subpackages
 
 .. toctree::
 
-    jube2.result_types
-    jube2.util
+    jube.result_types
+    jube.util
 
 Submodules
 ----------
 
-jube2\.analyser module
+jube\.analyser module
 ----------------------
 
-.. automodule:: jube2.analyser
+.. automodule:: jube.analyser
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.benchmark module
+jube\.benchmark module
 -----------------------
 
-.. automodule:: jube2.benchmark
+.. automodule:: jube.benchmark
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.completion module
+jube\.completion module
 ------------------------
 
-.. automodule:: jube2.completion
+.. automodule:: jube.completion
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.conf module
+jube\.conf module
 ------------------
 
-.. automodule:: jube2.conf
+.. automodule:: jube.conf
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.fileset module
+jube\.fileset module
 ---------------------
 
-.. automodule:: jube2.fileset
+.. automodule:: jube.fileset
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.help module
+jube\.help module
 ------------------
 
-.. automodule:: jube2.help
+.. automodule:: jube.help
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.info module
+jube\.info module
 ------------------
 
-.. automodule:: jube2.info
+.. automodule:: jube.info
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.jubeio module
+jube\.jubeio module
 --------------------
 
-.. automodule:: jube2.jubeio
+.. automodule:: jube.jubeio
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.log module
+jube\.log module
 -----------------
 
-.. automodule:: jube2.log
+.. automodule:: jube.log
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.main module
+jube\.main module
 ------------------
 
-.. automodule:: jube2.main
+.. automodule:: jube.main
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.parameter module
+jube\.parameter module
 -----------------------
 
-.. automodule:: jube2.parameter
+.. automodule:: jube.parameter
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.pattern module
+jube\.pattern module
 ---------------------
 
-.. automodule:: jube2.pattern
+.. automodule:: jube.pattern
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.result module
+jube\.result module
 --------------------
 
-.. automodule:: jube2.result
+.. automodule:: jube.result
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.step module
+jube\.step module
 ------------------
 
-.. automodule:: jube2.step
+.. automodule:: jube.step
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.substitute module
+jube\.substitute module
 ------------------------
 
-.. automodule:: jube2.substitute
+.. automodule:: jube.substitute
     :members:
     :undoc-members:
     :show-inheritance:
 
-jube2\.workpackage module
+jube\.workpackage module
 -------------------------
 
-.. automodule:: jube2.workpackage
+.. automodule:: jube.workpackage
     :members:
     :undoc-members:
     :show-inheritance:
