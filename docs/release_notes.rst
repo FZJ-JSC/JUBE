@@ -21,9 +21,9 @@
 Release notes
 =============
 
-[UNRELEASED]
+Version 2.6.2
 ~~~~~~~~~~~~~
-Release: 2024-XX-XX
+Release: 2024-04-05
 
 * Added: `CONTRIBUTING.md` file
 * Added: New `parameter` named `jobname` in `parameterset` `systemParameter` of file `platform/slurm/platform.xml` to modify the value of the `--job-name` argument in `submit.job`. During substitution in `executesub`, quotes are added around the value of `jobname`.
