@@ -27,13 +27,13 @@ Release: 2024-XX-XX
 
 * Added: `CONTRIBUTING.md` file
 * Added: New `parameter` named `jobname` in `parameterset` `systemParameter` of file `platform/slurm/platform.xml` to modify the value of the `--job-name` argument in `submit.job`. During substitution in `executesub`, quotes are added around the value of `jobname`.
-* Added: JUBE logo in svg and eps format
 * Added: Test to verify that a `step` with a `do` operation that contains a `done_file` has been successfully executed.
 * Added: `CODE_OF_CONDUCT.md` file
 * Added: JUBE logo in svg and eps format
 * Fixed: Resolved deprecation warnings
 * Fixed: Parameters of a dependent step with an update_mode `step` are updated when a `jube continue` is executed.
 * Fixed: Allow YAML and XML scripts to include paths per `include` in `include-path`.
+* Fixed: Use correct `continue` log file for parallel `step` execution.
 * Deprecated: Comma character (`,`) will not be supported anymore in `tag` attributes. Instead use `|`, `+` and `!`. 
 * Changed: The `unit` of a `parameter` or `pattern` will also be displayed in the results output when a `title` is specified.
 * Changed: Redesign of the `README.md` file
