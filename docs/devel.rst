@@ -22,6 +22,16 @@ Developer documentation
 .. highlight:: bash
    :linenothreshold: 5
 
+Contributing
+~~~~~~~~~~~~
+
+We welcome contributions in the form of
+`pull requests <https://github.com/FZJ-JSC/JUBE/pulls>`_. Contributions can
+be anything from bug fixes to documentation to new features. Please ensure
+that your contributions to JUBE comply with the
+`CONTRIBUTING.md <https://github.com/FZJ-JSC/JUBE/blob/master/CONTRIBUTING.md>`_
+and the following developer guidelines.
+
 Coding standards
 ~~~~~~~~~~~~~~~~
 
