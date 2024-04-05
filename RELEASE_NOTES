@@ -15,8 +15,6 @@ Release: 2024-XX-XX
   substitution in *executesub*, quotes are added around the value of
   *jobname*.
 
-* Added: JUBE logo in svg and eps format
-
 * Added: Test to verify that a *step* with a *do* operation that
   contains a *done_file* has been successfully executed.
 
@@ -31,6 +29,9 @@ Release: 2024-XX-XX
 
 * Fixed: Allow YAML and XML scripts to include paths per *include* in
   *include-path*.
+
+* Fixed: Use correct *continue* log file for parallel *step*
+  execution.
 
 * Deprecated: Comma character (*,*) will not be supported anymore in
   *tag* attributes. Instead use *|*, *+* and *!*.
