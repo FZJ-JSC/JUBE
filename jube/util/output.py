@@ -21,7 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2.conf
+import jube.conf
 import textwrap
 import copy
 import sys
@@ -30,22 +30,22 @@ import xml.etree.ElementTree as ET
 
 def text_boxed(text):
     """Create an ASCII boxed version of text."""
-    box = "#" * jube2.conf.DEFAULT_WIDTH
+    box = "#" * jube.conf.DEFAULT_WIDTH
     for line in text.split("\n"):
         box += "\n"
         lines = ["# {0}".format(element) for element in
-                 textwrap.wrap(line.strip(), jube2.conf.DEFAULT_WIDTH - 2)]
+                 textwrap.wrap(line.strip(), jube.conf.DEFAULT_WIDTH - 2)]
         if len(lines) == 0:
             box += "#"
         else:
             box += "\n".join(lines)
-    box += "\n" + "#" * jube2.conf.DEFAULT_WIDTH
+    box += "\n" + "#" * jube.conf.DEFAULT_WIDTH
     return box
 
 
 def text_line(char="#"):
     """Return a horizonal ASCII line"""
-    return char * jube2.conf.DEFAULT_WIDTH
+    return char * jube.conf.DEFAULT_WIDTH
 
 
 def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
@@ -84,7 +84,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                     max_length[i] = max(max_length[i], len(line))
                 if auto_linebreak:
                     max_length[i] = min(max_length[i],
-                                        jube2.conf.MAX_TABLE_CELL_WIDTH)
+                                        jube.conf.MAX_TABLE_CELL_WIDTH)
 
     if colw is not None:
         for i, maxl in enumerate(max_length):
@@ -101,7 +101,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
                 lines = list()
                 for line in text.splitlines():
                     lines += \
-                        textwrap.wrap(line, jube2.conf.MAX_TABLE_CELL_WIDTH)
+                        textwrap.wrap(line, jube.conf.MAX_TABLE_CELL_WIDTH)
                 wraps.append(lines)
             else:
                 if style == "pretty":
@@ -153,7 +153,7 @@ def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,
 
 def print_loading_bar(current_cnt, all_cnt, wait_cnt=0, error_cnt=0):
     """Show a simple loading animation"""
-    width = jube2.conf.DEFAULT_WIDTH - 10
+    width = jube.conf.DEFAULT_WIDTH - 10
     cnt = dict()
     if all_cnt > 0:
         cnt["done_cnt"] = (current_cnt * width) // all_cnt

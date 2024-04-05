@@ -21,14 +21,14 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-from jube2.result import Result
-import jube2.log
+from jube.result import Result
+import jube.log
 import xml.etree.ElementTree as ET
 import operator
-import jube2.util.util
-import jube2.util.output
+import jube.util.util
+import jube.util.output
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class KeyValuesResult(Result):
@@ -252,7 +252,7 @@ class KeyValuesResult(Result):
             sort_data = \
                 sorted(sort_data,
                        key=lambda x:
-                       [jube2.util.util.CompType(x[sort_name])
+                       [jube.util.util.CompType(x[sort_name])
                         for sort_name in self._sort_names])
 
         # Check for correctness of exclude and select names
@@ -315,7 +315,7 @@ class KeyValuesResult(Result):
                     else:
                         # Format data values to create string representation
                         if key.format is not None:
-                            value = jube2.util.output.format_value(
+                            value = jube.util.output.format_value(
                                 key.format, dataset[key.name])
                         elif preserve_datatype:
                             value = dataset[key.name]

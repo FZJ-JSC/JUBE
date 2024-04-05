@@ -21,14 +21,14 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-from jube2.result import Result
-import jube2.log
+from jube.result import Result
+import jube.log
 import xml.etree.ElementTree as ET
 import operator
-import jube2.util.util
-import jube2.util.output
+import jube.util.util
+import jube.util.output
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class GenericResult(Result):

@@ -27,14 +27,14 @@ import string
 import operator
 import os.path
 import subprocess
-import jube2.log
+import jube.log
 import time
-import jube2.conf
+import jube.conf
 import grp
 import pwd
 
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Queue:
@@ -195,7 +195,7 @@ def id_dir(base_dir, id_number):
     """Return path for 'id_number' in 'base_dir'."""
     return os.path.join(
         base_dir,
-        "{id_number:0{zfill}d}".format(zfill=jube2.conf.ZERO_FILL_DEFAULT,
+        "{id_number:0{zfill}d}".format(zfill=jube.conf.ZERO_FILL_DEFAULT,
                                        id_number=id_number))
 
 
@@ -232,7 +232,7 @@ def substitution(text, substitution_dict):
                                     str_substitution_dict.items()])
 
     # Run multiple times to allow recursive parameter substitution
-    while changed and count < jube2.conf.MAX_RECURSIVE_SUB:
+    while changed and count < jube.conf.MAX_RECURSIVE_SUB:
         count += 1
         orig_text = text
         # Save double $$
@@ -284,7 +284,7 @@ def script_evaluation(cmd, script_type):
             cmd = "perl -e \"print " + cmd + "\""
 
         # Select unix shell
-        shell = jube2.conf.STANDARD_SHELL
+        shell = jube.conf.STANDARD_SHELL
         if "JUBE_EXEC_SHELL" in os.environ:
             alt_shell = os.environ["JUBE_EXEC_SHELL"].strip()
             if len(alt_shell) > 0:

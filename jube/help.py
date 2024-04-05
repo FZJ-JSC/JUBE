@@ -21,7 +21,7 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2
+import jube
 import os
 import re
 
@@ -31,7 +31,7 @@ HELP = dict()
 def load_help():
     """Load additional documentation out of help file and add these data to
     global help dictionary."""
-    path = os.path.join(jube2.__path__[0], "help.txt")
+    path = os.path.join(jube.__path__[0], "help.txt")
     help_file = open(path, "r")
     group = None
     # skip header lines

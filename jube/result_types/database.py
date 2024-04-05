@@ -24,12 +24,12 @@ import sqlite3
 import ast
 import os
 
-from jube2.result_types.keyvaluesresult import KeyValuesResult
-from jube2.result import Result
+from jube.result_types.keyvaluesresult import KeyValuesResult
+from jube.result import Result
 import xml.etree.ElementTree as ET
-import jube2.log
+import jube.log
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Database(KeyValuesResult):

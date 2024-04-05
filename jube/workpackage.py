@@ -23,18 +23,18 @@ from __future__ import (print_function,
 
 import multiprocessing as mp
 import xml.etree.ElementTree as ET
-import jube2.util.util
-import jube2.util.output
-import jube2.conf
-import jube2.log
-import jube2.parameter
-import jube2.step
+import jube.util.util
+import jube.util.output
+import jube.conf
+import jube.log
+import jube.parameter
+import jube.step
 import os
 import re
 import stat
 import shutil
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Workpackage(object):
@@ -162,17 +162,17 @@ class Workpackage(object):
         # Collect parameter for substitution
         parameter = self.parameter_dict
         # Parameter substitution
-        active = jube2.util.util.substitution(active, parameter)
+        active = jube.util.util.substitution(active, parameter)
         # Evaluate active state
-        return jube2.util.util.eval_bool(active)
+        return jube.util.util.eval_bool(active)
 
     @property
     def done(self):
         """Workpackage done?"""
         done_file = os.path.join(self.workpackage_dir,
-                                 jube2.conf.WORKPACKAGE_DONE_FILENAME)
+                                 jube.conf.WORKPACKAGE_DONE_FILENAME)
         exist = os.path.exists(done_file)
-        if jube2.conf.DEBUG_MODE:
+        if jube.conf.DEBUG_MODE:
             exist = exist or os.path.exists(done_file + "_DEBUG")
         return exist
 
@@ -180,12 +180,12 @@ class Workpackage(object):
     def done(self, set_done):
         """Set/reset Workpackage done"""
         done_file = os.path.join(self.workpackage_dir,
-                                 jube2.conf.WORKPACKAGE_DONE_FILENAME)
-        if jube2.conf.DEBUG_MODE:
+                                 jube.conf.WORKPACKAGE_DONE_FILENAME)
+        if jube.conf.DEBUG_MODE:
             done_file = done_file + "_DEBUG"
         if set_done:
             fout = open(done_file, "w")
-            fout.write(jube2.util.util.now_str())
+            fout.write(jube.util.util.now_str())
             fout.close()
             self._remove_operation_info_files()
         else:
@@ -196,13 +196,13 @@ class Workpackage(object):
     def error(self):
         """Workpackage error?"""
         error_file = os.path.join(self.workpackage_dir,
-                                  jube2.conf.WORKPACKAGE_ERROR_FILENAME)
+                                  jube.conf.WORKPACKAGE_ERROR_FILENAME)
         return os.path.exists(error_file)
 
     def set_error(self, set_error, msg=""):
         """Set/reset Workpackage error"""
         error_file = os.path.join(self.workpackage_dir,
-                                  jube2.conf.WORKPACKAGE_ERROR_FILENAME)
+                                  jube.conf.WORKPACKAGE_ERROR_FILENAME)
         if set_error:
             fout = open(error_file, "w")
             fout.write(msg)
@@ -240,7 +240,7 @@ class Workpackage(object):
                 alt_work_dir = self.alt_work_dir(parameter_dict)
                 if alt_work_dir is not None:
                     work_dir = alt_work_dir
-                async_filename = jube2.util.util.substitution(
+                async_filename = jube.util.util.substitution(
                     operation.async_filename, parameter_dict)
                 async_filename = \
                     os.path.expandvars(os.path.expanduser(async_filename))
@@ -256,21 +256,21 @@ class Workpackage(object):
         """Mark/checks operation status"""
         done_file = os.path.join(self.workpackage_dir,
                                  "wp_{0}_{1:02d}".format(
-                                     jube2.conf.WORKPACKAGE_DONE_FILENAME,
+                                     jube.conf.WORKPACKAGE_DONE_FILENAME,
                                      operation_number))
         if set_done is None:
             exist = os.path.exists(done_file)
-            if jube2.conf.DEBUG_MODE:
+            if jube.conf.DEBUG_MODE:
                 exist = exist or os.path.exists(done_file + "_DEBUG")
             return exist
         else:
-            if jube2.conf.DEBUG_MODE:
+            if jube.conf.DEBUG_MODE:
                 done_file = done_file + "_DEBUG"
             elif ((set_done and not os.path.exists(done_file)) or
                   (not set_done and os.path.exists(done_file))):
-                jube2.util.util.update_timestamps(
+                jube.util.util.update_timestamps(
                     os.path.join(self._benchmark.bench_dir,
-                                 jube2.conf.TIMESTAMPS_INFO),
+                                 jube.conf.TIMESTAMPS_INFO),
                     "change")
             if set_done:
                 fout = open(done_file, "w")
@@ -327,7 +327,7 @@ class Workpackage(object):
     @property
     def local_parameterset(self):
         """Return local parameterset"""
-        parameterset = jube2.parameter.Parameterset()
+        parameterset = jube.parameter.Parameterset()
         for name in self._local_parameter_names:
             parameterset.add_parameter(self._parameterset[name])
         return parameterset
@@ -396,27 +396,27 @@ class Workpackage(object):
 
     def update_status(self):
         """Update status in jube parameter"""
-        parameterset = jube2.parameter.Parameterset()
+        parameterset = jube.parameter.Parameterset()
 
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_status", self.status(),
                              parameter_type="string",
-                             update_mode=jube2.parameter.JUBE_MODE))
+                             update_mode=jube.parameter.JUBE_MODE))
 
         self.parameterset.update_parameterset(parameterset)
 
     def get_jube_cycle_parameterset(self):
         """Return parameterset which contains cycle related
         information"""
-        parameterset = jube2.parameter.Parameterset()
+        parameterset = jube.parameter.Parameterset()
 
         # worpackage cycle
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_cycle",
                              str(self._cycle), parameter_type="int",
-                             update_mode=jube2.parameter.JUBE_MODE))
+                             update_mode=jube.parameter.JUBE_MODE))
 
         return parameterset
 
@@ -431,35 +431,35 @@ class Workpackage(object):
     def get_jube_parameterset(self):
         """Return parameterset which contains workpackage related
         information"""
-        parameterset = jube2.parameter.Parameterset()
+        parameterset = jube.parameter.Parameterset()
         # workpackage id
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_id", str(self._id),
                              parameter_type="int",
-                             update_mode=jube2.parameter.JUBE_MODE))
+                             update_mode=jube.parameter.JUBE_MODE))
 
         # workpackage id with padding
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_padid",
-                             jube2.util.util.id_dir("", self._id),
+                             jube.util.util.id_dir("", self._id),
                              parameter_type="string",
-                             update_mode=jube2.parameter.JUBE_MODE))
+                             update_mode=jube.parameter.JUBE_MODE))
         
         # workpackage status
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_status", self.status(),
                              parameter_type="string",
-                             update_mode=jube2.parameter.JUBE_MODE))
+                             update_mode=jube.parameter.JUBE_MODE))
 
         # workpackage iteration
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_iteration",
                              str(self._iteration), parameter_type="int",
-                             update_mode=jube2.parameter.JUBE_MODE))
+                             update_mode=jube.parameter.JUBE_MODE))
 
         parameterset.add_parameterset(self.get_jube_cycle_parameterset())
 
@@ -471,26 +471,26 @@ class Workpackage(object):
 
         # workpackage relative folder path
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_relpath", path,
-                             update_mode=jube2.parameter.JUBE_MODE,
+                             update_mode=jube.parameter.JUBE_MODE,
                              eval_helper=self.create_relpath))
 
         # workpackage absolute folder path
         parameterset.add_parameter(
-            jube2.parameter.Parameter.
+            jube.parameter.Parameter.
             create_parameter("jube_wp_abspath", path,
-                             update_mode=jube2.parameter.JUBE_MODE,
+                             update_mode=jube.parameter.JUBE_MODE,
                              eval_helper=self.create_abspath))
 
         # parent workpackage id
         for parent in self._parents:
             parameterset.add_parameter(
-                jube2.parameter.Parameter.
+                jube.parameter.Parameter.
                 create_parameter(("jube_wp_parent_{0}_id")
                                  .format(parent.step.name),
                                  str(parent.id), parameter_type="int",
-                                 update_mode=jube2.parameter.JUBE_MODE))
+                                 update_mode=jube.parameter.JUBE_MODE))
 
         # environment export string
         env_str = ""
@@ -499,18 +499,18 @@ class Workpackage(object):
         parameter_names.sort(key=str.lower)
         for name in parameter_names:
             env_str += "export {0}=${1}\n".format(name, name)
-        env_par = jube2.parameter.Parameter.create_parameter(
+        env_par = jube.parameter.Parameter.create_parameter(
             "jube_wp_envstr", env_str, no_templates=True,
-            update_mode=jube2.parameter.JUBE_MODE,
-            eval_helper=jube2.parameter.StaticParameter.fix_export_string)
+            update_mode=jube.parameter.JUBE_MODE,
+            eval_helper=jube.parameter.StaticParameter.fix_export_string)
         parameterset.add_parameter(env_par)
 
         # environment export list
         parameterset.add_parameter(
-            jube2.parameter.Parameter.create_parameter(
+            jube.parameter.Parameter.create_parameter(
                 "jube_wp_envlist",
                 ",".join([name for name in parameter_names]),
-                no_templates=True, update_mode=jube2.parameter.JUBE_MODE))
+                no_templates=True, update_mode=jube.parameter.JUBE_MODE))
 
         return parameterset
 
@@ -548,7 +548,7 @@ class Workpackage(object):
             # Create shared folder link
             if parameter_dict is not None:
                 shared_name = \
-                    jube2.util.util.substitution(self._step.shared_link_name,
+                    jube.util.util.substitution(self._step.shared_link_name,
                                                  parameter_dict)
             else:
                 shared_name = self._step.shared_link_name
@@ -570,10 +570,10 @@ class Workpackage(object):
                     dict([[par.name, par.value] for par in
                           self._parameterset.constant_parameter_dict.values()])
                 # Parameter substitution
-                suffix = jube2.util.util.substitution(suffix, parameter)
+                suffix = jube.util.util.substitution(suffix, parameter)
                 suffix = "_" + os.path.expandvars(os.path.expanduser(suffix))
             path = "{path}_{step_name}{suffix}".format(
-                path=jube2.util.util.id_dir(
+                path=jube.util.util.id_dir(
                     self._benchmark.bench_dir, self._id),
                 step_name=self._step.name,
                 suffix=suffix)
@@ -595,7 +595,7 @@ class Workpackage(object):
             if parameter_dict is None:
                 parameter_dict = self.parameter_dict
             alt_work_dir = self._step.alt_work_dir
-            alt_work_dir = jube2.util.util.substitution(alt_work_dir,
+            alt_work_dir = jube.util.util.substitution(alt_work_dir,
                                                         parameter_dict)
             alt_work_dir = os.path.expandvars(os.path.expanduser(alt_work_dir))
             alt_work_dir = os.path.join(self._benchmark.file_path_ref,
@@ -608,7 +608,7 @@ class Workpackage(object):
         """Run all available operations"""
         continue_op = True
         continue_cycle = True
-        doLog = jube2.step.DoLog(log_dir=os.path.dirname(
+        doLog = jube.step.DoLog(log_dir=os.path.dirname(
             self.work_dir), log_file=self.step._do_log_file, initial_env=self.env, cycle=self._cycle)
         for operation_number, operation in enumerate(self._step.operations):
             # Check if the operation is activated
@@ -727,8 +727,8 @@ class Workpackage(object):
         # create individual log files for each processor in a parallel run
         if mode == "p":
             proc_id = mp.current_process()._identity[0]
-            log_fname = jube2.log.LOGFILE_NAME.split('/')[-1]
-            jube2.log.change_logfile_name(os.path.join(
+            log_fname = jube.log.LOGFILE_NAME.split('/')[-1]
+            jube.log.change_logfile_name(os.path.join(
                 self.benchmark.bench_dir,
                 log_fname.replace('.', '_{}.').format(proc_id) if (('_'+str(proc_id)) not in log_fname) else log_fname))
 
@@ -772,7 +772,7 @@ class Workpackage(object):
             # --- Update cycle parameter ---
             update_parameter = \
                 self.parameterset.get_updatable_parameter(
-                    mode=jube2.parameter.CYCLE_MODE, keep_index=True)
+                    mode=jube.parameter.CYCLE_MODE, keep_index=True)
             if len(update_parameter) > 0:
                 fixed_parameterset = self.parameterset.copy()
                 for parameter in update_parameter:
@@ -790,7 +790,7 @@ class Workpackage(object):
                     [fixed_parameterset], final_sub=True)
                 self.parameterset.update_parameterset(update_parameter)
                 debugstr = "  updated parameter:\n"
-                debugstr += jube2.util.output.text_table(
+                debugstr += jube.util.output.text_table(
                     [("parameter", "value")] + sorted(
                         [(par.name, par.value) for par in update_parameter]),
                     use_header_line=True, indent=9, align_right=False)
@@ -813,7 +813,7 @@ class Workpackage(object):
             alt_work_dir = self.alt_work_dir(parameter)
             if alt_work_dir is not None:
                 # Check if given work directory contains any remaining variable
-                if re.search(jube2.parameter.Parameter.parameter_regex,
+                if re.search(jube.parameter.Parameter.parameter_regex,
                              alt_work_dir):
                     raise IOError(("Given work directory {0} contains a " +
                                    "unknown JUBE or environment variable.")
@@ -821,14 +821,14 @@ class Workpackage(object):
                 LOGGER.debug("  switch to alternativ work dir: \"{0}\""
                              .format(alt_work_dir))
 
-                if not jube2.conf.DEBUG_MODE and \
+                if not jube.conf.DEBUG_MODE and \
                         not os.path.exists(alt_work_dir):
                     try:
                         os.makedirs(alt_work_dir)
                     except FileExistsError:
                         pass
                     # Get group_id if available (given by JUBE_GROUP_NAME)
-                    group_id = jube2.util.util.check_and_get_group_id()
+                    group_id = jube.util.util.check_and_get_group_id()
                     if group_id is not None:
                         os.chown(alt_work_dir, os.getuid(), group_id)
                         os.chmod(alt_work_dir,
@@ -837,7 +837,7 @@ class Workpackage(object):
             # Print debug info
             if self._cycle == 0:
                 debugstr = "  available parameter:\n"
-                debugstr += jube2.util.output.text_table(
+                debugstr += jube.util.output.text_table(
                     [("parameter", "value")] + sorted(
                         [(name, par) for name, par in parameter.items()]),
                     use_header_line=True, indent=9,
@@ -894,7 +894,7 @@ class Workpackage(object):
             except RuntimeError as e:
                 self.set_error(True, str(e))
                 continue_cycle = False
-                if jube2.conf.EXIT_ON_ERROR:
+                if jube.conf.EXIT_ON_ERROR:
                     raise(RuntimeError(str(e)))
                 else:
                     LOGGER.debug(

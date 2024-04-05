@@ -22,7 +22,7 @@ from __future__ import (print_function,
                         division)
 
 
-import jube2.main
+import jube.main
 
 
 # This is formatted once.
@@ -71,11 +71,11 @@ complete -o bashdefault -o default -F _{command_name} {command_name}
 def complete_function_bash(args):
     """Print completion function for bash."""
 
-    subparser = jube2.main.gen_subparser_conf()
+    subparser = jube.main.gen_subparser_conf()
     all_sub_names = " ".join(sorted(subparser))
 
     parser = sorted([opt
-                     for opts, kwargs in jube2.main.gen_parser_conf()
+                     for opts, kwargs in jube.main.gen_parser_conf()
                      for opt in opts if opt.startswith("--")])
 
     command_name = args.command_name[0]

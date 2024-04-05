@@ -21,10 +21,10 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2.parameter
+import jube.parameter
 import xml.etree.ElementTree as ET
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Patternset(object):
@@ -33,8 +33,8 @@ class Patternset(object):
 
     def __init__(self, name=""):
         self._name = name
-        self._pattern = jube2.parameter.Parameterset("pattern")
-        self._derived_pattern = jube2.parameter.Parameterset("derived_pattern")
+        self._pattern = jube.parameter.Parameterset("pattern")
+        self._derived_pattern = jube.parameter.Parameterset("derived_pattern")
 
     def add_pattern(self, pattern):
         """Add a additional pattern to the patternset. Existing pattern using
@@ -162,7 +162,7 @@ class Patternset(object):
             return None
 
 
-class Pattern(jube2.parameter.StaticParameter):
+class Pattern(jube.parameter.StaticParameter):
 
     """A pattern can be used to scan a result file, using regular expression,
     or to represent a derived pattern."""
@@ -183,7 +183,7 @@ class Pattern(jube2.parameter.StaticParameter):
 
         self._unit = unit
 
-        jube2.parameter.StaticParameter.__init__(
+        jube.parameter.StaticParameter.__init__(
             self, name, value, parameter_type=content_type,
             parameter_mode=pattern_mode, unit=self._unit)
 
@@ -228,12 +228,12 @@ class Pattern(jube2.parameter.StaticParameter):
             # will be thrown. Only using the final_sub setup is too late
             # because the default pattern might be used within another derived
             # pattern
-            if (self._mode in jube2.conf.ALLOWED_SCRIPTTYPES and
+            if (self._mode in jube.conf.ALLOWED_SCRIPTTYPES and
                     force_evaluation and self._default is not None):
                 final_sub = True
                 force_evaluation = False
             param, changed = \
-                jube2.parameter.StaticParameter.substitute_and_evaluate(
+                jube.parameter.StaticParameter.substitute_and_evaluate(
                     self, parametersets, final_sub, no_templates,
                     force_evaluation)
         except RuntimeError as re:

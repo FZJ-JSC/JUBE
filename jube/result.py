@@ -21,12 +21,12 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2.util.util
+import jube.util.util
 import xml.etree.ElementTree as ET
 import re
-import jube2.log
+import jube.log
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Result(object):
@@ -178,9 +178,9 @@ class Result(object):
                     parameter_dict = dict()
                     for par in workpackage.parameterset:
                         value = \
-                            jube2.util.util.convert_type(par.name,
-                                                         par.parameter_type,
-                                                         par.value, stop=False)
+                            jube.util.util.convert_type(par.name,
+                                                        par.parameter_type,
+                                                        par.value, stop=False)
                         # add suffix to the parameter name
                         if (par.name + "_" + workpackage.step.name
                                 not in parameter_dict):
@@ -198,9 +198,9 @@ class Result(object):
 
                 # If res_filter is set, only show matching result lines
                 if self._res_filter is not None:
-                    res_filter = jube2.util.util.substitution(
+                    res_filter = jube.util.util.substitution(
                         self._res_filter, analyse_dict)
-                    if not jube2.util.util.eval_bool(res_filter):
+                    if not jube.util.util.eval_bool(res_filter):
                         continue
 
                 yield analyse_dict

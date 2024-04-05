@@ -24,13 +24,13 @@ from __future__ import (print_function,
 import os
 import shutil
 import xml.etree.ElementTree as ET
-import jube2.util.util
-import jube2.conf
-import jube2.step
-import jube2.log
+import jube.util.util
+import jube.conf
+import jube.step
+import jube.log
 import glob
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Fileset(list):
@@ -114,22 +114,22 @@ class File(object):
                file_path_ref="", environment=None):
         """Create file access"""
         # Check active status
-        active = jube2.util.util.eval_bool(jube2.util.util.substitution(
+        active = jube.util.util.eval_bool(jube.util.util.substitution(
             self._active, parameter_dict))
         if not active:
             return
-        pathname = jube2.util.util.substitution(self._path, parameter_dict)
+        pathname = jube.util.util.substitution(self._path, parameter_dict)
         pathname = os.path.expanduser(pathname)
-        source_dir = jube2.util.util.substitution(self._source_dir,
+        source_dir = jube.util.util.substitution(self._source_dir,
                                                   parameter_dict)
         source_dir = os.path.expanduser(source_dir)
-        target_dir = jube2.util.util.substitution(self._target_dir,
+        target_dir = jube.util.util.substitution(self._target_dir,
                                                   parameter_dict)
         target_dir = os.path.expanduser(target_dir)
         if environment is not None:
-            pathname = jube2.util.util.substitution(pathname, environment)
-            source_dir = jube2.util.util.substitution(source_dir, environment)
-            target_dir = jube2.util.util.substitution(target_dir, environment)
+            pathname = jube.util.util.substitution(pathname, environment)
+            source_dir = jube.util.util.substitution(source_dir, environment)
+            target_dir = jube.util.util.substitution(target_dir, environment)
         else:
             pathname = os.path.expandvars(pathname)
             source_dir = os.path.expandvars(source_dir)
@@ -147,10 +147,10 @@ class File(object):
         if self._name is None:
             name = os.path.basename(pathname)
         else:
-            name = jube2.util.util.substitution(self._name, parameter_dict)
+            name = jube.util.util.substitution(self._name, parameter_dict)
             name = os.path.expanduser(name)
             if environment is not None:
-                name = jube2.util.util.substitution(name, environment)
+                name = jube.util.util.substitution(name, environment)
             else:
                 name = os.path.expandvars(name)
 
@@ -158,7 +158,7 @@ class File(object):
             work_dir = alt_work_dir
         # Shell expansion
         pathes = glob.glob(pathname)
-        if (len(pathes) == 0) and (not jube2.conf.DEBUG_MODE):
+        if (len(pathes) == 0) and (not jube.conf.DEBUG_MODE):
             raise RuntimeError("no files found using \"{0}\""
                                .format(pathname))
         for path in pathes:
@@ -176,7 +176,7 @@ class File(object):
             # Create target_dir if needed
             if (len(os.path.dirname(new_file_path)) > 0 and
                     not os.path.exists(os.path.dirname(new_file_path)) and
-                    not jube2.conf.DEBUG_MODE):
+                    not jube.conf.DEBUG_MODE):
                 os.makedirs(os.path.dirname(new_file_path))
 
             self.create_action(path, name, new_file_path)
@@ -225,7 +225,7 @@ class Link(File):
         else:
             target_path = os.path.relpath(path, os.path.dirname(new_file_path))
         LOGGER.debug("  link \"{0}\" <- \"{1}\"".format(target_path, name))
-        if not jube2.conf.DEBUG_MODE and not os.path.exists(new_file_path):
+        if not jube.conf.DEBUG_MODE and not os.path.exists(new_file_path):
             os.symlink(target_path, new_file_path)
 
     def etree_repr(self):
@@ -256,7 +256,7 @@ class Copy(File):
     def create_action(self, path, name, new_file_path):
         """Copy file/directory to work_dir"""
         LOGGER.debug("  copy \"{0}\" -> \"{1}\"".format(path, name))
-        if not jube2.conf.DEBUG_MODE and not os.path.exists(new_file_path):
+        if not jube.conf.DEBUG_MODE and not os.path.exists(new_file_path):
             if os.path.isdir(path):
                 shutil.copytree(path, new_file_path, symlinks=True)
             else:
@@ -281,13 +281,13 @@ class Copy(File):
         return copy_etree
 
 
-class Prepare(jube2.step.Operation):
+class Prepare(jube.step.Operation):
 
     """Prepare the workpackage work directory"""
 
     def __init__(self, cmd, stdout_filename=None, stderr_filename=None,
                  work_dir=None, active="true"):
-        jube2.step.Operation.__init__(self,
+        jube.step.Operation.__init__(self,
                                       do=cmd,
                                       stdout_filename=stdout_filename,
                                       stderr_filename=stderr_filename,
@@ -297,7 +297,7 @@ class Prepare(jube2.step.Operation):
     def execute(self, parameter_dict, work_dir, only_check_pending=False,
                 environment=None):
         """Execute the prepare command"""
-        jube2.step.Operation.execute(
+        jube.step.Operation.execute(
             self, parameter_dict=parameter_dict, work_dir=work_dir,
             only_check_pending=only_check_pending, environment=environment)
 

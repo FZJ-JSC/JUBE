@@ -22,16 +22,16 @@ from __future__ import (print_function,
                         division)
 
 import xml.etree.ElementTree as ET
-import jube2.log
+import jube.log
 import os
 import re
 import glob
 import math
-import jube2.pattern
-import jube2.util.util
-import jube2.util.output
+import jube.pattern
+import jube.util.util
+import jube.util.output
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Analyser(object):
@@ -78,7 +78,7 @@ class Analyser(object):
             file_etree.text = self._path
             if len(self._use) > 0:
                 file_etree.attrib["use"] = \
-                    jube2.conf.DEFAULT_SEPARATOR.join(self._use)
+                    jube.conf.DEFAULT_SEPARATOR.join(self._use)
             return file_etree
 
     def __init__(self, name, reduce_iteration=True):
@@ -187,13 +187,13 @@ class Analyser(object):
         result = dict()
 
         # Combine all patternsets
-        patternset = jube2.pattern.Patternset()
+        patternset = jube.pattern.Patternset()
         self._combine_and_check_patternsets(patternset, self._use)
 
         # Print debug info
         debugstr = "  available pattern:\n"
         debugstr += \
-            jube2.util.output.text_table(
+            jube.util.output.text_table(
                 [("pattern", "value")] +
                 sorted([(par.name, par.value) for par in
                         patternset.pattern_storage]),
@@ -201,7 +201,7 @@ class Analyser(object):
                 align_right=False)
         debugstr += "\n  available derived pattern:\n"
         debugstr += \
-            jube2.util.output.text_table(
+            jube.util.output.text_table(
                 [("pattern", "value")] +
                 sorted([(par.name, par.value) for par in
                         patternset.derived_pattern_storage]),
@@ -248,7 +248,7 @@ class Analyser(object):
                     for file_obj in self._analyse[stepname]:
                         if step.alt_work_dir is not None:
                             file_path = step.alt_work_dir
-                            file_path = jube2.util.util.substitution(
+                            file_path = jube.util.util.substitution(
                                 file_path, parameter)
                             file_path = \
                                 os.path.expandvars(
@@ -259,7 +259,7 @@ class Analyser(object):
                             file_path = workpackage.work_dir
 
                         filename = \
-                            jube2.util.util.substitution(file_obj.path,
+                            jube.util.util.substitution(file_obj.path,
                                                          parameter)
                         filename = \
                             os.path.expandvars(os.path.expanduser(filename))
@@ -317,14 +317,14 @@ class Analyser(object):
     def _eval_derived_pattern(self, patternset, parameterset, result_dict):
         """Evaluate all derived pattern in patternset using parameterset
         and result_dict"""
-        resultset = jube2.parameter.Parameterset()
+        resultset = jube.parameter.Parameterset()
         for name in result_dict:
             resultset.add_parameter(
-                jube2.parameter.Parameter.create_parameter(
+                jube.parameter.Parameter.create_parameter(
                     name, value=str(result_dict[name])))
 
         # Get jube patternset
-        jube_pattern = jube2.pattern.get_jube_pattern()
+        jube_pattern = jube.pattern.get_jube_pattern()
         # calculate derived pattern
         patternset.derived_pattern_substitution(
             [parameterset, resultset, jube_pattern.pattern_storage])
@@ -332,10 +332,10 @@ class Analyser(object):
         new_result_dict = dict()
         # Convert content type
         for par in patternset.derived_pattern_storage:
-            if par.mode not in jube2.conf.ALLOWED_SCRIPTTYPES:
+            if par.mode not in jube.conf.ALLOWED_SCRIPTTYPES:
                 new_result_dict[par.name] = \
-                    jube2.util.util.convert_type(par.name, par.content_type,
-                                                 par.value, stop=False)
+                    jube.util.util.convert_type(par.name, par.content_type,
+                                                par.value, stop=False)
         return new_result_dict
 
     def _analyse_file(self, file_path, patternset, global_patternset,
@@ -372,7 +372,7 @@ class Analyser(object):
                                     ",".join(incompatible_names), self._name))
 
         # Get jube patternset
-        jube_pattern = jube2.pattern.get_jube_pattern()
+        jube_pattern = jube.pattern.get_jube_pattern()
 
         # Do pattern substitution
         local_patternset.pattern_substitution(
@@ -485,7 +485,7 @@ class Analyser(object):
 
         info_str = "      file \"{0}\" scanned pattern found:\n".format(
             os.path.basename(file_path))
-        info_str += jube2.util.output.text_table(
+        info_str += jube.util.output.text_table(
             [(_name, ", ".join(["{0}:{1}".format(key, con)
                                 for key, con in value.items()]))
              for _name, value in match_dict.items()],

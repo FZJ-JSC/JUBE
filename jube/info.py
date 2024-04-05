@@ -21,10 +21,10 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2.util.util
-import jube2.util.output
-import jube2.conf
-import jube2.jubeio
+import jube.util.util
+import jube.util.output
+import jube.conf
+import jube.jubeio
 import os
 import time
 import textwrap
@@ -42,18 +42,18 @@ def print_benchmarks_info(path):
     for dir_name in dir_list:
         dir_path = os.path.join(path, dir_name)
         configuration_file = \
-            os.path.join(dir_path, jube2.conf.CONFIGURATION_FILENAME)
+            os.path.join(dir_path, jube.conf.CONFIGURATION_FILENAME)
         if os.path.isdir(dir_path) and os.path.exists(configuration_file):
             try:
                 id_number = int(dir_name)
-                parser = jube2.jubeio.Parser(configuration_file)
+                parser = jube.jubeio.Parser(configuration_file)
                 name_str, comment_str, tags = parser.benchmark_info_from_xml()
-                tags_str = jube2.conf.DEFAULT_SEPARATOR.join(tags)
+                tags_str = jube.conf.DEFAULT_SEPARATOR.join(tags)
 
                 # Read timestamps from timestamps file
                 timestamps = \
-                    jube2.util.util.read_timestamps(
-                        os.path.join(dir_path, jube2.conf.TIMESTAMPS_INFO))
+                    jube.util.util.read_timestamps(
+                        os.path.join(dir_path, jube.conf.TIMESTAMPS_INFO))
                 if "start" in timestamps:
                     time_start = timestamps["start"]
                 else:
@@ -80,9 +80,9 @@ def print_benchmarks_info(path):
     benchmark_info = [("id", "name", "started", "last change",
                        "comment", "tags")] + benchmark_info
     if len(benchmark_info) > 1:
-        infostr = (jube2.util.output.text_boxed("Benchmarks found in \"{0}\":".
+        infostr = (jube.util.output.text_boxed("Benchmarks found in \"{0}\":".
                                                 format(path)) + "\n" +
-                   jube2.util.output.text_table(benchmark_info,
+                   jube.util.output.text_table(benchmark_info,
                                                 use_header_line=True))
         print(infostr)
     else:
@@ -92,10 +92,10 @@ def print_benchmarks_info(path):
 def print_benchmark_info(benchmark):
     """Print information concerning a single benchmark"""
     infostr = \
-        jube2.util.output.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
+        jube.util.output.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
                                      .format(benchmark.name,
                                              benchmark.id,
-                                             jube2.conf.DEFAULT_SEPARATOR.join(
+                                             jube.conf.DEFAULT_SEPARATOR.join(
                                                  benchmark.tags),
                                              benchmark.comment))
     print(infostr)
@@ -105,8 +105,8 @@ def print_benchmark_info(benchmark):
           .format(os.path.abspath(benchmark.bench_dir)))
 
     # Read timestamps from timestamps file
-    timestamps = jube2.util.util.read_timestamps(
-        os.path.join(benchmark.bench_dir, jube2.conf.TIMESTAMPS_INFO))
+    timestamps = jube.util.util.read_timestamps(
+        os.path.join(benchmark.bench_dir, jube.conf.TIMESTAMPS_INFO))
 
     if "start" in timestamps:
         time_start = timestamps["start"]
@@ -115,7 +115,7 @@ def print_benchmark_info(benchmark):
         time_start = time.strftime(
             "%Y-%m-%d %H:%M:%S",
             time.localtime(os.path.getctime(os.path.join(
-                benchmark.bench_dir, jube2.conf.CONFIGURATION_FILENAME))))
+                benchmark.bench_dir, jube.conf.CONFIGURATION_FILENAME))))
     if "change" in timestamps:
         time_change = timestamps["change"]
     else:
@@ -125,11 +125,11 @@ def print_benchmark_info(benchmark):
 
     print("\n    Started: {0}".format(time_start))
     print("Last change: {0}".format(time_change))
-    print(jube2.util.output.text_line("="))
+    print(jube.util.output.text_line("="))
 
     # Create parameter overview
     if benchmark.parametersets:
-        print(jube2.util.output.text_line("="))
+        print(jube.util.output.text_line("="))
         print("\nParametersets info:")
         for parameterset_name, parameterset in benchmark.parametersets.items():
             print("\n   Parameterset name: " + parameterset_name)
@@ -142,13 +142,13 @@ def print_benchmark_info(benchmark):
                                     parameter.update_mode, parameter.duplicate,
                                     parameter.value))
             print("   Parameter:")
-            print("\n" + jube2.util.output.text_table(parameter_info, use_header_line=True,
+            print("\n" + jube.util.output.text_table(parameter_info, use_header_line=True,
                                                     indent=2))
 
 
     # Create substitute overview
     if benchmark.substitutesets:
-        print(jube2.util.output.text_line("="))
+        print(jube.util.output.text_line("="))
         print("\nSubstitutesets info:")
         for substituteset_name, substituteset in benchmark.substitutesets.items():
             print("\n   Substituteset name: " + substituteset_name)
@@ -156,19 +156,19 @@ def print_benchmark_info(benchmark):
             for file in substituteset.files:
                 file_info.append((file[1], file[0], file[2]))
             print("   IOFiles:")
-            print("\n" + jube2.util.output.text_table(file_info, use_header_line=True,
+            print("\n" + jube.util.output.text_table(file_info, use_header_line=True,
                                                     indent=2))
             sub_info = [("source", "dest", "mode")]
             for name, sub in substituteset.subs.items():
                 sub_info.append((sub.source, sub.dest, sub.mode))
             print("   Subs:")
-            print("\n" + jube2.util.output.text_table(sub_info, use_header_line=True,
+            print("\n" + jube.util.output.text_table(sub_info, use_header_line=True,
                                                     indent=2))
 
 
     # Create file overview
     if benchmark.filesets:
-        print(jube2.util.output.text_line("="))
+        print(jube.util.output.text_line("="))
         print("\nFilesets info:")
         for fileset_name, fileset in benchmark.filesets.items():
             print("\n   Fileset name: " + fileset_name)
@@ -180,12 +180,12 @@ def print_benchmark_info(benchmark):
                 file_info.append((file.file_type, name, file.path, file.source_dir,
                                   file.target_dir, rel_path_ref, str(file.active)))
             print("   Files:")
-            print("\n" + jube2.util.output.text_table(file_info, use_header_line=True,
+            print("\n" + jube.util.output.text_table(file_info, use_header_line=True,
                                                     indent=2))
 
     # Create pattern overview
     if benchmark.patternsets:
-        print(jube2.util.output.text_line("="))
+        print(jube.util.output.text_line("="))
         print("\nPatternsets info:")
         for patternset_name, patternset in benchmark.patternsets.items():
             print("\n   Patternset name: " + patternset_name)
@@ -199,13 +199,13 @@ def print_benchmark_info(benchmark):
                 pattern_info.append((pattern.name, pattern.value, default, pattern.unit,
                                      pattern.mode, pattern.parameter_type, str(pattern.dotall)))
             print("   Pattern:")
-            print("\n" + jube2.util.output.text_table(pattern_info, use_header_line=True,
+            print("\n" + jube.util.output.text_table(pattern_info, use_header_line=True,
                                                     indent=2))
 
     # Create step overview
     if benchmark.steps:
         status_info = [("step_name", "#work", "#error", "#done", "last finished")]
-        print(jube2.util.output.text_line("="))
+        print(jube.util.output.text_line("="))
         print("\nSteps info:")
         for step_name, workpackages in benchmark.workpackages.items():
             print("\n   Step name: " + step_name)
@@ -226,7 +226,7 @@ def print_benchmark_info(benchmark):
             if used_substitutesets:
                 print("   Used Substitutesets: " + ", ".join(used_substitutesets))
             # Get attributes and print out
-            depends = jube2.conf.DEFAULT_SEPARATOR.join(step.depend)
+            depends = jube.conf.DEFAULT_SEPARATOR.join(step.depend)
             iterations = step.iterations
             work_dir = step.work_dir if step.work_dir else ""
             shared = step.shared_link_name if step.shared_link_name else ""
@@ -236,7 +236,7 @@ def print_benchmark_info(benchmark):
                             str(step.cycles), str(step.procs), do_log_file))
 
             print(
-                "\n" + jube2.util.output.text_table(step_info, use_header_line=True,
+                "\n" + jube.util.output.text_table(step_info, use_header_line=True,
                                                     indent=2))
 
             # Get operation attributes and print out
@@ -254,7 +254,7 @@ def print_benchmark_info(benchmark):
                                     async_file, error, break_file, str(operation.shared),
                                     work_dir))
             print(
-                "\n" + jube2.util.output.text_table(operation_info, use_header_line=True,
+                "\n" + jube.util.output.text_table(operation_info, use_header_line=True,
                                                     indent=2))
 
             # Get status and print out
@@ -268,7 +268,7 @@ def print_benchmark_info(benchmark):
                     # Read timestamp from done_file if it is available otherwise
                     # use mtime
                     done_file = os.path.join(workpackage.workpackage_dir,
-                                            jube2.conf.WORKPACKAGE_DONE_FILENAME)
+                                            jube.conf.WORKPACKAGE_DONE_FILENAME)
                     done_file_f = open(done_file, "r")
                     done_str = done_file_f.read().strip()
                     done_file_f.close()
@@ -298,7 +298,7 @@ def print_benchmark_info(benchmark):
 
     # Create analyse overview
     if benchmark.analyser:
-        print(jube2.util.output.text_line("="))
+        print(jube.util.output.text_line("="))
         print("\nAnalyser info:")
         for analyser_name, analyser in benchmark.analyser.items():
             print("\n   Analyser name: " + analyser_name)
@@ -309,12 +309,12 @@ def print_benchmark_info(benchmark):
                 analyse_info = [("path", "use")]
                 for file in analyse:
                     analyse_info.append((file.path, ", ".join(file.use)))
-                print("\n" + jube2.util.output.text_table(analyse_info, use_header_line=True,
+                print("\n" + jube.util.output.text_table(analyse_info, use_header_line=True,
                                                         indent=3))
 
     # Create Result overview
     if benchmark.results:
-        print(jube2.util.output.text_line("="))
+        print(jube.util.output.text_line("="))
         print("\nResult info:")
         for result_name, result in benchmark.results.items():
             print("\n   Result name: " + result_name)
@@ -327,7 +327,7 @@ def print_benchmark_info(benchmark):
                 table_info.append((result.name, result.style, ", ".join(result.sort),
                                 result.separator, str(result.transpose), res_filter))
                 print("   Table Info:")
-                print("\n" + jube2.util.output.text_table(table_info, use_header_line=True,
+                print("\n" + jube.util.output.text_table(table_info, use_header_line=True,
                                                         indent=3))
                 for column in result._keys:
                     colw = column.colw if column.colw else ""
@@ -335,7 +335,7 @@ def print_benchmark_info(benchmark):
                     title = column.title if column.title else ""
                     column_info.append((column.name, colw, col_format, title))
                 print("   Column Info:")
-                print("\n" + jube2.util.output.text_table(column_info, use_header_line=True,
+                print("\n" + jube.util.output.text_table(column_info, use_header_line=True,
                                                         indent=3))
             elif result_type == "Database":
                 database_info = [("name", "primekeys", "file", "filter")]
@@ -344,13 +344,13 @@ def print_benchmark_info(benchmark):
                 database_info.append((result.name, ", ".join(result.primekeys), result.file, res_filter))
 
                 print("   Database Info:")
-                print("\n" + jube2.util.output.text_table(database_info, use_header_line=True,
+                print("\n" + jube.util.output.text_table(database_info, use_header_line=True,
                                                         indent=3))
                 for key in result._keys:
                     title = key.title if key.title else ""
                     key_info.append((key.name, title))
                 print("   Key Info:")
-                print("\n" + jube2.util.output.text_table(key_info, use_header_line=True,
+                print("\n" + jube.util.output.text_table(key_info, use_header_line=True,
                                                         indent=3))
             elif result_type == "SysloggedResult":
                 syslog_info = [("name", "address", "host", "port", "sort", "format", "filter")]
@@ -362,21 +362,21 @@ def print_benchmark_info(benchmark):
                 syslog_info.append((result.name, address, host, port, ", ".join(result.sort),
                                     result.sys_format, res_filter))
                 print("   Syslog Info:")
-                print("\n" + jube2.util.output.text_table(syslog_info, use_header_line=True,
+                print("\n" + jube.util.output.text_table(syslog_info, use_header_line=True,
                                                         indent=3))
                 for key in result._keys:
                     key_format = key.format if key.format else ""
                     title = key.title if key.title else ""
                     key_info.append((key.name, key_format, title))
                 print("   Key Info:")
-                print("\n" + jube2.util.output.text_table(key_info, use_header_line=True,
+                print("\n" + jube.util.output.text_table(key_info, use_header_line=True,
                                                         indent=3))
 
-    print(jube2.util.output.text_line("="))
-    print(jube2.util.output.text_line("="))
+    print(jube.util.output.text_line("="))
+    print(jube.util.output.text_line("="))
 
     print("\nSteps status:")
-    print("\n" + jube2.util.output.text_table(status_info, use_header_line=True,
+    print("\n" + jube.util.output.text_table(status_info, use_header_line=True,
                                                 indent=1))
 
     if continue_possible:
@@ -384,7 +384,7 @@ def print_benchmark_info(benchmark):
     else:
         print("\n--- Benchmark finished ---\n")
 
-    print(jube2.util.output.text_line())
+    print(jube.util.output.text_line())
 
 
 def print_step_info(benchmark, step_name, parametrization_only=False,
@@ -399,7 +399,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
         parametrization_only = True
 
     if not parametrization_only:
-        print(jube2.util.output.text_boxed(
+        print(jube.util.output.text_boxed(
             "{0} Step: {1}".format(benchmark.name, step_name)))
 
     step = benchmark.steps[step_name]
@@ -434,7 +434,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
         done_str = str(workpackage.done).lower()
         work_dir = workpackage.work_dir
         if step.alt_work_dir is not None:
-            work_dir = jube2.util.util.substitution(step.alt_work_dir,
+            work_dir = jube.util.util.substitution(step.alt_work_dir,
                                                     parameter)
 
         # collect parameterization
@@ -460,7 +460,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
     if not parametrization_only:
         print("Workpackages:")
-        print(jube2.util.output.text_table(wp_info, use_header_line=True,
+        print(jube.util.output.text_table(wp_info, use_header_line=True,
                                            indent=1, auto_linebreak=False))
 
     if (useable_parameter is not None) and (not parametrization_only):
@@ -491,7 +491,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
                 table_data.append(list())
                 for name in table_data[0]:
                     table_data[-1].append(parameter_dict[name])
-        print(jube2.util.output.text_table(
+        print(jube.util.output.text_table(
             table_data, use_header_line=True, indent=1, align_right=True,
             auto_linebreak=False,
             style="csv" if parametrization_only_csv else "pretty",
@@ -511,7 +511,7 @@ def print_step_info(benchmark, step_name, parametrization_only=False,
 
 def print_workpackage_info(benchmark, workpackage):
     """Print information concerning a single workpackage in a specific benchmark"""
-    print(jube2.util.output.text_boxed(
+    print(jube.util.output.text_boxed(
             "{0} Workpackage with ID {1}".format(benchmark.name, workpackage.id)))
     print("Step: {}".format(workpackage.step.name))
     print("")
@@ -598,7 +598,7 @@ def print_benchmark_status(benchmark):
 def print_tag_documentation(dir, benchmark):
     """Print tag documentation concerning a specific input file"""
     infostr = \
-        jube2.util.output.text_boxed("{0} \n\n{1}".format(benchmark.name,
+        jube.util.output.text_boxed("{0} \n\n{1}".format(benchmark.name,
                                                           benchmark.comment))
     print(infostr)
 
@@ -608,18 +608,18 @@ def print_tag_documentation(dir, benchmark):
     for name, doku in benchmark.tag_docu.items():
         tag_docu.append((name, doku))
 
-    print("\n" + jube2.util.output.text_table(tag_docu, use_header_line=True,
+    print("\n" + jube.util.output.text_table(tag_docu, use_header_line=True,
                                               indent=1))
 
-    print(jube2.util.output.text_line())
+    print(jube.util.output.text_line())
 
 def print_benchmark_tag_documentation(benchmark):
     """Print tag documentation concerning a specific benchmark"""
     infostr = \
-        jube2.util.output.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
+        jube.util.output.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
                                      .format(benchmark.name,
                                              benchmark.id,
-                                             jube2.conf.DEFAULT_SEPARATOR.join(
+                                             jube.conf.DEFAULT_SEPARATOR.join(
                                                  benchmark.tags),
                                              benchmark.comment))
     print(infostr)
@@ -631,7 +631,7 @@ def print_benchmark_tag_documentation(benchmark):
     for name, doku in benchmark.tag_docu.items():
         tag_docu.append((name, doku))
 
-    print("\n" + jube2.util.output.text_table(tag_docu, use_header_line=True,
+    print("\n" + jube.util.output.text_table(tag_docu, use_header_line=True,
                                               indent=1))
 
-    print(jube2.util.output.text_line())
+    print(jube.util.output.text_line())

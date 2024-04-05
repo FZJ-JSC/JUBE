@@ -23,15 +23,15 @@ from __future__ import (print_function,
 
 import os
 import re
-import jube2.util.util
-import jube2.util.output
-import jube2.conf
+import jube.util.util
+import jube.util.output
+import jube.conf
 import xml.etree.ElementTree as ET
-import jube2.log
+import jube.log
 import shutil
 import codecs
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Substituteset(object):
@@ -85,8 +85,8 @@ class Substituteset(object):
         if parameter_dict is not None:
             substitute_dict = dict()
             for name, sub in self._substitute_dict.items():
-                new_source = jube2.util.util.substitution(sub.source, parameter_dict)
-                new_dest = jube2.util.util.substitution(sub.dest, parameter_dict)
+                new_source = jube.util.util.substitution(sub.source, parameter_dict)
+                new_dest = jube.util.util.substitution(sub.dest, parameter_dict)
                 substitute_dict[new_source] = Sub(new_source, sub.mode, new_dest)
         else:
             substitute_dict = self._substitute_dict
@@ -97,21 +97,21 @@ class Substituteset(object):
             infile_name = data[1]
             out_mode = data[2]
 
-            infile = jube2.util.util.substitution(infile_name,
+            infile = jube.util.util.substitution(infile_name,
                                                   parameter_dict)
-            outfile = jube2.util.util.substitution(outfile_name,
+            outfile = jube.util.util.substitution(outfile_name,
                                                    parameter_dict)
 
             LOGGER.debug("  substitute {0} -> {1}".format(infile, outfile))
 
             LOGGER.debug("  substitute:\n" +
-                         jube2.util.output.text_table(
+                         jube.util.output.text_table(
                              [("source", "dest")] + [(sub.source, sub.dest)
                                                      for sub in
                                                      substitute_dict.values()],
                              use_header_line=True, indent=9,
                              align_right=False))
-            if not jube2.conf.DEBUG_MODE:
+            if not jube.conf.DEBUG_MODE:
                 infile = os.path.join(work_dir, infile)
                 outfile = os.path.join(work_dir, outfile)
                 # Check not existing files

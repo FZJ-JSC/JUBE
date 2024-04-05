@@ -31,18 +31,18 @@ try:
     import yaml
 except ImportError:
     pass
-import jube2.log
-import jube2.conf
-import jube2.util.output
+import jube.log
+import jube.conf
+import jube.util.output
 import os
 import copy
-import jube2.util.util
+import jube.util.util
 try:
     from StringIO import StringIO as IOStream
 except ImportError:
     from io import BytesIO as IOStream
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class YAML_Converter(object):
@@ -89,7 +89,7 @@ class YAML_Converter(object):
         # It is possible to add new tags by including external files into a
         # selection block therefore the input must be scanned multiple times
         # to gather all available tags
-        while changed and counter < jube2.conf.PREPROCESS_MAX_ITERATION:
+        while changed and counter < jube.conf.PREPROCESS_MAX_ITERATION:
             self._include_path = list(include_path) + \
                 self.__search_for_include_pathes() + \
                 [os.path.dirname(self._path)]
@@ -121,7 +121,7 @@ class YAML_Converter(object):
             xmltree = etree.Element('jube')
             data = yaml.load(file_handle.read(), Loader=yaml.Loader)
             YAML_Converter.create_headtags(data, xmltree, self._include_path)
-            xml = jube2.util.output.element_tree_tostring(
+            xml = jube.util.output.element_tree_tostring(
                 xmltree, encoding="UTF-8")
             self._int_file.write(xml.encode('UTF-8'))
         LOGGER.debug("  YAML Conversion finalized")
@@ -157,7 +157,7 @@ class YAML_Converter(object):
                 for tag in data["selection"]["tag"]:
                     if not tag.startswith("!include "):
                         tags.update(
-                            set(tag.split(jube2.conf.DEFAULT_SEPARATOR)))
+                            set(tag.split(jube.conf.DEFAULT_SEPARATOR)))
         return tags
 
     def __search_for_include_pathes(self):
@@ -180,7 +180,7 @@ class YAML_Converter(object):
         paths = []
         for path in data:
             if type(path) is dict:
-                if "tag" in path and not jube2.util.util.valid_tags(path["tag"], self._tags):
+                if "tag" in path and not jube.util.util.valid_tags(path["tag"], self._tags):
                     continue
                 value = path["path"] if "path" in path else path["_"]
                 if type(value) is not list:

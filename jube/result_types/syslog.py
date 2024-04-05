@@ -21,14 +21,14 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-from jube2.result_types.keyvaluesresult import KeyValuesResult
-from jube2.result import Result
+from jube.result_types.keyvaluesresult import KeyValuesResult
+from jube.result import Result
 import xml.etree.ElementTree as ET
-import jube2.log
-import jube2.conf
+import jube.log
+import jube.conf
 import logging.handlers
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class SysloggedResult(KeyValuesResult):
@@ -84,7 +84,7 @@ class SysloggedResult(KeyValuesResult):
                     entry.append("{0}={1}".format(key.name, dataset[i]))
                 # Log result
                 if show:
-                    if not jube2.conf.DEBUG_MODE:
+                    if not jube.conf.DEBUG_MODE:
                         log.info(" ".join(entry))
                     LOGGER.debug("Logged: {0}\n".format(" ".join(entry)))
 
@@ -108,7 +108,7 @@ class SysloggedResult(KeyValuesResult):
         self._syslog_host = syslog_host
         self._syslog_port = syslog_port
         if syslog_fmt_string is None:
-            self._syslog_fmt_string = jube2.conf.SYSLOG_FMT_STRING
+            self._syslog_fmt_string = jube.conf.SYSLOG_FMT_STRING
         else:
             self._syslog_fmt_string = syslog_fmt_string
 
@@ -156,7 +156,7 @@ class SysloggedResult(KeyValuesResult):
             syslog_etree.attrib["filter"] = self._res_filter
         if len(self._sort_names) > 0:
             syslog_etree.attrib["sort"] = \
-                jube2.conf.DEFAULT_SEPARATOR.join(self._sort_names)
+                jube.conf.DEFAULT_SEPARATOR.join(self._sort_names)
         for key in self._keys:
             syslog_etree.append(key.etree_repr())
         return result_etree

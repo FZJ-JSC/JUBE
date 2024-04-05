@@ -21,13 +21,13 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-from jube2.result_types.keyvaluesresult import KeyValuesResult
-from jube2.result import Result
+from jube.result_types.keyvaluesresult import KeyValuesResult
+from jube.result import Result
 import xml.etree.ElementTree as ET
-import jube2.log
-import jube2.util.output
+import jube.log
+import jube.util.output
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Table(KeyValuesResult):
@@ -52,7 +52,7 @@ class Table(KeyValuesResult):
             if self._style == "pretty":
                 self._separator = None
             elif self._separator is None:
-                self._separator = jube2.conf.DEFAULT_SEPARATOR
+                self._separator = jube.conf.DEFAULT_SEPARATOR
             self._transpose = transpose
 
         @property
@@ -99,7 +99,7 @@ class Table(KeyValuesResult):
             else:
                 output = ""
 
-            output += jube2.util.output.text_table(
+            output += jube.util.output.text_table(
                 data, use_header_line=True, auto_linebreak=False, colw=colw,
                 indent=0, style=self._style,
                 separator=self._separator, transpose=self._transpose)
@@ -152,7 +152,7 @@ class Table(KeyValuesResult):
             return column_etree
 
     def __init__(self, name, style="csv",
-                 separator=jube2.conf.DEFAULT_SEPARATOR,
+                 separator=jube.conf.DEFAULT_SEPARATOR,
                  sort_names=None,
                  transpose=False,
                  res_filter=None):
@@ -204,7 +204,7 @@ class Table(KeyValuesResult):
         table_etree.attrib["transpose"] = str(self._transpose)
         if len(self._sort_names) > 0:
             table_etree.attrib["sort"] = \
-                jube2.conf.DEFAULT_SEPARATOR.join(self._sort_names)
+                jube.conf.DEFAULT_SEPARATOR.join(self._sort_names)
         for column in self._keys:
             table_etree.append(column.etree_repr())
         return result_etree

@@ -25,13 +25,13 @@ import itertools
 import os
 import xml.etree.ElementTree as ET
 import copy
-import jube2.util.util
-import jube2.conf
-import jube2.log
+import jube.util.util
+import jube.conf
+import jube.log
 import re
 import inspect
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 JUBE_MODE = "jube"
 NEVER_MODE = "never"
@@ -115,9 +115,9 @@ class Parameterset(object):
             if self._parameters[parameter.name]._value == parameter._value:
                 return parameter
             else:
-                value=list(set(jube2.util.util.ensure_list(self._parameters[parameter.name]._value)+jube2.util.util.ensure_list(parameter._value)))
+                value=list(set(jube.util.util.ensure_list(self._parameters[parameter.name]._value)+jube.util.util.ensure_list(parameter._value)))
                 value.sort()
-                return jube2.parameter.TemplateParameter(
+                return jube.parameter.TemplateParameter(
                             parameter._name, value, parameter._separator, parameter._type,
                             parameter._mode, parameter._unit, parameter._export,
                             parameter._update_mode, parameter._idx,
@@ -204,8 +204,8 @@ class Parameterset(object):
                      for parameter in self._parameters.values()
                      if (not parameter.is_template) and
                         (parameter.mode not in
-                         jube2.conf.ALLOWED_SCRIPTTYPES.union(
-                             jube2.conf.ALLOWED_ADVANCED_MODETYPES))])
+                         jube.conf.ALLOWED_SCRIPTTYPES.union(
+                             jube.conf.ALLOWED_ADVANCED_MODETYPES))])
 
     @property
     def template_parameter_dict(self):
@@ -341,7 +341,7 @@ class Parameterset(object):
         set_changed = True
         count = 0
         while set_changed and (not self.has_templates) and \
-                (count < jube2.conf.MAX_RECURSIVE_SUB):
+                (count < jube.conf.MAX_RECURSIVE_SUB):
             set_changed = False
             count += 1
 
@@ -357,7 +357,7 @@ class Parameterset(object):
 
             # Resolve dependencies
             substitution_list = [self._parameters[name] for name in
-                                 jube2.util.util.resolve_depend(depend_dict)]
+                                 jube.util.util.resolve_depend(depend_dict)]
 
             # Do substition and evaluation if possible
             set_changed = self.__substitute_parameters_in_list(
@@ -420,7 +420,7 @@ class Parameter(object):
         self._name = name
         self._value = value
         if separator is None:
-            self._separator = jube2.conf.DEFAULT_SEPARATOR
+            self._separator = jube.conf.DEFAULT_SEPARATOR
         else:
             self._separator = separator
         self._type = parameter_type
@@ -445,7 +445,7 @@ class Parameter(object):
         """Parameter constructor.
         Return a Static- or TemplateParameter based on the given data."""
         if separator is None:
-            sep = jube2.conf.DEFAULT_SEPARATOR
+            sep = jube.conf.DEFAULT_SEPARATOR
         else:
             sep = separator
 
@@ -457,11 +457,11 @@ class Parameter(object):
             values = [value]
         else:
             values = [val.strip() for val in
-                      jube2.util.util.safe_split(value, sep)]
+                      jube.util.util.safe_split(value, sep)]
 
         if len(values) == 1 or \
-           (parameter_mode in jube2.conf.ALLOWED_SCRIPTTYPES.union(
-               jube2.conf.ALLOWED_ADVANCED_MODETYPES)):
+           (parameter_mode in jube.conf.ALLOWED_SCRIPTTYPES.union(
+               jube.conf.ALLOWED_ADVANCED_MODETYPES)):
             if fixed:
                 result = FixedParameter(name, value, separator, parameter_type,
                                         parameter_mode, unit, export, update_mode,
@@ -709,8 +709,8 @@ class StaticParameter(Parameter):
         return all([(param_name not in parameterset) or
                     ((not parameterset[param_name].is_template) and
                      (not parameterset[param_name].mode in
-                      jube2.conf.ALLOWED_SCRIPTTYPES.union(
-                          jube2.conf.ALLOWED_ADVANCED_MODETYPES)))
+                      jube.conf.ALLOWED_SCRIPTTYPES.union(
+                          jube.conf.ALLOWED_ADVANCED_MODETYPES)))
                     for param_name in self._depending_parameter])
 
     def depends_on(self, parameter):
@@ -729,7 +729,7 @@ class StaticParameter(Parameter):
         """
         value = self._value
         if not final_sub and "$" in value:
-            value = jube2.util.util.expand_dollar_count(value)
+            value = jube.util.util.expand_dollar_count(value)
         parameter_dict = dict()
         if parametersets is not None:
             for parameterset in parametersets:
@@ -740,7 +740,7 @@ class StaticParameter(Parameter):
                         parameter_dict[name] = re.sub(r"\$", "$$", param.value)
                     else:
                         parameter_dict[name] = param.value
-        value = jube2.util.util.substitution(value, parameter_dict)
+        value = jube.util.util.substitution(value, parameter_dict)
         # Run parameter evaluation, if value is fully expanded and
         # Parameter is a script
         mode = self._mode
@@ -756,17 +756,17 @@ class StaticParameter(Parameter):
                 force_evaluation or final_sub) and \
                 (not any(parname.startswith("jube_wp_")
                          for parname in self._depending_parameter)) and \
-                ((self._mode in jube2.conf.ALLOWED_SCRIPTTYPES.union(
-                    jube2.conf.ALLOWED_ADVANCED_MODETYPES))):
+                ((self._mode in jube.conf.ALLOWED_SCRIPTTYPES.union(
+                    jube.conf.ALLOWED_ADVANCED_MODETYPES))):
             try:
                 # Run additional substitution to remove $$ before running
                 # script evaluation to allow usage of environment variables
                 if not final_sub:
-                    value = jube2.util.util.substitution(value, parameter_dict)
+                    value = jube.util.util.substitution(value, parameter_dict)
                 # Run script evaluation
                 LOGGER.debug("Evaluate parameter: {0}".format(self._name))
-                if self._mode in jube2.conf.ALLOWED_SCRIPTTYPES:
-                    value = jube2.util.util.script_evaluation(
+                if self._mode in jube.conf.ALLOWED_SCRIPTTYPES:
+                    value = jube.util.util.script_evaluation(
                         value, self._mode)
                 if self._mode == "env":
                     try:

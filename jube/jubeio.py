@@ -23,30 +23,30 @@ from __future__ import (print_function,
 
 import xml.etree.ElementTree as ET
 import os
-from jube2.util.util import Queue
-import jube2.benchmark
-import jube2.substitute
-import jube2.parameter
-import jube2.fileset
-import jube2.pattern
-import jube2.workpackage
-import jube2.analyser
-import jube2.step
-import jube2.util.util
-import jube2.util.output
-import jube2.conf
-import jube2.result_types.syslog
-import jube2.result_types.table
-import jube2.result_types.database
-import jube2.util.yaml_converter
+from jube.util.util import Queue
+import jube.benchmark
+import jube.substitute
+import jube.parameter
+import jube.fileset
+import jube.pattern
+import jube.workpackage
+import jube.analyser
+import jube.step
+import jube.util.util
+import jube.util.output
+import jube.conf
+import jube.result_types.syslog
+import jube.result_types.table
+import jube.result_types.database
+import jube.util.yaml_converter
 import sys
 import re
 import copy
 import hashlib
-import jube2.log
-from jube2.util.version import StrictVersion
+import jube.log
+from jube.util.version import StrictVersion
 
-LOGGER = jube2.log.get_logger(__name__)
+LOGGER = jube.log.get_logger(__name__)
 
 
 class Parser(object):
@@ -100,7 +100,7 @@ class Parser(object):
         # be broken if there is a special char inside the input file.
         # In such cases the encode will stop, using an UnicodeEncodeError
         try:
-            xml = jube2.util.output.element_tree_tostring(tree.getroot(),
+            xml = jube.util.output.element_tree_tostring(tree.getroot(),
                                                           encoding="UTF-8")
             xml.encode(sys.getfilesystemencoding())
         except UnicodeEncodeError as uee:
@@ -111,7 +111,7 @@ class Parser(object):
         version = tree.getroot().get("version")
         if (version is not None) and (not self._force):
             version = version.strip()
-            if StrictVersion(version) > StrictVersion(jube2.conf.JUBE_VERSION):
+            if StrictVersion(version) > StrictVersion(jube.conf.JUBE_VERSION):
                 if self._strict:
                     error_str = ("Benchmark file \"{0}\" was created using " +
                                  "a newer version of JUBE ({1}).\nCurrent " +
@@ -119,7 +119,7 @@ class Parser(object):
                                  ". Due to strict mode, further execution " +
                                  "was stopped.").format(
                                      self._filename, version,
-                                     jube2.conf.JUBE_VERSION)
+                                     jube.conf.JUBE_VERSION)
                     raise ValueError(error_str)
                 else:
                     info_str = ("Benchmark file \"{0}\" was created using a " +
@@ -127,7 +127,7 @@ class Parser(object):
                                 "version ({2}) might not be compatible." +
                                 "\nContinue? (y/n):").format(
                                     self._filename, version,
-                                    jube2.conf.JUBE_VERSION)
+                                    jube.conf.JUBE_VERSION)
                     try:
                         inp = raw_input(info_str)
                     except NameError:
@@ -146,7 +146,7 @@ class Parser(object):
         # recursive include structures
         changed = True
         counter = 0
-        while changed and counter < jube2.conf.PREPROCESS_MAX_ITERATION:
+        while changed and counter < jube.conf.PREPROCESS_MAX_ITERATION:
             # Reset variables
             only_bench = set()
             not_bench = set()
@@ -157,7 +157,7 @@ class Parser(object):
 
             LOGGER.debug("  Remove invalid tags")
             LOGGER.debug("    Available tags: {0}"
-                         .format(jube2.conf.DEFAULT_SEPARATOR.join(
+                         .format(jube.conf.DEFAULT_SEPARATOR.join(
                              self._tags)))
             Parser._remove_invalid_tags(local_tree.getroot(), self._tags)
 
@@ -171,7 +171,7 @@ class Parser(object):
 
             LOGGER.debug("  Remove invalid tags")
             LOGGER.debug("    Available tags: {0}"
-                         .format(jube2.conf.DEFAULT_SEPARATOR.join(
+                         .format(jube.conf.DEFAULT_SEPARATOR.join(
                              self._tags)))
             # Reset tree, because selection might add additional tags
             local_tree = copy.deepcopy(tree)
@@ -205,7 +205,7 @@ class Parser(object):
         # Rerun removing invalid tags
         LOGGER.debug("  Remove invalid tags")
         LOGGER.debug("    Available tags: {0}"
-                     .format(jube2.conf.DEFAULT_SEPARATOR.join(self._tags)))
+                     .format(jube.conf.DEFAULT_SEPARATOR.join(self._tags)))
         Parser._remove_invalid_tags(tree.getroot(), self._tags)
 
         # Check tags
@@ -213,7 +213,7 @@ class Parser(object):
             Parser._check_tag(element, valid_tags)
 
         # Check for remaing <include> tags
-        node = jube2.util.util.get_tree_element(tree.getroot(),
+        node = jube.util.util.get_tree_element(tree.getroot(),
                                                 tag_path="include")
                                                 
         if node is not None:
@@ -257,7 +257,7 @@ class Parser(object):
     @staticmethod
     def _check_valid_tags(element, tags):
         """Check if element contains only valid tags"""
-        return jube2.util.util.valid_tags(element.get("tag"), tags)
+        return jube.util.util.valid_tags(element.get("tag"), tags)
 
     @staticmethod
     def _remove_invalid_tags(etree, tags):
@@ -315,7 +315,7 @@ class Parser(object):
         LOGGER.debug("  Preprocess benchmark xml tree")
 
         # Search for <use from=""></use> and load external set
-        uses = jube2.util.util.get_tree_elements(benchmark_etree, "use")
+        uses = jube.util.util.get_tree_elements(benchmark_etree, "use")
         files = dict()
         for use in uses:
             from_str = use.get("from", "").strip()
@@ -326,9 +326,9 @@ class Parser(object):
                     files[hash_val] = set()
 
                 set_names = [element.strip() for element
-                             in use.text.split(jube2.conf.DEFAULT_SEPARATOR)]
+                             in use.text.split(jube.conf.DEFAULT_SEPARATOR)]
 
-                for file_str in from_str.split(jube2.conf.DEFAULT_SEPARATOR):
+                for file_str in from_str.split(jube.conf.DEFAULT_SEPARATOR):
                     parts = file_str.strip().split(":")
                     filename = parts[0].strip()
                     if filename == "":
@@ -344,7 +344,7 @@ class Parser(object):
                 new_use_str = ""
                 for name in set_names:
                     if len(new_use_str) > 0:
-                        new_use_str += jube2.conf.DEFAULT_SEPARATOR
+                        new_use_str += jube.conf.DEFAULT_SEPARATOR
                     new_use_str += "jube_{0}_{1}".format(hash_val, name)
                 use.text = new_use_str
 
@@ -377,7 +377,7 @@ class Parser(object):
         file_path = self._find_include_file(filename)
         etree = self._tree_from_file(file_path).getroot()
         Parser._remove_invalid_tags(etree, self._tags)
-        found_set = jube2.util.util.get_tree_elements(
+        found_set = jube.util.util.get_tree_elements(
             etree, attribute_dict={"name": name})
 
         found_set = [set_etree for set_etree in found_set
@@ -398,13 +398,13 @@ class Parser(object):
         found in file"""
         tree = ET.parse(self._filename).getroot()
         tags = set()
-        for tag_etree in jube2.util.util.get_tree_elements(tree,
+        for tag_etree in jube.util.util.get_tree_elements(tree,
                                                            "selection/tag"):
             if tag_etree.text is not None:
                 tags.update(set([tag.strip() for tag in
                                  tag_etree.text.split(
-                                     jube2.conf.DEFAULT_SEPARATOR)]))
-        benchmark_etree = jube2.util.util.get_tree_element(tree, "benchmark")
+                                     jube.conf.DEFAULT_SEPARATOR)]))
+        benchmark_etree = jube.util.util.get_tree_element(tree, "benchmark")
         if benchmark_etree is None:
             raise ValueError("benchmark-tag not found in \"{0}\"".format(
                 self._filename))
@@ -431,8 +431,8 @@ class Parser(object):
                 "{0}".format(pe))
             return None
         analyse_result = dict()
-        analyser = jube2.util.util.get_tree_elements(tree, "analyzer")
-        analyser += jube2.util.util.get_tree_elements(tree, "analyser")
+        analyser = jube.util.util.get_tree_elements(tree, "analyzer")
+        analyser += jube.util.util.get_tree_elements(tree, "analyser")
         for analyser_etree in analyser:
             analyser_name = Parser._attribute_from_element(
                 analyser_etree, "name")
@@ -460,7 +460,7 @@ class Parser(object):
                             value = value.strip()
                         else:
                             value = ""
-                        value = jube2.util.util.convert_type(pattern_name,
+                        value = jube.util.util.convert_type(pattern_name,
                                                              pattern_type,
                                                              value)
                         analyse_result[analyser_name][step_name][
@@ -492,7 +492,7 @@ class Parser(object):
             step = benchmark.steps[step_name]
             parameter_names = [parameter.name for parameter in parameterset]
             tmp[workpackage_id] = \
-                jube2.workpackage.Workpackage(benchmark, step, parameter_names,
+                jube.workpackage.Workpackage(benchmark, step, parameter_names,
                                               parameterset, workpackage_id,
                                               iteration, cycle)
             max_id = max(max_id, workpackage_id)
@@ -506,7 +506,7 @@ class Parser(object):
                 work_list.put(tmp[workpackage_id])
 
         # Set workpackage counter to current id number
-        jube2.workpackage.Workpackage.id_counter = max_id + 1
+        jube.workpackage.Workpackage.id_counter = max_id + 1
 
         # Rebuild graph structure
         for workpackage_id in parents_tmp:
@@ -523,7 +523,7 @@ class Parser(object):
         done_list = list()
         while not work_list.empty():
             workpackage = work_list.get_nowait()
-            history = jube2.parameter.Parameterset()
+            history = jube.parameter.Parameterset()
             if workpackage.id in parents_tmp:
                 for parent_id in parents_tmp[workpackage.id]:
                     history.add_parameterset(tmp[parent_id].parameterset)
@@ -551,14 +551,14 @@ class Parser(object):
             # Enable work_dir caching
             workpackage.allow_workpackage_dir_caching()
             jube_parameter = workpackage.parameterset.get_updatable_parameter(
-                jube2.parameter.JUBE_MODE)
+                jube.parameter.JUBE_MODE)
             jube_parameter.parameter_substitution(
                 additional_parametersets=[workpackage.parameterset],
                 final_sub=True)
             workpackage.parameterset.update_parameterset(jube_parameter)
             # Update step parameter
             update_parameter = workpackage.parameterset.get_updatable_parameter(
-                jube2.parameter.STEP_MODE)
+                jube.parameter.STEP_MODE)
             if len(update_parameter) > 0:
                 fixed_parameterset = workpackage.parameterset.copy()
                 for parameter in update_parameter:
@@ -577,7 +577,7 @@ class Parser(object):
                 workpackage.parameterset.update_parameterset(update_parameter)
 
         # Store workpackage data
-        work_stat = jube2.util.util.WorkStat()
+        work_stat = jube.util.util.WorkStat()
         for step_name in benchmark.steps:
             workpackages[step_name] = list()
         # First put started wps inside the queue
@@ -615,7 +615,7 @@ class Parser(object):
             parameters = Parser._extract_parameters(parameterset_etree)
         else:
             parameters = list()
-        parameterset = jube2.parameter.Parameterset()
+        parameterset = jube.parameter.Parameterset()
         for parameter in parameters:
             parameterset.add_parameter(parameter)
         parents_etree = workpackage_etree.find("parents")
@@ -665,7 +665,7 @@ class Parser(object):
         tags = set()
         for element in selection_etree:
             Parser._check_tag(element, valid_tags)
-            separator = jube2.conf.DEFAULT_SEPARATOR
+            separator = jube.conf.DEFAULT_SEPARATOR
             if element.text is not None:
                 if element.tag == "only":
                     only_bench += element.text.split(separator)
@@ -726,7 +726,7 @@ class Parser(object):
                 check_tags += " + "
 
         if check_tags != "":
-            if not jube2.util.util.valid_tags(check_tags, self._tags):
+            if not jube.util.util.valid_tags(check_tags, self._tags):
                 raise ValueError("The following tag combination is required: "
                                  "{0}".format(check_tags.replace('|', ' or ')\
                                  .replace('+', ' and ').replace('!', ' not ')\
@@ -858,7 +858,7 @@ class Parser(object):
         file_path_ref = \
             os.path.normpath(os.path.join(self.file_path_ref, file_path_ref))
 
-        benchmark = jube2.benchmark.Benchmark(name, outpath,
+        benchmark = jube.benchmark.Benchmark(name, outpath,
                                               parametersets, substitutesets,
                                               filesets, patternsets, steps,
                                               analyser, results, results_order,
@@ -918,8 +918,8 @@ class Parser(object):
         do_log_file = None if do_log_file == "None" else do_log_file
         do_log_file = None if do_log_file == "False" else do_log_file
         do_log_file = None if do_log_file == "false" else do_log_file
-        do_log_file = jube2.conf.DO_LOG_FILENAME if do_log_file == "True" else do_log_file
-        do_log_file = jube2.conf.DO_LOG_FILENAME if do_log_file == "true" else do_log_file
+        do_log_file = jube.conf.DO_LOG_FILENAME if do_log_file == "True" else do_log_file
+        do_log_file = jube.conf.DO_LOG_FILENAME if do_log_file == "true" else do_log_file
         shared_name = etree_step.get("shared")
         if shared_name is not None:
             shared_name = shared_name.strip()
@@ -927,9 +927,9 @@ class Parser(object):
                 raise ValueError("Empty \"shared\" attribute in " +
                                  "<step> found.")
         depend = set(val.strip() for val in
-                     tmp.split(jube2.conf.DEFAULT_SEPARATOR) if val.strip())
+                     tmp.split(jube.conf.DEFAULT_SEPARATOR) if val.strip())
 
-        step = jube2.step.Step(name, depend, iterations, alt_work_dir,
+        step = jube.step.Step(name, depend, iterations, alt_work_dir,
                                shared_name, export, max_wps, active, suffix,
                                cycles, procs, do_log_file)
         for element in etree_step:
@@ -973,7 +973,7 @@ class Parser(object):
                 cmd = element.text
                 if cmd is None:
                     cmd = ""
-                operation = jube2.step.Operation(cmd.strip(),
+                operation = jube.step.Operation(cmd.strip(),
                                                  async_filename,
                                                  stdout_filename,
                                                  stderr_filename,
@@ -1008,7 +1008,7 @@ class Parser(object):
                                               "name").strip()
         reduce_iteration = \
             etree_analyser.get("reduce", "true").strip().lower() == "true"
-        analyser = jube2.analyser.Analyser(name, reduce_iteration)
+        analyser = jube.analyser.Analyser(name, reduce_iteration)
         LOGGER.debug("  Parsing <analyser name=\"{0}\">".format(name))
         for element in etree_analyser:
             Parser._check_tag(element, valid_tags)
@@ -1027,12 +1027,12 @@ class Parser(object):
                         if use_text is not None:
                             use_names = \
                                 [use_name.strip() for use_name in
-                                 use_text.split(jube2.conf.DEFAULT_SEPARATOR)]
+                                 use_text.split(jube.conf.DEFAULT_SEPARATOR)]
                         else:
                             use_names = list()
                         for filename in file_etree.text.split(
-                                jube2.conf.DEFAULT_SEPARATOR):
-                            file_obj = jube2.analyser.Analyser.AnalyseFile(
+                                jube.conf.DEFAULT_SEPARATOR):
+                            file_obj = jube.analyser.Analyser.AnalyseFile(
                                 filename.strip())
                             file_obj.add_uses(use_names)
                             analyser.add_analyse(step_name, file_obj)
@@ -1092,13 +1092,13 @@ class Parser(object):
         """Extract a table from etree"""
         name = Parser._attribute_from_element(etree_table, "name").strip()
         separator = \
-            etree_table.get("separator", jube2.conf.DEFAULT_SEPARATOR)
+            etree_table.get("separator", jube.conf.DEFAULT_SEPARATOR)
         style = etree_table.get("style", "csv").strip()
         if style not in ["csv", "pretty", "aligned"]:
             raise ValueError("Not allowed style-type \"{0}\" "
                              "in <table name=\"{1}\">".format(style, name))
         sort_names = etree_table.get("sort", "").split(
-            jube2.conf.DEFAULT_SEPARATOR)
+            jube.conf.DEFAULT_SEPARATOR)
         sort_names = [sort_name.strip() for sort_name in sort_names]
         sort_names = [
             sort_name for sort_name in sort_names if len(sort_name) > 0]
@@ -1110,7 +1110,7 @@ class Parser(object):
         res_filter = etree_table.get("filter")
         if res_filter is not None:
             res_filter = res_filter.strip()
-        table = jube2.result_types.table.Table(name, style, separator,
+        table = jube.result_types.table.Table(name, style, separator,
                                                sort_names, transpose,
                                                res_filter)
         for element in etree_table:
@@ -1140,11 +1140,11 @@ class Parser(object):
             res_filter = res_filter.strip()
         primekeys = etree_database.get("primekeys", "")
         primekeys = primekeys.replace('[', '').replace(']', '').replace(
-            "'", '').split(jube2.conf.DEFAULT_SEPARATOR)
+            "'", '').split(jube.conf.DEFAULT_SEPARATOR)
         primekeys = [primekey.strip() for primekey in primekeys]
         primekeys = [primekey for primekey in primekeys if len(primekey) > 0]
         db_file = etree_database.get("file")
-        database = jube2.result_types.database.Database(
+        database = jube.result_types.database.Database(
             name, res_filter, primekeys, db_file)
         for element in etree_database:
             Parser._check_tag(element, ["key"])
@@ -1185,14 +1185,14 @@ class Parser(object):
         if syslog_fmt_string is not None:
             syslog_fmt_string = syslog_fmt_string.strip()
         sort_names = etree_syslog.get("sort", "").split(
-            jube2.conf.DEFAULT_SEPARATOR)
+            jube.conf.DEFAULT_SEPARATOR)
         sort_names = [sort_name.strip() for sort_name in sort_names]
         sort_names = [
             sort_name for sort_name in sort_names if len(sort_name) > 0]
         res_filter = etree_syslog.get("filter")
         if res_filter is not None:
             res_filter = res_filter.strip()
-        syslog_result = jube2.result_types.syslog.SysloggedResult(
+        syslog_result = jube.result_types.syslog.SysloggedResult(
             name, syslog_address, syslog_host, syslog_port, syslog_fmt_string,
             sort_names, res_filter)
 
@@ -1216,7 +1216,7 @@ class Parser(object):
         """Extract a use from etree"""
         if etree_use.text is not None:
             use_names = [use_name.strip() for use_name in
-                         etree_use.text.split(jube2.conf.DEFAULT_SEPARATOR)]
+                         etree_use.text.split(jube.conf.DEFAULT_SEPARATOR)]
             return use_names
         else:
             raise ValueError("Empty <use> found")
@@ -1227,11 +1227,11 @@ class Parser(object):
             if file_path.endswith(".xml"):
                 return ET.parse(file_path)
             elif file_path.endswith(".yml") or file_path.endswith(".yaml") or \
-                jube2.util.yaml_converter.\
+                jube.util.yaml_converter.\
                     YAML_Converter.is_parseable_yaml_file(file_path):
                 include_path = list(self._include_path)
                 include_path += Parser._read_envvar_include_path()
-                file_handle = jube2.util.yaml_converter.YAML_Converter(
+                file_handle = jube.util.yaml_converter.YAML_Converter(
                     file_path, include_path, self._tags)
                 data = file_handle.read()
                 tree = ET.ElementTree(ET.fromstring(data))
@@ -1256,11 +1256,11 @@ class Parser(object):
         result_set = None
 
         # Find element in XML-tree
-        elements = jube2.util.util.get_tree_elements(etree, set_type,
+        elements = jube.util.util.get_tree_elements(etree, set_type,
                                                      {"name": search_name})
         # Element can also be the root element itself
         if etree.tag == set_type:
-            element = jube2.util.util.get_tree_element(
+            element = jube.util.util.get_tree_element(
                 etree, attribute_dict={"name": search_name})
             if element is not None:
                 elements.append(element)
@@ -1312,23 +1312,23 @@ class Parser(object):
 
             if set_type == "parameterset":
                 if result_set is None:
-                    result_set = jube2.parameter.Parameterset(name, duplicate)
+                    result_set = jube.parameter.Parameterset(name, duplicate)
                 for parameter in self._extract_parameters(elements[0]):
                     result_set.add_parameter(parameter)
             elif set_type == "substituteset":
                 files, subs = self._extract_subs(elements[0])
                 if result_set is None:
                     result_set = \
-                        jube2.substitute.Substituteset(name, files, subs)
+                        jube.substitute.Substituteset(name, files, subs)
                 else:
                     result_set.update_files(files)
                     result_set.update_substitute(subs)
             elif set_type == "fileset":
                 if result_set is None:
-                    result_set = jube2.fileset.Fileset(name)
+                    result_set = jube.fileset.Fileset(name)
                     files = self._extract_files(elements[0])
                     for file_obj in files:
-                        if type(file_obj) is not jube2.fileset.Prepare:
+                        if type(file_obj) is not jube.fileset.Prepare:
                             file_obj.file_path_ref = \
                                 os.path.join(os.path.dirname(file_path),
                                              file_obj.file_path_ref)
@@ -1339,7 +1339,7 @@ class Parser(object):
                     result_set += files
             elif set_type == "patternset":
                 if result_set is None:
-                    result_set = jube2.pattern.Patternset(name)
+                    result_set = jube.pattern.Patternset(name)
                 for pattern in self._extract_pattern(elements[0]):
                     result_set.add_pattern(pattern)
             return result_set
@@ -1377,7 +1377,7 @@ class Parser(object):
                                                         "parameterset", name,
                                                         search_name, duplicate)
             else:
-                parameterset = jube2.parameter.Parameterset(name, duplicate)
+                parameterset = jube.parameter.Parameterset(name, duplicate)
             for parameter in self._extract_parameters(element):
                 parameterset.add_parameter(parameter)
             if parameterset.name in parametersets:
@@ -1403,13 +1403,13 @@ class Parser(object):
                                   "contains a disallowed " +
                                   "character").format(name))
             separator = param.get("separator",
-                                  default=jube2.conf.DEFAULT_SEPARATOR)
+                                  default=jube.conf.DEFAULT_SEPARATOR)
             parameter_type = param.get("type", default="string").strip()
             parameter_mode = param.get("mode", default="text").strip()
             parameter_unit = param.get("unit", default="").strip()
             parameter_update_mode = param.get("update_mode",
                                               default="never").strip()
-            if parameter_update_mode not in jube2.parameter.UPDATE_MODES:
+            if parameter_update_mode not in jube.parameter.UPDATE_MODES:
                 raise ValueError(
                     ("update_mode=\"{0}\" in " +
                      "<parameter name=\"{1}\"> does not exist")
@@ -1424,7 +1424,7 @@ class Parser(object):
                 raise ValueError("Invalid \"duplicate\" attribute in " +
                                  "parameter {0} found. Use \"replace\"" +
                                  ", \"concat\", \"error\" or \"none\" (default).".format(name))
-            if parameter_mode not in jube2.conf.ALLOWED_MODETYPES:
+            if parameter_mode not in jube.conf.ALLOWED_MODETYPES:
                 raise ValueError(
                     ("parameter-mode \"{0}\" not allowed in " +
                      "<parameter name=\"{1}\">").format(parameter_mode,
@@ -1452,7 +1452,7 @@ class Parser(object):
             if selected_value is not None:
                 selected_value = selected_value.strip()
             parameter = \
-                jube2.parameter.Parameter.create_parameter(
+                jube.parameter.Parameter.create_parameter(
                     name, value, separator, parameter_type, selected_value,
                     parameter_mode, parameter_unit, export, update_mode=parameter_update_mode,
                     idx=idx, eval_helper=None, fixed=False, duplicate=duplicate)
@@ -1479,7 +1479,7 @@ class Parser(object):
                                                       "patternset", name,
                                                       search_name)
             else:
-                patternset = jube2.pattern.Patternset(name)
+                patternset = jube.pattern.Patternset(name)
             for pattern in Parser._extract_pattern(element):
                 patternset.add_pattern(pattern)
             if patternset.name in patternsets:
@@ -1506,7 +1506,7 @@ class Parser(object):
             pattern_mode = pattern.get("mode", default="pattern").strip()
             if pattern_mode not in \
                     set(["pattern", "text"]).union(
-                        jube2.conf.ALLOWED_SCRIPTTYPES):
+                        jube.conf.ALLOWED_SCRIPTTYPES):
                 raise ValueError(("pattern-mdoe \"{0}\" not allowed in " +
                                   "<pattern name=\"{1}\">").format(
                     pattern_mode, name))
@@ -1521,7 +1521,7 @@ class Parser(object):
                 value = ""
             else:
                 value = pattern.text.strip()
-            patternlist.append(jube2.pattern.Pattern(name, value, pattern_mode,
+            patternlist.append(jube.pattern.Pattern(name, value, pattern_mode,
                                                      content_type, unit,
                                                      default, dotall))
         return patternlist
@@ -1549,7 +1549,7 @@ class Parser(object):
                                                           "fileset", name,
                                                           search_name)
             else:
-                filesets[name] = jube2.fileset.Fileset(name)
+                filesets[name] = jube.fileset.Fileset(name)
             filesets[name] += filelist
         return filesets
 
@@ -1562,7 +1562,7 @@ class Parser(object):
             Parser._check_tag(etree_file, valid_tags)
             if etree_file.tag in ["copy", "link"]:
                 separator = etree_file.get(
-                    "separator", jube2.conf.DEFAULT_SEPARATOR)
+                    "separator", jube.conf.DEFAULT_SEPARATOR)
                 source_dir = etree_file.get("directory", default="").strip()
                 # New source_dir attribute overwrites deprecated directory
                 # attribute
@@ -1581,12 +1581,12 @@ class Parser(object):
                 if etree_file.text is None:
                     raise ValueError("Empty filelist in <{0}> found."
                                      .format(etree_file.tag))
-                files = jube2.util.util.safe_split(etree_file.text.strip(),
+                files = jube.util.util.safe_split(etree_file.text.strip(),
                                                    separator)
                 if alt_name is not None:
                     # Use the new alternativ filenames
                     names = [name.strip() for name in
-                             alt_name.split(jube2.conf.DEFAULT_SEPARATOR)]
+                             alt_name.split(jube.conf.DEFAULT_SEPARATOR)]
                     if len(names) != len(files):
                         raise ValueError("Namelist and filelist must have " +
                                          "same length in <{0}>".
@@ -1600,11 +1600,11 @@ class Parser(object):
                     else:
                         name = None
                     if etree_file.tag == "copy":
-                        file_obj = jube2.fileset.Copy(
+                        file_obj = jube.fileset.Copy(
                             path, name, is_internal_ref, active, source_dir,
                             target_dir)
                     elif etree_file.tag == "link":
-                        file_obj = jube2.fileset.Link(
+                        file_obj = jube.fileset.Link(
                             path, name, is_internal_ref, active, source_dir,
                             target_dir)
                     if file_path_ref is not None:
@@ -1628,7 +1628,7 @@ class Parser(object):
                     alt_work_dir = alt_work_dir.strip()
                 active = etree_file.get("active", "true").strip()
 
-                prepare_obj = jube2.fileset.Prepare(cmd, stdout_filename,
+                prepare_obj = jube.fileset.Prepare(cmd, stdout_filename,
                                                     stderr_filename,
                                                     alt_work_dir, active)
                 filelist.append(prepare_obj)
@@ -1663,7 +1663,7 @@ class Parser(object):
                 substitutesets[name].update_substitute(subs)
             else:
                 substitutesets[name] = \
-                    jube2.substitute.Substituteset(name, files, subs)
+                    jube.substitute.Substituteset(name, files, subs)
         return substitutesets
 
     @staticmethod
@@ -1701,7 +1701,7 @@ class Parser(object):
                         dest = ""
                 dest = dest.strip() + ""
                 sub_type = sub.get("mode", default="text").strip()
-                subs[source] = jube2.substitute.Sub(source, sub_type, dest)
+                subs[source] = jube.substitute.Sub(source, sub_type, dest)
         return (files, subs)
 
     @staticmethod
@@ -1725,5 +1725,5 @@ class Parser(object):
         if element.tag not in valid_tags:
             raise ValueError(("Unknown tag or tag used in wrong " +
                               "position:\n{0}").format(
-                jube2.util.output.element_tree_tostring(
+                jube.util.output.element_tree_tostring(
                     element, encoding="UTF-8")))

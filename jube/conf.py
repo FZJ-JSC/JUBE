@@ -29,8 +29,8 @@ ALLOWED_MODETYPES = set(["text"]).union(ALLOWED_SCRIPTTYPES).union(
     ALLOWED_ADVANCED_MODETYPES)
 DEBUG_MODE = False
 VERBOSE_LEVEL = 0
-UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/version"
-UPDATE_URL = "http://apps.fz-juelich.de/jsc/jube/jube2/download.php"
+UPDATE_VERSION_URL = "http://apps.fz-juelich.de/jsc/jube/source/version"
+UPDATE_URL = "http://apps.fz-juelich.de/jsc/jube/source/download.php"
 STANDARD_SHELL = "/bin/sh"
 EXIT_ON_ERROR = False
 
