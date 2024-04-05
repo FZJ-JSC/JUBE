@@ -34,6 +34,7 @@ Release: 2024-XX-XX
 * Fixed: Resolved deprecation warnings
 * Fixed: Parameters of a dependent step with an update_mode `step` are updated when a `jube continue` is executed.
 * Fixed: Allow YAML and XML scripts to include paths per `include` in `include-path`.
+* Deprecated: Comma character (`,`) will not be supported anymore in `tag` attributes. Instead use `|`, `+` and `!`. 
 * Changed: The `unit` of a `parameter` or `pattern` will also be displayed in the results output when a `title` is specified.
 * Changed: Redesign of the `README.md` file
 * Changed: Colors on website
