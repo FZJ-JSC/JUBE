@@ -20,6 +20,10 @@ Release: 2024-XX-XX
 * Added: Test to verify that a *step* with a *do* operation that
   contains a *done_file* has been successfully executed.
 
+* Added: *CODE_OF_CONDUCT.md* file
+
+* Added: JUBE logo in svg and eps format
+
 * Fixed: Resolved deprecation warnings
 
 * Fixed: Parameters of a dependent step with an update_mode *step* are
@@ -30,6 +34,8 @@ Release: 2024-XX-XX
 
 * Changed: The *unit* of a *parameter* or *pattern* will also be
   displayed in the results output when a *title* is specified.
+
+* Changed: Redesign of the *README.md* file
 
 * Changed: Colors on website
 
