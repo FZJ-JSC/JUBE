@@ -29,7 +29,7 @@ import glob
 import unittest
 import os
 import shutil
-import jube2.main
+import jube.main
 
 
 class TestXMLScripts(unittest.TestCase):
@@ -42,7 +42,7 @@ class TestXMLScripts(unittest.TestCase):
         if os.path.exists(os.path.join(thisfiledir, 'xml_test_scripts', 'bench_run')):
             shutil.rmtree(os.path.join(os.path.dirname(__file__),
                           'xml_test_scripts', 'bench_run'))
-        jube2.main.main(('run -e '+os.path.join(thisfiledir,
+        jube.main.main(('run -e '+os.path.join(thisfiledir,
                         'xml_test_scripts/parameter_duplicate_example_with_init_with.xml')).split())
         errorFileExistent = False
         if os.path.exists(os.path.join(thisfiledir, 'xml_test_scripts', 'bench_run', '000000', '000000_perform_iterations', 'error')):
@@ -62,7 +62,7 @@ class TestXMLScripts(unittest.TestCase):
         thisfiledir = os.path.dirname(__file__)
         if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs')):
             shutil.rmtree(os.path.join(os.path.dirname(__file__), 'benchmark_runs'))
-        jube2.main.main(('run -e '+os.path.join(thisfiledir,
+        jube.main.main(('run -e '+os.path.join(thisfiledir,
                         'xml-test-01.xml')).split())
         errorFileExistent = False
         if os.path.exists(os.path.join(thisfiledir, 'benchmark_runs', '000000', '000000_compile', 'error')):

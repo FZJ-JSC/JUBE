@@ -26,8 +26,8 @@ import re
 import unittest
 import sqlite3
 import os
-import jube2.result_types.database
-import jube2.result_types.keyvaluesresult
+import jube.result_types.database
+import jube.result_types.keyvaluesresult
 
 
 class TestResultDatabase(unittest.TestCase):
@@ -39,13 +39,13 @@ class TestResultDatabase(unittest.TestCase):
         self.dataKeyNames = ["dataKeyName1", "dataKeyName2"]
         self.dataKeys = [[2, 4], [8, 4]]
         self.dataBaseTableName = "databaseKeyValuesData"
-        keyValuesDataInstance = jube2.result_types.keyvaluesresult.KeyValuesResult.KeyValuesData(
+        keyValuesDataInstance = jube.result_types.keyvaluesresult.KeyValuesResult.KeyValuesData(
             self.dataBaseTableName)
-        databaseDataInstance = jube2.result_types.database.Database.DatabaseData(
+        databaseDataInstance = jube.result_types.database.Database.DatabaseData(
             keyValuesDataInstance, [], None)
-        datakey1 = jube2.result_types.database.Database.Column(
+        datakey1 = jube.result_types.database.Database.Column(
             self.dataKeyNames[0], None, None)
-        datakey2 = jube2.result_types.database.Database.Column(
+        datakey2 = jube.result_types.database.Database.Column(
             self.dataKeyNames[1], None, None)
         databaseDataInstance._keys = [datakey1, datakey2]
         databaseDataInstance._data = [d for d in list(zip(*self.dataKeys))]

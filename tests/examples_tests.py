@@ -25,7 +25,7 @@ from __future__ import (print_function,
 import unittest
 import shutil
 import os
-import jube2.main
+import jube.main
 import examples_tests
 
 EXAMPLES_PREFIX = os.path.join(os.path.dirname(__file__), "../examples")
@@ -67,7 +67,7 @@ class TestCase:
             #Execute all commands and save the created worpackage directories
             cls._wp_paths = {}
             for command_id, command in enumerate(cls._commands):
-                jube2.main.main(command)
+                jube.main.main(command)
                 run_path = cls._get_run_path(cls, cls._bench_run_path, command_id)
                 cls._wp_paths[run_path] = cls._get_wp_pathes(cls, run_path)
 

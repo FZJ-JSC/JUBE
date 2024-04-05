@@ -31,7 +31,7 @@ dependencies:
         # Checking installed packages and their versions
         - pip3 list
         # PATH required for tests
-        - export PYTHONPATH=${CI_PROJECT_DIR}/jube2:${PYTHONPATH}
+        - export PYTHONPATH=${CI_PROJECT_DIR}/jube:${PYTHONPATH}
 
 .clone_repo: &clone_repo
     before_script:
@@ -84,7 +84,7 @@ build:year:
 
 build:version:
     variables:
-        FILE_LIST: jube2/conf.py docs/conf.py setup.py
+        FILE_LIST: jube/conf.py docs/conf.py setup.py
         COMMIT_MESSAGE: "Updating Version"
     stage: build
     script:
@@ -95,7 +95,7 @@ build:version:
         # Updating version in files
         - |
             sed -i "s/'version': '.*'/'version': '${RELEASE}'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/setup.py
-        - sed -i "s/JUBE_VERSION = \".*\"/JUBE_VERSION = \"${RELEASE}\"/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/jube2/conf.py
+        - sed -i "s/JUBE_VERSION = \".*\"/JUBE_VERSION = \"${RELEASE}\"/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/jube/conf.py
         - sed -i "s/version = '.*'/version = '${VERSION}'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
         - sed -i "s/release = '.*'/release = '${RELEASE}'/g" ${CI_PROJECT_DIR}/${CI_JOB_NAME#*:}/docs/conf.py
     <<: *push_files
@@ -122,7 +122,7 @@ build:release_notes:
 
 build:help:
     variables:
-        FILE_LIST: jube2/help.txt
+        FILE_LIST: jube/help.txt
         COMMIT_MESSAGE: "Updating $FILE_LIST"
     stage: build
     script:
@@ -280,4 +280,4 @@ pages:production:
         - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del docs/_build/html/* apps_jube_docu:docu/"
     environment:
         name: production
-        url: https://apps.fz-juelich.de/jsc/jube/jube2/docu/
+        url: https://apps.fz-juelich.de/jsc/jube/jube/docu/

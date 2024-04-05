@@ -24,7 +24,7 @@ from __future__ import (print_function,
 
 import unittest
 import os
-import jube2.main
+import jube.main
 from examples_tests import TestCase
 
 class TestSharedExample(TestCase.TestExample):

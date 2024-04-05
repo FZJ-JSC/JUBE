@@ -29,8 +29,8 @@ import glob
 import unittest
 import os
 import shutil
-import jube2.main
-import jube2.util.yaml_converter
+import jube.main
+import jube.util.yaml_converter
 
 
 class TestYAMLScripts(unittest.TestCase):
@@ -43,7 +43,7 @@ class TestYAMLScripts(unittest.TestCase):
         if os.path.exists(os.path.join(thisfiledir, 'yaml_test_scripts', 'bench_run')):
             shutil.rmtree(os.path.join(os.path.dirname(__file__),
                           'yaml_test_scripts', 'bench_run'))
-        jube2.main.main(('run -e '+os.path.join(thisfiledir,
+        jube.main.main(('run -e '+os.path.join(thisfiledir,
                         'yaml_test_scripts/newline_separator.yaml')).split())
         errorFileExistent = False
         if os.path.exists(os.path.join(thisfiledir, 'yaml_test_scripts', 'bench_run', '000000', '000000_execute', 'error')):
@@ -62,7 +62,7 @@ class TestYAMLScripts(unittest.TestCase):
         if os.path.exists(os.path.join(thisfiledir, 'yaml_test_scripts', 'bench_run_2')):
             shutil.rmtree(os.path.join(os.path.dirname(__file__),
                           'yaml_test_scripts', 'bench_run_2'))
-        jube2.main.main(('run -e '+os.path.join(thisfiledir,
+        jube.main.main(('run -e '+os.path.join(thisfiledir,
                         'yaml_test_scripts/multiple_benchmarks.yaml')).split())
         stdoutFileExistent = True
         if not os.path.exists(os.path.join(thisfiledir, 'yaml_test_scripts', 'bench_run_1', '000000', '000000_execute', 'work', 'stdout')):
@@ -85,10 +85,10 @@ class TestYAMLScripts(unittest.TestCase):
         try:
             import ruamel.yaml
             with self.assertRaises(ruamel.yaml.constructor.DuplicateKeyError):
-                jube2.util.yaml_converter.YAML_Converter(os.path.join(thisfiledir,'yaml_test_scripts/overwrite_parameterset.yaml'))
+                jube.util.yaml_converter.YAML_Converter(os.path.join(thisfiledir,'yaml_test_scripts/overwrite_parameterset.yaml'))
         except ImportError:
             with self.assertRaises(SystemExit):
-                jube2.main.main(('run -e '+os.path.join(thisfiledir,
+                jube.main.main(('run -e '+os.path.join(thisfiledir,
                             'yaml_test_scripts/overwrite_parameterset.yaml')).split())
 
 

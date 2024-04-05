@@ -26,10 +26,10 @@ import re
 import unittest
 import shutil
 import os
-import jube2.step
-import jube2.parameter
-import jube2.benchmark
-import jube2.workpackage
+import jube.step
+import jube.parameter
+import jube.benchmark
+import jube.workpackage
 
 
 class TestMultiprocessing(unittest.TestCase):
@@ -37,23 +37,23 @@ class TestMultiprocessing(unittest.TestCase):
     """Multiprocessing test class"""
 
     def setUp(self):
-        self.parallelParameter = jube2.parameter.StaticParameter(
+        self.parallelParameter = jube.parameter.StaticParameter(
             name='i',
             value='",".join(str(i) for i in range(4))',
             separator=',',
             parameter_type='int',
             parameter_mode='python')
-        self.parallelParameterset = jube2.parameter.Parameterset(
+        self.parallelParameterset = jube.parameter.Parameterset(
             name='param_set')
         self.parallelParameterset.add_parameter(self.parallelParameter)
-        self.parallelStep = jube2.step.Step(
+        self.parallelStep = jube.step.Step(
             name='parallel_execution', depend=set(), procs=2)
         self.parallelStep.add_uses(['param_set'])
-        self.parallelOperation = jube2.step.Operation('echo "$i"', stdout_filename='stdout',
+        self.parallelOperation = jube.step.Operation('echo "$i"', stdout_filename='stdout',
                                                       stderr_filename='stderr',
                                                       work_dir='.', error_filename='error')
         self.parallelStep.add_operation(self.parallelOperation)
-        self.parallelBenchmark = jube2.benchmark.Benchmark(
+        self.parallelBenchmark = jube.benchmark.Benchmark(
             name='parallel_workpackages',
             outpath='bench_run',
             parametersets={'param_set': self.parallelParameterset},

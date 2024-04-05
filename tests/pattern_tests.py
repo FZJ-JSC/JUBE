@@ -24,7 +24,7 @@ from __future__ import (print_function,
 
 import re
 import unittest
-import jube2.pattern
+import jube.pattern
 
 
 class TestPattern(unittest.TestCase):
@@ -32,16 +32,16 @@ class TestPattern(unittest.TestCase):
     """Pattern test class"""
 
     def setUp(self):
-        self.std_pattern = jube2.pattern.Pattern("std", ".*", unit="s")
-        self.std_pattern2 = jube2.pattern.Pattern("std2", ".*")
-        self.derived_pattern = jube2.pattern.Pattern(
+        self.std_pattern = jube.pattern.Pattern("std", ".*", unit="s")
+        self.std_pattern2 = jube.pattern.Pattern("std2", ".*")
+        self.derived_pattern = jube.pattern.Pattern(
             "derived", "$std2", pattern_mode="text")
-        self.calculate_pattern = jube2.pattern.Pattern(
+        self.calculate_pattern = jube.pattern.Pattern(
             "derived", "100*2", pattern_mode="python", content_type="int")
-        self.calculate_pattern_non_derived = jube2.pattern.Pattern(
+        self.calculate_pattern_non_derived = jube.pattern.Pattern(
             "non_derived", "100*$derived",
             pattern_mode="pattern", content_type="int")
-        self.jube_pattern = jube2.pattern.get_jube_pattern()
+        self.jube_pattern = jube.pattern.get_jube_pattern()
 
     def test_std_pattern(self):
         """Test standard pattern"""
@@ -59,7 +59,7 @@ class TestPattern(unittest.TestCase):
         """Test derived pattern"""
         self.assertTrue(self.derived_pattern.derived)
         self.assertFalse(self.std_pattern.derived)
-        patternset = jube2.pattern.Patternset("test_set")
+        patternset = jube.pattern.Patternset("test_set")
         patternset.add_pattern(self.std_pattern2)
         result_pattern, changed = self.derived_pattern.substitute_and_evaluate(
             [patternset.pattern_storage])
@@ -73,7 +73,7 @@ class TestPattern(unittest.TestCase):
             self.calculate_pattern.substitute_and_evaluate([])
         self.assertTrue(changed)
         self.assertEqual(result_pattern.value, "200")
-        patternset = jube2.pattern.Patternset("test_set")
+        patternset = jube.pattern.Patternset("test_set")
         patternset.add_pattern(result_pattern)
         result_pattern, changed = \
             self.calculate_pattern_non_derived.substitute_and_evaluate(
@@ -130,7 +130,7 @@ TEST_PATTERNS_FULL = [
         (r"^{jube_pat_fp}$", "-12.34E-5"),
         (r"^{jube_pat_fp}$", "-12.34E+56"),
         (r"^{jube_pat_wrd}$", "jube"),
-        (r"^{jube_pat_wrd}$", "jube2"),
+        (r"^{jube_pat_wrd}$", "jube"),
         (r"^{jube_pat_bl}$", "  "),
     )
 ]

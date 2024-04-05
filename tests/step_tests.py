@@ -27,11 +27,11 @@ import unittest
 import shutil
 import os
 import sys
-import jube2.step
-import jube2.benchmark
-import jube2.parameter
-import jube2.workpackage
-import jube2.main
+import jube.step
+import jube.benchmark
+import jube.parameter
+import jube.workpackage
+import jube.main
 import subprocess
 
 class TestStep(unittest.TestCase):
@@ -40,50 +40,50 @@ class TestStep(unittest.TestCase):
 
     def setUp(self):
         self.para_cluster = \
-            jube2.parameter.Parameter.create_parameter("cluster_module", "CM, DAM, ESB")
-        self.paramset_cluster = jube2.parameter.Parameterset("cluster")
+            jube.parameter.Parameter.create_parameter("cluster_module", "CM, DAM, ESB")
+        self.paramset_cluster = jube.parameter.Parameterset("cluster")
         self.paramset_cluster.add_parameter(self.para_cluster)
 
         self.para_acc = \
-            jube2.parameter.Parameter.create_parameter("ACC",
+            jube.parameter.Parameter.create_parameter("ACC",
                                                        "{'CM': '66', 'DAM': '77', 'ESB': '88'}"+
                                                        ".get('${cluster_module}', 0)",
                                                        parameter_mode="python")
         self.para_acc_step = \
-            jube2.parameter.Parameter.create_parameter("ACC_STEP",
+            jube.parameter.Parameter.create_parameter("ACC_STEP",
                                                        "{'sec': '${ACC}'}.get('$jube_step_name', 'NO_ACC')",
                                                        parameter_mode="python",
-                                                       update_mode=jube2.parameter.STEP_MODE)
-        self.parameterset = jube2.parameter.Parameterset("update_test")
+                                                       update_mode=jube.parameter.STEP_MODE)
+        self.parameterset = jube.parameter.Parameterset("update_test")
         self.parameterset.add_parameter(self.para_acc)
         self.parameterset.add_parameter(self.para_acc_step)
 
-        self.first_step = jube2.step.Step(name='first', depend=set())
+        self.first_step = jube.step.Step(name='first', depend=set())
         self.first_step.add_uses(['cluster', 'update_test'])
-        operation = jube2.step.Operation('echo "${ACC}, ${ACC_STEP}"',
+        operation = jube.step.Operation('echo "${ACC}, ${ACC_STEP}"',
                                          stdout_filename='stdout',
                                          stderr_filename='stderr',
                                          work_dir='.', error_filename='error')
         self.first_step.add_operation(operation)
 
-        self.second_step = jube2.step.Step(name='sec', depend={"first"})
-        operation = jube2.step.Operation('echo "BEFORE ${ACC}, ${ACC_STEP}"',
+        self.second_step = jube.step.Step(name='sec', depend={"first"})
+        operation = jube.step.Operation('echo "BEFORE ${ACC}, ${ACC_STEP}"',
                                          stdout_filename='stdout',
                                          stderr_filename='stderr',
                                          work_dir='.', error_filename='error')
         self.second_step.add_operation(operation)
-        operation = jube2.step.Operation('', stdout_filename='stdout',
+        operation = jube.step.Operation('', stdout_filename='stdout',
                                          stderr_filename='stderr',
                                          async_filename='ready',
                                          work_dir='.', error_filename='error')
         self.second_step.add_operation(operation)
-        operation = jube2.step.Operation('echo "AFTER ${ACC}, ${ACC_STEP}"',
+        operation = jube.step.Operation('echo "AFTER ${ACC}, ${ACC_STEP}"',
                                          stdout_filename='stdout',
                                          stderr_filename='stderr',
                                          work_dir='.', error_filename='error')
         self.second_step.add_operation(operation)
         self.bench_run_path = os.path.join(os.path.dirname(__file__), "bench_run")
-        self.benchmark = jube2.benchmark.Benchmark(
+        self.benchmark = jube.benchmark.Benchmark(
             name='update_test',
             outpath=self.bench_run_path,
             parametersets={'update_test': self.parameterset,
@@ -136,7 +136,7 @@ class TestStep(unittest.TestCase):
             f.close()
 
         # Continue run
-        jube2.main.main(["continue", self.bench_run_path])
+        jube.main.main(["continue", self.bench_run_path])
 
         # Test if continue was succesful
         output = ["BEFORE 66, 66\nAFTER 66, 66\n", "BEFORE 77, 77\nAFTER 77, 77\n",
@@ -165,7 +165,7 @@ class TestOperation(unittest.TestCase):
             sys.stdout.encoding)
         self.echoPath = self.echoPath.replace('\n', '')
         self.currWorkDir = os.getcwd()
-        self.operation = jube2.step.Operation(self.echoPath+' Test', stdout_filename='stdout',
+        self.operation = jube.step.Operation(self.echoPath+' Test', stdout_filename='stdout',
                                               stderr_filename='stderr', work_dir='.', error_filename='error')
         self.parameter_dict = {
             'param': 'p1',
@@ -249,9 +249,9 @@ class TestDoLog(unittest.TestCase):
     def setUp(self):
         self.currWorkDir = os.getcwd()
         self.environment = {'TEST': 'test'}
-        self.dolog = jube2.step.DoLog(
+        self.dolog = jube.step.DoLog(
             log_dir=self.currWorkDir, log_file='do_log', initial_env=self.environment)
-        self.dolog_variable_path = jube2.step.DoLog(
+        self.dolog_variable_path = jube.step.DoLog(
             log_dir=self.currWorkDir, log_file='${path_variable}/do_log', initial_env=self.environment)
         self.echoPath = subprocess.check_output(['which', 'echo']).decode(
             sys.stdout.encoding)
