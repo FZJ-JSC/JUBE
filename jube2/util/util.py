@@ -149,8 +149,11 @@ def valid_tags(tag_string, tags):
     if tag_tags_str is not None:
         # Check for old tag format
         if "," in tag_tags_str:
-            tag_tags_str = jube2.jubeio.Parser._convert_old_tag_format(
-                tag_tags_str)
+            raise ValueError("'{0}' cannot be parsed because the"
+                             "comma is no longer supported in "
+                             "'check_tags' and 'tag' attributes. "
+                             "Use '|', '+' and '!' instead."
+                             .format(tag_string))
         tag_tags_str = tag_tags_str.replace(' ', '')
         tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
                      if len(i) > 0]
