@@ -22,8 +22,8 @@ from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import jube2.main
+import jube.main
 
 
 if __name__ == "__main__":
-    jube2.main.main()
+    jube.main.main()
