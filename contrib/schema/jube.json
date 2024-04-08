@@ -180,7 +180,7 @@
 					"type": "string"
 				},
 				"check_tags": {
-					"description": "It specifies a combination of tags that must be set (logical operations: \"+\" (conjunction), \"|\" (disjunction), \"!\" (negation))",
+					"description": "It specifies a combination of tags that must be set (logical operations: \"+\" (conjunction), \"|\" (disjunction), \"^\" (exclusive disjunction), \"!\" (negation))",
 					"anyOf": [{
 						"type": "array",
 						"items": {
