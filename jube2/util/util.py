@@ -155,7 +155,7 @@ def valid_tags(tag_string, tags):
                              "Use '|', '+' and '!' instead."
                              .format(tag_string))
         tag_tags_str = tag_tags_str.replace(' ', '')
-        tag_array = [i for i in re.split('[()|+!]', tag_tags_str)
+        tag_array = [i for i in re.split('[()|+!^]', tag_tags_str)
                      if len(i) > 0]
         tag_state = {}
         for tag in tag_array:
