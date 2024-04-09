@@ -43,7 +43,7 @@ benchmark =
   }
 attlist.benchmark &=
   attribute name { text },
-  attribute outpath { text },
+  attribute outpath { text }?,
   attribute file_path_ref { text }?,
   attribute tag { text }?
 comment = element comment { attlist.comment, text }

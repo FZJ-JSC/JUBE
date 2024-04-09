@@ -29,6 +29,8 @@ Release: XXXX-XX-XX
 * Added: New environment variable `JUBE_VERBOSE` to set the verbosity level.
 * Added: Warning when the current verbosity level from the command line or environment variable is out of range.
 * Added: New `primekey` attribute for the `key`-tag of the `database` to define whether this `key` is a primary key of the database or not. Can be set to `true` or `false` (default: `false`).
+* Added: New command line option `--outpath` to specify the benchmark outpath.
+* Changed: The `outpath` attribute can now be removed from the `<benchmark>` tag when specified from the command line with `--outpath`.
 * Changed: The convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
 * Changed: If the `title` attribute of a database `key` is set, then this title is used as the name of the database column instead of the parameter or pattern name.
 * Deprecated: The `primekeys` attribute of the `database` is no longer supported. Use the new `primekey` attribute of the `database` `key` instead.

@@ -17,7 +17,7 @@
 <!ELEMENT check_tags (#PCDATA)>
 <!ELEMENT benchmark (comment?,(parameterset|substituteset|fileset|step|patternset|analyser|analyzer|result|include)*)>
 <!ATTLIST benchmark     name CDATA #REQUIRED
-                        outpath CDATA #REQUIRED
+                        outpath CDATA #IMPLIED
                         file_path_ref CDATA #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT comment (#PCDATA)>

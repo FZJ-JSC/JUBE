@@ -832,7 +832,8 @@ def gen_subparser_conf():
             ("-m", "--comment"):
                 {"help": "add comment"},
             ("-o", "--outpath"):
-                {"help": "overwrite outpath directory"}
+                {"help": "overwrite outpath directory (relative to the "
+                 "execution location)"}
         }
     }
 
