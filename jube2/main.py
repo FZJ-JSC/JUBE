@@ -517,7 +517,7 @@ def run_new_benchmark(args):
         else:
             include_pathes = None
         parser = jube2.jubeio.Parser(path, tags, include_pathes,
-                                     args.force, args.strict)
+                                     args.outpath, args.force, args.strict)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
@@ -548,9 +548,6 @@ def run_new_benchmark(args):
                     continue
                 bench.id = args.id[id_cnt]
                 id_cnt += 1
-            # Change runtime outpath if specified
-            if args.outpath is not None:
-                bench.outpath = args.outpath
             # Start benchmark run
             bench.new_run()
             # Run analyse
