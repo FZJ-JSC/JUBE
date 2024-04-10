@@ -199,6 +199,8 @@ class Parser(object):
             else:
                 LOGGER.debug("  No preprocessing changes were detected, stop" +
                              " additional include-preprocess runs.")
+        # Save the current tree before removing the invalid tags to preserve all available tags
+        tag_tree = copy.deepcopy(tree)
 
         # Rerun removing invalid tags
         LOGGER.debug("  Remove invalid tags")
@@ -223,10 +225,10 @@ class Parser(object):
 
         # DEPRECATED: check_tags no longer allowed at global level, only in tags
         # Read all global check_tags and check if necessary tags are given
-        self._control_check_tags(tree)
+        self._control_check_tags(tree.getroot())
 
         # Read out tag documentation in tags-tag
-        self._tag_docu = self._extract_tags(tree, self._tags)
+        self._tag_docu = self._extract_tags(tag_tree.getroot())
 
         LOGGER.debug("  Preprocess done")
 
@@ -729,16 +731,19 @@ class Parser(object):
                                  .replace('+', ' and ').replace('!', ' not ')\
                                  .replace('^', ' xor ')))
 
-    def _extract_tags(self, tree, tags):
+    def _extract_tags(self, tree):
         """
         Extract tag documentation from tree and controll check_tags.
         Returns the tags with documentation found as dictionary.
         """
         valid_tags = ["tag", "check_tags"]
         tags = dict()
+        forced = False
         for tags_tree in tree.findall("tags"):
             # controll check tags
             self._control_check_tags(tags_tree)
+
+            forced = tags_tree.get("forced", "false").strip().lower() == "true" or forced
 
             # find tag documentation
             for element in tags_tree:
@@ -748,6 +753,31 @@ class Parser(object):
                     tag_docu = element.text.strip()
                     if tag_docu != "":
                         tags[tag_name] = tag_docu
+                    else:
+                        raise ValueError("The following tag description is empty: {0}"
+                                         .format(tag_name))
+                elif element.tag == "tag" and element.text is None:
+                    tag_name = Parser._attribute_from_element(element, "name").strip()
+                    raise ValueError("The following tag description is empty: {0}"
+                                     .format(tag_name))
+
+        # Get all available tags to check if tags are documented and have matching tag
+        all_tags = list()
+        for element in tree.findall(".//*[@tag]"):
+            found_tag = re.findall(r"[\w'-]+", element.attrib["tag"])
+            all_tags.extend(found_tag)
+        unused_tag_docu = list(set(tags.keys()) - set(all_tags))
+        if len(unused_tag_docu):
+            raise ValueError("Tag descriptions are only allowed for used tags. Tag: "
+                             "'{0}' isn't used in the input file."
+                             .format(", ".join(unused_tag_docu)))
+
+        if forced:
+            missing_tag_docu = list(set(all_tags) - set(tags.keys()))
+            if len(missing_tag_docu):
+                raise ValueError("The following tag description is required: "
+                                 "{0}".format(", ".join(missing_tag_docu)))
+
         return tags
 
     def _create_benchmark(self, benchmark_etree, global_parametersets,
