@@ -70,6 +70,18 @@ def status(args):
             return
         jube2.info.print_benchmark_status(benchmark)
         
+
+def tag(args):
+    """Show tag documentation"""
+    found_benchmarks = search_for_benchmarks(args)
+    for benchmark_folder in found_benchmarks:
+        benchmark = _load_existing_benchmark(args, benchmark_folder,
+                                             load_analyse=False)
+        if benchmark is None:
+            return
+        jube2.info.print_tag_documentation(benchmark)
+
+
 def output(args):
     """Show output filename"""
     found_workpackages = list()
@@ -957,6 +969,20 @@ def gen_subparser_conf():
     subparser_configuration["status"] = {
         "help": "show benchmark status",
         "func": status,
+        "arguments": {
+            ('dir',):
+                {"metavar": "DIRECTORY", "nargs": "?",
+                 "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"help": "use benchmarks given by id",
+                 "nargs": "+"}
+        }
+    }
+
+    # tag subparser
+    subparser_configuration["tag"] = {
+        "help": "show tag documentation",
+        "func": tag,
         "arguments": {
             ('dir',):
                 {"metavar": "DIRECTORY", "nargs": "?",

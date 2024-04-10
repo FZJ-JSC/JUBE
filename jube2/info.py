@@ -593,3 +593,27 @@ def print_benchmark_status(benchmark):
         print("ERROR")
     else:
         print("FINISHED")
+
+
+def print_tag_documentation(benchmark):
+    """Print configuration information concerning a specific benchmark"""
+    infostr = \
+        jube2.util.output.text_boxed("{0} id:{1} tags:{2}\n\n{3}"
+                                     .format(benchmark.name,
+                                             benchmark.id,
+                                             jube2.conf.DEFAULT_SEPARATOR.join(
+                                                 benchmark.tags),
+                                             benchmark.comment))
+    print(infostr)
+
+    print("  Directory: {0}"
+          .format(os.path.abspath(benchmark.bench_dir)))
+
+    tag_docu = [("tag name", "description")]
+    for name, doku in benchmark.tag_docu.items():
+        tag_docu.append((name, doku))
+
+    print("\n" + jube2.util.output.text_table(tag_docu, use_header_line=True,
+                                              indent=1))
+
+    print(jube2.util.output.text_line())
