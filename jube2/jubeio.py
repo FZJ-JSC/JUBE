@@ -135,7 +135,8 @@ class Parser(object):
                     if not inp.startswith("y"):
                         return None, list(), list()
 
-        valid_tags = ["selection", "include-path", "parameterset", "benchmark",
+        # DEPRECATED: check_tags no longer allowed at global level, only in tags
+        valid_tags = ["selection", "include-path", "parameterset", "benchmark", "tags",
                       "substituteset", "fileset", "include", "patternset", "check_tags"]
 
         # Save init include path (from command line)
@@ -220,18 +221,12 @@ class Parser(object):
                               "<include from=\"{0}\" ... />")
                              .format(node.attrib["from"]))   
 
+        # DEPRECATED: check_tags no longer allowed at global level, only in tags
         # Read all global check_tags and check if necessary tags are given
-        check_tags = ""
-        for element in tree.findall("check_tags"):
-            check_tags += "(" + element.text + ") + "
+        self._control_check_tags(tree)
 
-        if check_tags != "":
-            check_tags = check_tags[:-3] # Remove last +
-            if not jube2.util.util.valid_tags(check_tags, self._tags):
-                raise ValueError("The following tag combination is required: "
-                                 "{0}".format(check_tags.replace('|', ' or ')\
-                                 .replace('+', ' and ').replace('!', ' not ')\
-                                 .replace('^', ' xor ')))
+        # Read out tag documentation in tags-tag
+        self._tag_docu = self._extract_tags(tree, self._tags)
 
         LOGGER.debug("  Preprocess done")
 
@@ -716,6 +711,45 @@ class Parser(object):
         else:
             return []
 
+    def _control_check_tags(self, tree):
+        """
+        Check for given check_tags in the tree and check
+        if required tags are set.
+        """
+        check_tags = ""
+        for element in tree.findall("check_tags"):
+            check_tags += "(" + element.text + ")"
+            if element != tree.findall("check_tags")[-1]:
+                check_tags += " + "
+
+        if check_tags != "":
+            if not jube2.util.util.valid_tags(check_tags, self._tags):
+                raise ValueError("The following tag combination is required: "
+                                 "{0}".format(check_tags.replace('|', ' or ')\
+                                 .replace('+', ' and ').replace('!', ' not ')\
+                                 .replace('^', ' xor ')))
+
+    def _extract_tags(self, tree, tags):
+        """
+        Extract tag documentation from tree and controll check_tags.
+        Returns the tags with documentation found as dictionary.
+        """
+        valid_tags = ["tag", "check_tags"]
+        tags = dict()
+        for tags_tree in tree.findall("tags"):
+            # controll check tags
+            self._control_check_tags(tags_tree)
+
+            # find tag documentation
+            for element in tags_tree:
+                Parser._check_tag(element, valid_tags)
+                if element.tag == "tag" and element.text is not None:
+                    tag_name = Parser._attribute_from_element(element, "name").strip()
+                    tag_docu = element.text.strip()
+                    if tag_docu != "":
+                        tags[tag_name] = tag_docu
+        return tags
+
     def _create_benchmark(self, benchmark_etree, global_parametersets,
                           global_substitutesets, global_filesets,
                           global_patternsets):
@@ -796,7 +830,7 @@ class Parser(object):
                                               parametersets, substitutesets,
                                               filesets, patternsets, steps,
                                               analyser, results, results_order,
-                                              comment, self._tags,
+                                              comment, self._tags, self._tag_docu,
                                               file_path_ref)
 
         return benchmark
