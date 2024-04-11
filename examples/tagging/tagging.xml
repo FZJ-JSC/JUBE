@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jube>
-  <check_tags>deu|eng</check_tags> <!-- check if tag deu or eng was set -->
+  <tags forced="true">
+    <check_tags>deu|eng</check_tags>
+    <tag name="deu">For german strings</tag>
+    <tag name="eng">For english strings</tag>
+  </tags>
 
   <benchmark name="tagging" outpath="bench_run">
     <comment>Tags as logical combination</comment>
