@@ -1,4 +1,4 @@
-<!ELEMENT jube ((selection|include-path|check_tags)* ,(benchmark|parameterset|fileset|substituteset|patternset|include)*)>
+<!ELEMENT jube ((selection|include-path|check_tags|tags)* ,(benchmark|parameterset|fileset|substituteset|patternset|include)*)>
 <!ATTLIST jube          xmlns:xsi CDATA #IMPLIED
                         xsi:noNamespaceSchemaLocation CDATA #IMPLIED
                         version CDATA #IMPLIED>
@@ -14,6 +14,10 @@
 <!ATTLIST include-path  tag CDATA #IMPLIED>
 <!ELEMENT path (#PCDATA)>
 <!ATTLIST path          tag CDATA #IMPLIED>
+<!ELEMENT tags ((tag|check_tags)*)>
+<!ATTLIST tags          forced CDATA #IMPLIED>
+<!ELEMENT tag (#PCDATA)>
+<!ATTLIST tag           name CDATA #IMPLIED>
 <!ELEMENT check_tags (#PCDATA)>
 <!ELEMENT benchmark (comment?,(parameterset|substituteset|fileset|step|patternset|analyser|analyzer|result|include)*)>
 <!ATTLIST benchmark     name CDATA #REQUIRED
