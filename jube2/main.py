@@ -1125,7 +1125,12 @@ def main(command=None):
         args = parser.parse_args(command)
 
     jube2.conf.DEBUG_MODE = args.debug
-    jube2.conf.VERBOSE_LEVEL = args.verbose
+
+    # Get verbose level out from args or env
+    if args.verbose > 0:
+        jube2.conf.VERBOSE_LEVEL = args.verbose
+    else:
+        jube2.conf.VERBOSE_LEVEL = jube2.util.util.check_and_get_verbose_level()
 
     if jube2.conf.VERBOSE_LEVEL > 0:
         args.hide_animation = True
