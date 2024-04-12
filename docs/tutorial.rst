@@ -90,6 +90,9 @@ shell environment variables are available which can be used to set system specif
   The group must exist and the *JUBE* user must be part of this group.
   The given group will be the owner of new benchmark runs. By default (without setting the environment variable)
   all file and directory permissions are defined by the normal *UNIX* rules.
+* ``JUBE_VERBOSE``: The verbosity level can normally be specified using the ``-v`` command line option.
+  This environment variable can be used to set a default verbose level, where ``JUBE_VERBOSE=1`` is equivalent to ``-v``,
+  ``JUBE_VERBOSE=2`` is equivalent to ``-vv`` and so on. If the command line option is set, the environment variable is ignored.
 
 *BASH* autocompletion can be enabled by using the ``eval "$(jube complete)"`` command. You can store the command in your bash profile
 settings if needed.
@@ -279,6 +282,10 @@ Log output can also be displayed during runtime by using the verbose output::
 
 ``-vv`` can be used to display stdout output during runtime and ``-vvv`` will display the
 stdout output as well as the log output at the same time.
+
+The verbosity level can also be set using the ``JUBE_VERBOSE`` environment variable.
+``JUBE_VERBOSE=1`` is equivalent to ``-v``, ``JUBE_VERBOSE=2`` to ``-vv`` and so on.
+If the verbosity level is set as a command line option, the environment variable is ignored.
 
 Since the parsing step is done before creating the benchmark directory, there will be a
 ``jube-parse.log`` inside your current working directory, which contains the parser log information.
