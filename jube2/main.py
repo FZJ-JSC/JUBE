@@ -1129,8 +1129,17 @@ def main(command=None):
     # Get verbose level out from args or env
     if args.verbose > 0:
         jube2.conf.VERBOSE_LEVEL = args.verbose
+        # Print warning if verbose level is out of range
+        if jube2.conf.VERBOSE_LEVEL < 0 or jube2.conf.VERBOSE_LEVEL > 3:
+            print("The verbosity level is out of range. It must be -v, -vv or -vvv but the "
+                  "current level is -{0}.".format("v"*jube2.conf.VERBOSE_LEVEL))
+            exit(1)
     else:
         jube2.conf.VERBOSE_LEVEL = jube2.util.util.check_and_get_verbose_level()
+        if jube2.conf.VERBOSE_LEVEL < 0 or jube2.conf.VERBOSE_LEVEL > 3:
+            print("The verbosity level is out of range. Supported values are 0, 1, 2 or 3. "
+                  "The current level is {0}.".format(jube2.conf.VERBOSE_LEVEL))
+            exit(1)
 
     if jube2.conf.VERBOSE_LEVEL > 0:
         args.hide_animation = True
