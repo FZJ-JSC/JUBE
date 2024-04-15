@@ -271,7 +271,6 @@ def convert_type(value_type, value, stop=True):
         else:
             result_value = value
     if value_type_incorrect:
-        print(f"Warning: \"{value}\" was converted to type \"{value_type}\": {result_value}.\n")
         LOGGER.debug(f"Warning: \"{value}\" was converted to type \"{value_type}\": {result_value}.\n")
     return result_value
 
