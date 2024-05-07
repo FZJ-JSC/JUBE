@@ -460,7 +460,8 @@ class Parser(object):
                             value = value.strip()
                         else:
                             value = ""
-                        value = jube2.util.util.convert_type(pattern_type,
+                        value = jube2.util.util.convert_type(pattern_name,
+                                                             pattern_type,
                                                              value)
                         analyse_result[analyser_name][step_name][
                             wp_id][pattern_name] = value

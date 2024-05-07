@@ -329,7 +329,7 @@ class Analyser(object):
         for par in patternset.derived_pattern_storage:
             if par.mode not in jube2.conf.ALLOWED_SCRIPTTYPES:
                 new_result_dict[par.name] = \
-                    jube2.util.util.convert_type(par.content_type,
+                    jube2.util.util.convert_type(par.name, par.content_type,
                                                  par.value, stop=False)
         return new_result_dict
 
