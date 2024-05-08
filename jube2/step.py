@@ -114,6 +114,11 @@ class Step(object):
         return self._name
 
     @property
+    def operations(self):
+        """Return step dos"""
+        return self._operations
+
+    @property
     def active(self):
         """Return active state"""
         return self._active
@@ -152,6 +157,16 @@ class Step(object):
     def do_log_file(self):
         """Return do log file name"""
         return self._do_log_file
+
+    @property
+    def work_dir(self):
+        """Return alternative working directory"""
+        return self._alt_work_dir
+
+    @property
+    def suffix(self):
+        """Return alternative working directory"""
+        return self._suffix
 
     def get_used_sets(self, available_sets, parameter_dict=None):
         """Get list of all used sets, which can be found in available_sets"""
@@ -442,6 +457,11 @@ class Operation(object):
         self._work_dir = work_dir
 
     @property
+    def do(self):
+        """Get do"""
+        return self._do
+
+    @property
     def stdout_filename(self):
         """Get stdout filename"""
         return self._stdout_filename
@@ -457,6 +477,11 @@ class Operation(object):
         return self._error_filename
 
     @property
+    def break_filename(self):
+        """Get break filename"""
+        return self._break_filename
+
+    @property
     def async_filename(self):
         """Get async filename"""
         return self._async_filename
@@ -465,6 +490,16 @@ class Operation(object):
     def shared(self):
         """Shared operation?"""
         return self._shared
+
+    @property
+    def active_string(self):
+        """Get active"""
+        return self._active
+
+    @property
+    def work_dir(self):
+        """Get work directory"""
+        return self._work_dir
 
     def active(self, parameter_dict):
         """Return active status of the current operation depending on the

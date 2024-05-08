@@ -125,55 +125,259 @@ def print_benchmark_info(benchmark):
 
     print("\n    Started: {0}".format(time_start))
     print("Last change: {0}".format(time_change))
+    print(jube2.util.output.text_line("="))
+
+    # Create parameter overview
+    if benchmark.parametersets:
+        print(jube2.util.output.text_line("="))
+        print("\nParametersets info:")
+        for parameterset_name, parameterset in benchmark.parametersets.items():
+            print("\n   Parameterset name: " + parameterset_name)
+            print("   Duplicate: " + parameterset.duplicate)
+            parameter_info = [("name", "mode", "type", "seperator", "export", "unit",
+                            "update_mode", "duplicate", "value")]
+            for parameter in parameterset.all_parameters:
+                parameter_info.append((parameter.name, parameter.mode, parameter.parameter_type,
+                                    parameter.separator, str(parameter.export), parameter.unit,
+                                    parameter.update_mode, parameter.duplicate,
+                                    parameter.value))
+            print("   Parameter:")
+            print("\n" + jube2.util.output.text_table(parameter_info, use_header_line=True,
+                                                    indent=2))
+
+
+    # Create substitute overview
+    if benchmark.substitutesets:
+        print(jube2.util.output.text_line("="))
+        print("\nSubstitutesets info:")
+        for substituteset_name, substituteset in benchmark.substitutesets.items():
+            print("\n   Substituteset name: " + substituteset_name)
+            file_info = [("in", "out", "out_mode")]
+            for file in substituteset.files:
+                file_info.append((file[1], file[0], file[2]))
+            print("   IOFiles:")
+            print("\n" + jube2.util.output.text_table(file_info, use_header_line=True,
+                                                    indent=2))
+            sub_info = [("source", "dest", "mode")]
+            for name, sub in substituteset.subs.items():
+                sub_info.append((sub.source, sub.dest, sub.mode))
+            print("   Subs:")
+            print("\n" + jube2.util.output.text_table(sub_info, use_header_line=True,
+                                                    indent=2))
+
+
+    # Create file overview
+    if benchmark.filesets:
+        print(jube2.util.output.text_line("="))
+        print("\nFilesets info:")
+        for fileset_name, fileset in benchmark.filesets.items():
+            print("\n   Fileset name: " + fileset_name)
+            file_info = [("type", "name", "path", "source_dir", "target_dir",
+                          "rel_path_ref", "active")]
+            for file in fileset:
+                name = file._name if file._name else ""
+                rel_path_ref = "internal" if file._is_internal_ref else "external"
+                file_info.append((file.file_type, name, file.path, file.source_dir,
+                                  file.target_dir, rel_path_ref, str(file.active)))
+            print("   Files:")
+            print("\n" + jube2.util.output.text_table(file_info, use_header_line=True,
+                                                    indent=2))
+
+    # Create pattern overview
+    if benchmark.patternsets:
+        print(jube2.util.output.text_line("="))
+        print("\nPatternsets info:")
+        for patternset_name, patternset in benchmark.patternsets.items():
+            print("\n   Patternset name: " + patternset_name)
+            pattern_info = [("name", "value", "default", "unit", "mode", "type", "dotall")]
+            for pattern in patternset.pattern_storage:
+                default = pattern.default_value if pattern.default_value else ""
+                pattern_info.append((pattern.name, pattern.value, default, pattern.unit,
+                                     pattern.mode, pattern.parameter_type, str(pattern.dotall)))
+            for pattern in patternset.derived_pattern_storage:
+                default = pattern.default_value if pattern.default_value else ""
+                pattern_info.append((pattern.name, pattern.value, default, pattern.unit,
+                                     pattern.mode, pattern.parameter_type, str(pattern.dotall)))
+            print("   Pattern:")
+            print("\n" + jube2.util.output.text_table(pattern_info, use_header_line=True,
+                                                    indent=2))
 
     # Create step overview
-    step_info = [("step name", "depends", "#work", "#error", "#done",
-                  "last finished")]
-    for step_name, workpackages in benchmark.workpackages.items():
-        cnt_done = 0
-        cnt_error = 0
-        last_finish = time.localtime(0)
-        depends = jube2.conf.DEFAULT_SEPARATOR.join(
-            benchmark.steps[step_name].depend)
-        for workpackage in workpackages:
-            if workpackage.done:
-                cnt_done += 1
+    if benchmark.steps:
+        status_info = [("step_name", "#work", "#error", "#done", "last finished")]
+        print(jube2.util.output.text_line("="))
+        print("\nSteps info:")
+        for step_name, workpackages in benchmark.workpackages.items():
+            print("\n   Step name: " + step_name)
+            step_info = [("depends", "work_dir", "suffix", "shared", "active", "export",
+                        "max_async", "iterations", "cycles", "procs", "do_log_file", )]
+            step = benchmark.steps[step_name]
+            # Get used sets and print out
+            used_paramsets = step.get_used_sets(benchmark.parametersets)
+            if used_paramsets:
+                print("   Used Parametersets: " + ", ".join(used_paramsets))
+            used_patternsets = step.get_used_sets(benchmark.patternsets)
+            if used_patternsets:
+                print("   Used Patternsets: " + ", ".join(used_patternsets))
+            used_filesets = step.get_used_sets(benchmark.filesets)
+            if used_filesets:
+                print("   Used Filesets: " + ", ".join(used_filesets))
+            used_substitutesets = step.get_used_sets(benchmark.substitutesets)
+            if used_substitutesets:
+                print("   Used Substitutesets: " + ", ".join(used_substitutesets))
+            # Get attributes and print out
+            depends = jube2.conf.DEFAULT_SEPARATOR.join(step.depend)
+            iterations = step.iterations
+            work_dir = step.work_dir if step.work_dir else ""
+            shared = step.shared_link_name if step.shared_link_name else ""
+            do_log_file = step.do_log_file if step.do_log_file else ""
+            step_info.append((depends, work_dir, step.suffix, shared, step.active,
+                            str(step.export), step.max_wps, str(iterations),
+                            str(step.cycles), str(step.procs), do_log_file))
 
-                # Read timestamp from done_file if it is available otherwise
-                # use mtime
-                done_file = os.path.join(workpackage.workpackage_dir,
-                                         jube2.conf.WORKPACKAGE_DONE_FILENAME)
-                done_file_f = open(done_file, "r")
-                done_str = done_file_f.read().strip()
-                done_file_f.close()
-                try:
-                    done_time = time.strptime(done_str, "%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    done_time = time.localtime(os.path.getmtime(done_file))
-                last_finish = max(last_finish, done_time)
-            if workpackage.error:
-                cnt_error += 1
+            print(
+                "\n" + jube2.util.output.text_table(step_info, use_header_line=True,
+                                                    indent=2))
 
-        if last_finish > time.localtime(0):
-            last_finish_str = time.strftime("%Y-%m-%d %H:%M:%S", last_finish)
-        else:
-            last_finish_str = ""
-        continue_possible = continue_possible or \
-            (len(workpackages) != cnt_done)
+            # Get operation attributes and print out
+            print("   Operations:")
+            operation_info = [("do", "stdout", "stderr", "active", "done_file",
+                            "error_file", "break_file", "shared", "work_dir")]
+            for operation in step.operations:
+                stdout = operation.stdout_filename if operation.stdout_filename else ""
+                stderr = operation.stderr_filename if operation.stderr_filename else ""
+                async_file = operation.async_filename if operation.async_filename else ""
+                error = operation.error_filename if operation.error_filename else ""
+                break_file = operation.break_filename if operation.break_filename else ""
+                work_dir = operation.work_dir if operation.work_dir else ""
+                operation_info.append((operation.do, stdout, stderr, operation.active_string,
+                                    async_file, error, break_file, str(operation.shared),
+                                    work_dir))
+            print(
+                "\n" + jube2.util.output.text_table(operation_info, use_header_line=True,
+                                                    indent=2))
 
-        # Create #workpackages string
-        iterations = benchmark.steps[step_name].iterations
-        if benchmark.steps[step_name].iterations > 1:
-            cnt = "{0}*{1}".format(len(workpackages) // iterations, iterations)
-        else:
-            cnt = str(len(workpackages))
+            # Get status and print out
+            cnt_done = 0
+            cnt_error = 0
+            last_finish = time.localtime(0)
+            for workpackage in workpackages:
+                if workpackage.done:
+                    cnt_done += 1
 
-        step_info.append((step_name, depends, cnt, str(cnt_error),
-                          str(cnt_done), last_finish_str))
+                    # Read timestamp from done_file if it is available otherwise
+                    # use mtime
+                    done_file = os.path.join(workpackage.workpackage_dir,
+                                            jube2.conf.WORKPACKAGE_DONE_FILENAME)
+                    done_file_f = open(done_file, "r")
+                    done_str = done_file_f.read().strip()
+                    done_file_f.close()
+                    try:
+                        done_time = time.strptime(done_str, "%Y-%m-%d %H:%M:%S")
+                    except ValueError:
+                        done_time = time.localtime(os.path.getmtime(done_file))
+                    last_finish = max(last_finish, done_time)
+                if workpackage.error:
+                    cnt_error += 1
 
-    print(
-        "\n" + jube2.util.output.text_table(step_info, use_header_line=True,
-                                            indent=1))
+            if last_finish > time.localtime(0):
+                last_finish_str = time.strftime("%Y-%m-%d %H:%M:%S", last_finish)
+            else:
+                last_finish_str = ""
+            continue_possible = continue_possible or \
+                (len(workpackages) != cnt_done)
+
+            # Create #workpackages string
+            if iterations > 1:
+                cnt = "{0}*{1}".format(len(workpackages) // iterations, iterations)
+            else:
+                cnt = str(len(workpackages))
+
+            status_info.append((step_name, cnt, str(cnt_error), str(cnt_done),
+                                last_finish_str))
+
+    # Create analyse overview
+    if benchmark.analyser:
+        print(jube2.util.output.text_line("="))
+        print("\nAnalyser info:")
+        for analyser_name, analyser in benchmark.analyser.items():
+            print("\n   Analyser name: " + analyser_name)
+            print("   Reduce: " + str(analyser.reduce))
+            print("   Used Patternsets: " + ", ".join(analyser.use))
+            for step_name, analyse in analyser.analyser.items():
+                print("   Analyse Files for Step " + step_name + ":")
+                analyse_info = [("path", "use")]
+                for file in analyse:
+                    analyse_info.append((file.path, ", ".join(file.use)))
+                print("\n" + jube2.util.output.text_table(analyse_info, use_header_line=True,
+                                                        indent=3))
+
+    # Create Result overview
+    if benchmark.results:
+        print(jube2.util.output.text_line("="))
+        print("\nResult info:")
+        for result_name, result in benchmark.results.items():
+            print("\n   Result name: " + result_name)
+            print("   Used Analyser: " + ", ".join(result.use))
+            result_type = result.result_type
+            if result_type == "Table":
+                table_info = [("name", "style", "sort", "seperator", "transpose", "filter")]
+                column_info = [("column", "colw", "format", "title")]
+                res_filter = result.res_filter if result.res_filter else ""
+                table_info.append((result.name, result.style, ", ".join(result.sort),
+                                result.separator, str(result.transpose), res_filter))
+                print("   Table Info:")
+                print("\n" + jube2.util.output.text_table(table_info, use_header_line=True,
+                                                        indent=3))
+                for column in result._keys:
+                    colw = column.colw if column.colw else ""
+                    col_format = column.format if column.format else ""
+                    title = column.title if column.title else ""
+                    column_info.append((column.name, colw, col_format, title))
+                print("   Column Info:")
+                print("\n" + jube2.util.output.text_table(column_info, use_header_line=True,
+                                                        indent=3))
+            elif result_type == "Database":
+                database_info = [("name", "primekeys", "file", "filter")]
+                key_info = [("key", "title")]
+                res_filter = result.res_filter if result.res_filter else ""
+                database_info.append((result.name, ", ".join(result.primekeys), result.file, res_filter))
+
+                print("   Database Info:")
+                print("\n" + jube2.util.output.text_table(database_info, use_header_line=True,
+                                                        indent=3))
+                for key in result._keys:
+                    title = key.title if key.title else ""
+                    key_info.append((key.name, title))
+                print("   Key Info:")
+                print("\n" + jube2.util.output.text_table(key_info, use_header_line=True,
+                                                        indent=3))
+            elif result_type == "SysloggedResult":
+                syslog_info = [("name", "address", "host", "port", "sort", "format", "filter")]
+                key_info = [("key", "format", "title")]
+                address = result.address if result.address else ""
+                host = result.host if result.host else ""
+                port = result.port if result.port else ""
+                res_filter = result.res_filter if result.res_filter else ""
+                syslog_info.append((result.name, address, host, port, ", ".join(result.sort),
+                                    result.sys_format, res_filter))
+                print("   Syslog Info:")
+                print("\n" + jube2.util.output.text_table(syslog_info, use_header_line=True,
+                                                        indent=3))
+                for key in result._keys:
+                    key_format = key.format if key.format else ""
+                    title = key.title if key.title else ""
+                    key_info.append((key.name, key_format, title))
+                print("   Key Info:")
+                print("\n" + jube2.util.output.text_table(key_info, use_header_line=True,
+                                                        indent=3))
+
+    print(jube2.util.output.text_line("="))
+    print(jube2.util.output.text_line("="))
+
+    print("\nSteps status:")
+    print("\n" + jube2.util.output.text_table(status_info, use_header_line=True,
+                                                indent=1))
 
     if continue_possible:
         print("\n--- Benchmark not finished! ---\n")

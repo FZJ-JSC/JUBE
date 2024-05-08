@@ -177,6 +177,16 @@ class Database(KeyValuesResult):
         self._primekeys = primekeys
         self._db_file = db_file
 
+    @property
+    def file(self):
+        """Return the database file"""
+        return self._db_file
+
+    @property
+    def primekeys(self):
+        """Return the database primekeys"""
+        return self._primekeys
+
     def add_key(self, name, format_string=None, title=None, primekey=False):
         """Add an additional key to the dataset"""
         self._keys.append(Database.Column(name, title, format_string,

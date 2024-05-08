@@ -161,6 +161,21 @@ class Table(KeyValuesResult):
         self._separator = separator
         self._transpose = transpose
 
+    @property
+    def style(self):
+        """Return the result style"""
+        return self._style
+
+    @property
+    def separator(self):
+        """Return the result separator"""
+        return self._separator
+
+    @property
+    def transpose(self):
+        """Return the result transpose"""
+        return self._transpose
+
     def add_column(self, name, colw=None, format_string=None, title=None):
         """Add an additional column to the dataset"""
         self._keys.append(Table.Column(name, title, colw, format_string))

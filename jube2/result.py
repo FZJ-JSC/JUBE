@@ -69,6 +69,21 @@ class Result(object):
         return self._name
 
     @property
+    def result_type(self):
+        """Return class name"""
+        return type(self).__name__
+
+    @property
+    def use(self):
+        """Return the result name"""
+        return self._use
+
+    @property
+    def res_filter(self):
+        """Return the result filter"""
+        return self._res_filter
+
+    @property
     def benchmark(self):
         """Return the benchmark"""
         return self._benchmark

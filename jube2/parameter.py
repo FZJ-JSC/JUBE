@@ -523,6 +523,11 @@ class Parameter(object):
         self._idx = new_idx
 
     @property
+    def separator(self):
+        """Return seperator"""
+        return self._separator
+
+    @property
     def update_mode(self):
         """Returns the update mode of the parameter"""
         return self._update_mode
