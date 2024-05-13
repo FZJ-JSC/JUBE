@@ -7,6 +7,12 @@ Release notes
 
 Release: XXXX-XX-XX
 
+* Added: New environment variable *JUBE_VERBOSE* to set the verbosity
+  level.
+
+* Added: Warning when the current verbosity level from the command
+  line or environment variable is out of range.
+
 * Changed: The convert type warning is only logged to the
   *analyse.log* file and no longer printed to the console output.
 
