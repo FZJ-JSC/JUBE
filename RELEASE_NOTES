@@ -5,7 +5,10 @@ Release notes
 [UNRELEASED]
 ============
 
-Release: XXX-XX-XX
+Release: XXXX-XX-XX
+
+* Changed: The convert type warning is only logged to the
+  *analyse.log* file and no longer printed to the console output.
 
 * Removed: Comma character (*,*) is no longer supported in
   *check_tags* and *tag* attributes. Instead use *|*, *+* and *!*.
