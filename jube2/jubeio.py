@@ -255,21 +255,6 @@ class Parser(object):
         return benchmarks, list(only_bench), list(not_bench)
 
     @staticmethod
-    def _convert_old_tag_format(input_string):
-        """Converts the old ,-based tag format into the new tag format"""
-
-        tags = set(map(lambda x: x.strip(), input_string.split(",")))
-        not_tags = set([tag for tag in tags if tag[0] == "!"])
-        tags = tags.difference(not_tags)
-
-        output_string = "+".join(not_tags)
-        if len(output_string) > 0 and len(tags) > 0:
-            output_string += "+"
-        if len(tags) > 0:
-            output_string += "(" + "|".join(tags) + ")"
-        return output_string
-
-    @staticmethod
     def _check_valid_tags(element, tags):
         """Check if element contains only valid tags"""
         return jube2.util.util.valid_tags(element.get("tag"), tags)

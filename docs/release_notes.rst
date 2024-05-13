@@ -21,6 +21,12 @@
 Release notes
 =============
 
+[UNRELEASED]
+~~~~~~~~~~~~~
+Release: XXX-XX-XX
+
+* Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `+` and `!`.
+
 Version 2.6.2
 ~~~~~~~~~~~~~
 Release: 2024-04-05
