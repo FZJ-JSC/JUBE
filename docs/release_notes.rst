@@ -36,6 +36,7 @@ Release: XXXX-XX-XX
 * Changed: If the `title` attribute of a database `key` is set, then this title is used as the name of the database column instead of the parameter or pattern name.
 * Deprecated: The `primekeys` attribute of the `database` is no longer supported. Use the new `primekey` attribute of the `database` `key` instead.
 * Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^` `+` and `!`.
+* Fixed: Allow YAML scripts to include a list of nested parametersets with `!include`.
 
 Version 2.6.2
 ~~~~~~~~~~~~~
