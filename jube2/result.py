@@ -163,7 +163,8 @@ class Result(object):
                     parameter_dict = dict()
                     for par in workpackage.parameterset:
                         value = \
-                            jube2.util.util.convert_type(par.parameter_type,
+                            jube2.util.util.convert_type(par.name,
+                                                         par.parameter_type,
                                                          par.value, stop=False)
                         # add suffix to the parameter name
                         if (par.name + "_" + workpackage.step.name

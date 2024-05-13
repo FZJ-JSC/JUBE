@@ -364,8 +364,9 @@ class Step(object):
                     # --- Check parameter type ---
                     for parameter in workpackage.parameterset:
                         if not parameter.is_template:
-                            jube2.util.util.convert_type(
-                                parameter.parameter_type, parameter.value)
+                            jube2.util.util.convert_type(parameter.name,
+                                                         parameter.parameter_type,
+                                                         parameter.value)
 
                     # --- Enable workpackage dir cache ---
                     workpackage.allow_workpackage_dir_caching()

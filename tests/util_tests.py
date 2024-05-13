@@ -32,12 +32,12 @@ class TestUtil(unittest.TestCase):
 
     def test_convert_type(self):
         """Test convert_type"""
-        self.assertEqual(type(jube2.util.util.convert_type("int","42",stop=True)),int)
-        self.assertEqual(type(jube2.util.util.convert_type("float","42",stop=True)),float)
-        self.assertEqual(type(jube2.util.util.convert_type("float","3.141",stop=True)),float)
+        self.assertEqual(type(jube2.util.util.convert_type("Test","int","42",stop=True)),int)
+        self.assertEqual(type(jube2.util.util.convert_type("Test","float","42",stop=True)),float)
+        self.assertEqual(type(jube2.util.util.convert_type("Test","float","3.141",stop=True)),float)
         with self.assertRaises(ValueError):
-            jube2.util.util.convert_type("int","forty-two",stop=True)
-        self.assertEqual(jube2.util.util.convert_type("int","forty-two",stop=False),"forty-two")
+            jube2.util.util.convert_type("Test","int","forty-two",stop=True)
+        self.assertEqual(jube2.util.util.convert_type("Test","int","forty-two",stop=False),"forty-two")
 
     def test_expand_dollar_count(self):
         """Test expand_dollar_count"""

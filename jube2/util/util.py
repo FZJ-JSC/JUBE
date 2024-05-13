@@ -247,7 +247,7 @@ def substitution(text, substitution_dict):
     return re.sub("\$(?=([\s]|$))","$$",tmp.safe_substitute(str_substitution_dict))
 
 
-def convert_type(value_type, value, stop=True):
+def convert_type(name, value_type, value, stop=True):
     """Convert value to given type"""
     result_value = None
     value_type_incorrect=False
@@ -267,12 +267,11 @@ def convert_type(value_type, value, stop=True):
             result_value = value
     except ValueError:
         if stop:
-            raise ValueError(f"\"{value}\" cannot be represented as a \"{value_type}\"")
+            raise ValueError(f"\"{value}\" from \"{name}\" cannot be represented as a \"{value_type}\"")
         else:
             result_value = value
     if value_type_incorrect:
-        print(f"Warning: \"{value}\" was converted to type \"{value_type}\": {result_value}.\n")
-        LOGGER.debug(f"Warning: \"{value}\" was converted to type \"{value_type}\": {result_value}.\n")
+        LOGGER.debug(f"Warning: \"{value}\" from \"{name}\" was converted to type \"{value_type}\": {result_value}.\n")
     return result_value
 
 
