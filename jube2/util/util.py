@@ -463,6 +463,19 @@ def check_and_get_group_id():
         return None
 
 
+def check_and_get_verbose_level():
+    """Read environment var JUBE_VERBOSE and return verbose level"""
+    verbose_level = 0
+    if "JUBE_VERBOSE" in os.environ:
+        try:
+            verbose_level = int(os.environ["JUBE_VERBOSE"])
+        except ValueError:
+            print("Failed to parse JUBE_VERBOSE variable '{}'. "
+                  "Accepted values are numbers from 0 to 3."
+                  .format(os.environ["JUBE_VERBOSE"]))
+            exit(1)
+    return verbose_level
+
 def consistency_check(benchmark):
     """Do some consistency checks"""
 
