@@ -408,7 +408,11 @@ For example:
 
 * ``!`` can be used for negation (``!deu`` stands for ``not deu``)
 
-* ``|`` can be used as an OR operator and ``+`` as an AND operator to combine tag values (e.g. XML: ``tag="!deu+eng"``; YAML: ``tag: "!deu+eng"``).
+* ``+`` can be used as an AND operator to combine tag values (e.g. XML: ``tag="!deu+eng"``; YAML: ``tag: "!deu+eng"``).
+
+* ``|`` can be used as an OR operator to combine tag values. (e.g. ``tag1 | tag2`` means that one of the two (or both) tags must be set.)
+
+* ``^`` can be used as am XOR operator to combine tag values. (e.g. ``tag1 ^ tag2`` means that one of the two tags must be set, but not both.)
 
 * Parentheses are also allowed
 

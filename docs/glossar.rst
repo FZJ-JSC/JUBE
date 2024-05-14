@@ -137,6 +137,7 @@ Glossary
       * The combination is set using boolean algebra.
       * For the logical operation 'conjunction', i.e. 'and', the sign ``+`` is used. Example: ``tag1 + tag2`` means that both tags must be set.
       * For the logical operation 'disjunction', i.e. 'or', the character ``|`` is used. Example: ``tag1 | tag2`` means that one of the two or both tags must be set.
+      * For the logical operation 'exclusive disjunction', i.e. 'xor', the character ``^`` is used. Example: ``tag1 ^ tag2`` means that one of the two (not both!) tags must be set.
       * In addition, the character ``!`` can be used for the logical operation 'negation', i.e. 'not'. Example: ``!tag1`` means that the tag ``tag1`` must not be set.
 
    selection_tag

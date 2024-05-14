@@ -229,7 +229,8 @@ class Parser(object):
             if not jube2.util.util.valid_tags(check_tags, self._tags):
                 raise ValueError("The following tag combination is required: "
                                  "{0}".format(check_tags.replace('|', ' or ')\
-                                 .replace('+', ' and ').replace('!', ' not ')))
+                                 .replace('+', ' and ').replace('!', ' not ')\
+                                 .replace('^', ' xor ')))
 
         LOGGER.debug("  Preprocess done")
 

@@ -25,10 +25,11 @@ Release notes
 ~~~~~~~~~~~~~
 Release: XXXX-XX-XX
 
+* Added: A new operator `^` (exclusive disjunction (`xor`)) for the `tag` attribute and `<check_tags>`.
 * Added: New environment variable `JUBE_VERBOSE` to set the verbosity level.
 * Added: Warning when the current verbosity level from the command line or environment variable is out of range.
 * Changed: The convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
-* Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `+` and `!`.
+* Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^`,  `+` and `!`.
 
 Version 2.6.2
 ~~~~~~~~~~~~~
