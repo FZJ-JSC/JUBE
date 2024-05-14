@@ -127,16 +127,6 @@ class Benchmark(object):
         self._file_path_ref = file_path_ref
 
     @property
-    def outpath(self):
-        """Return outpath"""
-        return self._outpath
-
-    @outpath.setter
-    def outpath(self, new_outpath):
-        """Overwrite outpath"""
-        self._outpath = new_outpath
-
-    @property
     def substitutesets(self):
         """Return substitutesets"""
         return self._substitutesets

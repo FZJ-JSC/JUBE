@@ -476,6 +476,13 @@ def check_and_get_verbose_level():
             exit(1)
     return verbose_level
 
+def check_and_get_benchmark_outpath():
+    """Read environment var JUBE_BENCHMARK_OUTPATH and return outpath"""
+    env_outpath = None
+    if "JUBE_BENCHMARK_OUTPATH" in os.environ:
+        env_outpath = os.environ["JUBE_BENCHMARK_OUTPATH"]
+    return env_outpath
+
 def consistency_check(benchmark):
     """Do some consistency checks"""
 

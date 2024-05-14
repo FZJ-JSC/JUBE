@@ -93,6 +93,9 @@ shell environment variables are available which can be used to set system specif
 * ``JUBE_VERBOSE``: The verbosity level can normally be specified using the ``-v`` command line option.
   This environment variable can be used to set a default verbose level, where ``JUBE_VERBOSE=1`` is equivalent to ``-v``,
   ``JUBE_VERBOSE=2`` is equivalent to ``-vv`` and so on. If the command line option is set, the environment variable is ignored.
+* ``JUBE_BENCHMARK_OUTPATH``: This environment variable can be used to set a default benchmark outpath, relative to the execution directory.
+  Alternatively, it can be set using the ``--outpath`` command line option or the ``outpath`` attribute of the benchmark tag.
+  The command line option overrides the environment variable, which in turn overrides the attribute in the input file.
 
 *BASH* autocompletion can be enabled by using the ``eval "$(jube complete)"`` command. You can store the command in your bash profile
 settings if needed.
