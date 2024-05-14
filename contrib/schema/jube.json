@@ -252,7 +252,7 @@
 					"$ref": "#/$defs/include"
 				}
 			},
-			"required": [ "name", "outpath" ],
+			"required": [ "name" ],
 			"additionalProperties": false
 		},
 

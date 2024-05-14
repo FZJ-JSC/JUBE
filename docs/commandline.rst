@@ -117,7 +117,7 @@ Run a new benchmark.
    overwrite benchmark specific comment
 
 ``-o OUTPATH``, ``--outpath OUTPATH``
-   overwrite outpath directory
+   overwrite outpath directory (relative to the execution location)
 
 ``-i ID [ID ...]``, ``--id ID [ID ...]``
    use specific benchmark id (must be >= 0)

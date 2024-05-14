@@ -516,8 +516,13 @@ def run_new_benchmark(args):
                               args.include_path if include_path != ""]
         else:
             include_pathes = None
+
+        # Get benchmark outpath out of environment if args.outpath not set
+        if args.outpath is None:
+            args.outpath = jube2.util.util.check_and_get_benchmark_outpath()
+
         parser = jube2.jubeio.Parser(path, tags, include_pathes,
-                                     args.force, args.strict)
+                                     args.outpath, args.force, args.strict)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment
@@ -548,9 +553,6 @@ def run_new_benchmark(args):
                     continue
                 bench.id = args.id[id_cnt]
                 id_cnt += 1
-            # Change runtime outpath if specified
-            if args.outpath is not None:
-                bench.outpath = args.outpath
             # Start benchmark run
             bench.new_run()
             # Run analyse
@@ -835,7 +837,8 @@ def gen_subparser_conf():
             ("-m", "--comment"):
                 {"help": "add comment"},
             ("-o", "--outpath"):
-                {"help": "overwrite outpath directory"}
+                {"help": "overwrite outpath directory (relative to the "
+                 "execution location)"}
         }
     }
 

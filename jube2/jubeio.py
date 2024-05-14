@@ -53,8 +53,8 @@ class Parser(object):
 
     """JUBE XML input file parser"""
 
-    def __init__(self, filename, tags=None, include_path=None, force=False,
-                 strict=False):
+    def __init__(self, filename, tags=None, include_path=None,
+                 outpath=None, force=False, strict=False):
         self._filename = filename
         if include_path is None:
             include_path = list()
@@ -62,6 +62,7 @@ class Parser(object):
         if tags is None:
             tags = set()
         self._tags = tags
+        self._outpath = outpath
         self._force = force
         self._strict = strict
         self._file_handle = None
@@ -739,11 +740,16 @@ class Parser(object):
         else:
             comment = ""
         comment = re.sub(r"\s+", " ", comment).strip()
-        outpath = Parser._attribute_from_element(benchmark_etree,
-                                                 "outpath").strip()
-        outpath = os.path.expandvars(os.path.expanduser(outpath))
-        # Add position of user to outpath
-        outpath = os.path.normpath(os.path.join(self.file_path_ref, outpath))
+        if self._outpath is None:
+            outpath = Parser._attribute_from_element(benchmark_etree,
+                                                    "outpath").strip()
+            outpath = os.path.expandvars(os.path.expanduser(outpath))
+            # Add position of user to outpath
+            outpath = os.path.normpath(os.path.join(self.file_path_ref, outpath))
+        # Change runtime outpath if specified
+        else:
+            outpath = self._outpath
+
         file_path_ref = benchmark_etree.get("file_path_ref")
 
         # Combine global and local sets
