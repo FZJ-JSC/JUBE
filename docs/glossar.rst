@@ -607,13 +607,11 @@ Glossary
      .. code-block:: xml
 
         <database name="..." primekeys="..." file="..." filter="...">
-          <key>...</key>
+          <key title="..." primekey="...">...</key>
           ...
         </database>
 
      * ``name``: name of the table in the database
-
-     * ``<key>`` must contain an single parameter or pattern name
 
      * Unlike the result table, the unit attribute of a parameter or pattern
        is not taken into account.
@@ -621,16 +619,27 @@ Glossary
      * ``primekeys`` is optional: can contain a list of parameter or
        pattern names (separated by ``,``). Given parameters or patterns
        will be used as primary keys of the database table. All
-       primekeys have to be listed as a ``<key>`` as well. Modification
-       of primary keys of an existing table is not supported.
+       primekeys have to be listed as a ``<key>`` as well and if the ``title``
+       attribute of a ``key`` is set, then the value of the ``title`` attribute must
+       be used in the ``primekeys`` attribute (and not the parameter or pattern
+       name). Modification of primary keys of an existing table is not supported.
        If no primekeys are set then each `jube result` will add new rows
        to the database. Otherwise rows with matching primekeys will be updated.
+       **Important note: The use of the ``database`` attribute ``primekeys`` is 
+       deprecated and will be removed soon. Instead, use the ``primekey`` attribute
+       of the ``key``. **
 
      * ``file`` is optional. The given value should hold the full path
        to the database file. If the file including the path does not
        exists it will be created. Absolute and relative paths are supported.
 
      * ``filter`` is optional. It can contain a bool expression to show only specific result entries.
+
+     * ``<key>`` can be specified in the database result and must contain an single parameter or pattern name.
+
+       * ``title`` is optional: alternative key title. Used to define a custom database column name.
+       * ``primekey`` is optional: If primekey is set to true, the key is added to the database primekeys.
+         (default: false) The ``primekeys`` attribute of the ``database``-tag is deprecated and will be removed.
 
    result_tag
      The result tag is used to handle different visualisation types of your analysed data.
@@ -698,7 +707,7 @@ Glossary
      .. code-block:: xml
 
         <syslog name="..." address="..." host="..." port="..." sort="..." format="..." filter="...">
-          <key>...</key>
+          <key format="..." title="...">...</key>
           ...
         </syslog>
 
@@ -707,20 +716,14 @@ Glossary
      * ``format`` is optional: can contain a log format written in a pythonic way (default: ``jube[%(process)s]: %(message)s``)
      * ``sort`` is optional: can contain a list of parameter- or patternnames (separated by ,).
        Given patterntype or parametertype will be used for sorting
-     * ``<key>`` must contain an single parameter- or patternname
+     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
+     * ``<key>`` can be specified in the syslog result and must contain an single parameter or pattern name.
+
+       * ``format`` can contain a C like format string: e.g. ``format=".2f"``
+       * ``title`` is optional: alternative key title.
+
      * Unlike the result table, the unit attribute of a parameter or pattern
        is not taken into account.
-     * ``filter`` is optional, it can contain a bool expression to show only specific result entries
-
-   key_tag
-     A syslog result key. ``<key>`` must contain an single parameter- or patternname.
-
-     .. code-block:: xml
-
-        <key format="..." title="...">...</key>
-
-     * ``title`` is optional: alternative key title
-     * ``format`` can contain a C like format string: e.g. ``format=".2f"``
 
    parameter_space
      The parameter space for a specific benchmark run is the bundle of all possible parameter combinations.

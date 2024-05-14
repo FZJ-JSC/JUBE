@@ -1237,6 +1237,11 @@
 					"description": "Alternative title",
 					"type": "string"
 				},
+				"primekey": {
+					"description": "If primekey is set to true, the key is added to the database primekeys.",
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
+				},
 				"tag": {
 					"$ref": "#/$defs/tag"
 				},

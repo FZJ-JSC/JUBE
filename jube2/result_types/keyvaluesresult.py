@@ -205,8 +205,11 @@ class KeyValuesResult(Result):
         self._keys.append(KeyValuesResult.DataKey(name, title, format_string,
                                                   unit))
 
-    def create_result_data(self, select=None, exclude=None):
-        """Create result data"""
+    def create_result_data(self, select=None, exclude=None, preserve_datatype=False):
+        """Create the result data. The keys in the select list are selected for
+        these results, while the keys in the exclude list are excluded from the results.
+        The preserve_datatype parameter specifies whether the data type of the value
+        should be preserved or converted to a string."""
         result_data = KeyValuesResult.KeyValuesData(self._name)
 
         if exclude is None:
@@ -308,6 +311,8 @@ class KeyValuesResult(Result):
                         if key.format is not None:
                             value = jube2.util.output.format_value(
                                 key.format, dataset[key.name])
+                        elif preserve_datatype:
+                            value = dataset[key.name]
                         else:
                             value = str(dataset[key.name])
                     row.append(value)

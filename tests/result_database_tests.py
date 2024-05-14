@@ -27,7 +27,7 @@ import unittest
 import sqlite3
 import os
 import jube2.result_types.database
-import jube2.result_types.genericresult
+import jube2.result_types.keyvaluesresult
 
 
 class TestResultDatabase(unittest.TestCase):
@@ -39,19 +39,19 @@ class TestResultDatabase(unittest.TestCase):
         self.dataKeyNames = ["dataKeyName1", "dataKeyName2"]
         self.dataKeys = [[2, 4], [8, 4]]
         self.dataBaseTableName = "databaseKeyValuesData"
-        keyValuesDataInstance = jube2.result_types.genericresult.GenericResult.KeyValuesData(
+        keyValuesDataInstance = jube2.result_types.keyvaluesresult.KeyValuesResult.KeyValuesData(
             self.dataBaseTableName)
         databaseDataInstance = jube2.result_types.database.Database.DatabaseData(
             keyValuesDataInstance, [], None)
-        datakey1 = jube2.result_types.genericresult.GenericResult.DataKey(
+        datakey1 = jube2.result_types.database.Database.Column(
             self.dataKeyNames[0], None, None)
-        datakey2 = jube2.result_types.genericresult.GenericResult.DataKey(
+        datakey2 = jube2.result_types.database.Database.Column(
             self.dataKeyNames[1], None, None)
-        databaseDataInstance._data = {
-            datakey1: self.dataKeys[0], datakey2: self.dataKeys[1]}
+        databaseDataInstance._keys = [datakey1, datakey2]
+        databaseDataInstance._data = [d for d in list(zip(*self.dataKeys))]
         databaseDataInstance._benchmark_ids = [0]
         databaseDataInstance.create_result(
-            True, self.databaseFileName, reverse=False)
+            True, self.databaseFileName)
 
     def test_database(self):
         """Test database"""

@@ -49,7 +49,7 @@ class TestResultDatabaseExample(TestCase.TestExample):
         Overwrites the original test (TestExample.test_for_equal_result_data())
         for the result output to allow an example specific test.
         '''
-        key_names = ["number", "number_pat"]
+        key_names = ["number", "NUM"]
         keys = [[1, 2, 4], [1, 2, 4]]
         for run_path, command_wps in self._wp_paths.items():
             #Get database file

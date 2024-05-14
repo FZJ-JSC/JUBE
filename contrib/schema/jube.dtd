@@ -164,6 +164,7 @@
 <!ELEMENT key (#PCDATA)>
 <!ATTLIST key           format CDATA #IMPLIED
                         title CDATA #IMPLIED
+                        primekey (true|false|True|False) #IMPLIED
                         tag CDATA #IMPLIED>
 <!ELEMENT file (#PCDATA)>
 <!ATTLIST file          tag CDATA #IMPLIED

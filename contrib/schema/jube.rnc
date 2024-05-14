@@ -220,6 +220,7 @@ key = element key { attlist.key, text }
 attlist.key &=
   attribute format { text }?,
   attribute title { text }?,
+  attribute primekey { "true" | "false" | "True" | "False" }?,
   attribute tag { text }?
 file = element file { attlist.file, text }
 attlist.file &=
