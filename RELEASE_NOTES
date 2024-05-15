@@ -46,6 +46,9 @@ Release: XXXX-XX-XX
 * Removed: Comma character (*,*) is no longer supported in
   *check_tags* and *tag* attributes. Instead use *|*, *^* *+* and *!*.
 
+* Fixed: Allow YAML scripts to include a list of nested parametersets
+  with *!include*.
+
 
 Version 2.6.2
 =============
