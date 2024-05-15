@@ -271,7 +271,11 @@ class YAML_Converter(object):
                 for val in value:
                     if key in allowed_tags:
                         # Create new subtag
-                        YAML_Converter.create_tag(key, val, new_node)
+                        if type(val) is list:
+                            for element in val:
+                                YAML_Converter.create_tag(key, element, new_node)
+                        else:
+                            YAML_Converter.create_tag(key, val, new_node)
                     else:
                         # Create attribute
                         new_node.set(key, str(val) if val is not None else "")
