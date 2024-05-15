@@ -26,6 +26,7 @@ Release notes
 Release: XXXX-XX-XX
 
 * Added: New `<tags>` tag, which includes the `<tag>` tag to write a description for each tag specified in the input file.
+* Added: New command `jube tag` to print out the tag description of a given input file or benchmark directory.
 * Added: A new operator `^` (exclusive disjunction (`xor`)) for the `tag` attribute and `<check_tags>`.
 * Added: New `primekey` attribute for the `key`-tag of the `database` to define whether this `key` is a primary key of the database or not. Can be set to `true` or `false` (default: `false`).
 * Added: New environment variable `JUBE_VERBOSE` to set the verbosity level.

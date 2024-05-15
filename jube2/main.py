@@ -73,13 +73,23 @@ def status(args):
 
 def tag(args):
     """Show tag documentation"""
-    found_benchmarks = search_for_benchmarks(args)
-    for benchmark_folder in found_benchmarks:
-        benchmark = _load_existing_benchmark(args, benchmark_folder,
-                                             load_analyse=False)
-        if benchmark is None:
+    # Show tag docu out of inputfile if the given path is a file
+    if os.path.isfile(args.dir):
+        parser = jube2.jubeio.Parser(args.dir)
+        benchmarks = parser.benchmarks_from_xml(check_tags=False)[0]
+        if benchmarks is None:
             return
-        jube2.info.print_tag_documentation(benchmark)
+        for benchmark in benchmarks.values():
+            jube2.info.print_tag_documentation(args.dir, benchmark)
+    # Show tag docu out of bench run if the given path is a directory
+    else:
+        found_benchmarks = search_for_benchmarks(args)
+        for benchmark_folder in found_benchmarks:
+            benchmark = _load_existing_benchmark(args, benchmark_folder,
+                                                load_analyse=False)
+            if benchmark is None:
+                return
+            jube2.info.print_benchmark_tag_documentation(benchmark)
 
 
 def output(args):
@@ -985,8 +995,9 @@ def gen_subparser_conf():
         "func": tag,
         "arguments": {
             ('dir',):
-                {"metavar": "DIRECTORY", "nargs": "?",
-                 "help": "benchmark directory", "default": "."},
+                {"metavar": "PATH", "nargs": "?",
+                 "help": "path to input file or benchmark directory",
+                 "default": "."},
             ("-i", "--id"):
                 {"help": "use benchmarks given by id",
                  "nargs": "+"}

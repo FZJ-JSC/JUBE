@@ -80,7 +80,7 @@ class Parser(object):
         else:
             return "."
 
-    def benchmarks_from_xml(self):
+    def benchmarks_from_xml(self, check_tags=True):
         """Return a dict of benchmarks
 
         Here parametersets are global and accessible to all benchmarks defined
@@ -225,10 +225,11 @@ class Parser(object):
 
         # DEPRECATED: check_tags no longer allowed at global level, only in tags
         # Read all global check_tags and check if necessary tags are given
-        self._control_check_tags(tree.getroot())
+        if check_tags:
+            self._control_check_tags(tree.getroot())
 
         # Read out tag documentation in tags-tag
-        self._tag_docu = self._extract_tags(tag_tree.getroot())
+        self._tag_docu = self._extract_tags(tag_tree.getroot(), check_tags)
 
         LOGGER.debug("  Preprocess done")
 
@@ -731,7 +732,7 @@ class Parser(object):
                                  .replace('+', ' and ').replace('!', ' not ')\
                                  .replace('^', ' xor ')))
 
-    def _extract_tags(self, tree):
+    def _extract_tags(self, tree, check_tags=True):
         """
         Extract tag documentation from tree and controll check_tags.
         Returns the tags with documentation found as dictionary.
@@ -741,7 +742,8 @@ class Parser(object):
         forced = False
         for tags_tree in tree.findall("tags"):
             # controll check tags
-            self._control_check_tags(tags_tree)
+            if check_tags:
+                self._control_check_tags(tags_tree)
 
             forced = tags_tree.get("forced", "false").strip().lower() == "true" or forced
 

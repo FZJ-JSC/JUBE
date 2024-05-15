@@ -63,7 +63,7 @@ Glossary
       directory will be used.
 
    tag
-      Show tag description for the given benchmark.
+      Show tag description for the given input file, the given benchmark directory or a specific benchmark.
 
       If path to input file or benchmark directory is missing, current directory will be used. If no benchmark id is given,
       last benchmark found in directory will be used.
