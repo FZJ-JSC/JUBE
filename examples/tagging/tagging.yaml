@@ -1,4 +1,9 @@
-check_tags: deu|eng  #check if tag deu or eng was set
+tags:
+  check_tags: deu|eng  #check if tag deu or eng was set
+  forced: True
+  tag:
+    - {name: deu, _: For german strings}
+    - {name: eng, _: For english strings}
 
 name: tagging
 outpath: bench_run

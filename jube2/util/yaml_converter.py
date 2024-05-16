@@ -52,10 +52,10 @@ class YAML_Converter(object):
     allowed_tags = \
         {"/": ["benchmark", "parameterset", "comment", "step",
                "fileset", "substituteset", "analyser", "result", "patternset",
-               "selection", "include-path", "check_tags"],
+               "selection", "include-path", "check_tags", "tags"],
          "/benchmark": ["benchmark", "parameterset", "fileset",
                         "substituteset", "patternset", "selection",
-                        "include-path", "check_tags"],
+                        "include-path", "check_tags", "tags"],
          "benchmark": ["parameterset", "comment", "step", "fileset",
                        "substituteset", "analyser", "result", "patternset"],
          "analyse": ["file"], "analyser": ["use", "analyse"],
@@ -64,7 +64,7 @@ class YAML_Converter(object):
          "patternset": ["pattern"], "result": ["use", "table", "syslog", "database"],
          "selection": ["not", "only", "tag"], "step": ["use", "do"],
          "substituteset": ["iofile", "sub"], "syslog": ["key"],
-         "table": ["column"], "database": ["key"]}
+         "table": ["column"], "tags": ["check_tags", "tag"], "database": ["key"]}
 
     def __init__(self, path, include_path=None, tags=None):
         self._path = path

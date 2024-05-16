@@ -419,6 +419,10 @@ For example:
 The ``tag`` attribute can be used within any ``<element>`` within the input file (except the ``<jube>``).
 If several different ``tag`` attribute values are used in a script, they can be specified as a list separated by spaces from the command line.
 
+To keep track of all tags, a description for each tag can be defined within the ``<tags>``, where ``<check_tags>`` is also defined, using
+``<tag name="...">Description</tag>``. To force a description of all possible tags, the ``forced`` attribute can be set to true,
+so that an error is thrown if a tag is not documented.
+
 All ``<elements>`` which contain a special ``tag="..."`` attribute will be hidden if the value of the tag evaluates to ``false``.
 This means that JUBE will ignore the elements with these tags in its internal processing.
 Caution: This can lead to erroneous execution if you forget to set the necessary tags for execution, as JUBE will ignore e.g. a ``<parameter>`` provided with the corresponding ``tag`` attribute that evaluates to false.

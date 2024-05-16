@@ -350,6 +350,7 @@
       <xs:choice minOccurs="0" maxOccurs="unbounded">
         <xs:element name="include-path" type="includePathType" />
         <xs:element name="selection" type="selectionType" />
+        <xs:element name="tags" type="tagsType" />
         <xs:element name="check_tags" type="xs:string" />
       </xs:choice>
       <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -382,6 +383,15 @@
     <xs:attribute name="tag" type="xs:string" use="optional" />
   </xs:complexType>
 
+  <xs:complexType name="tagsType">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element name="tag" type="tagsTagType" />
+      <xs:element name="check_tags" type="xs:string" />
+    </xs:choice>
+    <xs:attribute name="forced" type="xs:string" use="optional" />
+  </xs:complexType>
+
+
   <xs:complexType name="includePathType" mixed="true">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="path" type="stringTagType" />
@@ -396,6 +406,10 @@
         <xs:attribute name="tag" type="xs:string" use="optional" />
       </xs:extension>
     </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="tagsTagType">
+    <xs:attribute name="name" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:complexType name="includeType">

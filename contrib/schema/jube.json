@@ -56,6 +56,28 @@
 						"type": "string"
 					}]
 				}, 
+				"tags": {
+					"description": "It is used to describe tags by name.",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"$ref": "#/$defs/tags_object"
+						}
+					}, {
+						"$ref": "#/$defs/tags_object"
+					}]
+				},
+				"check_tags": {
+					"description": "It specifies a combination of tags that must be set (logical operations: \"+\" (conjunction), \"|\" (disjunction), \"^\" (exclusive disjunction), \"!\" (negation))",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}, {
+						"type": "string"
+					}]
+				},
 				"parameterset": {
 					"$ref": "#/$defs/parameterset"
 				},
@@ -159,6 +181,45 @@
 				},
 				"tag": {
 					"$ref": "#/$defs/tag"
+				}
+			},
+			"additionalProperties": false
+		},
+		"tags_object": {
+			"type": "object",
+			"properties": {
+				"forced": {
+					"description": "If forced is set to true, you will be forced to describe each tag specified in the input file.",
+					"type": ["string","boolean"],
+					"pattern": "^(true|false)$"
+				},
+				"tag": {
+					"description": "Contains the description of the tag with the given name",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"anyOf": [{
+								"$ref": "#/$defs/tags_tag_object"
+							}, {
+								"type": "string"
+							}]
+						}
+					}, {
+						"$ref": "#/$defs/tags_tag_object"
+					}, {
+						"type": "string"
+					}]
+				},
+				"check_tags": {
+					"description": "It specifies a combination of tags that must be set (logical operations: \"+\" (conjunction), \"|\" (disjunction), \"^\" (exclusive disjunction), \"!\" (negation))",
+					"anyOf": [{
+						"type": "array",
+						"items": {
+							"type": "string"
+						}
+					}, {
+						"type": "string"
+					}]
 				}
 			},
 			"additionalProperties": false
@@ -1295,6 +1356,22 @@
 					"$ref": "#/$defs/tag"
 				 }
 			 },
+			"additionalProperties": false
+		},
+
+		"tags_tag_object": {
+			"type": "object",
+			"properties": {
+				"_": {
+					"description": "Description of the tag",
+					"type": "string"
+				},
+				"name": {
+					"description": "The name of the tag",
+					"type": "string"
+				 }
+			 },
+			"required": [ "name" ],
 			"additionalProperties": false
 		},
 

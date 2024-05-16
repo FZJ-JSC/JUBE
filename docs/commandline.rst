@@ -410,6 +410,26 @@ Show benchmark status RUNNING or FINISHED.
 
 .. index:: complete
 
+tag
+~~~
+
+Show tags description
+
+.. code-block:: none
+
+   jube tag [-h] [-i ID [ID ...]] [PATH]
+
+``-h``, ``--help``
+   show command help information
+
+``-i ID [ID ...]``, ``--id ID [ID ...]``
+   |ID_DESCRIPTION|
+
+``PATH``
+   path to input file or directory which contains benchmarks, default: .
+
+.. index:: complete
+
 complete
 ~~~~~~~~
 

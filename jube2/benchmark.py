@@ -46,7 +46,8 @@ class Benchmark(object):
 
     def __init__(self, name, outpath, parametersets, substitutesets,
                  filesets, patternsets, steps, analyser, results,
-                 results_order, comment="", tags=None, file_path_ref="."):
+                 results_order, comment="", tags=None, tag_docu=dict(),
+                 file_path_ref="."):
         self._name = name
         self._outpath = outpath
         self._parametersets = parametersets
@@ -70,6 +71,7 @@ class Benchmark(object):
             self._tags = set()
         else:
             self._tags = tags
+        self._tag_docu = tag_docu
 
     @property
     def name(self):
@@ -85,6 +87,11 @@ class Benchmark(object):
     def tags(self):
         """Return set of tags"""
         return self._tags
+
+    @property
+    def tag_docu(self):
+        """Return dict of tag documentation"""
+        return self._tag_docu
 
     @comment.setter
     def comment(self, new_comment):
@@ -792,6 +799,13 @@ class Benchmark(object):
             for tag in self._tags:
                 tag_etree = ET.SubElement(selection_etree, "tag")
                 tag_etree.text = tag
+        # Store tag documentation
+        if len(self._tag_docu) > 0:
+            tags_etree = ET.SubElement(benchmarks_etree, "tags")
+            for tag, docu in self._tag_docu.items():
+                tag_etree = ET.SubElement(tags_etree, "tag")
+                tag_etree.attrib["name"] = tag
+                tag_etree.text = docu
 
         benchmark_etree = self.etree_repr(new_cwd=self.bench_dir)
         if outpath is not None:

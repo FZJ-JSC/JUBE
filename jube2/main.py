@@ -70,6 +70,28 @@ def status(args):
             return
         jube2.info.print_benchmark_status(benchmark)
         
+
+def tag(args):
+    """Show tag documentation"""
+    # Show tag docu out of inputfile if the given path is a file
+    if os.path.isfile(args.dir):
+        parser = jube2.jubeio.Parser(args.dir)
+        benchmarks = parser.benchmarks_from_xml(check_tags=False)[0]
+        if benchmarks is None:
+            return
+        for benchmark in benchmarks.values():
+            jube2.info.print_tag_documentation(args.dir, benchmark)
+    # Show tag docu out of bench run if the given path is a directory
+    else:
+        found_benchmarks = search_for_benchmarks(args)
+        for benchmark_folder in found_benchmarks:
+            benchmark = _load_existing_benchmark(args, benchmark_folder,
+                                                load_analyse=False)
+            if benchmark is None:
+                return
+            jube2.info.print_benchmark_tag_documentation(benchmark)
+
+
 def output(args):
     """Show output filename"""
     found_workpackages = list()
@@ -961,6 +983,21 @@ def gen_subparser_conf():
             ('dir',):
                 {"metavar": "DIRECTORY", "nargs": "?",
                  "help": "benchmark directory", "default": "."},
+            ("-i", "--id"):
+                {"help": "use benchmarks given by id",
+                 "nargs": "+"}
+        }
+    }
+
+    # tag subparser
+    subparser_configuration["tag"] = {
+        "help": "show tag documentation",
+        "func": tag,
+        "arguments": {
+            ('dir',):
+                {"metavar": "PATH", "nargs": "?",
+                 "help": "path to input file or benchmark directory",
+                 "default": "."},
             ("-i", "--id"):
                 {"help": "use benchmarks given by id",
                  "nargs": "+"}

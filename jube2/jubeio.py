@@ -80,7 +80,7 @@ class Parser(object):
         else:
             return "."
 
-    def benchmarks_from_xml(self):
+    def benchmarks_from_xml(self, check_tags=True):
         """Return a dict of benchmarks
 
         Here parametersets are global and accessible to all benchmarks defined
@@ -135,7 +135,8 @@ class Parser(object):
                     if not inp.startswith("y"):
                         return None, list(), list()
 
-        valid_tags = ["selection", "include-path", "parameterset", "benchmark",
+        # DEPRECATED: check_tags no longer allowed at global level, only in tags
+        valid_tags = ["selection", "include-path", "parameterset", "benchmark", "tags",
                       "substituteset", "fileset", "include", "patternset", "check_tags"]
 
         # Save init include path (from command line)
@@ -198,6 +199,8 @@ class Parser(object):
             else:
                 LOGGER.debug("  No preprocessing changes were detected, stop" +
                              " additional include-preprocess runs.")
+        # Save the current tree before removing the invalid tags to preserve all available tags
+        tag_tree = copy.deepcopy(tree)
 
         # Rerun removing invalid tags
         LOGGER.debug("  Remove invalid tags")
@@ -220,18 +223,13 @@ class Parser(object):
                               "<include from=\"{0}\" ... />")
                              .format(node.attrib["from"]))   
 
+        # DEPRECATED: check_tags no longer allowed at global level, only in tags
         # Read all global check_tags and check if necessary tags are given
-        check_tags = ""
-        for element in tree.findall("check_tags"):
-            check_tags += "(" + element.text + ") + "
+        if check_tags:
+            self._control_check_tags(tree.getroot())
 
-        if check_tags != "":
-            check_tags = check_tags[:-3] # Remove last +
-            if not jube2.util.util.valid_tags(check_tags, self._tags):
-                raise ValueError("The following tag combination is required: "
-                                 "{0}".format(check_tags.replace('|', ' or ')\
-                                 .replace('+', ' and ').replace('!', ' not ')\
-                                 .replace('^', ' xor ')))
+        # Read out tag documentation in tags-tag
+        self._tag_docu = self._extract_tags(tag_tree.getroot(), check_tags)
 
         LOGGER.debug("  Preprocess done")
 
@@ -716,6 +714,74 @@ class Parser(object):
         else:
             return []
 
+    def _control_check_tags(self, tree):
+        """
+        Check for given check_tags in the tree and check
+        if required tags are set.
+        """
+        check_tags = ""
+        for element in tree.findall("check_tags"):
+            check_tags += "(" + element.text + ")"
+            if element != tree.findall("check_tags")[-1]:
+                check_tags += " + "
+
+        if check_tags != "":
+            if not jube2.util.util.valid_tags(check_tags, self._tags):
+                raise ValueError("The following tag combination is required: "
+                                 "{0}".format(check_tags.replace('|', ' or ')\
+                                 .replace('+', ' and ').replace('!', ' not ')\
+                                 .replace('^', ' xor ')))
+
+    def _extract_tags(self, tree, check_tags=True):
+        """
+        Extract tag documentation from tree and controll check_tags.
+        Returns the tags with documentation found as dictionary.
+        """
+        valid_tags = ["tag", "check_tags"]
+        tags = dict()
+        forced = False
+        for tags_tree in tree.findall("tags"):
+            # controll check tags
+            if check_tags:
+                self._control_check_tags(tags_tree)
+
+            forced = tags_tree.get("forced", "false").strip().lower() == "true" or forced
+
+            # find tag documentation
+            for element in tags_tree:
+                Parser._check_tag(element, valid_tags)
+                if element.tag == "tag" and element.text is not None:
+                    tag_name = Parser._attribute_from_element(element, "name").strip()
+                    tag_docu = element.text.strip()
+                    if tag_docu != "":
+                        tags[tag_name] = tag_docu
+                    else:
+                        raise ValueError("The following tag description is empty: {0}"
+                                         .format(tag_name))
+                elif element.tag == "tag" and element.text is None:
+                    tag_name = Parser._attribute_from_element(element, "name").strip()
+                    raise ValueError("The following tag description is empty: {0}"
+                                     .format(tag_name))
+
+        # Get all available tags to check if tags are documented and have matching tag
+        all_tags = list()
+        for element in tree.findall(".//*[@tag]"):
+            found_tag = re.findall(r"[\w'-]+", element.attrib["tag"])
+            all_tags.extend(found_tag)
+        unused_tag_docu = list(set(tags.keys()) - set(all_tags))
+        if len(unused_tag_docu):
+            raise ValueError("Tag descriptions are only allowed for used tags. Tag: "
+                             "'{0}' isn't used in the input file."
+                             .format(", ".join(unused_tag_docu)))
+
+        if forced:
+            missing_tag_docu = list(set(all_tags) - set(tags.keys()))
+            if len(missing_tag_docu):
+                raise ValueError("The following tag description is required: "
+                                 "{0}".format(", ".join(missing_tag_docu)))
+
+        return tags
+
     def _create_benchmark(self, benchmark_etree, global_parametersets,
                           global_substitutesets, global_filesets,
                           global_patternsets):
@@ -796,7 +862,7 @@ class Parser(object):
                                               parametersets, substitutesets,
                                               filesets, patternsets, steps,
                                               analyser, results, results_order,
-                                              comment, self._tags,
+                                              comment, self._tags, self._tag_docu,
                                               file_path_ref)
 
         return benchmark

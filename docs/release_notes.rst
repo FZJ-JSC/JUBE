@@ -25,6 +25,8 @@ Release notes
 ~~~~~~~~~~~~~
 Release: XXXX-XX-XX
 
+* Added: New `<tags>` tag, which includes the `<tag>` tag to write a description for each tag specified in the input file.
+* Added: New command `jube tag` to print out the tag description of a given input file or benchmark directory.
 * Added: A new operator `^` (exclusive disjunction (`xor`)) for the `tag` attribute and `<check_tags>`.
 * Added: New `primekey` attribute for the `key`-tag of the `database` to define whether this `key` is a primary key of the database or not. Can be set to `true` or `false` (default: `false`).
 * Added: New environment variable `JUBE_VERBOSE` to set the verbosity level.
@@ -35,7 +37,9 @@ Release: XXXX-XX-XX
 * Changed: The `outpath` attribute of the `<benchmark>` tag no longer needs to be specified if either the command line option `--outpath` is set or the new environment variable `JUBE_BENCHMARK_OUTPATH` is used. The command line option overrides the environment variable, which in turn overrides the attribute in the input file.
 * Changed: The convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
 * Changed: If the `title` attribute of a database `key` is set, then this title is used as the name of the database column instead of the parameter or pattern name.
+* Changed: The `<check_tags>` tag is now a subelement of the new `<tags>` tag.
 * Deprecated: The `primekeys` attribute of the `database` is no longer supported. Use the new `primekey` attribute of the `database` `key` instead.
+* Deprecated: `<check_tags>` will no longer be supported on a global level. Instead, it should be specified in the `<tags>` tag.
 * Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^` `+` and `!`.
 * Fixed: Allow YAML scripts to include a list of nested parametersets with `!include`.
 * Fixed: Allow YAML scripts to use the tag attribute in the `<path>` of the `<include-path>`-tag.

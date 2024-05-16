@@ -62,6 +62,12 @@ Glossary
       If no benchmark id is given, last benchmark found in directory will be used. If benchmark directory is missing, current
       directory will be used.
 
+   tag
+      Show tag description for the given input file, the given benchmark directory or a specific benchmark.
+
+      If path to input file or benchmark directory is missing, current directory will be used. If no benchmark id is given,
+      last benchmark found in directory will be used.
+
    continue
       Continue an existing benchmark. Not finished steps will be continued,
       if they are leaving pending mode.
@@ -126,6 +132,20 @@ Glossary
       .. code-block:: xml
 
          <comment>...</comment>
+
+  tags_tag
+      Specify tag description and combination of tags that must be set.
+
+      .. code-block:: xml
+
+         <tags forced="...">
+           <check_tags>...</check_tags>
+           <tag name="...">...</tag>
+         </tags>
+
+      * ``forced`` is optional, if it is set to ``true``, you will be forced to describe every possible tag. (default: ``false``)
+      * multiple ``<check_tags>`` and ``<tag>`` are allowed
+      * In the ``<tag>``, you can write a description for the tag with the given name.
 
    check_tags_tag
       Specify combination of tags that must be set.
