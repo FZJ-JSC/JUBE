@@ -26,6 +26,9 @@ Release: XXXX-XX-XX
 * Added: New command line option *--outpath* of *jube run* to specify
   the benchmark outpath.
 
+* Changed: The *jube info* command now also shows information about
+  all sets, steps, analyser and result from the *configuration.xml*.
+
 * Changed: The *outpath* attribute of the *<benchmark>* tag no longer
   needs to be specified if either the command line option *--outpath*
   is set or the new environment variable *JUBE_BENCHMARK_OUTPATH* is
