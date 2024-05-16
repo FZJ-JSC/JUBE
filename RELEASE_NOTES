@@ -7,6 +7,12 @@ Release notes
 
 Release: XXXX-XX-XX
 
+* Added: New *<tags>* tag, which includes the *<tag>* tag to write a
+  description for each tag specified in the input file.
+
+* Added: New command *jube tag* to print out the tag description of a
+  given input file or benchmark directory.
+
 * Added: A new operator *^* (exclusive disjunction (*xor*)) for the
   *tag* attribute and *<check_tags>*.
 
@@ -42,9 +48,15 @@ Release: XXXX-XX-XX
   this title is used as the name of the database column instead of the
   parameter or pattern name.
 
+* Changed: The *<check_tags>* tag is now a subelement of the new
+  *<tags>* tag.
+
 * Deprecated: The *primekeys* attribute of the *database* is no longer
   supported. Use the new *primekey* attribute of the *database* *key*
   instead.
+
+* Deprecated: *<check_tags>* will no longer be supported on a global
+  level. Instead, it should be specified in the *<tags>* tag.
 
 * Removed: Comma character (*,*) is no longer supported in
   *check_tags* and *tag* attributes. Instead use *|*, *^* *+* and *!*.
