@@ -52,6 +52,9 @@ Release: XXXX-XX-XX
 * Fixed: Allow YAML scripts to include a list of nested parametersets
   with *!include*.
 
+* Fixed: Allow YAML scripts to use the tag attribute in the *<path>*
+  of the *<include-path>*-tag.
+
 
 Version 2.6.2
 =============
