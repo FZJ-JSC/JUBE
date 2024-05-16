@@ -38,6 +38,7 @@ Release: XXXX-XX-XX
 * Deprecated: The `primekeys` attribute of the `database` is no longer supported. Use the new `primekey` attribute of the `database` `key` instead.
 * Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^` `+` and `!`.
 * Fixed: Allow YAML scripts to include a list of nested parametersets with `!include`.
+* Fixed: Allow YAML scripts to use the tag attribute in the `<path>` of the `<include-path>`-tag.
 
 Version 2.6.2
 ~~~~~~~~~~~~~
