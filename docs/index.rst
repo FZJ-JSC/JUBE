@@ -36,4 +36,4 @@ Contents:
 .. toctree::
    :hidden:
 
-   jube2
+   jube

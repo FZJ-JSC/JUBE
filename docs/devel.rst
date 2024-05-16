@@ -66,7 +66,7 @@ In the top directory
 
   .. code-block:: sh
 
-     pylint --rcfile devel-utils/pylint.rc jube2
+     pylint --rcfile devel-utils/pylint.rc jube
 
 
 Flake8
@@ -76,7 +76,7 @@ In the top directory
 
   .. code-block:: sh
 
-     flake8 --config devel-utils/flake8 jube2
+     flake8 --config devel-utils/flake8 jube
 
 Another possibility is to copy or link the file to the default search
 path ``~/.config/flake8`` to use it globally.
@@ -129,4 +129,4 @@ to update the ``tar.gz`` file inside the dist directory.
 Python package documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here you will find the *Python* package documentation of *JUBE*: :doc:`Package doku <jube2>`
+Here you will find the *Python* package documentation of *JUBE*: :doc:`Package doku <jube>`

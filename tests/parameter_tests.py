@@ -23,7 +23,7 @@ from __future__ import (print_function,
                         division)
 
 import unittest
-import jube2.parameter
+import jube.parameter
 
 
 class TestParameter(unittest.TestCase):
@@ -32,34 +32,34 @@ class TestParameter(unittest.TestCase):
 
     def setUp(self):
         self.para_cons = \
-            jube2.parameter.Parameter.create_parameter("test", "3")
+            jube.parameter.Parameter.create_parameter("test", "3")
         self.temp_values = ["2", "3", "4"]
         self.para_temp = \
-            jube2.parameter.Parameter.create_parameter(
+            jube.parameter.Parameter.create_parameter(
                 "test", ",".join(self.temp_values))
         self.para_select = \
-            jube2.parameter.Parameter.create_parameter("test", "2,3,4",
+            jube.parameter.Parameter.create_parameter("test", "2,3,4",
                                                        selected_value="3")
         self.para_export = \
-            jube2.parameter.Parameter.create_parameter("test2", "4",
+            jube.parameter.Parameter.create_parameter("test2", "4",
                                                        export=True)
         self.para_no_template = \
-            jube2.parameter.Parameter.create_parameter("no_templates", "2,3,4",
+            jube.parameter.Parameter.create_parameter("no_templates", "2,3,4",
                                                        no_templates=True)
         self.para_eval = \
-            jube2.parameter.Parameter.create_parameter("eval", "2+2",
+            jube.parameter.Parameter.create_parameter("eval", "2+2",
                                                        parameter_mode="python")
         self.para_error = \
-            jube2.parameter.Parameter.create_parameter("error", "2+'test'",
+            jube.parameter.Parameter.create_parameter("error", "2+'test'",
                                                        parameter_mode="python")
         self.para_search_method_3 = \
-            jube2.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
+            jube.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
                                                        parameter_mode="python")
         self.para_search_method_2 = \
-            jube2.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
+            jube.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
                                                        parameter_mode="python")
         self.para_search_method_1 = \
-            jube2.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
+            jube.parameter.Parameter.create_parameter("dummy_name", "dummy_value",
                                                        parameter_mode="python")
         self.para_search_method_3.eval_helper = self.para_search_method_1.search_method
         self.para_search_method_3.based_on = None
@@ -149,36 +149,36 @@ class TestParameterSet(unittest.TestCase):
     def setUp(self):
         self.temp_values = ["2", "3", "4"]
         self.para_cons = \
-            jube2.parameter.Parameter.create_parameter("test", "3")
+            jube.parameter.Parameter.create_parameter("test", "3")
         self.para_export = \
-            jube2.parameter.Parameter.create_parameter("test2", "4",
+            jube.parameter.Parameter.create_parameter("test2", "4",
                                                        export=True)
         self.para_temp = \
-            jube2.parameter.Parameter.create_parameter(
+            jube.parameter.Parameter.create_parameter(
                 "test2", ",".join(self.temp_values))
         self.para_select = \
-            jube2.parameter.Parameter.create_parameter("test2", "2,3,4",
+            jube.parameter.Parameter.create_parameter("test2", "2,3,4",
                                                        selected_value="3")
         self.para_sub = \
-            jube2.parameter.Parameter.create_parameter("test4", "$test2")
+            jube.parameter.Parameter.create_parameter("test4", "$test2")
         self.para_eval = \
-            jube2.parameter.Parameter.create_parameter("test5",
+            jube.parameter.Parameter.create_parameter("test5",
                                                        "${test4} * 2",
                                                        parameter_mode="python")
         self.para_eval2 = \
-            jube2.parameter.Parameter.create_parameter("test6",
+            jube.parameter.Parameter.create_parameter("test6",
                                                        "$$test4")
-        parameter3 = jube2.parameter.Parameter.create_parameter("test3", "5")
+        parameter3 = jube.parameter.Parameter.create_parameter("test3", "5")
 
-        self.parameterset = jube2.parameter.Parameterset("test")
+        self.parameterset = jube.parameter.Parameterset("test")
         self.parameterset.add_parameter(self.para_cons)
         self.parameterset.add_parameter(self.para_temp)
 
-        self.parameterset2 = jube2.parameter.Parameterset("test2")
+        self.parameterset2 = jube.parameter.Parameterset("test2")
         self.parameterset2.add_parameter(parameter3)
         self.parameterset2.add_parameter(self.para_export)
 
-        self.parameterset3 = jube2.parameter.Parameterset("test3")
+        self.parameterset3 = jube.parameter.Parameterset("test3")
         self.parameterset3.add_parameter(parameter3)
         self.parameterset3.add_parameter(self.para_select)
 
@@ -293,7 +293,7 @@ class TestParameterSet(unittest.TestCase):
             self.assertEqual(new_parameterset["test5"].value,
                              str(int(self.temp_values[idx]) * 2))
 
-        parameterset = jube2.parameter.Parameterset("test")
+        parameterset = jube.parameter.Parameterset("test")
         parameterset2 = self.parameterset2.copy()
         parameterset.add_parameter(self.para_sub)
         parameterset2.add_parameter(self.para_sub)
@@ -312,21 +312,21 @@ class TestParameterSet(unittest.TestCase):
 
     def test_concat_parameter(self):
         """Test concat_parameter"""
-        param1 = jube2.parameter.TemplateParameter(
+        param1 = jube.parameter.TemplateParameter(
             name='param1',
             value=['1','2','3'],
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='none')
-        param2 = jube2.parameter.TemplateParameter(
+        param2 = jube.parameter.TemplateParameter(
             name='param1',
             value=['4','5','6'],
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='none')
-        param3 = jube2.parameter.StaticParameter(
+        param3 = jube.parameter.StaticParameter(
             name='param1',
             value='',
             separator=',',
@@ -334,35 +334,35 @@ class TestParameterSet(unittest.TestCase):
             parameter_mode='text',
             duplicate='none')
 
-        paramset1 = jube2.parameter.Parameterset(name='paramset1',duplicate='concat')
+        paramset1 = jube.parameter.Parameterset(name='paramset1',duplicate='concat')
         paramset1.add_parameter(param1)
         self.assertEqual(paramset1.concat_parameter(param2)._value,['1','2','3','4','5','6'])
         self.assertEqual(paramset1.concat_parameter(param3)._value,['','1','2','3'])
 
     def test_check_parameter_options(self):
         """Test check_parameter_options"""
-        param1 = jube2.parameter.TemplateParameter(
+        param1 = jube.parameter.TemplateParameter(
             name='param1',
             value=['1','2','3'],
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='none')
-        param2 = jube2.parameter.TemplateParameter(
+        param2 = jube.parameter.TemplateParameter(
             name='param1',
             value=['4','5','6'],
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='none')
-        param3 = jube2.parameter.TemplateParameter(
+        param3 = jube.parameter.TemplateParameter(
             name='param1',
             value=['7','8','9'],
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='replace')
-        paramset1 = jube2.parameter.Parameterset(name='paramset1',duplicate='concat')
+        paramset1 = jube.parameter.Parameterset(name='paramset1',duplicate='concat')
         paramset1.add_parameter(param1)
         paramset1.check_parameter_options(param2)
         with self.assertRaises(ValueError):
@@ -370,49 +370,49 @@ class TestParameterSet(unittest.TestCase):
 
     def test_add_parameter(self):
         """Test add_parameter"""
-        param1 = jube2.parameter.TemplateParameter(
+        param1 = jube.parameter.TemplateParameter(
             name='param1',
             value=['1','2','3'],
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='none')
-        param2 = jube2.parameter.TemplateParameter(
+        param2 = jube.parameter.TemplateParameter(
             name='param1',
             value=['4','5','6'],
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='none')
-        param3 = jube2.parameter.StaticParameter(
+        param3 = jube.parameter.StaticParameter(
             name='param1',
             value='84',
             separator=',',
             parameter_type='int',
             parameter_mode='text',
             duplicate='error')
-        param4 = jube2.parameter.StaticParameter(
+        param4 = jube.parameter.StaticParameter(
             name='param2',
             value='',
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='replace')
-        param5 = jube2.parameter.StaticParameter(
+        param5 = jube.parameter.StaticParameter(
             name='param2',
             value='1',
             separator=',',
             parameter_type='string',
             parameter_mode='text',
             duplicate='replace')
-        param6 = jube2.parameter.StaticParameter(
+        param6 = jube.parameter.StaticParameter(
             name='param1',
             value='42',
             separator=',',
             parameter_type='int',
             parameter_mode='text',
             duplicate='none')
-        param7 = jube2.parameter.StaticParameter(
+        param7 = jube.parameter.StaticParameter(
             name='param3',
             value='3141',
             separator=',',
@@ -420,7 +420,7 @@ class TestParameterSet(unittest.TestCase):
             parameter_mode='text',
             duplicate='erroneous_duplicate_type')
 
-        paramset1 = jube2.parameter.Parameterset(name='paramset1',duplicate='concat')
+        paramset1 = jube.parameter.Parameterset(name='paramset1',duplicate='concat')
         paramset1.add_parameter(param1)
         self.assertEqual(paramset1._parameters[param1._name]._value,['1','2','3'])
         paramset1.add_parameter(param2)
@@ -434,7 +434,7 @@ class TestParameterSet(unittest.TestCase):
         with self.assertRaises(Exception):
             paramset1.add_parameter(param7)
 
-        paramset2 = jube2.parameter.Parameterset(name='paramset2',duplicate='replace')
+        paramset2 = jube.parameter.Parameterset(name='paramset2',duplicate='replace')
         paramset2.add_parameter(param1)
         paramset2.add_parameter(param2)
         self.assertEqual(paramset2._parameters[param2._name]._value,['4','5','6'])
@@ -442,7 +442,7 @@ class TestParameterSet(unittest.TestCase):
         self.assertEqual(paramset2._parameters[param6._name]._value,'42')
         self.assertEqual(paramset2._parameters[param6._name]._type,'int')
 
-        paramset3 = jube2.parameter.Parameterset(name='paramset3',duplicate='error')
+        paramset3 = jube.parameter.Parameterset(name='paramset3',duplicate='error')
         paramset3.add_parameter(param1)
         with self.assertRaises(Exception):
             paramset3.add_parameter(param2)

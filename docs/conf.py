@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# JUBE2 documentation build configuration file, created by
+# JUBE documentation build configuration file, created by
 # sphinx-quickstart on Thu Apr 17 18:09:51 2014.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -87,7 +87,7 @@ release = '2.6.2'
 # directories to ignore when looking for source files.
 exclude_patterns = ['_build']
 if tags.has('latex'):
-    exclude_patterns += ['index.rst','jube2.rst','devel.rst']
+    exclude_patterns += ['index.rst','jube.rst','devel.rst']
 else:
     exclude_patterns += ['index_user.rst']
 

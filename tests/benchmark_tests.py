@@ -26,10 +26,10 @@ import re
 import unittest
 import shutil
 import os
-import jube2.step
-import jube2.parameter
-import jube2.benchmark
-import jube2.workpackage
+import jube.step
+import jube.parameter
+import jube.benchmark
+import jube.workpackage
 
 
 class TestBenchmark(unittest.TestCase):
@@ -37,21 +37,21 @@ class TestBenchmark(unittest.TestCase):
     """Benchmark test class"""
 
     def setUp(self):
-        self.parameter = jube2.parameter.StaticParameter(
+        self.parameter = jube.parameter.StaticParameter(
             name='i',
             value='",".join(str(i) for i in range(4))',
             separator=',',
             parameter_type='int',
             parameter_mode='python')
-        self.parameterset = jube2.parameter.Parameterset(name='param_set')
+        self.parameterset = jube.parameter.Parameterset(name='param_set')
         self.parameterset.add_parameter(self.parameter)
-        self.step = jube2.step.Step(name='execution', depend=set())
+        self.step = jube.step.Step(name='execution', depend=set())
         self.step.add_uses(['param_set'])
-        self.operation = jube2.step.Operation('echo "$i"', stdout_filename='stdout',
+        self.operation = jube.step.Operation('echo "$i"', stdout_filename='stdout',
                                               stderr_filename='stderr',
                                               work_dir='.', error_filename='error')
         self.step.add_operation(self.operation)
-        self.benchmark = jube2.benchmark.Benchmark(
+        self.benchmark = jube.benchmark.Benchmark(
             name='workpackages',
             outpath='bench_run',
             parametersets={'param_set': self.parameterset},

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE jube SYSTEM "jube2.dtd">
+<!DOCTYPE jube SYSTEM "jube.dtd">
 <jube xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:noNamespaceSchemaLocation="jube2.xsd">
+  xsi:noNamespaceSchemaLocation="jube.xsd">
   
   <parameterset name="compileset">
     <parameter name="cc">gcc</parameter>

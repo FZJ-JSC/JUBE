@@ -48,13 +48,13 @@ To use the *JUBE* command line tool, the ``PYTHONPATH`` must contain the positio
 
 * You can utilize ``pip[3]`` to take care of the installation process (including the download) ::
 
-   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --user
+   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube/download.php?version=latest --user
    # or
-   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube2/download.php?version=latest --prefix=...
+   >>> pip3 install http://apps.fz-juelich.de/jsc/jube/jube/download.php?version=latest --prefix=...
 
   You might have to adjust your ``PYTHONPATH``.
 
-* You can add the **parent folder path** of the *JUBE* package-folder (``jube2`` directory) to the ``PYTHONPATH`` environment variable::
+* You can add the **parent folder path** of the *JUBE* package-folder (``jube`` directory) to the ``PYTHONPATH`` environment variable::
 
    >>> export PYTHONPATH=<parent folder path>:$PYTHONPATH
 

@@ -26,8 +26,8 @@ import re
 import unittest
 import os
 import shutil
-import jube2.substitute
-import jube2.main
+import jube.substitute
+import jube.main
 
 PATH_PREFIX = os.path.join(os.path.dirname(__file__))
 
@@ -59,14 +59,14 @@ class TestSubstitute(unittest.TestCase):
         with open('file.in', 'w') as file:
             file.write('Number: #NUMBER#')
         self.std_files_data = [["std_file.out", "file.in", "w"]]
-        self.std_sub = jube2.substitute.Sub("#NUMBER#", "text", "1")
-        self.std_sub_set = jube2.substitute.Substituteset("sub_set",
+        self.std_sub = jube.substitute.Sub("#NUMBER#", "text", "1")
+        self.std_sub_set = jube.substitute.Substituteset("sub_set",
                                                           self.std_files_data,
                                                           {"#NUMBER#": self.std_sub})
         self.std_sub_set.substitute({}, None)
         self.regex_files_data = [["regex_file.out", "file.in", "w"]]
-        self.regex_sub = jube2.substitute.Sub("#.*#", "regex", "1")
-        self.regex_sub_set = jube2.substitute.Substituteset("regex_set",
+        self.regex_sub = jube.substitute.Sub("#.*#", "regex", "1")
+        self.regex_sub_set = jube.substitute.Substituteset("regex_set",
                                                             self.regex_files_data,
                                                             {"#.*#": self.regex_sub})
         self.regex_sub_set.substitute({}, None)
@@ -87,7 +87,7 @@ class TestSubstitute(unittest.TestCase):
 
     def test_init_with_substitution(self):
         """Testing for existing files and content"""
-        jube2.main.main(('run -e '+ self._input_path).split())
+        jube.main.main(('run -e '+ self._input_path).split())
         # Test for done file
         done_file = os.path.join(self._wp_path, 'done')
         self.assertTrue(os.path.exists(done_file), "Failed to successfully "

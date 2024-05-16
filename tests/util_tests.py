@@ -23,7 +23,7 @@ from __future__ import (print_function,
                         division)
 
 import unittest
-import jube2.util.util
+import jube.util.util
 
 
 class TestUtil(unittest.TestCase):
@@ -32,12 +32,12 @@ class TestUtil(unittest.TestCase):
 
     def test_convert_type(self):
         """Test convert_type"""
-        self.assertEqual(type(jube2.util.util.convert_type("Test","int","42",stop=True)),int)
-        self.assertEqual(type(jube2.util.util.convert_type("Test","float","42",stop=True)),float)
-        self.assertEqual(type(jube2.util.util.convert_type("Test","float","3.141",stop=True)),float)
+        self.assertEqual(type(jube.util.util.convert_type("Test","int","42",stop=True)),int)
+        self.assertEqual(type(jube.util.util.convert_type("Test","float","42",stop=True)),float)
+        self.assertEqual(type(jube.util.util.convert_type("Test","float","3.141",stop=True)),float)
         with self.assertRaises(ValueError):
-            jube2.util.util.convert_type("Test","int","forty-two",stop=True)
-        self.assertEqual(jube2.util.util.convert_type("Test","int","forty-two",stop=False),"forty-two")
+            jube.util.util.convert_type("Test","int","forty-two",stop=True)
+        self.assertEqual(jube.util.util.convert_type("Test","int","forty-two",stop=False),"forty-two")
 
     def test_expand_dollar_count(self):
         """Test expand_dollar_count"""
@@ -69,7 +69,7 @@ class TestUtil(unittest.TestCase):
         test_result_text.append("echo $$$$")
 
         for i in range(len(test_text)):
-            self.assertEqual(jube2.util.util.expand_dollar_count(text=test_text[i]),test_result_text[i])
+            self.assertEqual(jube.util.util.expand_dollar_count(text=test_text[i]),test_result_text[i])
 
     def test_substitution(self):
         """Test substitution"""
@@ -105,16 +105,16 @@ class TestUtil(unittest.TestCase):
         test_result_text.append("$$")
 
         for i in range(len(test_text)):
-            self.assertEqual(jube2.util.util.substitution(text=test_text[i], substitution_dict=test_substitution_dict),test_result_text[i])
+            self.assertEqual(jube.util.util.substitution(text=test_text[i], substitution_dict=test_substitution_dict),test_result_text[i])
 
     def test_ensure_list(self):
         """Test ensure_list"""
-        self.assertEqual(jube2.util.util.ensure_list(42),[42])
-        self.assertEqual(type(jube2.util.util.ensure_list(42)),list)
-        self.assertEqual(jube2.util.util.ensure_list(""),[""])
-        self.assertEqual(type(jube2.util.util.ensure_list("")),list)
-        self.assertEqual(jube2.util.util.ensure_list(["",42,3.141]),["",42,3.141])
-        self.assertEqual(type(jube2.util.util.ensure_list(["",42,3.141])),list)
+        self.assertEqual(jube.util.util.ensure_list(42),[42])
+        self.assertEqual(type(jube.util.util.ensure_list(42)),list)
+        self.assertEqual(jube.util.util.ensure_list(""),[""])
+        self.assertEqual(type(jube.util.util.ensure_list("")),list)
+        self.assertEqual(jube.util.util.ensure_list(["",42,3.141]),["",42,3.141])
+        self.assertEqual(type(jube.util.util.ensure_list(["",42,3.141])),list)
 
 
 if __name__ == "__main__":

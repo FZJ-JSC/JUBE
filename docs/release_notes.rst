@@ -38,6 +38,7 @@ Release: XXXX-XX-XX
 * Changed: The convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
 * Changed: If the `title` attribute of a database `key` is set, then this title is used as the name of the database column instead of the parameter or pattern name.
 * Changed: The `<check_tags>` tag is now a subelement of the new `<tags>` tag.
+* Changed: Changed the name of the source directory from `jube2` to `jube` and adapted the code to the name change.
 * Deprecated: The `primekeys` attribute of the `database` is no longer supported. Use the new `primekey` attribute of the `database` `key` instead.
 * Deprecated: `<check_tags>` will no longer be supported on a global level. Instead, it should be specified in the `<tags>` tag.
 * Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^` `+` and `!`.

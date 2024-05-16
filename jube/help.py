@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # JUBE Benchmarking Environment
 # Copyright (C) 2008-2024
 # Forschungszentrum Juelich GmbH, Juelich Supercomputing Centre
@@ -16,24 +15,37 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Test the configurations"""
+"""User help"""
 
 from __future__ import (print_function,
                         unicode_literals,
                         division)
 
-import unittest
-import jube.conf
-from jube.util.version import StrictVersion
+import jube
+import os
+import re
 
-class TestConf(unittest.TestCase):
-
-    """Class for testing the configurations"""
-
-    def test_version_number(self):
-        """version number testing"""
-        StrictVersion(jube.conf.JUBE_VERSION)
+HELP = dict()
 
 
-if __name__ == "__main__":
-    unittest.main()
+def load_help():
+    """Load additional documentation out of help file and add these data to
+    global help dictionary."""
+    path = os.path.join(jube.__path__[0], "help.txt")
+    help_file = open(path, "r")
+    group = None
+    # skip header lines
+    i = 0
+    while i < 4:
+        help_file.readline()
+        i += 1
+    for line in help_file:
+        # search for new abstract inside of help file
+        matcher = re.match(r"^(\S+)s*$", line)
+        if matcher is not None:
+            group = matcher.group(1)
+            HELP[group] = ""
+        else:
+            if (len(line) > 0) and (group is not None):
+                HELP[group] += line[0] + line[3:]
+    help_file.close()
