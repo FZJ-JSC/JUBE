@@ -51,6 +51,9 @@ Release: XXXX-XX-XX
 * Changed: The *<check_tags>* tag is now a subelement of the new
   *<tags>* tag.
 
+* Changed: Changed the name of the source directory from *jube2* to
+  *jube* and adapted the code to the name change.
+
 * Deprecated: The *primekeys* attribute of the *database* is no longer
   supported. Use the new *primekey* attribute of the *database* *key*
   instead.
