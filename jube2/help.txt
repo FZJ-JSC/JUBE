@@ -1,80 +1,23 @@
 Glossary
 ********
 
-analyse
-   Analyse an existing benchmark. The analyser will scan through all
-   files given inside the configuration by using the given
-   patternsets.
+tags_tag
+   Specify tag description and combination of tags that must be set.
 
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
+      <tags forced="...">
+        <check_tags>...</check_tags>
+        <tag name="...">...</tag>
+      </tags>
 
-analyser_tag
-   The analyser describe the steps and files which should be scanned
-   using a set of pattern.
+   * "forced" is optional, if it is set to "true", you will be forced
+     to describe every possible tag. (default: "false")
 
-      <analyser name="..." reduce="...">
-        <use from="">...</use>
-        ...
-        <analyse step="...">
-          <file use="">...</file>
-        </analyse>
-        ...
-      </analyser>
+   * multiple "<check_tags>" and "<tag>" are allowed
 
-   * you can use different patternsets to analyse a set of files
+   * In the "<tag>", you can write a description for the tag with the
+     given name.
 
-   * only patternsets are usable
-
-   * using patternsets "<use>set1,set2</use>" is the same as
-     "<use>set1</use><use>set2</use>"
-
-   * the from-attribute is optional and can be used to specify an
-     external set source
-
-   * any name must be unique, it is not allowed to reuse a set
-
-   * the step-attribute contains an existing stepname
-
-   * each file using each workpackage will be scanned seperatly
-
-   * the "use" argument inside the "<file>" tag is optional and can be
-     used to specify a file specific patternset;
-
-     * the global "<use>" and this local use will be combined and
-       evaluated at the same time
-
-     * a "from" subargument is not possible in this local "use"
-
-   * "reduce" is optional (default: "true" )
-
-     * "true" : Combine result lines if iteration-option is used
-
-     * "false" : Create single line for each iteration
-
-benchmark_tag
-   The main benchmark definition
-
-      <benchmark name="..." outpath="...">
-      ...
-      </benchmark>
-
-   * container for all benchmark information
-
-   * benchmark-name must be unique inside input file
-
-   * "outpath" contains the path to the root folder for benchmark runs
-
-     * multiple benchmarks can use the same folder
-
-     * every benchmark and every (new) run will create a new folder
-       (named by an unique benchmark id) inside this given "outpath"
-
-     * the path will be relative to input file location
-
-check_tags_tag
-   Specify combination of tags that must be set.
+   ck_tags_tag Specify combination of tags that must be set.
 
       <check_tags>...</check_tags>
 
@@ -95,541 +38,181 @@ check_tags_tag
      operation 'negation', i.e. 'not'. Example: "!tag1" means that the
      tag "tag1" must not be set.
 
-column_tag
-   A line within a ASCII result table. The "<column>"-tag can contain
-   the name of a pattern or the name of a parameter.
+   ection_tag Specify tags or select benchmarks by name.
 
-      <column colw="..." format="..." title="...">...</column>
-
-   * "colw" is optional: column width
-
-   * "title" is optional: column title
-
-   * "format" can contain a C like format string: e.g. "format=".2f""
-
-comment
-   Add or manipulate the comment string.
-
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
-
-comment_tag
-   Add a benchmark specific comment. These comment will be stored
-   inside the benchmark directory.
-
-      <comment>...</comment>
-
-complete
-   Generate shell completion.
-
-continue
-   Continue an existing benchmark. Not finished steps will be
-   continued, if they are leaving pending mode.
-
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
-
-copy_tag
-   A copy can be used to copy a file or directory from your normal
-   filesytem to your sandbox work directory.
-
-      <copy source_dir="..." target_dir="..." name="..." rel_path_ref="..." separator="..." active="...">...</copy>
-
-   * "source_dir" is optional, will be used as a prefix for the source
-     filenames
-
-   * "target_dir" is optional, will be used as a prefix for the target
-     filenames
-
-   * "name" is optional, it can be used to rename the file inside your
-     work directory (will be ignored if you use shell extensions in
-     your pathname)
-
-   * "rel_path_ref" is optional
-
-     * "external" or "internal" can be chosen, default: external
-
-     * "external": rel.-paths based on position of xml-file
-
-     * "internal": rel.-paths based on current work directory (e.g. to
-       link files of another step)
-
-   * "active" is optional
-
-     * can be set to "true" or "false" or any *Python* parsable bool
-       expression to enable or disable the single command
-
-     * *parameter* are allowed inside this attribute
-
-   * each copy-tag can contain a list of filenames (or directories),
-     separated by ",", the default separator can be changed by using
-     the "separator" attribute
-
-     * if "name" is present, the lists must have the same length
-
-   * you can copy all files inside a directory by using "directory/*"
-
-     * this cannot be mixed using "name"
-
-   * in the execution step the given files or directories will be
-     copied
-
-database_tag
-   Create sqlite3 database
-
-      <database name="..." primekeys="..." file="..." filter="...">
-        <key title="..." primekey="...">...</key>
+      <selection>
+        <only>...</only>
+        <not>...</not>
+        <tag>...</tag>
         ...
-      </database>
+      </selection>
 
-   * "name": name of the table in the database
+   * multiple <tag> are allowed to specify tags (see tagging)
 
-   * Unlike the result table, the unit attribute of a parameter or
-     pattern is not taken into account.
+   * select or unselect a benchmark by name
 
-   * "primekeys" is optional: can contain a list of parameter or
-     pattern names (separated by ","). Given parameters or patterns
-     will be used as primary keys of the database table. All primekeys
-     have to be listed as a "<key>" as well and if the "title"
-     attribute of a "key" is set, then the value of the "title"
-     attribute must be used in the "primekeys" attribute (and not the
-     parameter or pattern name). Modification of primary keys of an
-     existing table is not supported. If no primekeys are set then
-     each *jube result* will add new rows to the database. Otherwise
-     rows with matching primekeys will be updated. >>**<<Important
-     note: The use of the "database" attribute "primekeys" is
-     deprecated and will be removed soon. Instead, use the "primekey"
-     attribute of the "key". **
+   * only selected benchmarks will run (when using the "run" command)
 
-   * "file" is optional. The given value should hold the full path to
-     the database file. If the file including the path does not exists
-     it will be created. Absolute and relative paths are supported.
+   * multiple "<only>" and "<not>" are allowed
 
-   * "filter" is optional. It can contain a bool expression to show
-     only specific result entries.
+   * "<only>" and "<not>" can contain a name list divided by ","
 
-   * "<key>" can be specified in the database result and must contain
-     an single parameter or pattern name.
+   ternset_tag A patternset is a container to store a bundle of
+   patterns.
 
-     * "title" is optional: alternative key title. Used to define a
-       custom database column name.
+      <patternset name="..." init_with="...">
+         <pattern>...</pattern>
+         ...
+      </patternset>
 
-     * "primekey" is optional: If primekey is set to true, the key is
-       added to the database primekeys. (default: false) The
-       "primekeys" attribute of the "database"-tag is deprecated and
-       will be removed.
+   * patternset-name must be unique
 
-directory_structure
-   * every (new) benchmark run will create its own directory structure
-
-   * every single workpackage will create its own directory structure
-
-   * user can add files (or links) to the workpackage dir, but the
-     real position in filesystem will be seen as a blackbox
-
-   * general directory structure:
-
-        benchmark_runs (given by "outpath" in xml-file)
-        |
-        +- 000000 (determined through benchmark-id)
-           |
-           +- 000000_compile (step: just an example, can be arbitrary chosen)
-              |
-              +- work (user environment)
-              +- done (workpackage finished information file)
-              +- ...  (more jube internal information files)
-           +- 000001_execute
-              |
-              +- work
-                 |
-                 +- compile -> ../../000000_compile/work (automatic generated link for depending step)
-              +- wp_done_00 (single "do" finished, but not the whole workpackage)
-              +- ...
-           +- 000002_execute
-           +- result (result data)
-           +- configuration.xml (benchmark configuration information file)
-           +- workpackages.xml (workpackage graph information file)
-           +- analyse.xml (analyse data)
-        +- 000001 (determined through benchmark-id)
-           |
-           +- 000000_compile (step: just an example, can be arbitrary chosen)
-           +- 000001_execute
-           +- 000002_postprocessing
-
-do_tag
-   A do contain a executable *Shell* operation.
-
-      <do stdout="..." stderr="..." active="...">...</do>
-      <do done_file="..." error_file="...">...</do>
-      <do break_file="...">...</do>
-      <do shared="true">...</do>
-      <do work_dir="...">...</do>
-
-   * "do" can contain any *Shell*-syntax-snippet (*parameter* will be
-     replaced "... $nameofparameter ...")
-
-   * "stdout"- and "stderr"-filename are optional (default: "stdout"
-     and "stderr")
-
-   * "work_dir" is optional, it can be used to change the work
-     directory of this single command (relativly seen towards the
-     original work directory)
-
-   * "active" is optional
-
-     * can be set to "true" or "false" or any *Python* parsable bool
-       expression to enable or disable the single command
-
-     * *parameter* are allowed inside this attribute
-
-   * "done_file"-filename and "error_file" are optional
-
-     * by using "done_file" the user can mark async-steps. The
-       operation will stop until the script will create the named file
-       inside the work directory.
-
-     * by using "error_file" the operation will produce a error if the
-       named file can be found inside the work directory. This feature
-       can be used together with the "done_file" to signalise broken
-       async-steps.
-
-   * "break_file"-filename is optional
-
-     * by using "break_file" the user can stop further cycle runs. the
-       current step will be directly marked with finalized and further
-       "<do>" will be ignored.
-
-   * "shared="true""
-
-     * can be used inside a step using a shared folder
-
-     * cmd will be **executed inside the shared folder**
-
-     * cmd will run once (synchronize all workpackages)
-
-     * "$jube_wp_..." - parameter cannot be used inside the shared
-       command
-
-fileset_tag
-   A fileset is a container to store a bundle of links and copy
-   commands.
-
-      <fileset name="..." init_with="...">
-        <link>...</link>
-        <copy>...</copy>
-        <prepare>...</prepare>
-        ...
-      </fileset>
-
-   * init_with is optional
+   * "init_with" is optional
 
      * if the given filepath can be found inside of the
-       "JUBE_INCLUDE_PATH" and if it contains a fileset using the
-       given name, all link and copy will be copied to the local set
+       "JUBE_INCLUDE_PATH" and if it contains a patternset using the
+       given name, all pattern will be copied to the local set
+
+     * local pattern will overwrite imported pattern
 
      * the name of the external set can differ to the local one by
        using "init-with="filename.xml:external_name""
 
-   * link and copy can be mixed within one fileset (or left)
-
-   * filesets can be used inside the step-command
-
-general_structure_xml
-      <?xml version="1.0" encoding="UTF-8"?>
-      <!-- Basic top level JUBE structure -->
-      <jube>
-        <!-- optional additional include paths -->
-        <include-path>
-          <path>...</path>
-          ...
-        </include-path>
-        <!-- optional benchmark selection -->
-        <selection>
-          <only>...</only>
-          <not>...</not>
-          <tag>...</tag>
-          ...
-        </selection>
-        <!-- optional must-have tag specification -->
-        <check_tags>...</check_tags>
-        <!-- global sets -->
-        <parameterset name="">...</parameterset>
-        <substitutionset name="">...</substitutionset>
-        <fileset name="">...</fileset>
-        <patternset name="">...</patternset>
-        ...
-        <benchmark name="" outpath="">
-          <!-- optional benchmark comment -->
-          <comment>...</comment>
-          <!-- local benchmark parametersets -->
-          <parameterset name="">...</parameterset>
-          ...
-          <!-- files, which should be used -->
-          <fileset name="">...</fileset>
-          ...
-          <!-- substitution rules -->
-          <substituteset name="">...</substituteset>
-          ...
-          <!-- pattern -->
-          <patternset name="">...</patternset>
-          ...
-          <!-- commands -->
-          <step name="">...</step>
-          ...
-          <!-- analyse -->
-          <analyser name="">...</analyser>
-          ...
-          <!-- result -->
-          <result>...</result>
-          ...
-        </benchmark>
-        ...
-      </jube>
-
-general_structure_yaml
-      # optional additional include paths
-      include-path:
-        ...
-
-      # optional benchmark selection
-      selection:
-        only: ...
-        not: ...
-        tag: ...
-
-      # optional must-have tag specification
-      check_tags:
-        ...
-
-      # global sets
-      parameterset:
-        ...
-      substitutionset:
-        ...
-      fileset:
-        ...
-      patternset:
-        ...
-
-      benchmark: # can be skipped if only a single benchmark is handled
-        - name: ...
-          outpath: ...
-          # optional benchmark comment
-          comment: ...
-
-          # local sets
-          parameterset:
-            ...
-          substitutionset:
-            ...
-          fileset:
-            ...
-          patternset:
-            ...
-
-          # commands
-          step:
-            ...
-
-          analyser:
-            ...
-          result:
-            ...
+   * patternsets can be used inside the analyser tag
 
-include-path_tag
-   Add some include paths where to search for include files.
+   * different sets, which are used inside the same analyser, must be
+     compatible
 
-      <include-path>
-        <path>...</path>
-        ...
-      </include-path>
+   tern_tag A pattern is used to parse your output files and create
+   your result data.
 
-   * the additional path will be scanned for include files
+      <pattern name="..." default="..." unit="..." mode="..." type="..." dotall="...">...</pattern>
 
-include_tag
-   Include *XML*-data from an external file.
+   * "unit" is optional, will be used in the result table
 
-      <include from="..." path="..." />
+   * "mode" is optional, allowed modes:
 
-   * "<include>" can be used to include an external *XML*-structure
-     into the current file
+     * "pattern": a regular expression (default)
 
-   * can be used at every position (inside the "<jube>"-tag)
+     * "text": simple text and variable concatenation
 
-   * path is optional and can be used to give an alternative xml-path
-     inside the include-file (default: root-node)
+     * "perl": snippet evaluation (using *Perl*)
 
-info
-   Show info for the given benchmark directory, a given benchmark or a
-   specific step.
+     * "python": snippet evaluation (using *Python*)
 
-   If benchmark directory is missing, current directory will be used.
+     * "shell": snippet evaluation (using *Shell*)
 
-iofile_tag
-   A iofile declare the name (and path) of a file used for
-   substitution.
+   * "type" is optional, specify datatype (for sort operation)
 
-      <iofile in="..." out="..." out_mode="..." />
+     * default: "string"
 
-   * "in" and "out" filepath are relative to the current work
-     directory for every single step (not relative to the path of the
-     inputfile)
+     * allowed: "int", "float" or "string"
 
-   * "in" and "out" can be the same
+   * "default" is optional: Specify default value if pattern cannot be
+     found or if it cannot be evaluated
 
-   * "out_mode" is optional, can be "w" or "a" (default: "w")
+   * "dotall" is optional (default: "false"): Can be set to "true" or
+     "false" to specify if a "." within the regular expression should
+     also match newline characters, which can be very helpfull to
+     extract a line only after a specific header was mentioned.
 
-     * "w" : "out"-file will be overridden
+   tistical_values If there are multiple pattern matches within one
+   file, multiple files or when using multiple iterations. *JUBE* will
+   create some statistical values automatically:
 
-     * "a" : "out"-file will be appended
+   * "first": first match (default)
 
-jube_pattern
-   List of available jube pattern:
+   * "last": last match
 
-   * "$jube_pat_int": integer number
+   * "min": min value
 
-   * "$jube_pat_nint": integer number, skip
+   * "max": max value
 
-   * "$jube_pat_fp": floating point number
+   * "avg": average value
 
-   * "$jube_pat_nfp": floating point number, skip
+   * "std": standard deviation
 
-   * "$jube_pat_wrd": word
+   * "sum": sum
 
-   * "$jube_pat_nwrd": word, skip
+   * "cnt": counter
 
-   * "$jube_pat_bl": blank space (variable length), skip
+   These variabels can be accessed within the the result creation or
+   to create derived pattern by "variable_name_<statistic_option>"
+   e.g. "${nodes_min}"
 
-jube_variables
-   List of available jube variables:
+   The variable name itself always matches the first match.
 
-   * Benchmark:
+   ameterset_tag A parameterset is a container to store a bundle of
+   *parameters*.
 
-     * "$jube_benchmark_name": current benchmark name
+      <parameterset name="..." init_with="..." duplicate="...">
+         <parameter>...</parameter>
+         ...
+      </parameterset>
 
-     * "$jube_benchmark_id": current benchmark id
+   * parameterset-name must be unique (cannot be reused inside
+     substitutionsets or filesets)
 
-     * "$jube_benchmark_padid": current benchmark id with preceding
-       zeros
+   * "init_with" is optional
 
-     * "$jube_benchmark_home": original input file location
+     * if the given filepath can be found inside of the
+       "JUBE_INCLUDE_PATH" and if it contains a parameterset using the
+       given name, all parameters will be copied to the local set
 
-     * "$jube_benchmark_rundir": main benchmark specific execution
-       directory
+     * local parameters will overwrite imported parameters
 
-     * "$jube_benchmark_start": benchmark starting time
+     * the name of the external set can differ to the local one by
+       using "init-with="filename.xml:external_name""
 
-   * Step:
+   * parametersets can be used inside the step-command
 
-     * "$jube_step_name": current step name
+   * parametersets can be combined inside the step-tag, but they must
+     be compatible:
 
-     * "$jube_step_iterations": number of step iterations (default: 1)
+     * Two parametersets are compatible if the parameter intersection
+       (given by the parameter-name), only contains parameter based on
+       the same definition
 
-     * "$jube_step_cycles": number of step cycles (default: 1)
+     * These two sets are compatible:
 
-   * Workpackage:
-
-     * "$jube_wp_id": current workpackage id
-
-     * "$jube_wp_padid": current workpackage id with preceding zeros
-
-     * "$jube_wp_status": current workpackage status [RUNNING, DONE,
-       ERROR]
-
-     * "$jube_wp_iteration": current iteration number (default: 0)
-
-     * "$jube_wp_parent_<parent_name>_id": workpackage id of selected
-       parent step
-
-     * "$jube_wp_relpath": relative path to workpackage work directory
-       (relative towards configuration file)
-
-     * "$jube_wp_abspath": absolute path to workpackage work directory
-
-     * "$jube_wp_envstr": a string containing all exported parameter
-       in shell syntax:
-
-          export par=$par
-          export par2=$par2
-
-     * "$jube_wp_envlist": list of all exported parameter names
-
-     * "$jube_wp_cycle": id of current step cycle (starts at 0)
-
-link_tag
-   A link can be used to create a symbolic link from your sandbox work
-   directory to a file or directory inside your normal filesystem.
-
-      <link source_dir="..." target_dir="..." name="..." rel_path_ref="..." separator="..." active="...">...</link>
-
-   * "source_dir" is optional, will be used as a prefix for the source
-     filenames
-
-   * "target_dir" is optional, will be used as a prefix for the target
-     filenames
-
-   * "name" is optional, it can be used to rename the file inside your
-     work directory (will be ignored if you use shell extensions in
-     your pathname)
-
-   * "rel_path_ref" is optional
-
-     * "external" or "internal" can be chosen, default: external
-
-     * "external": rel.-paths based on position of xml-file
-
-     * "internal": rel.-paths based on current work directory (e.g. to
-       link files of another step)
-
-   * "active" is optional
-
-     * can be set to "true" or "false" or any *Python* parsable bool
-       expression to enable or disable the single command
-
-     * *parameter* are allowed inside this attribute
-
-   * each link-tag can contain a list of filenames (or directories),
-     separated by ",", the default separator can be changed by using
-     the "separator" attribute
-
-     * if "name" is present, the lists must have the same length
-
-   * in the execution step the given files or directories will be
-     linked
-
-log
-   Show logs for the given benchmark directory or a given benchmark.
-
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
-
-output
-   Shows path and content of the stdout and stderr files of the given
-   benchmark.
-
-   If no benchmark id is given, last benchmark found in will be used.
-
-parameter_space
-   The parameter space for a specific benchmark run is the bundle of
-   all possible parameter combinations. E.g. there are to different
-   parameter: a = 1,2 and b= "p","q" then you will get four different
-   parameter combinations: "a=1", "b="p""; "a=1", "b="q""; "a=2",
-   "b="p""; "a=2", "b="q"".
-
-   The parameter space of a specific step will be one of these
-   parameter combinations. To fulfill all combinations the step will
-   be executed multible times (each time using a new combination). The
-   specific combination of a step and an expanded parameter space is
-   named *workpackage*.
-
-parameter_tag
-   A parameter can be used to store benchmark configuration data. A
-   set of different parameters will create a specific parameter
-   environment (also called *parameter space*) for the different steps
-   of the benchmark.
+          <parameterset name="set1">
+            <parameter name="test">1,2,4</parameter>
+            <parameter name="test2">foo</parameter>
+          </parameterset>
+          <parameterset name="set2">
+            <parameter name="test">1,2,4</parameter>
+            <parameter name="test3">bar</parameter>
+          </parameterset>
+
+     * These two sets are not compatible:
+
+          <parameterset name="set1">
+            <parameter name="test">1,2,4</parameter>
+            <parameter name="test2">foo</parameter>
+          </parameterset>
+          <parameterset name="set2">
+            <parameter name="test">2</parameter> <!-- Template in set1 -->
+            <parameter name="test2">bar</parameter> <!-- Other content in set2 -->
+          </parameterset>
+
+   * "duplicate" is optional and of relevance, if there are more than
+     one parameter definitions with the same name within one
+     parameterset. This "duplicate" option has lower priority than the
+     "duplicte" option of the parameters. "duplicate" must contain one
+     of the following three options:
+
+     * "replace" (default): Parameters with the same name are
+       overwritten
+
+     * "concat": Parameters with the same name are concatenated
+
+     * "error": Throws an error, if parameters with the same name are
+       defined
+
+   ameter_tag A parameter can be used to store benchmark configuration
+   data. A set of different parameters will create a specific
+   parameter environment (also called *parameter space*) for the
+   different steps of the benchmark.
 
       <parameter name="..." mode="..." type="..." separator="..." export="..." unit="..." update_mode="..." duplicate="...">...</parameter>
 
@@ -716,437 +299,534 @@ parameter_tag
      * "error": Throws an error, if parameters with the same name are
        defined
 
-parameterset_tag
-   A parameterset is a container to store a bundle of *parameters*.
+   ate_mode The update mode is parameter attribute which can be used
+   to control the reevaluation of the parameter content.
 
-      <parameterset name="..." init_with="..." duplicate="...">
-         <parameter>...</parameter>
-         ...
-      </parameterset>
+   These update modes are available:
 
-   * parameterset-name must be unique (cannot be reused inside
-     substitutionsets or filesets)
+   * "never": no reevaluation, even if the parameterset is used
+     multiple times
 
-   * "init_with" is optional
+   * "use": reevaluation if the parameterset is explicitly used
+
+   * "step": reevaluation in each new step
+
+   * "cycle": reevaluation in each cycle, but not at the begin of a
+     new step (number of workpackages will stay unchanged)
+
+   * "always": reevaluation in each step and cycle
+
+   eset_tag A fileset is a container to store a bundle of links and
+   copy commands.
+
+      <fileset name="..." init_with="...">
+        <link>...</link>
+        <copy>...</copy>
+        <prepare>...</prepare>
+        ...
+      </fileset>
+
+   * init_with is optional
 
      * if the given filepath can be found inside of the
-       "JUBE_INCLUDE_PATH" and if it contains a parameterset using the
-       given name, all parameters will be copied to the local set
-
-     * local parameters will overwrite imported parameters
+       "JUBE_INCLUDE_PATH" and if it contains a fileset using the
+       given name, all link and copy will be copied to the local set
 
      * the name of the external set can differ to the local one by
        using "init-with="filename.xml:external_name""
 
-   * parametersets can be used inside the step-command
+   * link and copy can be mixed within one fileset (or left)
 
-   * parametersets can be combined inside the step-tag, but they must
-     be compatible:
+   * filesets can be used inside the step-command
 
-     * Two parametersets are compatible if the parameter intersection
-       (given by the parameter-name), only contains parameter based on
-       the same definition
+   k_tag
+      link can be used to create a symbolic link from your sandbox
+      work directory to a file or directory inside your normal
+      filesystem.
 
-     * These two sets are compatible:
+   . code-block:: xml
 
-          <parameterset name="set1">
-            <parameter name="test">1,2,4</parameter>
-            <parameter name="test2">foo</parameter>
-          </parameterset>
-          <parameterset name="set2">
-            <parameter name="test">1,2,4</parameter>
-            <parameter name="test3">bar</parameter>
-          </parameterset>
+         <link source_dir="..." target_dir="..." name="..."
+         rel_path_ref="..." separator="..." active="...">...</link>
 
-     * These two sets are not compatible:
+      "source_dir" is optional, will be used as a prefix for the
+      source filenames "target_dir" is optional, will be used as a
+      prefix for the target filenames "name" is optional, it can be
+      used to rename the file inside your work directory (will be
+      ignored if you use shell extensions in your pathname)
+      "rel_path_ref" is optional
 
-          <parameterset name="set1">
-            <parameter name="test">1,2,4</parameter>
-            <parameter name="test2">foo</parameter>
-          </parameterset>
-          <parameterset name="set2">
-            <parameter name="test">2</parameter> <!-- Template in set1 -->
-            <parameter name="test2">bar</parameter> <!-- Other content in set2 -->
-          </parameterset>
+      * "external" or "internal" can be chosen, default: external
 
-   * "duplicate" is optional and of relevance, if there are more than
-     one parameter definitions with the same name within one
-     parameterset. This "duplicate" option has lower priority than the
-     "duplicte" option of the parameters. "duplicate" must contain one
-     of the following three options:
+      * "external": rel.-paths based on position of xml-file
 
-     * "replace" (default): Parameters with the same name are
-       overwritten
+      * "internal": rel.-paths based on current work directory (e.g.
+        to link files of another step)
 
-     * "concat": Parameters with the same name are concatenated
+      "active" is optional
 
-     * "error": Throws an error, if parameters with the same name are
-       defined
+      * can be set to "true" or "false" or any *Python* parsable bool
+        expression to enable or disable the single command
 
-pattern_tag
-   A pattern is used to parse your output files and create your result
-   data.
+      * *parameter* are allowed inside this attribute
 
-      <pattern name="..." default="..." unit="..." mode="..." type="..." dotall="...">...</pattern>
+      each link-tag can contain a list of filenames (or directories),
+      separated by ",", the default separator can be changed by using
+      the "separator" attribute
 
-   * "unit" is optional, will be used in the result table
+      * if "name" is present, the lists must have the same length
 
-   * "mode" is optional, allowed modes:
+      in the execution step the given files or directories will be
+      linked
 
-     * "pattern": a regular expression (default)
+   y_tag
+      copy can be used to copy a file or directory from your normal
+      filesytem to your sandbox work directory.
 
-     * "text": simple text and variable concatenation
+   . code-block:: xml
 
-     * "perl": snippet evaluation (using *Perl*)
+         <copy source_dir="..." target_dir="..." name="..."
+         rel_path_ref="..." separator="..." active="...">...</copy>
 
-     * "python": snippet evaluation (using *Python*)
+      "source_dir" is optional, will be used as a prefix for the
+      source filenames "target_dir" is optional, will be used as a
+      prefix for the target filenames "name" is optional, it can be
+      used to rename the file inside your work directory (will be
+      ignored if you use shell extensions in your pathname)
+      "rel_path_ref" is optional
 
-     * "shell": snippet evaluation (using *Shell*)
+      * "external" or "internal" can be chosen, default: external
 
-   * "type" is optional, specify datatype (for sort operation)
+      * "external": rel.-paths based on position of xml-file
 
-     * default: "string"
+      * "internal": rel.-paths based on current work directory (e.g.
+        to link files of another step)
 
-     * allowed: "int", "float" or "string"
+      "active" is optional
 
-   * "default" is optional: Specify default value if pattern cannot be
-     found or if it cannot be evaluated
+      * can be set to "true" or "false" or any *Python* parsable bool
+        expression to enable or disable the single command
 
-   * "dotall" is optional (default: "false"): Can be set to "true" or
-     "false" to specify if a "." within the regular expression should
-     also match newline characters, which can be very helpfull to
-     extract a line only after a specific header was mentioned.
+      * *parameter* are allowed inside this attribute
 
-patternset_tag
-   A patternset is a container to store a bundle of patterns.
+      each copy-tag can contain a list of filenames (or directories),
+      separated by ",", the default separator can be changed by using
+      the "separator" attribute
 
-      <patternset name="..." init_with="...">
-         <pattern>...</pattern>
-         ...
-      </patternset>
+      * if "name" is present, the lists must have the same length
 
-   * patternset-name must be unique
+      you can copy all files inside a directory by using "directory/*"
 
-   * "init_with" is optional
+      * this cannot be mixed using "name"
 
-     * if the given filepath can be found inside of the
-       "JUBE_INCLUDE_PATH" and if it contains a patternset using the
-       given name, all pattern will be copied to the local set
+      in the execution step the given files or directories will be
+      copied
 
-     * local pattern will overwrite imported pattern
-
-     * the name of the external set can differ to the local one by
-       using "init-with="filename.xml:external_name""
-
-   * patternsets can be used inside the analyser tag
-
-   * different sets, which are used inside the same analyser, must be
-     compatible
-
-prepare_tag
-   The prepare can contain any *Shell* command you want. It will be
-   executed like a normal *<do>* inside the step where the
+   pare_tag he prepare can contain any *Shell* command you want. It
+   will be executed like a normal *<do>* inside the tep where the
    corresponding fileset is used. The only difference towards the
-   normal do is, that it will be executed **before** the substitution
+   normal do is, that it will be executed *before** the substitution
    will be executed.
 
-      <prepare stdout="..." stderr="..." work_dir="..." active="...">...</prepare>
+   . code-block:: xml
 
-   * "stdout"- and "stderr"-filename are optional (default: "stdout"
-     and "stderr")
+         <prepare stdout="..." stderr="..." work_dir="..."
+         active="...">...</prepare>
 
-   * "work_dir" is optional, it can be used to change the work
-     directory of this single command (relativly seen towards the
-     original work directory)
+      "stdout"- and "stderr"-filename are optional (default: "stdout"
+      and "stderr") "work_dir" is optional, it can be used to change
+      the work directory of this single command (relativly seen
+      towards the original work directory) "active" is optional
 
-   * "active" is optional
+      * can be set to "true" or "false" or any *Python* parsable bool
+        expression to enable or disable the single command
 
-     * can be set to "true" or "false" or any *Python* parsable bool
-       expression to enable or disable the single command
+      * *parameter* are allowed inside this attribute
 
-     * *parameter* are allowed inside this attribute
+   stituteset_tag
+      substituteset is a container to store a bundle of *sub*
+      commands.
 
-remove
-   The given benchmark will be removed.
+   . code-block:: xml
 
-   If no benchmark id is given, last benchmark found in directory will
-   be removed.
+         <substituteset name="..." init_with="...">
+            <iofile/> ... <sub/> ...
 
-   Only the *JUBE* internal directory structure will be deleted.
-   External files and directories will stay unchanged.
+         </substituteset>
 
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
+      "init_with" is optional
 
-result
-   Create a result table.
+      * if the given filepath can be found inside of the
+        "JUBE_INCLUDE_PATH" and if it contains a substituteset using
+        the given name, all iofile and sub will be copied to the local
+        set
 
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If multiple benchmarks are selected (e.g. by using "--id
-   all"), a combined result view of all available benchmarks in the
-   given directory will be created. If benchmark directory is missing,
-   current directory will be used.
+      * local "iofile" will overwrite imported ones based on "out",
+        local "sub" will overwrite imported ones based on "source"
 
-result_tag
-   The result tag is used to handle different visualisation types of
-   your analysed data.
+      * the name of the external set can differ to the local one by
+        using "init-with="filename.xml:external_name""
 
-      <result result_dir="...">
-        <use>...</use>
-        ...
-        <table>...</table>
-        <syslog>...</syslog>
-        <database>...</database>
-        ...
-      </result>
+      substitutesets can be used inside the step-command
 
-   * "result_dir" is optional. Here you can specify an different
-     output directory. Inside of this directory a subfolder named by
-     the current benchmark id will be created. Default:
-     benchmark_dir/result
+   ile_tag
+      iofile declare the name (and path) of a file used for
+      substitution.
 
-   * only analyser are usable
+   . code-block:: xml
 
-   * using analyser "<use>set1,set2</use>" is the same as
-     "<use>set1</use><use>set2</use>"
+         <iofile in="..." out="..." out_mode="..." />
 
-run
-   Start a new benchmark run by parsing the given *JUBE* input file.
+      "in" and "out" filepath are relative to the current work
+      directory for every single step (not relative to the path of the
+      inputfile) "in" and "out" can be the same "out_mode" is
+      optional, can be "w" or "a" (default: "w")
 
-selection_tag
-   Specify tags or select benchmarks by name.
+      * "w" : "out"-file will be overridden
 
-      <selection>
-        <only>...</only>
-        <not>...</not>
-        <tag>...</tag>
-        ...
-      </selection>
+      * "a" : "out"-file will be appended
 
-   * multiple <tag> are allowed to specify tags (see tagging)
+   _tag
+      substition expression.
 
-   * select or unselect a benchmark by name
+   . code-block:: xml
 
-   * only selected benchmarks will run (when using the "run" command)
+         <sub source="..." dest="..." mode="..."/>
 
-   * multiple "<only>" and "<not>" are allowed
+      "source"-string will be replaced by "dest"-string both can
+      contain parameter: "... $nameofparameter ..." "mode" is optional
+      (default: "text"). Can be used to switch between "text" and
+      "regex" substitution
 
-   * "<only>" and "<not>" can contain a name list divided by ","
+   p_tag
+      step give a list of *Shell* operations and a corresponding
+      parameter environment.
 
-statistical_values
-   If there are multiple pattern matches within one file, multiple
-   files or when using multiple iterations. *JUBE* will create some
-   statistical values automatically:
+   . code-block:: xml
 
-   * "first": first match (default)
+         <step name="..." depend="..." work_dir="..." suffix="..."
+         shared="..." active="..."
+               export="..." max_async="..." iterations="..."
+               cycles="..." procs="..." do_log_file="...">
 
-   * "last": last match
+            <use from="">...</use> ... <do></do> ...
 
-   * "min": min value
+         </step>
 
-   * "max": max value
+      parametersets, filesets and substitutionsets are usable using
+      sets "<use>set1,set2</use>" is the same as
+      "<use>set1</use><use>set2</use>" parameter can be used inside
+      the "<use>"-tag the "from" attribute is optional and can be used
+      to specify an external set source any name must be unique, it is
+      **not allowed to reuse** a set "depend" is optional and can
+      contain a list of other step names which must be executed before
+      the current step "max_async" is optional and can contain a
+      number (or a parameter) which describe how many *workpackages*
+      can be executed asynchronously (default: 0 means no limitation).
+      This option is only important if a *do* inside the step contains
+      a "done_file" attribute and should be executed in the background
+      (or managed by a jobsystem). In this case *JUBE* will manage
+      that there will not be to many instances at the same time. To
+      update the benchmark and start further instances, if the first
+      ones were finished, the *continue* command must be used.
+      "work_dir" is optional and can be used to switch to an
+      alternative work directory
 
-   * "avg": average value
+      * the user had to handle **uniqueness of this directory** by his
+        own
 
-   * "std": standard deviation
+      * no automatic parent/children link creation
 
-   * "sum": sum
+      "suffix" is optional and can contain a string (parameters are
+      allowed) which will be attached to the default workpackage
+      directory name "active" is optional
 
-   * "cnt": counter
+      * can be set to "true" or "false" or any *Python* parsable bool
+        expression to enable or disable the single command
 
-   These variabels can be accessed within the the result creation or
-   to create derived pattern by "variable_name_<statistic_option>"
-   e.g. "${nodes_min}"
+      * *parameter* are allowed inside this attribute
 
-   The variable name itself always matches the first match.
+      "shared" is optional and can be used to create a shared folder
+      which can be accessed by all workpackages based on this step
 
-status
-   Show status string (RUNNING or FINISHED) for the given benchmark.
+      * a link, named by the attribute content, is used to access the
+        shared folder
 
-   If no benchmark id is given, last benchmark found in directory will
-   be used. If benchmark directory is missing, current directory will
-   be used.
+      * the shared folder link will not be automatically created in an
+        alternative working directory!
 
-step_tag
-   A step give a list of *Shell* operations and a corresponding
-   parameter environment.
+      "export="true""
 
-      <step name="..." depend="..." work_dir="..." suffix="..." shared="..." active="..."
-            export="..." max_async="..." iterations="..." cycles="..." procs="..." do_log_file="...">
-        <use from="">...</use>
-        ...
-        <do></do>
-        ...
-      </step>
+      * the environment of the current step will be exported to an
+        dependent step
 
-   * parametersets, filesets and substitutionsets are usable
+      "iterations" is optional. All workpackages within this step will
+      be executed multiple times if the iterations value is used.
+      "cycles" is optional. All "<do>" commands within the step will
+      be executed "cycles"-times "procs" is optional. Amount of
+      processes used to execute the parameter expansions of the
+      corresponding step in parallel. "do_log_file" is optional. Name
+      or path of a do log file trying to mimick the do steps and the
+      environment of a workpacakge of a step to produce an executable
+      script.
 
-   * using sets "<use>set1,set2</use>" is the same as
-     "<use>set1</use><use>set2</use>"
+   tag
+      do contain a executable *Shell* operation.
 
-   * parameter can be used inside the "<use>"-tag
+   . code-block:: xml
 
-   * the "from" attribute is optional and can be used to specify an
-     external set source
+         <do stdout="..." stderr="..." active="...">...</do> <do
+         done_file="..." error_file="...">...</do> <do
+         break_file="...">...</do> <do shared="true">...</do> <do
+         work_dir="...">...</do>
 
-   * any name must be unique, it is **not allowed to reuse** a set
+      "do" can contain any *Shell*-syntax-snippet (*parameter* will be
+      replaced "... $nameofparameter ...") "stdout"- and
+      "stderr"-filename are optional (default: "stdout" and "stderr")
+      "work_dir" is optional, it can be used to change the work
+      directory of this single command (relativly seen towards the
+      original work directory) "active" is optional
 
-   * "depend" is optional and can contain a list of other step names
-     which must be executed before the current step
+      * can be set to "true" or "false" or any *Python* parsable bool
+        expression to enable or disable the single command
 
-   * "max_async" is optional and can contain a number (or a parameter)
-     which describe how many *workpackages* can be executed
-     asynchronously (default: 0 means no limitation). This option is
-     only important if a *do* inside the step contains a "done_file"
-     attribute and should be executed in the background (or managed by
-     a jobsystem). In this case *JUBE* will manage that there will not
-     be to many instances at the same time. To update the benchmark
-     and start further instances, if the first ones were finished, the
-     *continue* command must be used.
+      * *parameter* are allowed inside this attribute
 
-   * "work_dir" is optional and can be used to switch to an
-     alternative work directory
+      "done_file"-filename and "error_file" are optional
 
-     * the user had to handle **uniqueness of this directory** by his
-       own
+      * by using "done_file" the user can mark async-steps. The
+        operation will stop until the script will create the named
+        file inside the work directory.
 
-     * no automatic parent/children link creation
+      * by using "error_file" the operation will produce a error if
+        the named file can be found inside the work directory. This
+        feature can be used together with the "done_file" to signalise
+        broken async-steps.
 
-   * "suffix" is optional and can contain a string (parameters are
-     allowed) which will be attached to the default workpackage
-     directory name
+      "break_file"-filename is optional
 
-   * "active" is optional
+      * by using "break_file" the user can stop further cycle runs.
+        the current step will be directly marked with finalized and
+        further "<do>" will be ignored.
 
-     * can be set to "true" or "false" or any *Python* parsable bool
-       expression to enable or disable the single command
+      "shared="true""
 
-     * *parameter* are allowed inside this attribute
+      * can be used inside a step using a shared folder
 
-   * "shared" is optional and can be used to create a shared folder
-     which can be accessed by all workpackages based on this step
+      * cmd will be **executed inside the shared folder**
 
-     * a link, named by the attribute content, is used to access the
-       shared folder
+      * cmd will run once (synchronize all workpackages)
 
-     * the shared folder link will not be automatically created in an
-       alternative working directory!
+      * "$jube_wp_..." - parameter cannot be used inside the shared
+        command
 
-   * "export="true""
+   lyser_tag he analyser describe the steps and files which should be
+   scanned using a set of pattern.
 
-     * the environment of the current step will be exported to an
-       dependent step
+   . code-block:: xml
 
-   * "iterations" is optional. All workpackages within this step will
-     be executed multiple times if the iterations value is used.
+         <analyser name="..." reduce="...">
+            <use from="">...</use> ... <analyse step="...">
 
-   * "cycles" is optional. All "<do>" commands within the step will be
-     executed "cycles"-times
+               <file use="">...</file>
 
-   * "procs" is optional. Amount of processes used to execute the
-     parameter expansions of the corresponding step in parallel.
+            </analyse> ...
 
-   * "do_log_file" is optional. Name or path of a do log file trying
-     to mimick the do steps and the environment of a workpacakge of a
-     step to produce an executable script.
+         </analyser>
 
-sub_tag
-   A substition expression.
+      you can use different patternsets to analyse a set of files only
+      patternsets are usable using patternsets "<use>set1,set2</use>"
+      is the same as "<use>set1</use><use>set2</use>" the from-
+      attribute is optional and can be used to specify an external set
+      source any name must be unique, it is not allowed to reuse a set
+      the step-attribute contains an existing stepname each file using
+      each workpackage will be scanned seperatly the "use" argument
+      inside the "<file>" tag is optional and can be used to specify a
+      file specific patternset;
 
-      <sub source="..." dest="..." mode="..."/>
+      * the global "<use>" and this local use will be combined and
+        evaluated at the same time
 
-   * "source"-string will be replaced by "dest"-string
+      * a "from" subargument is not possible in this local "use"
 
-   * both can contain parameter: "... $nameofparameter ..."
+      "reduce" is optional (default: "true" )
 
-   * "mode" is optional (default: "text"). Can be used to switch
-     between "text" and "regex" substitution
+      * "true" : Combine result lines if iteration-option is used
 
-substituteset_tag
-   A substituteset is a container to store a bundle of *sub* commands.
+      * "false" : Create single line for each iteration
 
-      <substituteset name="..." init_with="...">
-        <iofile/>
-        ...
-        <sub/>
-        ...
-      </substituteset>
+   abase_tag reate sqlite3 database
 
-   * "init_with" is optional
+   . code-block:: xml
 
-     * if the given filepath can be found inside of the
-       "JUBE_INCLUDE_PATH" and if it contains a substituteset using
-       the given name, all iofile and sub will be copied to the local
-       set
+         <database name="..." primekeys="..." file="..." filter="...">
+            <key title="..." primekey="...">...</key> ...
 
-     * local "iofile" will overwrite imported ones based on "out",
-       local "sub" will overwrite imported ones based on "source"
+         </database>
 
-     * the name of the external set can differ to the local one by
-       using "init-with="filename.xml:external_name""
+      "name": name of the table in the database
 
-   * substitutesets can be used inside the step-command
+      Unlike the result table, the unit attribute of a parameter or
+      pattern is not taken into account.
 
-syslog_tag
-   A syslog result type
+      "primekeys" is optional: can contain a list of parameter or
+      pattern names (separated by ","). Given parameters or patterns
+      will be used as primary keys of the database table. All
+      primekeys have to be listed as a "<key>" as well and if the
+      "title" attribute of a "key" is set, then the value of the
+      "title" attribute must be used in the "primekeys" attribute (and
+      not the parameter or pattern name). Modification of primary keys
+      of an existing table is not supported. If no primekeys are set
+      then each *jube result* will add new rows to the database.
+      Otherwise rows with matching primekeys will be updated.
+      >>**<<Important note: The use of the "database" attribute
+      "primekeys" is deprecated and will be removed soon. Instead, use
+      the "primekey" attribute of the "key". **
 
-      <syslog name="..." address="..." host="..." port="..." sort="..." format="..." filter="...">
-        <key format="..." title="...">...</key>
-        ...
-      </syslog>
+      "file" is optional. The given value should hold the full path to
+      the database file. If the file including the path does not
+      exists it will be created. Absolute and relative paths are
+      supported.
 
-   * Syslog deamon can be given by a "host" and "port" combination
-     (default "port": 541) or by a socket "address" e.g.: "/dev/log"
-     (mixing of host and address is not allowed)
+      "filter" is optional. It can contain a bool expression to show
+      only specific result entries.
 
-   * "format" is optional: can contain a log format written in a
-     pythonic way (default: "jube[%(process)s]: %(message)s")
+      "<key>" can be specified in the database result and must contain
+      an single parameter or pattern name.
 
-   * "sort" is optional: can contain a list of parameter- or
-     patternnames (separated by ,). Given patterntype or parametertype
-     will be used for sorting
+      * "title" is optional: alternative key title. Used to define a
+        custom database column name.
 
-   * "filter" is optional, it can contain a bool expression to show
-     only specific result entries
+      * "primekey" is optional: If primekey is set to true, the key is
+        added to the database primekeys. (default: false) The
+        "primekeys" attribute of the "database"-tag is deprecated and
+        will be removed.
 
-   * "<key>" can be specified in the syslog result and must contain an
-     single parameter or pattern name.
+   ult_tag he result tag is used to handle different visualisation
+   types of your analysed data.
 
-     * "format" can contain a C like format string: e.g.
-       "format=".2f""
+   . code-block:: xml
 
-     * "title" is optional: alternative key title.
+         <result result_dir="...">
+            <use>...</use> ... <table>...</table> <syslog>...</syslog>
+            <database>...</database> ...
 
-   * Unlike the result table, the unit attribute of a parameter or
-     pattern is not taken into account.
+         </result>
 
-table_tag
-   A simple ASCII based table ouput.
+      "result_dir" is optional. Here you can specify an different
+      output directory. Inside of this directory a subfolder named by
+      the current benchmark id will be created. Default:
+      benchmark_dir/result only analyser are usable using analyser
+      "<use>set1,set2</use>" is the same as
+      "<use>set1</use><use>set2</use>"
 
-      <table name="..." style="..." sort="..." separator="..." transpose="..." filter="...">
-        <column>...</column>
-        ...
-      </table>
+   es term:*Parameter <parameter_tag>* and *Pattern* allow a type
+   specification. This type is either used for orting within the
+   result table and is also used to validate the parameter content.
+   The types are not used to convert parameter values, .g. a floating
+   value will stay unchanged when used in any other context even if
+   the type int was specified.
 
-   * "style" is optional; allowed styles: "csv", "pretty", "aligned";
-     default: "csv"
+   llowed types are:
 
-   * "separator" is optional; only used in csv-style, default: ","
+      "string" (this is also the default type) "int" "float"
 
-   * "sort" is optional: can contain a list of parameter- or
-     patternnames (separated by ,). Given patterntype or parametertype
-     will be used for sorting
+   le_tag
+      simple ASCII based table ouput.
 
-   * "<column>" must contain an single parameter- or patternname
+   . code-block:: xml
 
-   * "transpose" is optional (default: "false")
+         <table name="..." style="..." sort="..." separator="..."
+         transpose="..." filter="...">
+            <column>...</column> ...
 
-   * "filter" is optional, it can contain a bool expression to show
-     only specific result entries
+         </table>
 
-tagging
-   Tagging is a simple way to mark parts of your input file to be
+      "style" is optional; allowed styles: "csv", "pretty", "aligned";
+      default: "csv" "separator" is optional; only used in csv-style,
+      default: "," "sort" is optional: can contain a list of
+      parameter- or patternnames (separated by ,). Given patterntype
+      or parametertype will be used for sorting "<column>" must
+      contain an single parameter- or patternname "transpose" is
+      optional (default: "false") "filter" is optional, it can contain
+      a bool expression to show only specific result entries
+
+   umn_tag
+      line within a ASCII result table. The "<column>"-tag can contain
+      the name of a pattern or
+
+   he name of a parameter.
+
+   . code-block:: xml
+
+         <column colw="..." format="..." title="...">...</column>
+
+      "colw" is optional: column width "title" is optional: column
+      title "format" can contain a C like format string: e.g.
+      "format=".2f""
+
+   log_tag
+      syslog result type
+
+   . code-block:: xml
+
+         <syslog name="..." address="..." host="..." port="..."
+         sort="..." format="..." filter="...">
+            <key format="..." title="...">...</key> ...
+
+         </syslog>
+
+      Syslog deamon can be given by a "host" and "port" combination
+      (default "port": 541) or by a socket "address" e.g.: "/dev/log"
+      (mixing of host and address is not allowed) "format" is
+      optional: can contain a log format written in a pythonic way
+      (default: "jube[%(process)s]: %(message)s") "sort" is optional:
+      can contain a list of parameter- or patternnames (separated by
+      ,). Given patterntype or parametertype will be used for sorting
+      "filter" is optional, it can contain a bool expression to show
+      only specific result entries "<key>" can be specified in the
+      syslog result and must contain an single parameter or pattern
+      name.
+
+      * "format" can contain a C like format string: e.g.
+        "format=".2f""
+
+      * "title" is optional: alternative key title.
+
+      Unlike the result table, the unit attribute of a parameter or
+      pattern is not taken into account.
+
+   ameter_space he parameter space for a specific benchmark run is the
+   bundle of all possible parameter combinations. .g. there are to
+   different parameter: a = 1,2 and b= "p","q" then you will get four
+   different parameter ombinations: "a=1", "b="p""; "a=1", "b="q"";
+   "a=2", "b="p""; "a=2", "b="q"".
+
+   he parameter space of a specific step will be one of these
+   parameter combinations. To fulfill all combinations he step will be
+   executed multible times (each time using a new combination). The
+   specific combination of a step and n expanded parameter space is
+   named *workpackage*.
+
+   lude_tag nclude *XML*-data from an external file.
+
+   . code-block:: xml
+
+         <include from="..." path="..." />
+
+      "<include>" can be used to include an external *XML*-structure
+      into the current file can be used at every position (inside the
+      "<jube>"-tag) path is optional and can be used to give an
+      alternative xml-path inside the include-file (default: root-
+      node)
+
+   kpackage A workpackage is the combination of a *step* (which
+   contains all operations) and one parameter setting out of the
+   expanded *parameter space*.
+
+   Every workpackage will run inside its own sandbox directory!
+
+   ging Tagging is a simple way to mark parts of your input file to be
    includable or excludable.
 
    * Every available "<tag>" (not the root "<jube>"-tag) can contain a
@@ -1170,45 +850,210 @@ tagging
      and running with "a b" will hide the "<tag>" because the "!b" is
      more important than the "a"
 
-types
-   *Parameter* and *Pattern* allow a type specification. This type is
-   either used for sorting within the result table and is also used to
-   validate the parameter content. The types are not used to convert
-   parameter values, e.g. a floating value will stay unchanged when
-   used in any other context even if the type int was specified.
+   ectory_structure * every (new) benchmark run will create its own
+   directory structure * every single workpackage will create its own
+   directory structure * user can add files (or links) to the
+   workpackage dir, but the real position in filesystem will be seen
+   as a blackbox * general directory structure:
 
-   allowed types are:
+         benchmark_runs (given by "outpath" in xml-file)
+         |
+         +- 000000 (determined through benchmark-id)
+            |
+            +- 000000_compile (step: just an example, can be arbitrary chosen)
+               |
+               +- work (user environment)
+               +- done (workpackage finished information file)
+               +- ...  (more jube internal information files)
+            +- 000001_execute
+               |
+               +- work
+                  |
+                  +- compile -> ../../000000_compile/work (automatic generated link for depending step)
+               +- wp_done_00 (single "do" finished, but not the whole workpackage)
+               +- ...
+            +- 000002_execute
+            +- result (result data)
+            +- configuration.xml (benchmark configuration information file)
+            +- workpackages.xml (workpackage graph information file)
+            +- analyse.xml (analyse data)
+         +- 000001 (determined through benchmark-id)
+            |
+            +- 000000_compile (step: just an example, can be arbitrary chosen)
+            +- 000001_execute
+            +- 000002_postprocessing
 
-   * "string" (this is also the default type)
+   eral_structure_xml
 
-   * "int"
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!-- Basic top level JUBE structure -->
+      <jube>
+        <!-- optional additional include paths -->
+        <include-path>
+          <path>...</path>
+          ...
+        </include-path>
+        <!-- optional benchmark selection -->
+        <selection>
+          <only>...</only>
+          <not>...</not>
+          <tag>...</tag>
+          ...
+        </selection>
+        <!-- optional must-have tag specification -->
+        <check_tags>...</check_tags>
+        <!-- global sets -->
+        <parameterset name="">...</parameterset>
+        <substitutionset name="">...</substitutionset>
+        <fileset name="">...</fileset>
+        <patternset name="">...</patternset>
+        ...
+        <benchmark name="" outpath="">
+          <!-- optional benchmark comment -->
+          <comment>...</comment>
+          <!-- local benchmark parametersets -->
+          <parameterset name="">...</parameterset>
+          ...
+          <!-- files, which should be used -->
+          <fileset name="">...</fileset>
+          ...
+          <!-- substitution rules -->
+          <substituteset name="">...</substituteset>
+          ...
+          <!-- pattern -->
+          <patternset name="">...</patternset>
+          ...
+          <!-- commands -->
+          <step name="">...</step>
+          ...
+          <!-- analyse -->
+          <analyser name="">...</analyser>
+          ...
+          <!-- result -->
+          <result>...</result>
+          ...
+        </benchmark>
+        ...
+      </jube>
 
-   * "float"
+   eral_structure_yaml
 
-update
-   Check if a newer JUBE version is available.
+      # optional additional include paths
+      include-path:
+        ...
 
-update_mode
-   The update mode is parameter attribute which can be used to control
-   the reevaluation of the parameter content.
+      # optional benchmark selection
+      selection:
+        only: ...
+        not: ...
+        tag: ...
 
-   These update modes are available:
+      # optional must-have tag specification
+      check_tags:
+        ...
 
-   * "never": no reevaluation, even if the parameterset is used
-     multiple times
+      # global sets
+      parameterset:
+        ...
+      substitutionset:
+        ...
+      fileset:
+        ...
+      patternset:
+        ...
 
-   * "use": reevaluation if the parameterset is explicitly used
+      benchmark: # can be skipped if only a single benchmark is handled
+        - name: ...
+          outpath: ...
+          # optional benchmark comment
+          comment: ...
 
-   * "step": reevaluation in each new step
+          # local sets
+          parameterset:
+            ...
+          substitutionset:
+            ...
+          fileset:
+            ...
+          patternset:
+            ...
 
-   * "cycle": reevaluation in each cycle, but not at the begin of a
-     new step (number of workpackages will stay unchanged)
+          # commands
+          step:
+            ...
 
-   * "always": reevaluation in each step and cycle
+          analyser:
+            ...
+          result:
+            ...
 
-workpackage
-   A workpackage is the combination of a *step* (which contains all
-   operations) and one parameter setting out of the expanded
-   *parameter space*.
+   e_pattern List of available jube pattern:
 
-   Every workpackage will run inside its own sandbox directory!
+   * "$jube_pat_int": integer number
+
+   * "$jube_pat_nint": integer number, skip
+
+   * "$jube_pat_fp": floating point number
+
+   * "$jube_pat_nfp": floating point number, skip
+
+   * "$jube_pat_wrd": word
+
+   * "$jube_pat_nwrd": word, skip
+
+   * "$jube_pat_bl": blank space (variable length), skip
+
+   e_variables List of available jube variables:
+
+   * Benchmark:
+
+     * "$jube_benchmark_name": current benchmark name
+
+     * "$jube_benchmark_id": current benchmark id
+
+     * "$jube_benchmark_padid": current benchmark id with preceding
+       zeros
+
+     * "$jube_benchmark_home": original input file location
+
+     * "$jube_benchmark_rundir": main benchmark specific execution
+       directory
+
+     * "$jube_benchmark_start": benchmark starting time
+
+   * Step:
+
+     * "$jube_step_name": current step name
+
+     * "$jube_step_iterations": number of step iterations (default: 1)
+
+     * "$jube_step_cycles": number of step cycles (default: 1)
+
+   * Workpackage:
+
+     * "$jube_wp_id": current workpackage id
+
+     * "$jube_wp_padid": current workpackage id with preceding zeros
+
+     * "$jube_wp_status": current workpackage status [RUNNING, DONE,
+       ERROR]
+
+     * "$jube_wp_iteration": current iteration number (default: 0)
+
+     * "$jube_wp_parent_<parent_name>_id": workpackage id of selected
+       parent step
+
+     * "$jube_wp_relpath": relative path to workpackage work directory
+       (relative towards configuration file)
+
+     * "$jube_wp_abspath": absolute path to workpackage work directory
+
+     * "$jube_wp_envstr": a string containing all exported parameter
+       in shell syntax:
+
+          export par=$par
+          export par2=$par2
+
+     * "$jube_wp_envlist": list of all exported parameter names
+
+     * "$jube_wp_cycle": id of current step cycle (starts at 0)
