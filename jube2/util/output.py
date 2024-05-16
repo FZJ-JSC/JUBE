@@ -43,9 +43,9 @@ def text_boxed(text):
     return box
 
 
-def text_line():
+def text_line(char="#"):
     """Return a horizonal ASCII line"""
-    return "#" * jube2.conf.DEFAULT_WIDTH
+    return char * jube2.conf.DEFAULT_WIDTH
 
 
 def text_table(entries_ext, use_header_line=False, indent=1, align_right=True,

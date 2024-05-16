@@ -48,6 +48,16 @@ class Substituteset(object):
         """Return name of Substituteset"""
         return self._name
 
+    @property
+    def files(self):
+        """Return iofiles"""
+        return self._files
+
+    @property
+    def subs(self):
+        """Return subs"""
+        return self._substitute_dict
+
     def update_files(self, file_data):
         """Update iofiles"""
         outfiles = set([data[0] for data in self._files])

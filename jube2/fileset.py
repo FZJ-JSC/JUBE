@@ -85,6 +85,31 @@ class File(object):
         self._active = active
         self._is_internal_ref = is_internal_ref
 
+    @property
+    def file_type(self):
+        """Return file type"""
+        return type(self).__name__
+
+    @property
+    def path(self):
+        """Return file path"""
+        return self._path
+
+    @property
+    def source_dir(self):
+        """Return file source dir"""
+        return self._source_dir
+
+    @property
+    def target_dir(self):
+        """Return file source dir"""
+        return self._target_dir
+
+    @property
+    def active(self):
+        """Return file active status"""
+        return self._active
+
     def create(self, work_dir, parameter_dict, alt_work_dir=None,
                file_path_ref="", environment=None):
         """Create file access"""

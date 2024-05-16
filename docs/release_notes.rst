@@ -31,6 +31,7 @@ Release: XXXX-XX-XX
 * Added: Warning when the current verbosity level from the command line or environment variable is out of range.
 * Added: New environment variable `JUBE_BENCHMARK_OUTPATH` to set the benchmark outpath.
 * Added: New command line option `--outpath` of `jube run` to specify the benchmark outpath.
+* Changed: The `jube info` command now also shows information about all sets, steps, analyser and result from the `configuration.xml`.
 * Changed: The `outpath` attribute of the `<benchmark>` tag no longer needs to be specified if either the command line option `--outpath` is set or the new environment variable `JUBE_BENCHMARK_OUTPATH` is used. The command line option overrides the environment variable, which in turn overrides the attribute in the input file.
 * Changed: The convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
 * Changed: If the `title` attribute of a database `key` is set, then this title is used as the name of the database column instead of the parameter or pattern name.

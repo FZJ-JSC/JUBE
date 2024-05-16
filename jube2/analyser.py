@@ -140,6 +140,11 @@ class Analyser(object):
         """Get analyser name"""
         return self._name
 
+    @property
+    def reduce(self):
+        """Get analyser reduce"""
+        return self._reduce_iteration
+
     def etree_repr(self):
         """Return etree object representation"""
         analyser_etree = ET.Element("analyser")

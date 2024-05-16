@@ -200,6 +200,12 @@ class KeyValuesResult(Result):
         else:
             self._sort_names = sort_names
 
+
+    @property
+    def sort(self):
+        """Return the result style"""
+        return self._sort_names
+
     def add_key(self, name, format_string=None, title=None, unit=None):
         """Add an additional key to the dataset"""
         self._keys.append(KeyValuesResult.DataKey(name, title, format_string,

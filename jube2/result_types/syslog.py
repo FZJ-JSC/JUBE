@@ -112,6 +112,26 @@ class SysloggedResult(KeyValuesResult):
         else:
             self._syslog_fmt_string = syslog_fmt_string
 
+    @property
+    def address(self):
+        """Return syslog address"""
+        return self._syslog_address
+
+    @property
+    def host(self):
+        """Return syslog host"""
+        return self._syslog_host
+
+    @property
+    def port(self):
+        """Return syslog port"""
+        return self._syslog_port
+
+    @property
+    def sys_format(self):
+        """Return syslog format"""
+        return self._syslog_fmt_string
+
     def create_result_data(self, style=None, select=None, exclude=None):
         """Create result data"""
         result_data = KeyValuesResult.create_result_data(self, select, exclude)
