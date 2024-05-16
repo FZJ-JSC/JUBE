@@ -181,7 +181,7 @@ class YAML_Converter(object):
         for path in data:
             if type(path) is dict:
                 if "tag" in path and not jube2.util.util.valid_tags(path["tag"], self._tags):
-                    return
+                    continue
                 value = path["path"] if "path" in path else path["_"]
                 if type(value) is not list:
                     value = [value]
