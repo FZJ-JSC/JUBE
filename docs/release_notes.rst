@@ -34,16 +34,16 @@ Release: XXXX-XX-XX
 * Added: New environment variable `JUBE_BENCHMARK_OUTPATH` to set the benchmark outpath.
 * Added: New command line option `--outpath` of `jube run` to specify the benchmark outpath.
 * Changed: The `jube info` command now also shows information about all sets, steps, analyser and result from the `configuration.xml`.
-* Changed: The `outpath` attribute of the `<benchmark>` tag no longer needs to be specified if either the command line option `--outpath` is set or the new environment variable `JUBE_BENCHMARK_OUTPATH` is used. The command line option overrides the environment variable, which in turn overrides the attribute in the input file.
-* Changed: The convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
-* Changed: If the `title` attribute of a database `key` is set, then this title is used as the name of the database column instead of the parameter or pattern name.
+* Changed: The `outpath` attribute of the `<benchmark>` tag no longer needs to be specified in the input file if either the command line option `--outpath` is set or the new environment variable `JUBE_BENCHMARK_OUTPATH` is used. The command line option overrides the environment variable, which in turn overrides the attribute in the input file.
+* Changed: The modified convert type warning is only logged to the `analyse.log` file and no longer printed to the console output.
+* Changed: If the `title` attribute of a `<database>` `<key>` is set, then this title is used as the name of the database column instead of the parameter or pattern name.
 * Changed: The `<check_tags>` tag is now a subelement of the new `<tags>` tag.
-* Changed: Changed the name of the source directory from `jube2` to `jube` and adapted the code to the name change.
-* Deprecated: The `primekeys` attribute of the `database` is no longer supported. Use the new `primekey` attribute of the `database` `key` instead.
+* Changed: Changed the name of the source directory from `jube2` to `jube` and adapted the code to the name change. The links to the documentation on the websites have also been adjusted accordingly.
+* Deprecated: The `primekeys` attribute of the `<database>` is no longer supported. Use the new `primekey` attribute of the `<database>` `<key>` instead.
 * Deprecated: `<check_tags>` will no longer be supported on a global level. Instead, it should be specified in the `<tags>` tag.
-* Removed: Comma character (`,`) is no longer supported in `check_tags` and `tag` attributes. Instead use `|`, `^` `+` and `!`.
+* Removed: Comma character (`,`) is no longer supported in `<check_tags>` and the `tag` attribute. Instead use `|`, `^` `+` and `!`.
 * Fixed: Allow YAML scripts to include a list of nested parametersets with `!include`.
-* Fixed: Allow YAML scripts to use the tag attribute in the `<path>` of the `<include-path>`-tag.
+* Fixed: Allow YAML scripts to use the `tag` attribute in the `<path>` of the `<include-path>`-tag.
 
 Version 2.6.2
 ~~~~~~~~~~~~~

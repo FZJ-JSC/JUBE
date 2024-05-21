@@ -280,4 +280,4 @@ pages:production:
         - "sshpass -e -P 'passphrase for key' rsync -rlgoDzP --del docs/_build/html/* apps_jube_docu:docu/"
     environment:
         name: production
-        url: https://apps.fz-juelich.de/jsc/jube/jube/docu/
+        url: https://apps.fz-juelich.de/jsc/jube/docu/

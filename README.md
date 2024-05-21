@@ -26,11 +26,11 @@ The source code can be downloaded from any of the following places:
 
 JUBE can be installed using `pip` or `setup.py` and needs *python 3.2* or higher.
 You will also need *SQLite* version 3.35.0 (or higher) to use the database as a result output.
-Installation instructions can be found [here](https://apps.fz-juelich.de/jsc/jube/jube/docu/tutorial.html#installation).
+Installation instructions can be found [here](https://apps.fz-juelich.de/jsc/jube/docu/tutorial.html#installation).
 
 The documentation for JUBE is split into Beginner Tutorial, Advanced Tutorial, 
 FAQ, CLI, and Glossary and can be found in the 
-**[User Guide](https://apps.fz-juelich.de/jsc/jube/jube/docu/index.html)**.
+**[User Guide](https://apps.fz-juelich.de/jsc/jube/docu/index.html)**.
 
 In addition to the documentation, there are also 
 [tutorial examples](examples)
@@ -65,7 +65,7 @@ branches in GitLab.
 
 Please ensure that your contributions to JUBE are compliant with the 
 [contribution](CONTRIBUTING.md), 
-[developer](https://apps.fz-juelich.de/jsc/jube/jube/docu/devel.html) and 
+[developer](https://apps.fz-juelich.de/jsc/jube/docu/devel.html) and
 [community](CODE_OF_CONDUCT.md) guidelines.
 
 # Citing JUBE
