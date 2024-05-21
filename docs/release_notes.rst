@@ -21,9 +21,9 @@
 Release notes
 =============
 
-[UNRELEASED]
+Version 2.7.0
 ~~~~~~~~~~~~~
-Release: XXXX-XX-XX
+Release: 2024-05-21
 
 * Added: New `<tags>` tag, which includes the `<tag>` tag to write a description for each tag specified in the input file.
 * Added: New command `jube tag` to print out the tag description of a given input file or benchmark directory.
