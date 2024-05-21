@@ -2,10 +2,10 @@ Release notes
 *************
 
 
-[UNRELEASED]
-============
+Version 2.7.0
+=============
 
-Release: XXXX-XX-XX
+Release: 2024-05-21
 
 * Added: New *<tags>* tag, which includes the *<tag>* tag to write a
   description for each tag specified in the input file.
