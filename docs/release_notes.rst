@@ -21,6 +21,12 @@
 Release notes
 =============
 
+[UNRELEASED]
+~~~~~~~~~~~~~
+Release: XXXX-XX-XX
+
+* Fixed: Glossar and `jube help`
+
 Version 2.7.0
 ~~~~~~~~~~~~~
 Release: 2024-05-21
