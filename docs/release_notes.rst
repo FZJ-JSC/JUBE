@@ -25,8 +25,10 @@ Release notes
 ~~~~~~~~~~~~~
 Release: XXXX-XX-XX
 
-* Added: GitLab-CI tests for `make` commands
-* Fixed: Glossar and `jube help`
+* Added: GitLab-CI tests for `make` commands.
+* Added: `jube continue` test for tagging example.
+* Fixed: Only in the case of `jube run`, check that there is a tag attribute description for tags that are not used in the input file.
+* Fixed: Glossar and `jube help`.
 
 Version 2.7.0
 ~~~~~~~~~~~~~

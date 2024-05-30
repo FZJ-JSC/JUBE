@@ -544,7 +544,8 @@ def run_new_benchmark(args):
             args.outpath = jube.util.util.check_and_get_benchmark_outpath()
 
         parser = jube.jubeio.Parser(path, tags, include_pathes,
-                                     args.outpath, args.force, args.strict)
+                                     args.outpath, args.force, args.strict,
+                                     args.subparser)
         benchmarks, only_bench, not_bench = parser.benchmarks_from_xml()
 
         # Add new comment

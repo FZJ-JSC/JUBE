@@ -54,7 +54,7 @@ class Parser(object):
     """JUBE XML input file parser"""
 
     def __init__(self, filename, tags=None, include_path=None,
-                 outpath=None, force=False, strict=False):
+                 outpath=None, force=False, strict=False, command_name=None):
         self._filename = filename
         if include_path is None:
             include_path = list()
@@ -65,6 +65,7 @@ class Parser(object):
         self._outpath = outpath
         self._force = force
         self._strict = strict
+        self._command_name = command_name # run, continue, analyse, ...
         self._file_handle = None
 
     def __del__(self):
@@ -769,7 +770,7 @@ class Parser(object):
             found_tag = re.findall(r"[\w'-]+", element.attrib["tag"])
             all_tags.extend(found_tag)
         unused_tag_docu = list(set(tags.keys()) - set(all_tags))
-        if len(unused_tag_docu):
+        if len(unused_tag_docu) and self._command_name == 'run':
             raise ValueError("Tag descriptions are only allowed for used tags. Tag: "
                              "'{0}' isn't used in the input file."
                              .format(", ".join(unused_tag_docu)))

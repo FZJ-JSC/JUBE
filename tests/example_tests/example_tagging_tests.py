@@ -23,6 +23,7 @@ from __future__ import (print_function,
                         division)
 
 import unittest
+import jube.main
 from examples_tests import TestCase
 
 class TestTaggingExample(TestCase.TestExample):
@@ -48,6 +49,15 @@ class TestTaggingExample(TestCase.TestExample):
         for tag in tags:
             run_args.append("--tag "+tag)
         super(TestTaggingExample, cls)._execute_commands(run_args)
+
+    def test_continue(self):
+        '''
+        Additional test to check that the continue command is executed successfully.
+        '''
+        for run_path, command_wps in self._wp_paths.items():
+            for wp_id, wp_path in command_wps.items():
+                jube.main.main(["continue", self._bench_run_path, "--id", f"{wp_id}"])
+            break
 
 if __name__ == "__main__":
     unittest.main()
