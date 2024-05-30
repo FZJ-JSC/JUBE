@@ -164,6 +164,46 @@ build:site:
             - docs/**/* # all files under folder 'docs'
 
 
+.test_make: &test_make
+    stage: tests
+    script:
+        - cd "${CI_PROJECT_DIR}/docs"
+        - make ${COMMAND} 2>&1 | tee output
+        - if [[ ! -z $(grep "ERROR" output) ]] ; then echo "Errors in the output" ; exit 21 ; fi
+
+tests:release_notes:
+    variables:
+        COMMAND: update_release
+    <<: *test_make
+    rules:
+        - changes:
+            - docs/release_notes.rst
+
+tests:help:
+    variables:
+        COMMAND: update_help
+    <<: *test_make
+    rules:
+        - changes:
+            - docs/glossar.rst
+
+tests:pdf:
+    variables:
+        COMMAND: latexpdf
+    <<: *test_make
+    rules:
+        - changes:
+            - docs/**/* # all files under folder 'docs'
+
+tests:site:
+    variables:
+        COMMAND: html
+    <<: *test_make
+    rules:
+        - changes:
+            - docs/**/* # all files under folder 'docs'
+
+
 .run_test: &run_test
     stage: tests
     script:

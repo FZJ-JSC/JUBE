@@ -133,7 +133,7 @@ Glossary
 
          <comment>...</comment>
 
-  tags_tag
+   tags_tag
       Specify tag description and combination of tags that must be set.
 
       .. code-block:: xml
@@ -647,7 +647,7 @@ Glossary
        to the database. Otherwise rows with matching primekeys will be updated.
        **Important note: The use of the ``database`` attribute ``primekeys`` is 
        deprecated and will be removed soon. Instead, use the ``primekey`` attribute
-       of the ``key``. **
+       of the ``key``.**
 
      * ``file`` is optional. The given value should hold the full path
        to the database file. If the file including the path does not
