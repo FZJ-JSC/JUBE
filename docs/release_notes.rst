@@ -21,9 +21,9 @@
 Release notes
 =============
 
-[UNRELEASED]
+Version 2.7.1
 ~~~~~~~~~~~~~
-Release: XXXX-XX-XX
+Release: 2024-05-30
 
 * Added: GitLab-CI tests for `make` commands.
 * Added: `jube continue` test for tagging example.
