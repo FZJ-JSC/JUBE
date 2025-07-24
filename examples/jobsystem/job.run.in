@@ -8,5 +8,11 @@
 
 ### start of jobscript
 
+# Always create the done_file at exit
+write_job_status()
+{
+  printf "$?" > #READY#
+}
+trap write_job_status EXIT
+
 #EXEC#
-touch #READY#
