@@ -692,9 +692,9 @@ class Benchmark(object):
             else:
                 self.wp_post_run_config(workpackage)
 
-            # Store workpackage information
-            self.write_workpackage_information(
-                os.path.join(self.bench_dir, jube.conf.WORKPACKAGES_FILENAME))
+        # Store workpackage information
+        self.write_workpackage_information(
+            os.path.join(self.bench_dir, jube.conf.WORKPACKAGES_FILENAME))
 
         print("\n")
         status_data = [("stepname", "all", "open", "wait", "error", "done")]
