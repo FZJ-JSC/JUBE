@@ -1,0 +1,21 @@
+# Example: Minimal benchmark definition
+#
+# This is the simplest possible Bulbe benchmark.
+# Only 'benchmark' and 'app.binary' are required.
+
+benchmark: my-app
+description: "Simple single-node benchmark"
+
+app:
+  binary: ./my_application
+
+job:
+  nodes: 1
+  tasks_per_node: 1
+  time: "00:30:00"
+
+analysis:
+  patterns:
+    - name: runtime
+      regex: "Total time:\\s+(\\d+\\.\\d+)"
+      unit: seconds

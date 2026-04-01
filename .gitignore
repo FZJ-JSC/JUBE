@@ -3,6 +3,8 @@
 .pydevproject
 .vscode
 JUBE.egg-info
+bulbe.egg-info
+*.egg-info
 build
 *.pyc
 examples/**/bench_run
@@ -14,3 +16,7 @@ tests/.coverage
 tests/htmlcov
 examples/result_database/result_database.dat 
 dist
+__pycache__
+.pytest_cache
+bulbe.db
+bulbe_runs/

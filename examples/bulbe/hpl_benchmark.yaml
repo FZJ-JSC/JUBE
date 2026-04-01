@@ -1,0 +1,65 @@
+# Example: HPL (High Performance Linpack) benchmark
+#
+# This demonstrates a full Bulbe benchmark definition with:
+# - Scaling sweep (1, 2, 4, 8 nodes)
+# - Frequency sweep (2.0, 2.4, 2.8 GHz)
+# - Memory bandwidth analysis (socket placement trick)
+# - Result extraction via regex patterns
+# - Live monitoring (tail + I/O)
+
+benchmark: hpl
+description: "HPL benchmark — scaling, frequency, and memory analysis"
+
+app:
+  binary: ./xhpl
+  modules:
+    - intel-mpi/2021.6
+    - mkl/2023.1
+  environment:
+    I_MPI_FABRICS: "shm:ofi"
+    OMP_NUM_THREADS: 1
+
+job:
+  scheduler: slurm
+  nodes: 4
+  tasks_per_node: 48
+  cpus_per_task: 1
+  time: "02:00:00"
+  partition: compute
+  account: myproject
+  exclusive: true
+
+pinning:
+  strategy: numactl
+  args: "--cpunodebind=0"
+
+parameters:
+  nodes: [1, 2, 4, 8]
+  cpu_freq: [2.0GHz, 2.4GHz, 2.8GHz]
+
+sweeps:
+  - type: scaling
+  - type: frequency
+  - type: memory
+    parameters:
+      placement: [one_socket, both_sockets]
+
+analysis:
+  patterns:
+    - name: gflops
+      regex: "WR.*\\s+(\\d+\\.\\d+)$"
+      unit: GFLOP/s
+      reduction: max
+    - name: walltime
+      regex: "Time\\s+=\\s+(\\d+\\.\\d+)"
+      unit: seconds
+      reduction: last
+
+monitor:
+  tail: true
+  io: true
+
+tags:
+  cluster: our-cluster
+  project: client-x
+  type: linpack
