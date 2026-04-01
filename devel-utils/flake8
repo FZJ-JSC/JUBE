@@ -1,3 +1,0 @@
-[flake8]
-ignore = x
-max-complexity = 25

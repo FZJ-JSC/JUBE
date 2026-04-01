@@ -1,22 +1,22 @@
+# IDE
 .settings
 .project
 .pydevproject
 .vscode
-JUBE.egg-info
-bulbe.egg-info
+.idea
+
+# Python
+*.pyc
+__pycache__
 *.egg-info
 build
-*.pyc
-examples/**/bench_run
-jube-parse.log
-jube-debug.log
-docs/_build
-tests/benchmark_runs
-tests/.coverage
-tests/htmlcov
-examples/result_database/result_database.dat 
 dist
-__pycache__
 .pytest_cache
+
+# Bulbe runtime
 bulbe.db
 bulbe_runs/
+
+# Test artifacts
+tests/.coverage
+tests/htmlcov
