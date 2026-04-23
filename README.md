@@ -14,7 +14,7 @@ It is actively developed by the [Juelich Supercomputing Centre](https://www.fz-j
 It focuses on managing the complexity of combinatorial benchmarks and ensuring reproducibility of the benchmarks.
 JUBE provides support for different workflows and the ability to use vendor-supplied platform configurations.
 The benchmark configuration and scripts can be specified in either YAML or XML format.
-JUBE is primarily designed for use on supercomputers with *scheduding* systems
+JUBE is primarily designed for use on supercomputers with *scheduling* systems
 like Slurm or PBS, but also works on laptops running Linux or MacOS operating systems.
 
 ## Documentation
